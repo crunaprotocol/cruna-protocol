@@ -10,7 +10,7 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {ERC721Holder} from "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 
-import {ModifiedAccountV3} from "./ModifiedAccountV3.sol";
+import {ManagerSigner} from "./ManagerSigner.sol";
 
 import {Protected} from "./Protected.sol";
 import {IERC6454} from "./IERC6454.sol";
@@ -21,7 +21,7 @@ import "@tokenbound/contracts/utils/Errors.sol" as Errors;
 
 //import {console} from "hardhat/console.sol";
 
-contract Manager is IManager, Actor, ModifiedAccountV3, ERC721Holder, EIP712, UUPSUpgradeable {
+contract Manager is IManager, Actor, ManagerSigner, ERC721Holder, EIP712, UUPSUpgradeable {
   using ECDSA for bytes32;
   using Strings for uint256;
 
@@ -51,7 +51,7 @@ contract Manager is IManager, Actor, ModifiedAccountV3, ERC721Holder, EIP712, UU
     _;
   }
 
-  constructor(address guardian, string memory name, string memory version) ModifiedAccountV3(guardian) EIP712(name, version) {}
+  constructor(address guardian, string memory name, string memory version) ManagerSigner(guardian) EIP712(name, version) {}
 
   function _authorizeUpgrade(address implementation) internal virtual override {
     if (!guardian.isTrustedImplementation(implementation)) revert Errors.InvalidImplementation();

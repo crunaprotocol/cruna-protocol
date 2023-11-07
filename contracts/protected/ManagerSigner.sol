@@ -15,9 +15,9 @@ import {IAccountGuardian} from "@tokenbound/contracts/interfaces/IAccountGuardia
 import {Protected} from "./Protected.sol";
 
 /**
- * @title Tokenbound ERC-6551 Account Implementation
+ * @title Tokenbound ERC-6551 Account Implementation Modified to remove anything unnecessary for a Manager (which is not a TBA)
  */
-contract ModifiedAccountV3 is Context {
+contract ManagerSigner is Context {
   IAccountGuardian public immutable guardian;
 
   /**
