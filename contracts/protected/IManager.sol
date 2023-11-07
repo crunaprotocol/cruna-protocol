@@ -22,7 +22,7 @@ interface IManager {
    */
   event BeneficiaryUpdated(address indexed owner, address indexed beneficiary, IActor.Status status);
 
-  event Inherited(address indexed vault, uint256 tokenId, address indexed from, address indexed to);
+  event Inherited(address indexed protected, uint256 tokenId, address indexed from, address indexed to);
 
   error TimestampZero();
   error Forbidden();
@@ -214,7 +214,7 @@ interface IManager {
     uint256 validFor
   ) external view returns (bytes32);
 
-  function guardianRequestDigest(
+  function beneficiaryRequestDigest(
     address guardian,
     uint256 status,
     uint256 timestamp,

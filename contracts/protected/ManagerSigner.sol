@@ -67,12 +67,12 @@ contract ManagerSigner is Context {
     return signer == owner();
   }
 
-  function vault() public view returns (Protected) {
+  function protected() public view returns (Protected) {
     (, address tokenContract_, ) = token();
     return Protected(tokenContract_);
   }
 
-  function tokenContract() public view returns (address) {
+  function tokenAddress() public view returns (address) {
     (, address tokenContract_, ) = token();
     return tokenContract_;
   }

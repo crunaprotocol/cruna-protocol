@@ -42,12 +42,12 @@ contract Manager is IManager, Actor, ManagerSigner, ERC721Holder, EIP712, UUPSUp
   mapping(address => BeneficiaryConf) internal _beneficiaryConfs;
 
   modifier onlyTokenOwner() {
-    if (vault().ownerOf(tokenId()) != _msgSender()) revert NotTheTokenOwner();
+    if (protected().ownerOf(tokenId()) != _msgSender()) revert NotTheTokenOwner();
     _;
   }
 
   modifier onlyTokensOwner() {
-    if (vault().balanceOf(_msgSender()) == 0) revert NotATokensOwner();
+    if (protected().balanceOf(_msgSender()) == 0) revert NotATokensOwner();
     _;
   }
 
@@ -64,7 +64,7 @@ contract Manager is IManager, Actor, ManagerSigner, ERC721Holder, EIP712, UUPSUp
    */
   function onERC721Received(address, address, uint256, bytes memory) public virtual override returns (bytes4) {
     // This contract is not supposed to own vaults itself
-    if (vault().balanceOf(address(this)) > 0) revert Errors.OwnershipCycle();
+    if (protected().balanceOf(address(this)) > 0) revert Errors.OwnershipCycle();
     return this.onERC721Received.selector;
   }
 
@@ -147,7 +147,7 @@ contract Manager is IManager, Actor, ManagerSigner, ERC721Holder, EIP712, UUPSUp
   }
 
   function checkIfSignatureUsedAndUseIfNot(bytes calldata signature) public override {
-    if (_msgSender() != tokenContract()) revert Forbidden();
+    if (_msgSender() != tokenAddress()) revert Forbidden();
     _checkIfSignatureUsedAndUseIfNot(signature);
   }
 
@@ -170,7 +170,7 @@ contract Manager is IManager, Actor, ManagerSigner, ERC721Holder, EIP712, UUPSUp
   }
 
   function invalidateSignatureFor(bytes32 hash, bytes calldata signature) external override onlyTokenOwner {
-    address tokenOwner_ = vault().ownerOf(tokenId());
+    address tokenOwner_ = protected().ownerOf(tokenId());
     (, Status status) = findProtector(tokenOwner_, _msgSender());
     if (status < Status.ACTIVE) revert NotAProtector();
     if (!signedByProtector(tokenOwner_, hash, signature)) revert WrongDataOrNotSignedByProtector();
@@ -203,7 +203,7 @@ contract Manager is IManager, Actor, ManagerSigner, ERC721Holder, EIP712, UUPSUp
   }
 
   function setSignatureAsUsed(bytes calldata signature) public override {
-    if (_msgSender() != tokenContract()) revert Forbidden();
+    if (_msgSender() != tokenAddress()) revert Forbidden();
     _setSignatureAsUsed(signature);
   }
 
@@ -232,7 +232,7 @@ contract Manager is IManager, Actor, ManagerSigner, ERC721Holder, EIP712, UUPSUp
     if (timestamp == 0) {
       if (countActiveProtectors(_msgSender()) > 0) revert NotPermittedWhenProtectorsAreActive();
     } else {
-      address signer = recover(guardianRequestDigest(beneficiary, uint256(status), timestamp, validFor), signature);
+      address signer = recover(beneficiaryRequestDigest(beneficiary, uint256(status), timestamp, validFor), signature);
       isNotExpired(timestamp, validFor);
       isSignerAProtector(_msgSender(), signer);
       _usedSignatures[keccak256(signature)] = true;
@@ -309,8 +309,8 @@ contract Manager is IManager, Actor, ManagerSigner, ERC721Holder, EIP712, UUPSUp
       _beneficiariesRequests[tokenOwner_].recipient == _msgSender() &&
       _beneficiariesRequests[tokenOwner_].approvers.length >= _beneficiaryConfs[tokenOwner_].quorum
     ) {
-      vault().managedTransfer(tokenId(), _msgSender());
-      emit Inherited(tokenContract(), tokenId(), tokenOwner_, _msgSender());
+      protected().managedTransfer(tokenId(), _msgSender());
+      emit Inherited(tokenAddress(), tokenId(), tokenOwner_, _msgSender());
       delete _beneficiariesRequests[tokenOwner_];
     } else revert Unauthorized();
   }
@@ -342,8 +342,10 @@ contract Manager is IManager, Actor, ManagerSigner, ERC721Holder, EIP712, UUPSUp
       _hashTypedDataV4(
         keccak256(
           abi.encode(
-            keccak256("Auth(address vault,uint256 tokenId,address protector,bool active,uint256 timestamp,uint256 validFor)"),
-            tokenContract(),
+            keccak256(
+              "Auth(address tokenAddress,uint256 tokenId,address protector,bool active,uint256 timestamp,uint256 validFor)"
+            ),
+            tokenAddress(),
             tokenId(),
             protector,
             active,
@@ -360,8 +362,8 @@ contract Manager is IManager, Actor, ManagerSigner, ERC721Holder, EIP712, UUPSUp
       _hashTypedDataV4(
         keccak256(
           abi.encode(
-            keccak256("Auth(address vault,uint256 tokenId,address to,uint256 timestamp,uint256 validFor)"),
-            tokenContract(),
+            keccak256("Auth(address tokenAddress,uint256 tokenId,address to,uint256 timestamp,uint256 validFor)"),
+            tokenAddress(),
             tokenId(),
             to,
             timestamp,
@@ -383,9 +385,9 @@ contract Manager is IManager, Actor, ManagerSigner, ERC721Holder, EIP712, UUPSUp
         keccak256(
           abi.encode(
             keccak256(
-              "Auth(address vault,uint256 tokenId,address owner,address recipient,uint256 level,uint256 timestamp,uint256 validFor)"
+              "Auth(address tokenAddress,uint256 tokenId,address owner,address recipient,uint256 level,uint256 timestamp,uint256 validFor)"
             ),
-            tokenContract(),
+            tokenAddress(),
             tokenId(),
             recipient,
             level,
@@ -396,8 +398,8 @@ contract Manager is IManager, Actor, ManagerSigner, ERC721Holder, EIP712, UUPSUp
       );
   }
 
-  function guardianRequestDigest(
-    address guardian,
+  function beneficiaryRequestDigest(
+    address beneficiary,
     uint256 status,
     uint256 timestamp,
     uint256 validFor
@@ -407,10 +409,12 @@ contract Manager is IManager, Actor, ManagerSigner, ERC721Holder, EIP712, UUPSUp
       _hashTypedDataV4(
         keccak256(
           abi.encode(
-            keccak256("Auth(address vault,uint256 tokenId,address guardian,uint256 status,uint256 timestamp,uint256 validFor)"),
-            tokenContract(),
+            keccak256(
+              "Auth(address tokenAddress,uint256 tokenId,address beneficiary,uint256 status,uint256 timestamp,uint256 validFor)"
+            ),
+            tokenAddress(),
             tokenId(),
-            guardian,
+            beneficiary,
             status,
             timestamp,
             validFor
