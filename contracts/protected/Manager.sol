@@ -3,26 +3,27 @@ pragma solidity ^0.8.19;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {ERC721Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
-import {ECDSAUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.sol";
-import {StringsUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
+import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
+import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+import {ERC721Holder} from "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
+
+import {ManagerSigner} from "./ManagerSigner.sol";
 
 import {Protected} from "./Protected.sol";
 import {IERC6454} from "./IERC6454.sol";
 import {Actor, IActor} from "./Actor.sol";
 import {IManager} from "./IManager.sol";
 
+import "@tokenbound/contracts/utils/Errors.sol" as Errors;
+
 //import {console} from "hardhat/console.sol";
 
-contract Manager is IManager, OwnableUpgradeable, Actor, EIP712Upgradeable, UUPSUpgradeable {
-  using ECDSAUpgradeable for bytes32;
-  using StringsUpgradeable for uint256;
-
-  Protected public vault;
-  uint256 public tokenId;
+contract Manager is IManager, Actor, ManagerSigner, ERC721Holder, EIP712, UUPSUpgradeable {
+  using ECDSA for bytes32;
+  using Strings for uint256;
 
   // the address of a second wallet required to validate the transfer of a token
   // the user can set up to 2 protectors
@@ -41,32 +42,30 @@ contract Manager is IManager, OwnableUpgradeable, Actor, EIP712Upgradeable, UUPS
   mapping(address => BeneficiaryConf) internal _beneficiaryConfs;
 
   modifier onlyTokenOwner() {
-    if (vault.ownerOf(tokenId) != _msgSender()) revert NotTheTokenOwner();
+    if (protected().ownerOf(tokenId()) != _msgSender()) revert NotTheTokenOwner();
     _;
   }
 
   modifier onlyTokensOwner() {
-    if (vault.balanceOf(_msgSender()) == 0) revert NotATokensOwner();
+    if (protected().balanceOf(_msgSender()) == 0) revert NotATokensOwner();
     _;
   }
 
-  /// @custom:oz-upgrades-unsafe-allow constructor
-  // solhint-disable-next-line
-  constructor() {
-    _disableInitializers();
+  constructor(address guardian, string memory name, string memory version) ManagerSigner(guardian) EIP712(name, version) {}
+
+  function _authorizeUpgrade(address implementation) internal virtual override {
+    if (!guardian.isTrustedImplementation(implementation)) revert Errors.InvalidImplementation();
+    if (!_isValidSigner(msg.sender)) revert Errors.NotAuthorized();
   }
 
-  function initialize(string memory name, string memory version, uint tokenId_) public initializer {
-    __Ownable_init();
-    __EIP712_init(name, version);
-    __UUPSUpgradeable_init();
-    vault = Protected(owner());
-    tokenId = tokenId_;
-  }
-
-  // solhint-disable-next-line no-empty-blocks
-  function _authorizeUpgrade(address newImplementation) internal virtual override onlyTokenOwner {
-    // TODO add support for official version registry
+  /**
+   * @dev called whenever an ERC-721 token is received. Can be overriden via Overridable. Reverts
+   * if token being received is the token the account is bound to.
+   */
+  function onERC721Received(address, address, uint256, bytes memory) public virtual override returns (bytes4) {
+    // This contract is not supposed to own vaults itself
+    if (protected().balanceOf(address(this)) > 0) revert Errors.OwnershipCycle();
+    return this.onERC721Received.selector;
   }
 
   function countActiveProtectors(address tokensOwner_) public view override returns (uint256) {
@@ -148,7 +147,7 @@ contract Manager is IManager, OwnableUpgradeable, Actor, EIP712Upgradeable, UUPS
   }
 
   function checkIfSignatureUsedAndUseIfNot(bytes calldata signature) public override {
-    if (_msgSender() != address(vault)) revert Forbidden();
+    if (_msgSender() != tokenAddress()) revert Forbidden();
     _checkIfSignatureUsedAndUseIfNot(signature);
   }
 
@@ -171,7 +170,7 @@ contract Manager is IManager, OwnableUpgradeable, Actor, EIP712Upgradeable, UUPS
   }
 
   function invalidateSignatureFor(bytes32 hash, bytes calldata signature) external override onlyTokenOwner {
-    address tokenOwner_ = vault.ownerOf(tokenId);
+    address tokenOwner_ = protected().ownerOf(tokenId());
     (, Status status) = findProtector(tokenOwner_, _msgSender());
     if (status < Status.ACTIVE) revert NotAProtector();
     if (!signedByProtector(tokenOwner_, hash, signature)) revert WrongDataOrNotSignedByProtector();
@@ -204,7 +203,7 @@ contract Manager is IManager, OwnableUpgradeable, Actor, EIP712Upgradeable, UUPS
   }
 
   function setSignatureAsUsed(bytes calldata signature) public override {
-    if (_msgSender() != address(vault)) revert Forbidden();
+    if (_msgSender() != tokenAddress()) revert Forbidden();
     _setSignatureAsUsed(signature);
   }
 
@@ -233,7 +232,7 @@ contract Manager is IManager, OwnableUpgradeable, Actor, EIP712Upgradeable, UUPS
     if (timestamp == 0) {
       if (countActiveProtectors(_msgSender()) > 0) revert NotPermittedWhenProtectorsAreActive();
     } else {
-      address signer = recover(guardianRequestDigest(beneficiary, uint256(status), timestamp, validFor), signature);
+      address signer = recover(beneficiaryRequestDigest(beneficiary, uint256(status), timestamp, validFor), signature);
       isNotExpired(timestamp, validFor);
       isSignerAProtector(_msgSender(), signer);
       _usedSignatures[keccak256(signature)] = true;
@@ -310,8 +309,8 @@ contract Manager is IManager, OwnableUpgradeable, Actor, EIP712Upgradeable, UUPS
       _beneficiariesRequests[tokenOwner_].recipient == _msgSender() &&
       _beneficiariesRequests[tokenOwner_].approvers.length >= _beneficiaryConfs[tokenOwner_].quorum
     ) {
-      vault.managedTransfer(tokenId, _msgSender());
-      emit Inherited(address(vault), tokenId, tokenOwner_, _msgSender());
+      protected().managedTransfer(tokenId(), _msgSender());
+      emit Inherited(tokenAddress(), tokenId(), tokenOwner_, _msgSender());
       delete _beneficiariesRequests[tokenOwner_];
     } else revert Unauthorized();
   }
@@ -343,9 +342,11 @@ contract Manager is IManager, OwnableUpgradeable, Actor, EIP712Upgradeable, UUPS
       _hashTypedDataV4(
         keccak256(
           abi.encode(
-            keccak256("Auth(address vault,uint256 tokenId,address protector,bool active,uint256 timestamp,uint256 validFor)"),
-            address(vault),
-            tokenId,
+            keccak256(
+              "Auth(address tokenAddress,uint256 tokenId,address protector,bool active,uint256 timestamp,uint256 validFor)"
+            ),
+            tokenAddress(),
+            tokenId(),
             protector,
             active,
             timestamp,
@@ -361,9 +362,9 @@ contract Manager is IManager, OwnableUpgradeable, Actor, EIP712Upgradeable, UUPS
       _hashTypedDataV4(
         keccak256(
           abi.encode(
-            keccak256("Auth(address vault,uint256 tokenId,address to,uint256 timestamp,uint256 validFor)"),
-            address(vault),
-            tokenId,
+            keccak256("Auth(address tokenAddress,uint256 tokenId,address to,uint256 timestamp,uint256 validFor)"),
+            tokenAddress(),
+            tokenId(),
             to,
             timestamp,
             validFor
@@ -384,10 +385,10 @@ contract Manager is IManager, OwnableUpgradeable, Actor, EIP712Upgradeable, UUPS
         keccak256(
           abi.encode(
             keccak256(
-              "Auth(address vault,uint256 tokenId,address owner,address recipient,uint256 level,uint256 timestamp,uint256 validFor)"
+              "Auth(address tokenAddress,uint256 tokenId,address owner,address recipient,uint256 level,uint256 timestamp,uint256 validFor)"
             ),
-            address(vault),
-            tokenId,
+            tokenAddress(),
+            tokenId(),
             recipient,
             level,
             timestamp,
@@ -397,8 +398,8 @@ contract Manager is IManager, OwnableUpgradeable, Actor, EIP712Upgradeable, UUPS
       );
   }
 
-  function guardianRequestDigest(
-    address guardian,
+  function beneficiaryRequestDigest(
+    address beneficiary,
     uint256 status,
     uint256 timestamp,
     uint256 validFor
@@ -408,10 +409,12 @@ contract Manager is IManager, OwnableUpgradeable, Actor, EIP712Upgradeable, UUPS
       _hashTypedDataV4(
         keccak256(
           abi.encode(
-            keccak256("Auth(address vault,uint256 tokenId,address guardian,uint256 status,uint256 timestamp,uint256 validFor)"),
-            address(vault),
-            tokenId,
-            guardian,
+            keccak256(
+              "Auth(address tokenAddress,uint256 tokenId,address beneficiary,uint256 status,uint256 timestamp,uint256 validFor)"
+            ),
+            tokenAddress(),
+            tokenId(),
+            beneficiary,
             status,
             timestamp,
             validFor
