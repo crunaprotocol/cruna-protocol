@@ -69,6 +69,7 @@ interface IProtected {
   error NotTheManager();
   error InvalidManager();
   error InvalidSignatureValidator();
+  error TimestampZero();
 
   /**
    * @dev Transfers a token to a recipient usign a valid signed transferRequest

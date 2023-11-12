@@ -124,37 +124,9 @@ interface IManager {
 
   function countActiveProtectors(address tokensOwner_) external view returns (uint256);
 
-  function setSignatureAsUsed(bytes calldata signature) external;
-
-  /**
-   * @dev Verifies if the transfer request is signed by a protector
-   * @param tokenOwner_ The token owner
-   * @param hash The hash of the transfer request
-   * @param signature The signature of the transfer request
-   * @return True if the transfer request is signed by a protector
-   */
   function signedByProtector(address tokenOwner_, bytes32 hash, bytes memory signature) external view returns (bool);
 
-  /**
-   * @dev Checks if a signature has been used
-   * @param signature The signature of the transfer request
-   * @return True if the signature has been used
-   */
-  function isSignatureUsed(bytes calldata signature) external view returns (bool);
-
-  function isNotExpired(uint256 timestamp, uint256 validFor) external view;
-
   function isSignerAProtector(address tokenOwner_, address signer_) external view;
-
-  function checkIfSignatureUsedAndUseIfNot(bytes calldata signature) external;
-
-  function validateTimestampAndSignature(
-    address tokenOwner_,
-    uint256 timestamp,
-    uint256 validFor,
-    bytes32 hash,
-    bytes calldata signature
-  ) external view;
 
   function invalidateSignatureFor(bytes32 hash, bytes calldata signature) external;
 

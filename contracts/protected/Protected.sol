@@ -26,6 +26,7 @@ abstract contract Protected is IProtected, IERC6454, ERC721, Ownable2Step, Reent
   uint256 public nextTokenId;
 
   mapping(uint256 => bool) internal _approvedTransfers;
+  mapping(bytes32 => bool) public usedSignatures;
 
   modifier onlyProtectorForTokenId(uint256 tokenId_) {
     address owner_ = ownerOf(tokenId_);
@@ -60,9 +61,19 @@ abstract contract Protected is IProtected, IERC6454, ERC721, Ownable2Step, Reent
     uint256 validFor,
     bytes calldata signature
   ) external override onlyTokenOwner(tokenId) {
-    managers[tokenId].checkIfSignatureUsedAndUseIfNot(signature);
-    managers[tokenId].isNotExpired(timestamp, validFor);
-    address signer = managers[tokenId].managerSigner().signRequest(_msgSender(), to, 0, timestamp, validFor, signature);
+    if (timestamp == 0) revert TimestampZero();
+    if (timestamp > block.timestamp || timestamp < block.timestamp - validFor) revert TimestampInvalidOrExpired();
+    if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
+    usedSignatures[keccak256(signature)] = true;
+    address signer = managers[tokenId].managerSigner().signRequest(
+      _msgSender(),
+      tokenId,
+      to,
+      0,
+      timestamp,
+      validFor,
+      signature
+    );
     managers[tokenId].isSignerAProtector(ownerOf(tokenId), signer);
     _approvedTransfers[tokenId] = true;
     _transfer(_msgSender(), to, tokenId);
