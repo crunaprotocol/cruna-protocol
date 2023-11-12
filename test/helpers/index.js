@@ -71,7 +71,8 @@ const Helpers = {
   async deployContract(contractName, ...args) {
     const Contract = await this.ethers.getContractFactory(contractName);
     const contract = await Contract.deploy(...args);
-    await contract.deployed();
+    // removed in Ethers V6
+    // await contract.deployed();
     return contract;
   },
 

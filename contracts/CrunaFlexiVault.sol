@@ -33,10 +33,6 @@ contract CrunaFlexiVault is ProtectedNFT {
     factoryAddress = factory;
   }
 
-  function version() external pure virtual returns (string memory) {
-    return "1.0.0";
-  }
-
   function _baseURI() internal view virtual override returns (string memory) {
     return "https://meta.cruna.cc/flexy-vault/v1/";
   }

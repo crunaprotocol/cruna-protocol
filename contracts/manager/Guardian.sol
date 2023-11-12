@@ -2,7 +2,8 @@
 pragma solidity ^0.8.13;
 
 import {AccountGuardian} from "@tokenbound/contracts/AccountGuardian.sol";
+import {Versioned} from "../utils/Versioned.sol";
 
-contract ManagerGuardian is AccountGuardian {
+contract Guardian is AccountGuardian, Versioned {
   constructor(address owner) AccountGuardian(owner) {}
 }

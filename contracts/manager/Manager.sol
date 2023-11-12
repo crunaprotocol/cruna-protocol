@@ -15,11 +15,12 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 import {IERC6551Account} from "erc6551/interfaces/IERC6551Account.sol";
-import {SignatureValidator} from "./SignatureValidator.sol";
+import {SignatureValidator} from "../utils/SignatureValidator.sol";
 
-import {ProtectedNFT} from "./ProtectedNFT.sol";
+import {ProtectedNFT} from "../protected/ProtectedNFT.sol";
 import {Actor, IActor} from "./Actor.sol";
 import {IManager} from "./IManager.sol";
+import {Versioned} from "../utils/Versioned.sol";
 
 import "@tokenbound/contracts/utils/Errors.sol" as Errors;
 
@@ -51,7 +52,7 @@ error NotYourProtector();
 error NotAnActiveProtector();
 error CannotBeYourself();
 
-contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IERC1271 {
+contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgradeable, IERC1271 {
   using ECDSA for bytes32;
   using Strings for uint256;
   IAccountGuardian public guardian;

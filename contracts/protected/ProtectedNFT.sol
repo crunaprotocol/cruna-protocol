@@ -12,10 +12,11 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.
 import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
 import {IProtected} from "./IProtected.sol";
 import {IERC6454} from "./IERC6454.sol";
-import {IActor} from "./Actor.sol";
-import {Manager} from "./Manager.sol";
-import {SignatureValidator} from "./SignatureValidator.sol";
-import {ManagerProxy} from "./ManagerProxy.sol";
+import {IActor} from "../manager/Actor.sol";
+import {Manager} from "../manager/Manager.sol";
+import {SignatureValidator} from "../utils/SignatureValidator.sol";
+import {ManagerProxy} from "../manager/ManagerProxy.sol";
+import {Versioned} from "../utils/Versioned.sol";
 
 //import {console} from "hardhat/console.sol";
 
@@ -30,7 +31,7 @@ error TimestampZero();
 error AlreadyInitialized();
 error NoZeroAddress();
 
-abstract contract ProtectedNFT is IProtected, IERC6454, ERC721, Ownable2Step, ReentrancyGuard {
+abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownable2Step, ReentrancyGuard {
   using ECDSA for bytes32;
   using Strings for uint256;
 
@@ -86,7 +87,6 @@ abstract contract ProtectedNFT is IProtected, IERC6454, ERC721, Ownable2Step, Re
       manager_ == address(0) ||
       managerProxy_ == address(0)
     ) revert NoZeroAddress();
-    if (address(registry_) != address(0)) revert AlreadyInitialized();
     GUARDIAN = IAccountGuardian(guardian_);
     VALIDATOR = SignatureValidator(signatureValidator_);
     REGISTRY = IERC6551Registry(registry_);
