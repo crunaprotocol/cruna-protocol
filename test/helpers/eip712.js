@@ -1,4 +1,4 @@
-const ethSigUtil = require("eth-sig-util");
+const ethSigUtil = require("@metamask/eth-sig-util");
 const keccak256 = require("keccak256");
 
 const EIP712Domain = [

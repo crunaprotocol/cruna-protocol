@@ -2,7 +2,7 @@
   "extends": "solhint:recommended",
   "rules": {
     "avoid-suicide": "error",
-    "no-unused-vars": "error",
+    "no-unused-vars": ["error", {"vars": "all", "args": "none"}],
     "private-vars-leading-underscore": "error",
     "const-name-snakecase": "error",
     "contract-name-camelcase": "error",
