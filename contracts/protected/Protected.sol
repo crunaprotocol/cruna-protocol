@@ -62,7 +62,7 @@ abstract contract Protected is IProtected, IERC6454, ERC721, Ownable2Step, Reent
   ) external override onlyTokenOwner(tokenId) {
     managers[tokenId].checkIfSignatureUsedAndUseIfNot(signature);
     managers[tokenId].isNotExpired(timestamp, validFor);
-    address signer = managers[tokenId].managerSigner().signRequest(to, address(0), 0, timestamp, validFor, signature);
+    address signer = managers[tokenId].managerSigner().signRequest(_msgSender(), to, 0, timestamp, validFor, signature);
     managers[tokenId].isSignerAProtector(ownerOf(tokenId), signer);
     _approvedTransfers[tokenId] = true;
     _transfer(_msgSender(), to, tokenId);

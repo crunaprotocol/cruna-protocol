@@ -53,11 +53,6 @@ contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IER
     _;
   }
 
-  modifier onlyTokensOwner() {
-    if (VAULT.balanceOf(_msgSender()) == 0) revert NotATokensOwner();
-    _;
-  }
-
   constructor() {
     VAULT = Protected(msg.sender);
   }
@@ -149,12 +144,12 @@ contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IER
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
-  ) external virtual override onlyTokensOwner {
+  ) external virtual override onlyTokenOwner {
     if (protector_ == address(0)) revert NoZeroAddress();
     if (protector_ == _msgSender()) revert CannotBeYourself();
     _checkIfSignatureUsedAndUseIfNot(signature);
     isNotExpired(timestamp, validFor);
-    address signer = managerSigner.signRequest(protector_, address(0), (active ? 1 : 0), timestamp, validFor, signature);
+    address signer = managerSigner.signRequest(_msgSender(), protector_, (active ? 1 : 0), timestamp, validFor, signature);
     if (active) {
       if (_ownersByProtector[protector_] != address(0)) {
         if (_ownersByProtector[protector_] == _msgSender()) revert ProtectorAlreadySetByYou();
@@ -242,11 +237,11 @@ contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IER
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
-  ) external override onlyTokensOwner {
+  ) external override onlyTokenOwner {
     if (timestamp == 0) {
       if (countActiveProtectors(_msgSender()) > 0) revert NotPermittedWhenProtectorsAreActive();
     } else {
-      address signer = managerSigner.signRequest(recipient, address(0), uint256(level), timestamp, validFor, signature);
+      address signer = managerSigner.signRequest(_msgSender(), recipient, uint256(level), timestamp, validFor, signature);
 
       isNotExpired(timestamp, validFor);
       isSignerAProtector(_msgSender(), signer);
@@ -286,11 +281,11 @@ contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IER
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
-  ) external override onlyTokensOwner {
+  ) external override onlyTokenOwner {
     if (timestamp == 0) {
       if (countActiveProtectors(_msgSender()) > 0) revert NotPermittedWhenProtectorsAreActive();
     } else {
-      address signer = managerSigner.signRequest(beneficiary, address(0), uint256(status), timestamp, validFor, signature);
+      address signer = managerSigner.signRequest(_msgSender(), beneficiary, uint256(status), timestamp, validFor, signature);
       isNotExpired(timestamp, validFor);
       isSignerAProtector(_msgSender(), signer);
       _usedSignatures[keccak256(signature)] = true;
@@ -303,7 +298,7 @@ contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IER
     emit BeneficiaryUpdated(_msgSender(), beneficiary, status);
   }
 
-  function configureBeneficiary(uint256 quorum, uint256 proofOfLifeDurationInDays) external onlyTokensOwner {
+  function configureBeneficiary(uint256 quorum, uint256 proofOfLifeDurationInDays) external onlyTokenOwner {
     if (countActiveProtectors(_msgSender()) > 0) revert NotPermittedWhenProtectorsAreActive();
     if (quorum == 0) revert QuorumCannotBeZero();
     if (quorum > _countActiveActorsByRole(_msgSender(), _role("BENEFICIARY"))) revert QuorumCannotBeGreaterThanBeneficiaries();
@@ -316,7 +311,7 @@ contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IER
     return (_getActors(tokenOwner_, _role("BENEFICIARY")), _beneficiaryConfs[tokenOwner_]);
   }
 
-  function proofOfLife() external onlyTokensOwner {
+  function proofOfLife() external onlyTokenOwner {
     if (_beneficiaryConfs[_msgSender()].proofOfLifeDurationInDays == 0) revert BeneficiaryNotConfigured();
     // solhint-disable-next-line not-rely-on-time
     _beneficiaryConfs[_msgSender()].lastProofOfLife = block.timestamp;
