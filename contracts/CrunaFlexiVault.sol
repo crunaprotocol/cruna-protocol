@@ -9,22 +9,8 @@ import {Protected, Strings} from "./protected/Protected.sol";
 contract CrunaFlexiVault is Protected {
   using Strings for uint256;
 
-  event TokenURIFrozen();
-  event TokenURIUpdated(string uri);
-  error FrozenTokenURI();
   error NotTheFactory();
   error ZeroAddress();
-  error CapReached();
-  error VaultManagerAlreadySet();
-  error VaultManagerNotInitiated();
-  error NotImplemented();
-  error ForbiddenWhenTokenApprovedForSale();
-  error TheAccountIsNotOwnedByTheFlexiVault();
-  error AccountAlreadyEjected();
-  error NotAllowedWhenProtector();
-  error NotAPreviouslyEjectedAccount();
-  error NotActivated();
-  error TokenIdDoesNotExist();
 
   address public factoryAddress;
 
@@ -33,7 +19,10 @@ contract CrunaFlexiVault is Protected {
     _;
   }
 
-  constructor(address guardian_) Protected("Cruna Flexi Vault V1", "CRUNA1", guardian_) {}
+  constructor(
+    address guardian_,
+    address signatureValidator_
+  ) Protected("Cruna Flexi Vault V1", "CRUNA1", guardian_, signatureValidator_) {}
 
   // set factory to 0x0 to disable a factory
   function setFactory(address factory) external virtual onlyOwner {

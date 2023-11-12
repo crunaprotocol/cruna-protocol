@@ -15,7 +15,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 import {IERC6551Account} from "erc6551/interfaces/IERC6551Account.sol";
-import {ManagerSigner} from "./ManagerSigner.sol";
+import {SignatureValidator} from "./SignatureValidator.sol";
 
 import {Protected} from "./Protected.sol";
 import {Actor, IActor} from "./Actor.sol";
@@ -25,11 +25,38 @@ import "@tokenbound/contracts/utils/Errors.sol" as Errors;
 
 //import {console} from "hardhat/console.sol";
 
+error NoZeroAddress();
+error TimestampZero();
+error Forbidden();
+error NotTheTokenOwner();
+error ProtectorNotFound();
+error AssociatedToAnotherOwner();
+error ProtectorAlreadySet();
+error ProtectorAlreadySetByYou();
+error NotAProtector();
+error NotPermittedWhenProtectorsAreActive();
+error TimestampInvalidOrExpired();
+error WrongDataOrNotSignedByProtector();
+error WrongDataOrNotSignedByProposedProtector();
+error SignatureAlreadyUsed();
+error QuorumCannotBeZero();
+error QuorumCannotBeGreaterThanBeneficiaries();
+error BeneficiaryNotConfigured();
+error NotExpiredYet();
+error InconsistentRecipient();
+error NotABeneficiary();
+error RequestAlreadyApproved();
+error Unauthorized();
+error NotYourProtector();
+error NotAnActiveProtector();
+error CannotBeYourself();
+error AlreadyInitialized();
+
 contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IERC1271 {
   using ECDSA for bytes32;
   using Strings for uint256;
   IAccountGuardian public guardian;
-  ManagerSigner public managerSigner;
+  SignatureValidator public signatureValidator;
   Protected public vault;
 
   // the address of the owner given the second wallet required to start the transfer
@@ -47,10 +74,12 @@ contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IER
   }
 
   // this must be execute immediately after the deployment
-  function init(string memory name, string memory version, address guardian_) external {
+  function init(address guardian_, address signatureValidator_) external {
     if (msg.sender != tokenAddress()) revert Forbidden();
+    if (guardian_ == address(0) || signatureValidator_ == address(0)) revert NoZeroAddress();
+    if (address(guardian) != address(0) || address(signatureValidator) != address(0)) revert AlreadyInitialized();
     guardian = IAccountGuardian(guardian_);
-    managerSigner = new ManagerSigner(name, version);
+    signatureValidator = SignatureValidator(signatureValidator_);
     vault = Protected(msg.sender);
   }
 
@@ -196,7 +225,7 @@ contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IER
     if (timestamp > block.timestamp || timestamp < block.timestamp - validFor) revert TimestampInvalidOrExpired();
     if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
     usedSignatures[keccak256(signature)] = true;
-    return managerSigner.signRequest(owner(), tokenId(), actor, levelOrStatus, timestamp, validFor, signature);
+    return signatureValidator.signRequest(owner(), tokenId(), actor, levelOrStatus, timestamp, validFor, signature);
   }
 
   // safe recipients

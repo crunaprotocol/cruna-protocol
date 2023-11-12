@@ -4,12 +4,6 @@ pragma solidity ^0.8.19;
 // Author: Francesco Sullo <francesco@sullo.co>
 
 interface IActor {
-  error NoZeroAddress();
-  error InvalidRole();
-  error ActorNotFound(bytes32);
-  error ActorAlreadyAdded();
-  error TooManyActors();
-
   enum Status {
     UNSET,
     PENDING,

@@ -22,55 +22,6 @@ interface IProtected {
    */
   event BeneficiaryUpdated(address indexed owner, address indexed beneficiary, IActor.Status status);
 
-  error NotTheTokenOwner();
-  error NotApprovable();
-  error NotApprovableForAll();
-  error NotTheContractDeployer();
-  error TokenDoesNotExist();
-  error SenderDoesNotOwnAnyToken();
-  error ProtectorNotFound();
-  error TokenAlreadyBeingTransferred();
-  error AssociatedToAnotherOwner();
-  error ProtectorAlreadySet();
-  error ProtectorAlreadySetByYou();
-  error NotAProtector();
-  error NotOwnByRelatedOwner();
-  error NotPermittedWhenProtectorsAreActive();
-  error TokenIdTooBig();
-  error PendingProtectorNotFound();
-  error ResignationAlreadySubmitted();
-  error UnsetNotStarted();
-  error NotTheProtector();
-  error NotATokensOwner();
-  error ResignationNotSubmitted();
-  error InvalidDuration();
-  error NoActiveProtectors();
-  error ProtectorsAlreadyLocked();
-  error ProtectorsUnlockAlreadyStarted();
-  error ProtectorsUnlockNotStarted();
-  error ProtectorsNotLocked();
-  error TimestampInvalidOrExpired();
-  error WrongDataOrNotSignedByProtector();
-  error SignatureAlreadyUsed();
-  error OperatorAlreadyActive();
-  error OperatorNotActive();
-  error NotTheVaultManager();
-  error QuorumCannotBeZero();
-  error QuorumCannotBeGreaterThanBeneficiaries();
-  error BeneficiaryNotConfigured();
-  error NotExpiredYet();
-  error BeneficiaryAlreadyRequested();
-  error InconsistentRecipient();
-  error NotABeneficiary();
-  error RequestAlreadyApproved();
-  error NotTheRecipient();
-  error Unauthorized();
-  error NotTransferable();
-  error NotTheManager();
-  error InvalidManager();
-  error InvalidSignatureValidator();
-  error TimestampZero();
-
   /**
    * @dev Transfers a token to a recipient usign a valid signed transferRequest
    * @notice The function MUST be executed by the owner

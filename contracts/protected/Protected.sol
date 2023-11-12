@@ -13,14 +13,25 @@ import {IProtected} from "./IProtected.sol";
 import {IERC6454} from "./IERC6454.sol";
 import {IActor} from "./Actor.sol";
 import {Manager} from "./Manager.sol";
+import {SignatureValidator} from "./SignatureValidator.sol";
 
 //import {console} from "hardhat/console.sol";
+
+error NotTheTokenOwner();
+error NotAProtector();
+error NotATokensOwner();
+error TimestampInvalidOrExpired();
+error SignatureAlreadyUsed();
+error NotTransferable();
+error NotTheManager();
+error TimestampZero();
 
 abstract contract Protected is IProtected, IERC6454, ERC721, Ownable2Step, ReentrancyGuard {
   using ECDSA for bytes32;
   using Strings for uint256;
 
   IAccountGuardian public immutable GUARDIAN;
+  SignatureValidator public immutable VALIDATOR;
 
   mapping(uint256 => Manager) public managers;
   uint256 public nextTokenId;
@@ -50,8 +61,14 @@ abstract contract Protected is IProtected, IERC6454, ERC721, Ownable2Step, Reent
     _;
   }
 
-  constructor(string memory name_, string memory symbol_, address guardian_) ERC721(name_, symbol_) {
+  constructor(
+    string memory name_,
+    string memory symbol_,
+    address guardian_,
+    address signatureValidator_
+  ) ERC721(name_, symbol_) {
     GUARDIAN = IAccountGuardian(guardian_);
+    VALIDATOR = SignatureValidator(signatureValidator_);
   }
 
   function protectedTransfer(
@@ -65,7 +82,7 @@ abstract contract Protected is IProtected, IERC6454, ERC721, Ownable2Step, Reent
     if (timestamp > block.timestamp || timestamp < block.timestamp - validFor) revert TimestampInvalidOrExpired();
     if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
     usedSignatures[keccak256(signature)] = true;
-    address signer = managers[tokenId].managerSigner().signRequest(
+    address signer = managers[tokenId].signatureValidator().signRequest(
       _msgSender(),
       tokenId,
       to,

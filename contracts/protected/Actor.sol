@@ -3,6 +3,11 @@ pragma solidity ^0.8.19;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
+error NoZeroAddress();
+error ActorNotFound(bytes32);
+error ActorAlreadyAdded();
+error TooManyActors();
+
 import {IActor} from "./IActor.sol";
 
 //import {console} from "hardhat/console.sol";
