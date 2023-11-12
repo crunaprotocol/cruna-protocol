@@ -30,7 +30,7 @@ contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IER
   using Strings for uint256;
   IAccountGuardian public guardian;
   ManagerSigner public managerSigner;
-  Protected public immutable VAULT;
+  Protected public vault;
 
   // the address of the owner given the second wallet required to start the transfer
   mapping(address => address) internal _ownersByProtector;
@@ -42,19 +42,16 @@ contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IER
   mapping(bytes32 => bool) public usedSignatures;
 
   modifier onlyTokenOwner() {
-    if (VAULT.ownerOf(tokenId()) != _msgSender()) revert NotTheTokenOwner();
+    if (vault.ownerOf(tokenId()) != _msgSender()) revert NotTheTokenOwner();
     _;
-  }
-
-  constructor() {
-    VAULT = Protected(msg.sender);
   }
 
   // this must be execute immediately after the deployment
   function init(string memory name, string memory version, address guardian_) external {
-    if (msg.sender != address(VAULT)) revert Forbidden();
+    if (msg.sender != tokenAddress()) revert Forbidden();
     guardian = IAccountGuardian(guardian_);
     managerSigner = new ManagerSigner(name, version);
+    vault = Protected(msg.sender);
   }
 
   function _authorizeUpgrade(address implementation) internal virtual override {
@@ -107,7 +104,7 @@ contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IER
 
   function onERC721Received(address, address, uint256, bytes memory) public virtual override returns (bytes4) {
     // This contract is not supposed to own vaults itself
-    if (VAULT.balanceOf(address(this)) > 0) revert Errors.OwnershipCycle();
+    if (vault.balanceOf(address(this)) > 0) revert Errors.OwnershipCycle();
     return this.onERC721Received.selector;
   }
 
@@ -181,7 +178,7 @@ contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IER
   }
 
   function invalidateSignatureFor(bytes32 hash, bytes calldata signature) external override onlyTokenOwner {
-    address tokenOwner_ = VAULT.ownerOf(tokenId());
+    address tokenOwner_ = vault.ownerOf(tokenId());
     (, Status status) = findProtector(tokenOwner_, _msgSender());
     if (status < Status.ACTIVE) revert NotAProtector();
     if (!signedByProtector(tokenOwner_, hash, signature)) revert WrongDataOrNotSignedByProtector();
@@ -321,7 +318,7 @@ contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IER
       _beneficiariesRequests[tokenOwner_].recipient == _msgSender() &&
       _beneficiariesRequests[tokenOwner_].approvers.length >= _beneficiaryConfs[tokenOwner_].quorum
     ) {
-      VAULT.managedTransfer(tokenId(), _msgSender());
+      vault.managedTransfer(tokenId(), _msgSender());
       emit Inherited(tokenAddress(), tokenId(), tokenOwner_, _msgSender());
       delete _beneficiariesRequests[tokenOwner_];
     } else revert Unauthorized();
