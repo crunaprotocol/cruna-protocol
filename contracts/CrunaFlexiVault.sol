@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: GPL3
 pragma solidity ^0.8.19;
 
-import {Protected, Strings} from "./protected/Protected.sol";
+import {ProtectedNFT, Strings} from "./protected/ProtectedNFT.sol";
 
 //import "hardhat/console.sol";
 
 // reference implementation of a Cruna Vault
-contract CrunaFlexiVault is Protected {
+contract CrunaFlexiVault is ProtectedNFT {
   using Strings for uint256;
 
   error NotTheFactory();
@@ -25,7 +25,7 @@ contract CrunaFlexiVault is Protected {
     address signatureValidator_,
     address manager_,
     address managerProxy_
-  ) Protected("Cruna Flexi Vault V1", "CRUNA1", registry_, guardian_, signatureValidator_, manager_, managerProxy_) {}
+  ) ProtectedNFT("Cruna Flexi Vault V1", "CRUNA1", registry_, guardian_, signatureValidator_, manager_, managerProxy_) {}
 
   // set factory to 0x0 to disable a factory
   function setFactory(address factory) external virtual onlyOwner {

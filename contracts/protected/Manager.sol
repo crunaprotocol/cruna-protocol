@@ -17,7 +17,7 @@ import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 import {IERC6551Account} from "erc6551/interfaces/IERC6551Account.sol";
 import {SignatureValidator} from "./SignatureValidator.sol";
 
-import {Protected} from "./Protected.sol";
+import {ProtectedNFT} from "./ProtectedNFT.sol";
 import {Actor, IActor} from "./Actor.sol";
 import {IManager} from "./IManager.sol";
 
@@ -56,7 +56,7 @@ contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IER
   using Strings for uint256;
   IAccountGuardian public guardian;
   SignatureValidator public signatureValidator;
-  Protected public vault;
+  ProtectedNFT public vault;
 
   // the address of the owner given the second wallet required to start the transfer
   mapping(address => address) internal _ownersByProtector;
@@ -77,7 +77,7 @@ contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IER
     if (msg.sender != tokenAddress()) revert Forbidden();
     guardian = IAccountGuardian(guardian_);
     signatureValidator = SignatureValidator(signatureValidator_);
-    vault = Protected(msg.sender);
+    vault = ProtectedNFT(msg.sender);
   }
 
   function _authorizeUpgrade(address implementation) internal virtual override {

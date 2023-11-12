@@ -30,7 +30,7 @@ error TimestampZero();
 error AlreadyInitialized();
 error NoZeroAddress();
 
-abstract contract Protected is IProtected, IERC6454, ERC721, Ownable2Step, ReentrancyGuard {
+abstract contract ProtectedNFT is IProtected, IERC6454, ERC721, Ownable2Step, ReentrancyGuard {
   using ECDSA for bytes32;
   using Strings for uint256;
 
