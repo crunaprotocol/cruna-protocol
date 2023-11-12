@@ -3,17 +3,21 @@ pragma solidity ^0.8.19;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
-import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {ERC721Holder} from "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
+import {IAccountGuardian} from "@tokenbound/contracts/interfaces/IAccountGuardian.sol";
+import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
+import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
+import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
+import {IERC6551Account} from "erc6551/interfaces/IERC6551Account.sol";
 import {ManagerSigner} from "./ManagerSigner.sol";
 
 import {Protected} from "./Protected.sol";
-import {IERC6454} from "./IERC6454.sol";
 import {Actor, IActor} from "./Actor.sol";
 import {IManager} from "./IManager.sol";
 
@@ -21,9 +25,12 @@ import "@tokenbound/contracts/utils/Errors.sol" as Errors;
 
 //import {console} from "hardhat/console.sol";
 
-contract Manager is IManager, Actor, ManagerSigner, ERC721Holder, EIP712, UUPSUpgradeable {
+contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IERC1271 {
   using ECDSA for bytes32;
   using Strings for uint256;
+  IAccountGuardian public guardian;
+  ManagerSigner public managerSigner;
+  Protected public immutable VAULT;
 
   // the address of a second wallet required to validate the transfer of a token
   // the user can set up to 2 protectors
@@ -42,31 +49,81 @@ contract Manager is IManager, Actor, ManagerSigner, ERC721Holder, EIP712, UUPSUp
   mapping(address => BeneficiaryConf) internal _beneficiaryConfs;
 
   modifier onlyTokenOwner() {
-    if (protected().ownerOf(tokenId()) != _msgSender()) revert NotTheTokenOwner();
+    if (VAULT.ownerOf(tokenId()) != _msgSender()) revert NotTheTokenOwner();
     _;
   }
 
   modifier onlyTokensOwner() {
-    if (protected().balanceOf(_msgSender()) == 0) revert NotATokensOwner();
+    if (VAULT.balanceOf(_msgSender()) == 0) revert NotATokensOwner();
     _;
   }
 
-  constructor(address guardian, string memory name, string memory version) ManagerSigner(guardian) EIP712(name, version) {}
+  constructor() {
+    VAULT = Protected(msg.sender);
+  }
+
+  // this must be execute immediately after the deployment
+  function init(string memory name, string memory version, address guardian_) external {
+    if (msg.sender != address(VAULT)) revert Forbidden();
+    guardian = IAccountGuardian(guardian_);
+    managerSigner = new ManagerSigner(name, version);
+  }
 
   function _authorizeUpgrade(address implementation) internal virtual override {
     if (!guardian.isTrustedImplementation(implementation)) revert Errors.InvalidImplementation();
     if (!_isValidSigner(msg.sender)) revert Errors.NotAuthorized();
   }
 
-  /**
-   * @dev called whenever an ERC-721 token is received. Can be overriden via Overridable. Reverts
-   * if token being received is the token the account is bound to.
-   */
+  function isValidSigner(address signer, bytes calldata) external view virtual returns (bytes4) {
+    if (_isValidSigner(signer)) {
+      return IERC6551Account.isValidSigner.selector;
+    }
+
+    return bytes4(0);
+  }
+
+  function isValidSignature(bytes32 hash, bytes memory signature) external view virtual returns (bytes4 magicValue) {
+    bool isValid = SignatureChecker.isValidSignatureNow(owner(), hash, signature);
+
+    if (isValid) {
+      return IERC1271.isValidSignature.selector;
+    }
+
+    return bytes4(0);
+  }
+
+  function token() public view virtual returns (uint256, address, uint256) {
+    return ERC6551AccountLib.token();
+  }
+
+  function owner() public view virtual returns (address) {
+    (uint256 chainId, address tokenContract_, uint256 tokenId_) = token();
+    if (chainId != block.chainid) return address(0);
+
+    return IERC721(tokenContract_).ownerOf(tokenId_);
+  }
+
+  function _isValidSigner(address signer) internal view virtual returns (bool) {
+    return signer == owner();
+  }
+
+  function tokenAddress() public view returns (address) {
+    (, address tokenContract_, ) = token();
+    return tokenContract_;
+  }
+
+  function tokenId() public view returns (uint256) {
+    (, , uint256 tokenId_) = token();
+    return tokenId_;
+  }
+
   function onERC721Received(address, address, uint256, bytes memory) public virtual override returns (bytes4) {
     // This contract is not supposed to own vaults itself
-    if (protected().balanceOf(address(this)) > 0) revert Errors.OwnershipCycle();
+    if (VAULT.balanceOf(address(this)) > 0) revert Errors.OwnershipCycle();
     return this.onERC721Received.selector;
   }
+
+  // actors
 
   function countActiveProtectors(address tokensOwner_) public view override returns (uint256) {
     return _countActiveActorsByRole(tokensOwner_, _role("PROTECTOR"));
@@ -97,7 +154,7 @@ contract Manager is IManager, Actor, ManagerSigner, ERC721Holder, EIP712, UUPSUp
     if (protector_ == _msgSender()) revert CannotBeYourself();
     _checkIfSignatureUsedAndUseIfNot(signature);
     isNotExpired(timestamp, validFor);
-    address signer = recover(setProtectorDigest(protector_, active, timestamp, validFor), signature);
+    address signer = managerSigner.signRequest(protector_, address(0), (active ? 1 : 0), timestamp, validFor, signature);
     if (active) {
       if (_ownersByProtector[protector_] != address(0)) {
         if (_ownersByProtector[protector_] == _msgSender()) revert ProtectorAlreadySetByYou();
@@ -170,7 +227,7 @@ contract Manager is IManager, Actor, ManagerSigner, ERC721Holder, EIP712, UUPSUp
   }
 
   function invalidateSignatureFor(bytes32 hash, bytes calldata signature) external override onlyTokenOwner {
-    address tokenOwner_ = protected().ownerOf(tokenId());
+    address tokenOwner_ = VAULT.ownerOf(tokenId());
     (, Status status) = findProtector(tokenOwner_, _msgSender());
     if (status < Status.ACTIVE) revert NotAProtector();
     if (!signedByProtector(tokenOwner_, hash, signature)) revert WrongDataOrNotSignedByProtector();
@@ -189,7 +246,8 @@ contract Manager is IManager, Actor, ManagerSigner, ERC721Holder, EIP712, UUPSUp
     if (timestamp == 0) {
       if (countActiveProtectors(_msgSender()) > 0) revert NotPermittedWhenProtectorsAreActive();
     } else {
-      address signer = recover(recipientRequestDigest(recipient, uint256(level), timestamp, validFor), signature);
+      address signer = managerSigner.signRequest(recipient, address(0), uint256(level), timestamp, validFor, signature);
+
       isNotExpired(timestamp, validFor);
       isSignerAProtector(_msgSender(), signer);
       _usedSignatures[keccak256(signature)] = true;
@@ -232,7 +290,7 @@ contract Manager is IManager, Actor, ManagerSigner, ERC721Holder, EIP712, UUPSUp
     if (timestamp == 0) {
       if (countActiveProtectors(_msgSender()) > 0) revert NotPermittedWhenProtectorsAreActive();
     } else {
-      address signer = recover(beneficiaryRequestDigest(beneficiary, uint256(status), timestamp, validFor), signature);
+      address signer = managerSigner.signRequest(beneficiary, address(0), uint256(status), timestamp, validFor, signature);
       isNotExpired(timestamp, validFor);
       isSignerAProtector(_msgSender(), signer);
       _usedSignatures[keccak256(signature)] = true;
@@ -309,118 +367,10 @@ contract Manager is IManager, Actor, ManagerSigner, ERC721Holder, EIP712, UUPSUp
       _beneficiariesRequests[tokenOwner_].recipient == _msgSender() &&
       _beneficiariesRequests[tokenOwner_].approvers.length >= _beneficiaryConfs[tokenOwner_].quorum
     ) {
-      protected().managedTransfer(tokenId(), _msgSender());
+      VAULT.managedTransfer(tokenId(), _msgSender());
       emit Inherited(tokenAddress(), tokenId(), tokenOwner_, _msgSender());
       delete _beneficiariesRequests[tokenOwner_];
     } else revert Unauthorized();
-  }
-
-  // validation
-
-  function recover(bytes32 digest, bytes calldata signature) public pure override returns (address) {
-    return digest.recover(signature);
-  }
-
-  //  function validate(
-  //    bytes32 digest,
-  //    bytes calldata signature,
-  //    address signer
-  //  ) public view override returns (bool) {
-  //    return recover(digest, signature) == signer;
-  //  }
-
-  // digests
-
-  function setProtectorDigest(
-    address protector,
-    bool active,
-    uint256 timestamp,
-    uint256 validFor
-  ) public view returns (bytes32) {
-    if (timestamp == 0) revert TimestampZero();
-    return
-      _hashTypedDataV4(
-        keccak256(
-          abi.encode(
-            keccak256(
-              "Auth(address tokenAddress,uint256 tokenId,address protector,bool active,uint256 timestamp,uint256 validFor)"
-            ),
-            tokenAddress(),
-            tokenId(),
-            protector,
-            active,
-            timestamp,
-            validFor
-          )
-        )
-      );
-  }
-
-  function transferRequestDigest(address to, uint256 timestamp, uint256 validFor) public view returns (bytes32) {
-    if (timestamp == 0) revert TimestampZero();
-    return
-      _hashTypedDataV4(
-        keccak256(
-          abi.encode(
-            keccak256("Auth(address tokenAddress,uint256 tokenId,address to,uint256 timestamp,uint256 validFor)"),
-            tokenAddress(),
-            tokenId(),
-            to,
-            timestamp,
-            validFor
-          )
-        )
-      );
-  }
-
-  function recipientRequestDigest(
-    address recipient,
-    uint256 level,
-    uint256 timestamp,
-    uint256 validFor
-  ) public view returns (bytes32) {
-    if (timestamp == 0) revert TimestampZero();
-    return
-      _hashTypedDataV4(
-        keccak256(
-          abi.encode(
-            keccak256(
-              "Auth(address tokenAddress,uint256 tokenId,address owner,address recipient,uint256 level,uint256 timestamp,uint256 validFor)"
-            ),
-            tokenAddress(),
-            tokenId(),
-            recipient,
-            level,
-            timestamp,
-            validFor
-          )
-        )
-      );
-  }
-
-  function beneficiaryRequestDigest(
-    address beneficiary,
-    uint256 status,
-    uint256 timestamp,
-    uint256 validFor
-  ) public view returns (bytes32) {
-    if (timestamp == 0) revert TimestampZero();
-    return
-      _hashTypedDataV4(
-        keccak256(
-          abi.encode(
-            keccak256(
-              "Auth(address tokenAddress,uint256 tokenId,address beneficiary,uint256 status,uint256 timestamp,uint256 validFor)"
-            ),
-            tokenAddress(),
-            tokenId(),
-            beneficiary,
-            status,
-            timestamp,
-            validFor
-          )
-        )
-      );
   }
 
   /**

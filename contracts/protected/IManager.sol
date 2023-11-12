@@ -191,33 +191,4 @@ interface IManager {
   function requestTransfer(address tokenOwner_, address beneficiaryRecipient) external;
 
   function inherit(address tokenOwner_) external;
-
-  // validation
-
-  function recover(bytes32 digest, bytes calldata signature) external view returns (address);
-
-  // digests
-
-  function setProtectorDigest(
-    address protector,
-    bool active,
-    uint256 timestamp,
-    uint256 validFor
-  ) external view returns (bytes32);
-
-  function transferRequestDigest(address to, uint256 timestamp, uint256 validFor) external view returns (bytes32);
-
-  function recipientRequestDigest(
-    address recipient,
-    uint256 level,
-    uint256 timestamp,
-    uint256 validFor
-  ) external view returns (bytes32);
-
-  function beneficiaryRequestDigest(
-    address guardian,
-    uint256 status,
-    uint256 timestamp,
-    uint256 validFor
-  ) external view returns (bytes32);
 }

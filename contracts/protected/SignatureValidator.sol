@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.0;
 
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 
-contract ManagerSigner is EIP712 {
-  using ECDSA for bytes32;
-
+contract SignatureValidator is EIP712 {
   error TimestampZero();
 
   constructor(string memory name, string memory version) EIP712(name, version) {}
@@ -32,6 +30,6 @@ contract ManagerSigner is EIP712 {
         )
       )
     );
-    return digest.recover(signature);
+    return ECDSA.recover(digest, signature);
   }
 }

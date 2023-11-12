@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 const {assert} = require("chai");
 const BN = require("bn.js");
-const ethSigUtil = require("eth-sig-util");
+const ethSigUtil = require("@metamask/eth-sig-util");
 
 const {domainType} = require("./eip712");
 
@@ -35,6 +35,37 @@ const Helpers = {
     const contract = await Contract.connect(owner).deploy(...args);
     await contract.deployed();
     return contract;
+  },
+
+  async deployNickSFactory(deployer) {
+    if ((await this.ethers.provider.getCode(Helpers.addressOfFactory)) === `0x`) {
+      // Fund account of signer of transaction that deploys Arachnid's factory.
+      const addressOfSignerToDeployArachnidsFactory = `0x3fab184622dc19b6109349b94811493bf2a45362`;
+      let txResponse = await deployer.sendTransaction({
+        to: addressOfSignerToDeployArachnidsFactory,
+        value: this.ethers.parseUnits(`0.1`, `ether`),
+        gasLimit: 100000,
+      });
+      await txResponse.wait();
+
+      const txSserialized = `0xf8a58085174876e800830186a08080b853604580600e600039806000f350fe7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe03601600081602082378035828234f58015156039578182fd5b8082525050506014600cf31ba02222222222222222222222222222222222222222222222222222222222222222a02222222222222222222222222222222222222222222222222222222222222222`;
+
+      txResponse = await this.ethers.provider.broadcastTransaction(txSserialized);
+      return txResponse.wait();
+    }
+  },
+
+  async deployContractViaNickSFactory(deployer, contractBytecode, salt) {
+    const factoryContract = new this.ethers.Contract(
+      Helpers.addressOfFactory,
+      ["function deploy(bytes _bytecode, bytes32 _salt) public returns (address)"],
+      deployer
+    );
+
+    const tx = await factoryContract.deploy(contractBytecode, salt);
+    await tx.wait();
+
+    return this.ethers.getCreate2Address(Helpers.addressOfFactory, salt, this.ethers.keccak256(contractBytecode));
   },
 
   async deployContract(contractName, ...args) {
@@ -121,6 +152,8 @@ const Helpers = {
     return types;
   },
 };
+
+Helpers.addressOfFactory = `0x4e59b44847b379578588920ca78fbf26c0b4956c`;
 
 Helpers.privateKeyByWallet = {
   "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266": "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",

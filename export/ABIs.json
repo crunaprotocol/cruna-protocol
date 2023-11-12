@@ -590,7 +590,7 @@
       },
       {
         "inputs": [],
-        "name": "NotAMinter",
+        "name": "NotTheFactory",
         "type": "error"
       },
       {
