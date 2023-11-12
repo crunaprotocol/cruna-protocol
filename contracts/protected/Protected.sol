@@ -9,11 +9,13 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {IAccountGuardian} from "@tokenbound/contracts/interfaces/IAccountGuardian.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
 import {IProtected} from "./IProtected.sol";
 import {IERC6454} from "./IERC6454.sol";
 import {IActor} from "./Actor.sol";
 import {Manager} from "./Manager.sol";
 import {SignatureValidator} from "./SignatureValidator.sol";
+import {ManagerProxy} from "./ManagerProxy.sol";
 
 //import {console} from "hardhat/console.sol";
 
@@ -25,6 +27,8 @@ error SignatureAlreadyUsed();
 error NotTransferable();
 error NotTheManager();
 error TimestampZero();
+error AlreadyInitialized();
+error NoZeroAddress();
 
 abstract contract Protected is IProtected, IERC6454, ERC721, Ownable2Step, ReentrancyGuard {
   using ECDSA for bytes32;
@@ -32,6 +36,11 @@ abstract contract Protected is IProtected, IERC6454, ERC721, Ownable2Step, Reent
 
   IAccountGuardian public immutable GUARDIAN;
   SignatureValidator public immutable VALIDATOR;
+  IERC6551Registry public immutable REGISTRY;
+  Manager public immutable MANAGER;
+  ManagerProxy public immutable MANAGER_PROXY;
+
+  bytes32 public salt = keccak256("Cruna_Manager");
 
   mapping(uint256 => Manager) public managers;
   uint256 public nextTokenId;
@@ -64,11 +73,25 @@ abstract contract Protected is IProtected, IERC6454, ERC721, Ownable2Step, Reent
   constructor(
     string memory name_,
     string memory symbol_,
+    address registry_,
     address guardian_,
-    address signatureValidator_
+    address signatureValidator_,
+    address manager_,
+    address managerProxy_
   ) ERC721(name_, symbol_) {
+    if (
+      registry_ == address(0) ||
+      guardian_ == address(0) ||
+      signatureValidator_ == address(0) ||
+      manager_ == address(0) ||
+      managerProxy_ == address(0)
+    ) revert NoZeroAddress();
+    if (address(registry_) != address(0)) revert AlreadyInitialized();
     GUARDIAN = IAccountGuardian(guardian_);
     VALIDATOR = SignatureValidator(signatureValidator_);
+    REGISTRY = IERC6551Registry(registry_);
+    MANAGER = Manager(manager_);
+    MANAGER_PROXY = ManagerProxy(payable(managerProxy_));
   }
 
   function protectedTransfer(
@@ -138,8 +161,7 @@ abstract contract Protected is IProtected, IERC6454, ERC721, Ownable2Step, Reent
   // minting new token binding the manager to it
 
   function _mintAndInit(address to) internal {
-    // TODO use ERC6551Registry to create the Manager.sol
-
+    REGISTRY.createAccount(address(MANAGER_PROXY), salt, block.chainid, address(MANAGER), nextTokenId);
     // managers[nextTokenId] = new Manager.sol(name(), version(), nextTokenId);
     _safeMint(to, nextTokenId++);
   }

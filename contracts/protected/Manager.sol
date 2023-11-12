@@ -50,7 +50,6 @@ error Unauthorized();
 error NotYourProtector();
 error NotAnActiveProtector();
 error CannotBeYourself();
-error AlreadyInitialized();
 
 contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IERC1271 {
   using ECDSA for bytes32;
@@ -76,8 +75,6 @@ contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IER
   // this must be execute immediately after the deployment
   function init(address guardian_, address signatureValidator_) external {
     if (msg.sender != tokenAddress()) revert Forbidden();
-    if (guardian_ == address(0) || signatureValidator_ == address(0)) revert NoZeroAddress();
-    if (address(guardian) != address(0) || address(signatureValidator) != address(0)) revert AlreadyInitialized();
     guardian = IAccountGuardian(guardian_);
     signatureValidator = SignatureValidator(signatureValidator_);
     vault = Protected(msg.sender);

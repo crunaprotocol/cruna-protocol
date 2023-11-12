@@ -20,9 +20,12 @@ contract CrunaFlexiVault is Protected {
   }
 
   constructor(
+    address registry_,
     address guardian_,
-    address signatureValidator_
-  ) Protected("Cruna Flexi Vault V1", "CRUNA1", guardian_, signatureValidator_) {}
+    address signatureValidator_,
+    address manager_,
+    address managerProxy_
+  ) Protected("Cruna Flexi Vault V1", "CRUNA1", registry_, guardian_, signatureValidator_, manager_, managerProxy_) {}
 
   // set factory to 0x0 to disable a factory
   function setFactory(address factory) external virtual onlyOwner {
