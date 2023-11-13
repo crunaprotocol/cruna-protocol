@@ -1,21 +1,12 @@
-const { expect } = require("chai");
-const { ethers } = require("hardhat");
-const {
-  toChecksumAddress
-} = require("ethereumjs-util");
+const {expect} = require("chai");
+const {ethers} = require("hardhat");
+const {toChecksumAddress} = require("ethereumjs-util");
 let count = 9000;
 function cl() {
   console.log(count++);
 }
 
-const {
-  amount,
-  normalize,
-  deployContractUpgradeable,
-  addr0,
-  getChainId,
-  deployContract,
-} = require("./helpers");
+const {amount, normalize, deployContractUpgradeable, addr0, getChainId, deployContract} = require("./helpers");
 
 describe("Integration", function () {
   let erc6551Registry, proxy, manager, guardian;
@@ -35,11 +26,11 @@ describe("Integration", function () {
     guardian = await deployContract("AccountGuardian", deployer.address);
     proxy = await deployContract("ManagerProxy", manager.address);
     vault = await deployContract(
-        "CrunaFlexiVault",
-        erc6551Registry.address,
-        guardian.address,
-        signatureValidator.address,
-        proxy.address
+      "CrunaFlexiVault",
+      erc6551Registry.address,
+      guardian.address,
+      signatureValidator.address,
+      proxy.address
     );
     factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
 
@@ -52,10 +43,8 @@ describe("Integration", function () {
     await usdt.mint(alice.address, normalize("600", 6));
 
     await expect(factory.setPrice(990)).to.emit(factory, "PriceSet").withArgs(990);
-    await expect(factory.setStableCoin(usdc.address, true))
-        .to.emit(factory, "StableCoinSet").withArgs(usdc.address, true);
-    await expect(factory.setStableCoin(usdt.address, true))
-        .to.emit(factory, "StableCoinSet").withArgs(usdt.address, true);
+    await expect(factory.setStableCoin(usdc.address, true)).to.emit(factory, "StableCoinSet").withArgs(usdc.address, true);
+    await expect(factory.setStableCoin(usdt.address, true)).to.emit(factory, "StableCoinSet").withArgs(usdt.address, true);
   });
 
   it("should get the token parameters from the manager", async function () {
@@ -74,5 +63,4 @@ describe("Integration", function () {
     expect(await manager.tokenId()).to.equal(nextTokenId);
     expect(await manager.owner()).to.equal(bob.address);
   });
-
 });

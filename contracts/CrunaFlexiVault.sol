@@ -26,8 +26,7 @@ contract CrunaFlexiVault is ProtectedNFT {
     address guardian_,
     address signatureValidator_,
     address managerProxy_
-  ) ProtectedNFT("Cruna Flexi Vault V1", "CRUNA1", registry_, guardian_, signatureValidator_,
-  managerProxy_) {}
+  ) ProtectedNFT("Cruna Flexi Vault V1", "CRUNA1", registry_, guardian_, signatureValidator_, managerProxy_) {}
 
   // set factory to 0x0 to disable a factory
   function setFactory(address factory) external virtual onlyOwner {

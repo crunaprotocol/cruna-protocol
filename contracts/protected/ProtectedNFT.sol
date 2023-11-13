@@ -15,10 +15,9 @@ import {IERC6454} from "./IERC6454.sol";
 import {IActor} from "../manager/Actor.sol";
 import {Manager} from "../manager/Manager.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
-import {ManagerProxy} from "../manager/ManagerProxy.sol";
 import {Versioned} from "../utils/Versioned.sol";
 
-import {console} from "hardhat/console.sol";
+//import {console} from "hardhat/console.sol";
 
 abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownable2Step, ReentrancyGuard {
   using ECDSA for bytes32;
@@ -39,7 +38,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
   SignatureValidator public immutable VALIDATOR;
   IERC6551Registry public immutable REGISTRY;
   Manager public immutable MANAGER;
-//  ManagerProxy public immutable MANAGER_PROXY;
+  //  ManagerProxy public immutable MANAGER_PROXY;
 
   bytes32 public salt = bytes32(uint256(400));
 
@@ -79,12 +78,8 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
     address signatureValidator_,
     address managerProxy_
   ) ERC721(name_, symbol_) {
-    if (
-      registry_ == address(0) ||
-      guardian_ == address(0) ||
-      signatureValidator_ == address(0) ||
-      managerProxy_ == address(0)
-    ) revert ZeroAddress();
+    if (registry_ == address(0) || guardian_ == address(0) || signatureValidator_ == address(0) || managerProxy_ == address(0))
+      revert ZeroAddress();
     GUARDIAN = IAccountGuardian(guardian_);
     VALIDATOR = SignatureValidator(signatureValidator_);
     REGISTRY = IERC6551Registry(registry_);
@@ -168,5 +163,4 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
   function managerOf(uint256 tokenId) public view returns (address) {
     return REGISTRY.account(address(MANAGER), salt, block.chainid, address(this), tokenId);
   }
-
 }

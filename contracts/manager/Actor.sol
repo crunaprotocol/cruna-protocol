@@ -7,7 +7,6 @@ import {IActor} from "./IActor.sol";
 //import {console} from "hardhat/console.sol";
 
 contract Actor is IActor {
-
   error ZeroAddress();
   error ActorNotFound(bytes32);
   error ActorAlreadyAdded();

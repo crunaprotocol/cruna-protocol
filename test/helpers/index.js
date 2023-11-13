@@ -66,7 +66,11 @@ const Helpers = {
     await tx.wait();
 
     // TODO fix the following, which is returning the wrong address
-    return this.ethers.utils.getCreate2Address(Helpers.nickSFactoryAddress, salt, this.ethers.utils.keccak256(contractBytecode));
+    return this.ethers.utils.getCreate2Address(
+      Helpers.nickSFactoryAddress,
+      salt,
+      this.ethers.utils.keccak256(contractBytecode)
+    );
   },
 
   async deployContract(contractName, ...args) {

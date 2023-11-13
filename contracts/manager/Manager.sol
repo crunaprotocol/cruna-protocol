@@ -24,9 +24,7 @@ import {Versioned} from "../utils/Versioned.sol";
 
 import "@tokenbound/contracts/utils/Errors.sol" as Errors;
 
-import {console} from "hardhat/console.sol";
-
-
+//import {console} from "hardhat/console.sol";
 
 contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgradeable, IERC1271 {
   using ECDSA for bytes32;

@@ -24,7 +24,6 @@ describe.skip("Nick's factory", function () {
     expect(await ethers.provider.getCode(managerAddress)).not.equal("0x");
   });
 
-
   it("should mint a valut and deploy the relative manager", async function () {
     // await expect(vault.
   });
