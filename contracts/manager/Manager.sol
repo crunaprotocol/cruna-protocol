@@ -18,42 +18,45 @@ import {IERC6551Account} from "erc6551/interfaces/IERC6551Account.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
 
 import {ProtectedNFT} from "../protected/ProtectedNFT.sol";
-import {Actor, IActor, ZeroAddress} from "./Actor.sol";
+import {Actor, IActor} from "./Actor.sol";
 import {IManager} from "./IManager.sol";
 import {Versioned} from "../utils/Versioned.sol";
 
 import "@tokenbound/contracts/utils/Errors.sol" as Errors;
 
-//import {console} from "hardhat/console.sol";
+import {console} from "hardhat/console.sol";
 
-error TimestampZero();
-error Forbidden();
-error NotTheTokenOwner();
-error ProtectorNotFound();
-error AssociatedToAnotherOwner();
-error ProtectorAlreadySet();
-error ProtectorAlreadySetByYou();
-error NotAProtector();
-error NotPermittedWhenProtectorsAreActive();
-error TimestampInvalidOrExpired();
-error WrongDataOrNotSignedByProtector();
-error WrongDataOrNotSignedByProposedProtector();
-error SignatureAlreadyUsed();
-error QuorumCannotBeZero();
-error QuorumCannotBeGreaterThanBeneficiaries();
-error BeneficiaryNotConfigured();
-error NotExpiredYet();
-error InconsistentRecipient();
-error NotABeneficiary();
-error RequestAlreadyApproved();
-error Unauthorized();
-error NotYourProtector();
-error NotAnActiveProtector();
-error CannotBeYourself();
+
 
 contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgradeable, IERC1271 {
   using ECDSA for bytes32;
   using Strings for uint256;
+
+  error TimestampZero();
+  error Forbidden();
+  error NotTheTokenOwner();
+  error ProtectorNotFound();
+  error AssociatedToAnotherOwner();
+  error ProtectorAlreadySet();
+  error ProtectorAlreadySetByYou();
+  error NotAProtector();
+  error NotPermittedWhenProtectorsAreActive();
+  error TimestampInvalidOrExpired();
+  error WrongDataOrNotSignedByProtector();
+  error WrongDataOrNotSignedByProposedProtector();
+  error SignatureAlreadyUsed();
+  error QuorumCannotBeZero();
+  error QuorumCannotBeGreaterThanBeneficiaries();
+  error BeneficiaryNotConfigured();
+  error NotExpiredYet();
+  error InconsistentRecipient();
+  error NotABeneficiary();
+  error RequestAlreadyApproved();
+  error Unauthorized();
+  error NotYourProtector();
+  error NotAnActiveProtector();
+  error CannotBeYourself();
+
   IAccountGuardian public guardian;
   SignatureValidator public signatureValidator;
   ProtectedNFT public vault;

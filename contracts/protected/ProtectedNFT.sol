@@ -20,26 +20,26 @@ import {Versioned} from "../utils/Versioned.sol";
 
 import {console} from "hardhat/console.sol";
 
-error NotTheTokenOwner();
-error NotAProtector();
-error NotATokensOwner();
-error TimestampInvalidOrExpired();
-error SignatureAlreadyUsed();
-error NotTransferable();
-error NotTheManager();
-error TimestampZero();
-error AlreadyInitialized();
-error ZeroAddress();
-
 abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownable2Step, ReentrancyGuard {
   using ECDSA for bytes32;
   using Strings for uint256;
+
+  error NotTheTokenOwner();
+  error NotAProtector();
+  error NotATokensOwner();
+  error TimestampInvalidOrExpired();
+  error SignatureAlreadyUsed();
+  error NotTransferable();
+  error NotTheManager();
+  error TimestampZero();
+  error AlreadyInitialized();
+  error ZeroAddress();
 
   IAccountGuardian public immutable GUARDIAN;
   SignatureValidator public immutable VALIDATOR;
   IERC6551Registry public immutable REGISTRY;
   Manager public immutable MANAGER;
-  ManagerProxy public immutable MANAGER_PROXY;
+//  ManagerProxy public immutable MANAGER_PROXY;
 
   bytes32 public salt = bytes32(uint256(400));
 
@@ -77,21 +77,18 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
     address registry_,
     address guardian_,
     address signatureValidator_,
-    address manager_,
     address managerProxy_
   ) ERC721(name_, symbol_) {
     if (
       registry_ == address(0) ||
       guardian_ == address(0) ||
       signatureValidator_ == address(0) ||
-      manager_ == address(0) ||
       managerProxy_ == address(0)
     ) revert ZeroAddress();
     GUARDIAN = IAccountGuardian(guardian_);
     VALIDATOR = SignatureValidator(signatureValidator_);
     REGISTRY = IERC6551Registry(registry_);
-    MANAGER = Manager(manager_);
-    MANAGER_PROXY = ManagerProxy(payable(managerProxy_));
+    MANAGER = Manager(managerProxy_);
     nextTokenId++;
   }
 
@@ -159,15 +156,17 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
     }
   }
 
-  // minting new token binding the manager to it
-
-  function managerAddress(uint256 tokenId) public view returns (address) {
-    return REGISTRY.account(address(MANAGER_PROXY), salt, block.chainid, address(MANAGER), tokenId);
-  }
+  // minting and initialization
 
   function _mintAndInit(address to) internal {
-    REGISTRY.createAccount(address(MANAGER_PROXY), salt, block.chainid, address(MANAGER), nextTokenId);
-    managers[nextTokenId] = Manager(managerAddress(nextTokenId));
+    REGISTRY.createAccount(address(MANAGER), salt, block.chainid, address(this), nextTokenId);
+    managers[nextTokenId] = Manager(managerOf(nextTokenId));
+    managers[nextTokenId].init(address(GUARDIAN), address(VALIDATOR));
     _safeMint(to, nextTokenId++);
   }
+
+  function managerOf(uint256 tokenId) public view returns (address) {
+    return REGISTRY.account(address(MANAGER), salt, block.chainid, address(this), tokenId);
+  }
+
 }

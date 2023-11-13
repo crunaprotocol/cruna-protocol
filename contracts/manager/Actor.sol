@@ -2,17 +2,17 @@
 pragma solidity ^0.8.19;
 
 // Author: Francesco Sullo <francesco@sullo.co>
-
-error ZeroAddress();
-error ActorNotFound(bytes32);
-error ActorAlreadyAdded();
-error TooManyActors();
-
 import {IActor} from "./IActor.sol";
 
 //import {console} from "hardhat/console.sol";
 
 contract Actor is IActor {
+
+  error ZeroAddress();
+  error ActorNotFound(bytes32);
+  error ActorAlreadyAdded();
+  error TooManyActors();
+
   mapping(bytes32 => mapping(address => Actor[])) private _actors;
   Actor private _emptyActor = Actor(address(0), Status.UNSET, Level.NONE);
 

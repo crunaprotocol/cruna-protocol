@@ -33,14 +33,13 @@ describe("Factory", function () {
     erc6551Registry = await deployContract("ERC6551Registry");
     manager = await deployContract("Manager");
     guardian = await deployContract("AccountGuardian", deployer.address);
-    proxy = await deployContract("ManagerProxy", guardian.address, manager.address);
+    proxy = await deployContract("ManagerProxy", manager.address);
     vault = await deployContract(
-      "CrunaFlexiVault",
-      erc6551Registry.address,
-      guardian.address,
-      signatureValidator.address,
-      manager.address,
-      proxy.address
+        "CrunaFlexiVault",
+        erc6551Registry.address,
+        guardian.address,
+        signatureValidator.address,
+        proxy.address
     );
     factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
 
@@ -62,15 +61,15 @@ describe("Factory", function () {
   it("should get the precalculated address of the manager", async function () {
     let price = await factory.finalPrice(usdc.address, "");
     await usdc.connect(bob).approve(factory.address, price);
-
-    const precalculatedAddress = await vault.managerAddress(1);
+    const nextTokenId = await vault.nextTokenId();
+    const precalculatedAddress = await vault.managerOf(nextTokenId);
     const salt = ethers.utils.hexZeroPad(ethers.BigNumber.from("400").toHexString(), 32);
 
     await expect(factory.connect(bob).buyVaults(usdc.address, 1, ""))
         .to.emit(vault, "Transfer")
-        .withArgs(addr0, bob.address, 1)
+        .withArgs(addr0, bob.address, nextTokenId)
         .to.emit(erc6551Registry, "ERC6551AccountCreated")
-        .withArgs(precalculatedAddress, toChecksumAddress(proxy.address), salt, await getChainId(), toChecksumAddress(manager.address), 1);
+        .withArgs(precalculatedAddress, toChecksumAddress(proxy.address), salt, await getChainId(), toChecksumAddress(manager.address), nextTokenId);
   });
 
   async function buyVault(token, amount, buyer, promoCode = "") {
