@@ -29,12 +29,12 @@ describe("SignatureValidator", function () {
     validator = await deployContract("SignatureValidator", name, version);
   });
 
-  it("should recover the signer of a recoverSigner2", async function () {
+  it("should recover the signer of a recoverSigner", async function () {
     const message = {
-      address1: tokenOwner.address,
-      address2: protector.address,
-      integer1: 1,
-      integer2: 19928273,
+      owner: tokenOwner.address,
+      actor: protector.address,
+      tokenId: 1,
+      extraValue: 19928273,
       timestamp: (await getTimestamp()) - 100,
       validFor: 3600,
     };
@@ -45,10 +45,10 @@ describe("SignatureValidator", function () {
       privateKeyByWallet[protector.address],
       "Auth",
       [
-        {name: "address1", type: "address"},
-        {name: "address2", type: "address"},
-        {name: "integer1", type: "uint256"},
-        {name: "integer2", type: "uint256"},
+        {name: "owner", type: "address"},
+        {name: "actor", type: "address"},
+        {name: "tokenId", type: "uint256"},
+        {name: "extraValue", type: "uint256"},
         {name: "timestamp", type: "uint256"},
         {name: "validFor", type: "uint256"},
       ],
@@ -56,56 +56,11 @@ describe("SignatureValidator", function () {
     );
 
     expect(
-      await validator.recoverSigner2(
-        message.address1,
-        message.address2,
-        message.integer1,
-        message.integer2,
-        message.timestamp,
-        message.validFor,
-        signature
-      )
-    ).equal(protector.address);
-  });
-
-  it("should recover the signer of a recoverSigner3", async function () {
-    const message = {
-      address1: tokenOwner.address,
-      address2: protector.address,
-      address3: ethers.ZeroAddress,
-      integer1: 1,
-      integer2: 19928273,
-      integer3: 0,
-      timestamp: (await getTimestamp()) - 100,
-      validFor: 3600,
-    };
-
-    const signature = await makeSignature(
-      chainId,
-      validator.target,
-      privateKeyByWallet[protector.address],
-      "Auth",
-      [
-        {name: "address1", type: "address"},
-        {name: "address2", type: "address"},
-        {name: "address3", type: "address"},
-        {name: "integer1", type: "uint256"},
-        {name: "integer2", type: "uint256"},
-        {name: "integer3", type: "uint256"},
-        {name: "timestamp", type: "uint256"},
-        {name: "validFor", type: "uint256"},
-      ],
-      message
-    );
-
-    expect(
-      await validator.recoverSigner3(
-        message.address1,
-        message.address2,
-        message.address3,
-        message.integer1,
-        message.integer2,
-        message.integer3,
+      await validator.recoverSigner(
+        message.owner,
+        message.actor,
+        message.tokenId,
+        message.extraValue,
         message.timestamp,
         message.validFor,
         signature

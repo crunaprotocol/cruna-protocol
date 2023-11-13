@@ -105,7 +105,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
     if (timestamp > block.timestamp || timestamp < block.timestamp - validFor) revert TimestampInvalidOrExpired();
     if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
     usedSignatures[keccak256(signature)] = true;
-    address signer = managers[tokenId].signatureValidator().recoverSigner2(
+    address signer = managers[tokenId].signatureValidator().recoverSigner(
       _msgSender(),
       to,
       tokenId,

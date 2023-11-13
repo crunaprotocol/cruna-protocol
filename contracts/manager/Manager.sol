@@ -223,7 +223,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     if (timestamp > block.timestamp || timestamp < block.timestamp - validFor) revert TimestampInvalidOrExpired();
     if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
     usedSignatures[keccak256(signature)] = true;
-    return signatureValidator.recoverSigner2(owner(), actor, tokenId(), level, timestamp, validFor, signature);
+    return signatureValidator.recoverSigner(owner(), actor, tokenId(), level, timestamp, validFor, signature);
   }
 
   // safe recipients
