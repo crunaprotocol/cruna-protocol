@@ -29,19 +29,18 @@ describe("Integration", function () {
 
   beforeEach(async function () {
     guardian = await deployContract("AccountGuardian", deployer);
-    proxy = await deployContract("ManagerProxy", guardian.target, managerAddress);
+    proxy = await deployContract("ManagerProxy", guardian.address, managerAddress);
     vault = await deployContract(
       "CrunaFlexiVault",
       erc6551RegistryAddress,
-      guardian.target,
-      signatureValidator.target,
+      guardian.address,
+      signatureValidator.address,
       managerAddress,
-      proxy.target
+      proxy.address
     );
   });
 
-  it("should work", async function () {
-    // expect(erc6551RegistryAddress).to.equal("0x8c9e088Fd0a256897690Ec32cd9aEccDf34c3d3e");
-    expect(true).to.equal(true);
+  it("should mint a valut and deploy the relative manager", async function () {
+    // await expect(vault.
   });
 });

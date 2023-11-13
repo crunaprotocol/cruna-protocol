@@ -41,7 +41,7 @@ describe("SignatureValidator", function () {
 
     const signature = await makeSignature(
       chainId,
-      validator.target,
+      validator.address,
       privateKeyByWallet[protector.address],
       "Auth",
       [

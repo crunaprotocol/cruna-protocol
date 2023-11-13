@@ -18,7 +18,7 @@ import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {ManagerProxy} from "../manager/ManagerProxy.sol";
 import {Versioned} from "../utils/Versioned.sol";
 
-//import {console} from "hardhat/console.sol";
+import {console} from "hardhat/console.sol";
 
 error NotTheTokenOwner();
 error NotAProtector();
@@ -41,7 +41,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
   Manager public immutable MANAGER;
   ManagerProxy public immutable MANAGER_PROXY;
 
-  bytes32 public salt = keccak256("Cruna_Manager");
+  bytes32 public salt = bytes32(uint256(400));
 
   mapping(uint256 => Manager) public managers;
   uint256 public nextTokenId;
@@ -92,6 +92,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
     REGISTRY = IERC6551Registry(registry_);
     MANAGER = Manager(manager_);
     MANAGER_PROXY = ManagerProxy(payable(managerProxy_));
+    nextTokenId++;
   }
 
   function protectedTransfer(
@@ -160,9 +161,13 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
 
   // minting new token binding the manager to it
 
+  function managerAddress(uint256 tokenId) public view returns (address) {
+    return REGISTRY.account(address(MANAGER_PROXY), salt, block.chainid, address(MANAGER), tokenId);
+  }
+
   function _mintAndInit(address to) internal {
     REGISTRY.createAccount(address(MANAGER_PROXY), salt, block.chainid, address(MANAGER), nextTokenId);
-    // managers[nextTokenId] = new Manager.sol(name(), version(), nextTokenId);
+    managers[nextTokenId] = Manager(managerAddress(nextTokenId));
     _safeMint(to, nextTokenId++);
   }
 }

@@ -43,14 +43,14 @@ const Helpers = {
       const addressOfSignerToDeployArachnidsFactory = `0x3fab184622dc19b6109349b94811493bf2a45362`;
       let txResponse = await deployer.sendTransaction({
         to: addressOfSignerToDeployArachnidsFactory,
-        value: this.ethers.parseUnits(`0.1`, `ether`),
+        value: this.ethers.utils.parseUnits(`0.1`, `ether`),
         gasLimit: 100000,
       });
       await txResponse.wait();
 
       const txSserialized = `0xf8a58085174876e800830186a08080b853604580600e600039806000f350fe7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe03601600081602082378035828234f58015156039578182fd5b8082525050506014600cf31ba02222222222222222222222222222222222222222222222222222222222222222a02222222222222222222222222222222222222222222222222222222222222222`;
 
-      txResponse = await this.ethers.provider.broadcastTransaction(txSserialized);
+      txResponse = await this.ethers.provider.sendTransaction(txSserialized);
       return txResponse.wait();
     }
   },
@@ -65,14 +65,14 @@ const Helpers = {
     const tx = await factoryContract.deploy(contractBytecode, salt);
     await tx.wait();
 
-    return this.ethers.getCreate2Address(Helpers.addressOfFactory, salt, this.ethers.keccak256(contractBytecode));
+    return this.ethers.utils.getCreate2Address(Helpers.addressOfFactory, salt, this.ethers.utils.keccak256(contractBytecode));
   },
 
   async deployContract(contractName, ...args) {
     const Contract = await this.ethers.getContractFactory(contractName);
     const contract = await Contract.deploy(...args);
     // removed in Ethers V6
-    // await contract.deployed();
+    await contract.deployed();
     return contract;
   },
 

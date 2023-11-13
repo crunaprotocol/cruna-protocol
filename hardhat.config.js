@@ -8,6 +8,7 @@ require("@secrez/cryptoenv").parse(() => process.env.NODE_ENV !== "test" && !pro
 
 const {env} = process;
 
+require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-waffle");
 require("@nomiclabs/hardhat-etherscan");
 require("@openzeppelin/hardhat-upgrades");
