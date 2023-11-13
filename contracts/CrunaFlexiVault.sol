@@ -20,6 +20,9 @@ contract CrunaFlexiVault is ProtectedNFT {
   }
 
   constructor(
+    // Notice that the registry address is fixed and could be hardcoded
+    // but if so, we cannot properly test the contract. So, we will pass it
+    // as a parameter in the deployment scripts.
     address registry_,
     address guardian_,
     address signatureValidator_,

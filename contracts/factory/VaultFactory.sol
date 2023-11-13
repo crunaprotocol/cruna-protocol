@@ -13,7 +13,7 @@ import {IVaultFactory} from "./IVaultFactory.sol";
 
 //import {console} from "hardhat/console.sol";
 
-error NoZeroAddress();
+error ZeroAddress();
 error NotAContract();
 error NotAVault();
 error InsufficientFunds();
@@ -113,7 +113,7 @@ contract VaultFactory is IVaultFactory, UUPSUpgradableTemplate {
     uint256 amount = 0;
     for (uint256 i = 0; i < tos.length; i++) {
       if (tos[i] == address(0)) {
-        revert NoZeroAddress();
+        revert ZeroAddress();
       }
       amount += amounts[i];
     }

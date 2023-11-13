@@ -29,7 +29,7 @@ error NotTransferable();
 error NotTheManager();
 error TimestampZero();
 error AlreadyInitialized();
-error NoZeroAddress();
+error ZeroAddress();
 
 abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownable2Step, ReentrancyGuard {
   using ECDSA for bytes32;
@@ -86,7 +86,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
       signatureValidator_ == address(0) ||
       manager_ == address(0) ||
       managerProxy_ == address(0)
-    ) revert NoZeroAddress();
+    ) revert ZeroAddress();
     GUARDIAN = IAccountGuardian(guardian_);
     VALIDATOR = SignatureValidator(signatureValidator_);
     REGISTRY = IERC6551Registry(registry_);

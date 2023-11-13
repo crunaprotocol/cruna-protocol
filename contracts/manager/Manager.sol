@@ -18,7 +18,7 @@ import {IERC6551Account} from "erc6551/interfaces/IERC6551Account.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
 
 import {ProtectedNFT} from "../protected/ProtectedNFT.sol";
-import {Actor, IActor} from "./Actor.sol";
+import {Actor, IActor, ZeroAddress} from "./Actor.sol";
 import {IManager} from "./IManager.sol";
 import {Versioned} from "../utils/Versioned.sol";
 
@@ -26,7 +26,6 @@ import "@tokenbound/contracts/utils/Errors.sol" as Errors;
 
 //import {console} from "hardhat/console.sol";
 
-error NoZeroAddress();
 error TimestampZero();
 error Forbidden();
 error NotTheTokenOwner();
@@ -162,7 +161,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
-    if (protector_ == address(0)) revert NoZeroAddress();
+    if (protector_ == address(0)) revert ZeroAddress();
     if (protector_ == _msgSender()) revert CannotBeYourself();
     address signer = _signRequest(protector_, (active ? 1 : 0), timestamp, validFor, signature);
     if (active) {
@@ -311,7 +310,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
   }
 
   function requestTransfer(address tokenOwner_, address beneficiaryRecipient) external {
-    if (beneficiaryRecipient == address(0)) revert NoZeroAddress();
+    if (beneficiaryRecipient == address(0)) revert ZeroAddress();
     if (_beneficiaryConfs[tokenOwner_].proofOfLifeDurationInDays == 0) revert BeneficiaryNotConfigured();
     (, IActor.Actor storage actor) = _getActor(tokenOwner_, _msgSender(), _role("BENEFICIARY"));
     if (actor.status == Status.UNSET) revert NotABeneficiary();

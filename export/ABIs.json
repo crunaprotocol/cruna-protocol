@@ -19,7 +19,7 @@
       },
       {
         "inputs": [],
-        "name": "NoZeroAddress",
+        "name": "ZeroAddress",
         "type": "error"
       },
       {
@@ -575,7 +575,7 @@
       },
       {
         "inputs": [],
-        "name": "NoZeroAddress",
+        "name": "ZeroAddress",
         "type": "error"
       },
       {
@@ -3438,7 +3438,7 @@
       },
       {
         "inputs": [],
-        "name": "NoZeroAddress",
+        "name": "ZeroAddress",
         "type": "error"
       },
       {
