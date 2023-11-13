@@ -69,7 +69,7 @@ describe("Factory", function () {
         .to.emit(vault, "Transfer")
         .withArgs(addr0, bob.address, nextTokenId)
         .to.emit(erc6551Registry, "ERC6551AccountCreated")
-        .withArgs(precalculatedAddress, toChecksumAddress(proxy.address), salt, await getChainId(), toChecksumAddress(manager.address), nextTokenId);
+        .withArgs(precalculatedAddress, toChecksumAddress(proxy.address), salt, await getChainId(), toChecksumAddress(vault.address), nextTokenId);
   });
 
   async function buyVault(token, amount, buyer, promoCode = "") {
