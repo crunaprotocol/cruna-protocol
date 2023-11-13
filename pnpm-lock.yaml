@@ -18,7 +18,7 @@ dependencies:
     specifier: ^4.9.3
     version: 4.9.3
   erc6551:
-    specifier: ^0.3.1
+    specifier: 0.3.1
     version: 0.3.1
   ethereumjs-abi:
     specifier: ^0.6.8
@@ -64,6 +64,9 @@ devDependencies:
   ethereum-waffle:
     specifier: ^3.4.4
     version: 3.4.4(typescript@4.9.5)
+  ethereumjs-util:
+    specifier: ^7.1.5
+    version: 7.1.5
   ethers:
     specifier: ^5.7.2
     version: 5.7.2

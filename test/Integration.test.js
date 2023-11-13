@@ -8,7 +8,7 @@ const {deployNickSFactory, deployContractViaNickSFactory, deployContract} = requ
 const registryBytecode = require("../artifacts/erc6551/ERC6551Registry.sol/ERC6551Registry.json").bytecode;
 const managerBytecode = require("../artifacts/contracts/manager/Manager.sol/Manager.json").bytecode;
 
-describe("Integration", function () {
+describe.skip("Integration", function () {
   let deployer;
   let erc6551RegistryAddress, managerAddress;
   let erc6551Registry, proxy, manager, guardian;

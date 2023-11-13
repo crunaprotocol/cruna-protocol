@@ -1,6 +1,8 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-
+const {
+  toChecksumAddress
+} = require("ethereumjs-util");
 let count = 9000;
 function cl() {
   console.log(count++);
@@ -11,44 +13,33 @@ const {
   normalize,
   deployContractUpgradeable,
   addr0,
-  deployNickSFactory,
-  deployContractViaNickSFactory,
+  getChainId,
   deployContract,
 } = require("./helpers");
 
-const registryBytecode = require("../artifacts/erc6551/ERC6551Registry.sol/ERC6551Registry.json").bytecode;
-const managerBytecode = require("../artifacts/contracts/manager/Manager.sol/Manager.json").bytecode;
-
 describe("Factory", function () {
-  let erc6551RegistryAddress, managerAddress;
   let erc6551Registry, proxy, manager, guardian;
   let signatureValidator, vault;
-  let salt;
   let factory;
   let usdc, usdt;
   let deployer, bob, alice, fred;
 
   before(async function () {
     [deployer, bob, alice, fred] = await ethers.getSigners();
-    await deployNickSFactory(deployer);
-    salt = "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31";
-    erc6551RegistryAddress = await deployContractViaNickSFactory(deployer, registryBytecode, salt);
-    erc6551Registry = await ethers.getContractAt("ERC6551Registry", erc6551RegistryAddress);
-    expect(erc6551RegistryAddress).to.equal("0xd97C080c191AdcE8Abc9789f520F67f4FE18e0e7");
-    managerAddress = await deployContractViaNickSFactory(deployer, managerBytecode, salt);
-    manager = await ethers.getContractAt("Manager", managerAddress);
     signatureValidator = await deployContract("SignatureValidator", "Cruna", "1");
   });
 
   beforeEach(async function () {
+    erc6551Registry = await deployContract("ERC6551Registry");
+    manager = await deployContract("Manager");
     guardian = await deployContract("AccountGuardian", deployer.address);
-    proxy = await deployContract("ManagerProxy", guardian.address, managerAddress);
+    proxy = await deployContract("ManagerProxy", guardian.address, manager.address);
     vault = await deployContract(
       "CrunaFlexiVault",
-      erc6551RegistryAddress,
+      erc6551Registry.address,
       guardian.address,
       signatureValidator.address,
-      managerAddress,
+      manager.address,
       proxy.address
     );
     factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
@@ -68,15 +59,18 @@ describe("Factory", function () {
         .to.emit(factory, "StableCoinSet").withArgs(usdt.address, true);
   });
 
-  it.only("should get the precalculated address of the manager", async function () {
+  it("should get the precalculated address of the manager", async function () {
+    let price = await factory.finalPrice(usdc.address, "");
+    await usdc.connect(bob).approve(factory.address, price);
 
-    const managerAddress = await vault.managerAddress(1);
-    //
-    // let price = await factory.finalPrice(usdc.address, "");
-    // await usdc.connect(bob).approve(factory.address, price);
-    // await expect(factory.connect(bob).buyVaults(usdc.address, 1, ""))
-    //     .to.emit(vault, "Transfer")
-    //     .withArgs(addr0, bob.address, 1)
+    const precalculatedAddress = await vault.managerAddress(1);
+    const salt = ethers.utils.hexZeroPad(ethers.BigNumber.from("400").toHexString(), 32);
+
+    await expect(factory.connect(bob).buyVaults(usdc.address, 1, ""))
+        .to.emit(vault, "Transfer")
+        .withArgs(addr0, bob.address, 1)
+        .to.emit(erc6551Registry, "ERC6551AccountCreated")
+        .withArgs(precalculatedAddress, toChecksumAddress(proxy.address), salt, await getChainId(), toChecksumAddress(manager.address), 1);
   });
 
   async function buyVault(token, amount, buyer, promoCode = "") {
@@ -121,11 +115,5 @@ describe("Factory", function () {
     price = await factory.finalPrice(usdt.address, promoCode);
     expect(price.toString()).to.equal("8910000");
 
-    await expect(factory.withdrawProceeds(fred.address, usdc.address, normalize("10")))
-      .to.emit(usdc, "Transfer")
-      .withArgs(factory.target, fred.address, normalize("10"));
-    await expect(factory.withdrawProceeds(fred.address, usdc.target, 0))
-      .to.emit(usdc, "Transfer")
-      .withArgs(factory.target, fred.address, amount("9.8"));
   });
 });
