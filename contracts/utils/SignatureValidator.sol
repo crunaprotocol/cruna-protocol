@@ -10,11 +10,11 @@ contract SignatureValidator is EIP712, Versioned {
 
   constructor(string memory name, string memory version) EIP712(name, version) {}
 
-  function signRequest(
-    address owner,
-    uint256 tokenId,
-    address actor,
-    uint256 levelOrStatus,
+  function recoverSigner2(
+    address address1,
+    address address2,
+    uint256 integer1,
+    uint256 integer2,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
@@ -24,12 +24,44 @@ contract SignatureValidator is EIP712, Versioned {
         keccak256(
           abi.encode(
             keccak256(
-              "Auth(address owner,uint256 tokenId,address actor,uint256 levelOrStatus,uint256 timestamp,uint256 validFor)"
+              "Auth(address address1,address address2,uint256 integer1,uint256 integer2,uint256 timestamp,uint256 validFor)"
             ),
-            owner,
-            tokenId,
-            actor,
-            levelOrStatus,
+            address1,
+            address2,
+            integer1,
+            integer2,
+            timestamp,
+            validFor
+          )
+        )
+      ).recover(signature);
+  }
+
+  // We put this function here just to be ready for more complex signatures in the future, without having to deploy a new contract
+  function recoverSigner3(
+    address address1,
+    address address2,
+    address address3,
+    uint256 integer1,
+    uint256 integer2,
+    uint256 integer3,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature
+  ) external view returns (address) {
+    return
+      _hashTypedDataV4(
+        keccak256(
+          abi.encode(
+            keccak256(
+              "Auth(address address1,address address2,address address3,uint256 integer1,uint256 integer2,uint256 integer3,uint256 timestamp,uint256 validFor)"
+            ),
+            address1,
+            address2,
+            address3,
+            integer1,
+            integer2,
+            integer3,
             timestamp,
             validFor
           )

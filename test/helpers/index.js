@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 const {assert} = require("chai");
 const BN = require("bn.js");
-const ethSigUtil = require("@metamask/eth-sig-util");
+const ethSigUtil = require("eth-sig-util");
 
 const {domainType} = require("./eip712");
 

@@ -214,7 +214,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
 
   function _signRequest(
     address actor,
-    uint256 levelOrStatus,
+    uint256 level,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
@@ -223,7 +223,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     if (timestamp > block.timestamp || timestamp < block.timestamp - validFor) revert TimestampInvalidOrExpired();
     if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
     usedSignatures[keccak256(signature)] = true;
-    return signatureValidator.signRequest(owner(), tokenId(), actor, levelOrStatus, timestamp, validFor, signature);
+    return signatureValidator.recoverSigner2(owner(), actor, tokenId(), level, timestamp, validFor, signature);
   }
 
   // safe recipients
