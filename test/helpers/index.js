@@ -166,8 +166,11 @@ const Helpers = {
     return types;
   },
 
-  async signRequest(owner, actor, tokenId, extraValue, timestamp, validFor, chainId, signer, validator) {
+  async signRequest(scope, owner, actor, tokenId, extraValue, timestamp, validFor, chainId, signer, validator) {
+    scope = await validator.getSupportedScope(scope);
+
     const message = {
+      scope: scope.toString(),
       owner,
       actor,
       tokenId: tokenId.toString(),
@@ -181,6 +184,7 @@ const Helpers = {
       Helpers.privateKeyByWallet[signer],
       "Auth",
       [
+        {name: "scope", type: "uint256"},
         {name: "owner", type: "address"},
         {name: "actor", type: "address"},
         {name: "tokenId", type: "uint256"},
