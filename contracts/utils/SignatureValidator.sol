@@ -14,7 +14,7 @@ contract SignatureValidator is EIP712, Versioned {
     address owner,
     address actor,
     uint256 tokenId,
-    uint256 extraValue,
+    uint256 extraValue, // levelOrStatus
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature

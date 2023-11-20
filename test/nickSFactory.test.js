@@ -17,9 +17,10 @@ describe.skip("Nick's factory", function () {
     [deployer] = await ethers.getSigners();
     await deployNickSFactory(deployer);
     expect(await ethers.provider.getCode(nickSFactoryAddress)).not.equal("0x");
-    salt = "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31";
+    salt = "0x6551655165516551655165516551655165516551655165516551655165516551";
     erc6551RegistryAddress = await deployContractViaNickSFactory(deployer, registryBytecode, salt);
     expect(await ethers.provider.getCode(erc6551RegistryAddress)).not.equal("0x");
+    salt = ethers.utils.keccak256("Cruna");
     managerAddress = await deployContractViaNickSFactory(deployer, managerBytecode, salt);
     expect(await ethers.provider.getCode(managerAddress)).not.equal("0x");
   });

@@ -1,5 +1,5 @@
 const hre = require("hardhat");
-const {assert} = require("chai");
+const {assert, expect} = require("chai");
 const BN = require("bn.js");
 const ethSigUtil = require("eth-sig-util");
 
@@ -62,15 +62,23 @@ const Helpers = {
       deployer
     );
 
+    // const expectedAddress = this.ethers.utils.getCreate2Address(
+    //     Helpers.nickSFactoryAddress,
+    //     salt,
+    //     this.ethers.utils.keccak256(contractBytecode)
+    // );
+    //
+    // console.log(contractBytecode);
+
     const tx = await factoryContract.deploy(contractBytecode, salt);
     await tx.wait();
 
-    // TODO fix the following, which is returning the wrong address
-    return this.ethers.utils.getCreate2Address(
+    const address = this.ethers.utils.getCreate2Address(
       Helpers.nickSFactoryAddress,
       salt,
       this.ethers.utils.keccak256(contractBytecode)
     );
+    return address;
   },
 
   async deployContract(contractName, ...args) {
@@ -157,10 +165,37 @@ const Helpers = {
     }
     return types;
   },
+
+  async signRequest(owner, actor, tokenId, extraValue, timestamp, validFor, chainId, signer, validator) {
+    const message = {
+      owner,
+      actor,
+      tokenId: tokenId.toString(),
+      extraValue: extraValue.toString(),
+      timestamp: timestamp.toString(),
+      validFor: validFor.toString(),
+    };
+    return Helpers.makeSignature(
+      chainId,
+      validator.address,
+      Helpers.privateKeyByWallet[signer],
+      "Auth",
+      [
+        {name: "owner", type: "address"},
+        {name: "actor", type: "address"},
+        {name: "tokenId", type: "uint256"},
+        {name: "extraValue", type: "uint256"},
+        {name: "timestamp", type: "uint256"},
+        {name: "validFor", type: "uint256"},
+      ],
+      message
+    );
+  },
 };
 
 Helpers.nickSFactoryAddress = `0x4e59b44847b379578588920ca78fbf26c0b4956c`;
 
+// The Hardhat test accounts. Never use them in production
 Helpers.privateKeyByWallet = {
   "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266": "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
   "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d",

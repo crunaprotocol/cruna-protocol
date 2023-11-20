@@ -6,7 +6,16 @@ function cl() {
   console.log(count++);
 }
 
-const {amount, normalize, deployContractUpgradeable, addr0, getChainId, deployContract} = require("./helpers");
+const {
+  amount,
+  normalize,
+  deployContractUpgradeable,
+  addr0,
+  getChainId,
+  deployContract,
+  getTimestamp,
+  signRequest,
+} = require("./helpers");
 
 describe("Integration", function () {
   let erc6551Registry, proxy, manager, guardian;
@@ -14,10 +23,12 @@ describe("Integration", function () {
   let factory;
   let usdc, usdt;
   let deployer, bob, alice, fred;
+  let chainId, ts;
 
   before(async function () {
     [deployer, bob, alice, fred] = await ethers.getSigners();
     signatureValidator = await deployContract("SignatureValidator", "Cruna", "1");
+    chainId = await getChainId();
   });
 
   beforeEach(async function () {
@@ -45,6 +56,19 @@ describe("Integration", function () {
     await expect(factory.setPrice(990)).to.emit(factory, "PriceSet").withArgs(990);
     await expect(factory.setStableCoin(usdc.address, true)).to.emit(factory, "StableCoinSet").withArgs(usdc.address, true);
     await expect(factory.setStableCoin(usdt.address, true)).to.emit(factory, "StableCoinSet").withArgs(usdt.address, true);
+    ts = (await getTimestamp()) - 100;
+  });
+
+  const buyAVault = async (bob) => {
+    const price = await factory.finalPrice(usdc.address, "");
+    await usdc.connect(bob).approve(factory.address, price);
+    const nextTokenId = await vault.nextTokenId();
+    await factory.connect(bob).buyVaults(usdc.address, 1, "");
+    return nextTokenId;
+  };
+
+  it("should deploy everything as expected", async function () {
+    // test the beforeEach
   });
 
   it("should get the token parameters from the manager", async function () {
@@ -55,12 +79,70 @@ describe("Integration", function () {
     expect(await ethers.provider.getCode(managerAddress)).equal("0x");
     await factory.connect(bob).buyVaults(usdc.address, 1, "");
     expect(await ethers.provider.getCode(managerAddress)).not.equal("0x");
-
-    // console.log(await vault.managerParams(nextTokenId));
-    //
     const manager = await ethers.getContractAt("Manager", managerAddress);
     expect(await manager.vault()).to.equal(vault.address);
     expect(await manager.tokenId()).to.equal(nextTokenId);
     expect(await manager.owner()).to.equal(bob.address);
+  });
+
+  describe("Protectors management", function () {
+    it("should add the first protector", async function () {
+      let tokenId = await buyAVault(bob);
+      const managerAddress = await vault.managerOf(tokenId);
+      const manager = await ethers.getContractAt("Manager", managerAddress);
+      // set Alice as first Bob's protector
+      await expect(manager.connect(bob).setProtector(alice.address,true, 0, 0, 0))
+        .to.emit(manager, "ProtectorUpdated")
+        .withArgs(bob.address, alice.address, true);
+    });
+
+    it("should throw is wrong data for first protector", async function () {
+      let tokenId = await buyAVault(bob);
+      const managerAddress = await vault.managerOf(tokenId);
+      const manager = await ethers.getContractAt("Manager", managerAddress);
+      // set Alice as first Bob's protector
+      await expect(manager.connect(bob).setProtector(addr0,true, 0, 0, 0)).revertedWith("ZeroAddress()");
+      await expect(manager.connect(bob).setProtector(bob.address,true, 0, 0, 0)).revertedWith("CannotBeYourself()");
+    });
+
+    it("should add many protectors", async function () {
+      let tokenId = await buyAVault(bob);
+      const managerAddress = await vault.managerOf(tokenId);
+      const manager = await ethers.getContractAt("Manager", managerAddress);
+      // set Alice as first Bob's protector
+      await manager.connect(bob).setProtector(alice.address,true, 0, 0, 0);
+      // Set Fred as Bob's protector
+      // To do so Bob needs Alice's signature
+      let signature = await signRequest(
+        bob.address,
+        fred.address,
+        tokenId,
+        1,
+        ts,
+        3600,
+        chainId,
+        alice.address,
+        signatureValidator
+      );
+      await expect(manager.connect(bob).setProtector(fred.address, true, ts, 3600, signature))
+        .to.emit(manager, "ProtectorUpdated")
+        .withArgs(bob.address, fred.address, true);
+
+      // let Fred remove Alice as protector
+      signature = await signRequest(
+          bob.address,
+          alice.address,
+          tokenId,
+          0,
+          ts,
+          3600,
+          chainId,
+          fred.address,
+          signatureValidator
+      );
+      await expect(manager.connect(bob).setProtector(alice.address, false, ts, 3600, signature))
+          .to.emit(manager, "ProtectorUpdated")
+          .withArgs(bob.address, alice.address, false);
+    });
   });
 });
