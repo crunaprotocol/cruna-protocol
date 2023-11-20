@@ -9,10 +9,10 @@ import {IActor} from "./IActor.sol";
 interface IManager {
   /**
    * @dev Emitted when a protector is set for an tokensOwner
-       The tokenOwner is useful for historic reason since the NFT can be later transferred to another address.
+       The token owner is useful for historic reason since the NFT can be later transferred to another address.
        If that happens, all the protector will be removed, and the new tokenOwner will have to set them again.
    */
-  event ProtectorUpdated(address indexed tokensOwner, address indexed protector, bool status);
+  event ProtectorUpdated(address indexed owner, address indexed protector, bool status);
 
   /**
    * @dev Emitted when the level of an allowed recipient is updated

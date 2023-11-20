@@ -117,7 +117,7 @@ describe("Integration", function () {
         bob.address,
         fred.address,
         tokenId,
-        0,
+        1,
         ts,
         3600,
         chainId,
@@ -129,6 +129,20 @@ describe("Integration", function () {
         .withArgs(bob.address, fred.address, true);
 
       // let Fred remove Alice as protector
+      signature = await signRequest(
+          bob.address,
+          alice.address,
+          tokenId,
+          0,
+          ts,
+          3600,
+          chainId,
+          fred.address,
+          signatureValidator
+      );
+      await expect(manager.connect(bob).setProtector(alice.address, false, ts, 3600, signature))
+          .to.emit(manager, "ProtectorUpdated")
+          .withArgs(bob.address, alice.address, false);
     });
   });
 });
