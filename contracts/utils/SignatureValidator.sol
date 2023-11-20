@@ -8,13 +8,31 @@ import {Versioned} from "./Versioned.sol";
 contract SignatureValidator is EIP712, Versioned {
   using ECDSA for bytes32;
 
+  error UnsupportedScope(string scope);
+
   constructor(string memory name, string memory version) EIP712(name, version) {}
 
+  function getSupportedScope(string memory scope) public pure returns (uint256) {
+    bytes32 scopeHash = keccak256(abi.encodePacked(scope));
+    if (scopeHash == keccak256(abi.encodePacked("PROTECTOR"))) {
+      return 1;
+    } else if (scopeHash == keccak256(abi.encodePacked("SENTINEL"))) {
+      return 2;
+    } else if (scopeHash == keccak256(abi.encodePacked("SAFE_RECIPIENT"))) {
+      return 3;
+    } else if (scopeHash == keccak256(abi.encodePacked("PROTECTED_TRANSFER"))) {
+      return 4;
+    } else {
+      revert UnsupportedScope(scope);
+    }
+  }
+
   function recoverSigner(
+    uint256 scope,
     address owner,
     address actor,
     uint256 tokenId,
-    uint256 extraValue, // levelOrStatus
+    uint256 extraValue,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
@@ -24,8 +42,9 @@ contract SignatureValidator is EIP712, Versioned {
         keccak256(
           abi.encode(
             keccak256(
-              "Auth(address owner,address actor,uint256 tokenId,uint256 extraValue,uint256 timestamp,uint256 validFor)"
+              "Auth(uint256 scope,address owner,address actor,uint256 tokenId,uint256 extraValue,uint256 timestamp,uint256 validFor)"
             ),
+            scope,
             owner,
             actor,
             tokenId,

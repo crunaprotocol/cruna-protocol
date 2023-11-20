@@ -138,21 +138,21 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
   // actors
 
   function countActiveProtectors() public view override returns (uint256) {
-    return _countActiveActorsByRole(_role("PROTECTOR"));
+    return _countActiveActorsByRole(PROTECTOR);
   }
 
   function findProtector(address protector_) public view override returns (uint256, Status) {
-    (uint256 i, IActor.Actor storage actor) = _getActor(protector_, _role("PROTECTOR"));
+    (uint256 i, IActor.Actor storage actor) = _getActor(protector_, PROTECTOR);
     return (i, actor.status);
   }
 
   function isAProtector(address protector_) public view returns (bool) {
-    Status status = _actorStatus(protector_, _role("PROTECTOR"));
+    Status status = _actorStatus(protector_, PROTECTOR);
     return status == Status.ACTIVE;
   }
 
   function listProtectors() public view override returns (address[] memory) {
-    return _listActiveActors(_role("PROTECTOR"));
+    return _listActiveActors(PROTECTOR);
   }
 
   function setProtector(
@@ -162,42 +162,12 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
-    if (protector_ == address(0)) revert ZeroAddress();
-    if (protector_ == _msgSender()) revert CannotBeYourself();
-    if (timestamp == 0) {
-      if (countActiveProtectors() > 0) revert NotTheFirstProtector();
-      _addActor(protector_, _role("PROTECTOR"), Status.ACTIVE, Level.NONE);
-    } else {
-      _signRequest(protector_, (active ? 1 : 0), timestamp, validFor, signature);
-      if (active) {
-        if (isAProtector(protector_)) revert ProtectorAlreadySetByYou();
-        _addActor(protector_, _role("PROTECTOR"), Status.ACTIVE, Level.NONE);
-      } else {
-        if (!isAProtector(protector_)) revert NotAProtector();
-        _removeActor(protector_, _role("PROTECTOR"));
-      }
-    }
+    _setSignedActor("PROTECTOR", protector_, PROTECTOR, active ? 1 : 0, timestamp, validFor, signature, true);
     emit ProtectorUpdated(_msgSender(), protector_, active);
   }
 
   function getProtectors() external view override returns (IActor.Actor[] memory) {
-    return _getActors(_role("PROTECTOR"));
-  }
-
-  function _signRequest(
-    address actor,
-    uint256 level,
-    uint256 timestamp,
-    uint256 validFor,
-    bytes calldata signature
-  ) internal returns (address) {
-    if (timestamp == 0) revert TimestampZero();
-    if (timestamp > block.timestamp || timestamp < block.timestamp - validFor) revert TimestampInvalidOrExpired();
-    if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
-    address signer = signatureValidator.recoverSigner(owner(), actor, tokenId(), level, timestamp, validFor, signature);
-    if (!isAProtector(signer)) revert WrongDataOrNotSignedByProtector();
-    usedSignatures[keccak256(signature)] = true;
-    return signer;
+    return _getActors(PROTECTOR);
   }
 
   // safe recipients
@@ -209,26 +179,17 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     uint256 validFor,
     bytes calldata signature
   ) external override onlyTokenOwner {
-    if (timestamp == 0) {
-      if (countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
-    } else {
-      _signRequest(recipient, uint256(level), timestamp, validFor, signature);
-    }
-    if (level == Level.NONE) {
-      _removeActor(recipient, _role("RECIPIENT"));
-    } else {
-      _addActor(recipient, _role("RECIPIENT"), Status.ACTIVE, level);
-    }
+    _setSignedActor("SAFE_RECIPIENT", recipient, SAFE_RECIPIENT, uint256(level), timestamp, validFor, signature, false);
     emit SafeRecipientUpdated(_msgSender(), recipient, level);
   }
 
   function safeRecipientLevel(address recipient) public view override returns (Level) {
-    (, IActor.Actor memory actor) = _getActor(recipient, _role("RECIPIENT"));
+    (, IActor.Actor memory actor) = _getActor(recipient, SAFE_RECIPIENT);
     return actor.level;
   }
 
   function getSafeRecipients() external view override returns (IActor.Actor[] memory) {
-    return _getActors(_role("RECIPIENT"));
+    return _getActors(SAFE_RECIPIENT);
   }
 
   // beneficiaries
@@ -240,16 +201,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     uint256 validFor,
     bytes calldata signature
   ) external override onlyTokenOwner {
-    if (timestamp == 0) {
-      if (countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
-    } else {
-      _signRequest(sentinel, uint256(status), timestamp, validFor, signature);
-    }
-    if (status == Status.UNSET) {
-      _removeActor(sentinel, _role("SENTINEL"));
-    } else {
-      _addActor(sentinel, _role("SENTINEL"), status, Level.NONE);
-    }
+    _setSignedActor("SENTINEL", sentinel, SENTINEL, uint256(status), timestamp, validFor, signature, false);
     emit SentinelUpdated(_msgSender(), sentinel, status);
   }
 
@@ -257,14 +209,14 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
   function configureInheritance(uint256 quorum, uint256 proofOfLifeDurationInDays) external onlyTokenOwner {
     if (countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
     if (quorum == 0) revert QuorumCannotBeZero();
-    if (quorum > _countActiveActorsByRole(_role("SENTINEL"))) revert QuorumCannotBeGreaterThanSentinels();
+    if (quorum > _countActiveActorsByRole(SENTINEL)) revert QuorumCannotBeGreaterThanSentinels();
     // solhint-disable-next-line not-rely-on-time
     _inheritanceConf = InheritanceConf(quorum, proofOfLifeDurationInDays, block.timestamp);
     delete _inheritanceRequest;
   }
 
   function getSentinels() external view returns (IActor.Actor[] memory, InheritanceConf memory) {
-    return (_getActors(_role("SENTINEL")), _inheritanceConf);
+    return (_getActors(SENTINEL), _inheritanceConf);
   }
 
   function proofOfLife() external onlyTokenOwner {
@@ -274,19 +226,10 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     delete _inheritanceRequest;
   }
 
-  function _hasApproved() internal view returns (bool) {
-    for (uint256 i = 0; i < _inheritanceRequest.approvers.length; i++) {
-      if (_msgSender() == _inheritanceRequest.approvers[i]) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   function requestTransfer(address beneficiary) external {
     if (beneficiary == address(0)) revert ZeroAddress();
     if (_inheritanceConf.proofOfLifeDurationInDays == 0) revert InheritanceNotConfigured();
-    (, IActor.Actor storage actor) = _getActor(_msgSender(), _role("SENTINEL"));
+    (, IActor.Actor storage actor) = _getActor(_msgSender(), SENTINEL);
     if (actor.status == Status.UNSET) revert NotASentinel();
     if (
       _inheritanceConf.lastProofOfLife + (_inheritanceConf.proofOfLifeDurationInDays * 1 hours) >
@@ -320,6 +263,69 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
       emit Inherited(tokenAddress(), tokenId(), owner(), _msgSender());
       delete _inheritanceRequest;
     } else revert Unauthorized();
+  }
+
+  // internal functions
+
+  function _validateRequest(
+    uint256 scope,
+    address actor,
+    uint256 extraValue,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature
+  ) internal {
+    if (timestamp == 0) {
+      if (countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
+    } else {
+      if (timestamp == 0) revert TimestampZero();
+      if (timestamp > block.timestamp || timestamp < block.timestamp - validFor) revert TimestampInvalidOrExpired();
+      if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
+      address signer = signatureValidator.recoverSigner(
+        scope,
+        owner(),
+        actor,
+        tokenId(),
+        extraValue,
+        timestamp,
+        validFor,
+        signature
+      );
+      if (!isAProtector(signer)) revert WrongDataOrNotSignedByProtector();
+      usedSignatures[keccak256(signature)] = true;
+    }
+  }
+
+  function _setSignedActor(
+    string memory scopeString,
+    address actor,
+    bytes32 role_,
+    uint256 extraValue,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature,
+    bool actorIsProtector
+  ) internal onlyTokenOwner {
+    uint256 scope = signatureValidator.getSupportedScope(scopeString);
+    if (actor == address(0)) revert ZeroAddress();
+    if (actor == _msgSender()) revert CannotBeYourself();
+    _validateRequest(scope, actor, extraValue, timestamp, validFor, signature);
+    if (extraValue == 0) {
+      if (timestamp != 0 && actorIsProtector && !isAProtector(actor)) revert ProtectorNotFound();
+      _removeActor(actor, role_);
+    } else {
+      if (timestamp != 0 && actorIsProtector && isAProtector(actor)) revert ProtectorAlreadySetByYou();
+      _addActor(actor, role_, Status.ACTIVE, Level(extraValue));
+    }
+  }
+
+  function _hasApproved() internal view returns (bool) {
+    for (uint256 i = 0; i < _inheritanceRequest.approvers.length; i++) {
+      if (_msgSender() == _inheritanceRequest.approvers[i]) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

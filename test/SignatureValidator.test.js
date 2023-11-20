@@ -30,12 +30,15 @@ describe("SignatureValidator", function () {
   });
 
   it("should recover the signer of a recoverSigner", async function () {
+    let scope = await validator.getSupportedScope("SENTINEL");
+
     const message = {
+      scope: scope.toString(),
       owner: tokenOwner.address,
       actor: protector.address,
       tokenId: 1,
-      extraValue: 19928273,
-      timestamp: (await getTimestamp()) - 100,
+      extraValue: 3,
+      timestamp: 1700453731,
       validFor: 3600,
     };
 
@@ -45,6 +48,7 @@ describe("SignatureValidator", function () {
       privateKeyByWallet[protector.address],
       "Auth",
       [
+        {name: "scope", type: "uint256"},
         {name: "owner", type: "address"},
         {name: "actor", type: "address"},
         {name: "tokenId", type: "uint256"},
@@ -57,6 +61,7 @@ describe("SignatureValidator", function () {
 
     expect(
       await validator.recoverSigner(
+        message.scope,
         message.owner,
         message.actor,
         message.tokenId,

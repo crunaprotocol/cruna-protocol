@@ -12,6 +12,10 @@ contract Actor is IActor {
   error ActorAlreadyAdded();
   error TooManyActors();
 
+  bytes32 public constant PROTECTOR = keccak256(abi.encodePacked("PROTECTOR"));
+  bytes32 public constant SENTINEL = keccak256(abi.encodePacked("SENTINEL"));
+  bytes32 public constant SAFE_RECIPIENT = keccak256(abi.encodePacked("SAFE_RECIPIENT"));
+
   mapping(bytes32 => Actor[]) private _actors;
   Actor private _emptyActor = Actor(address(0), Status.UNSET, Level.NONE);
 
@@ -61,7 +65,7 @@ contract Actor is IActor {
   }
 
   function _listActiveActors(bytes32 role) internal view returns (address[] memory) {
-    uint256 count = role == _role("PROTECTOR") ? _countActiveActorsByRole(role) : _actorLength(role);
+    uint256 count = role == PROTECTOR ? _countActiveActorsByRole(role) : _actorLength(role);
     address[] memory actors = new address[](count);
     uint256 j = 0;
     for (uint256 i = 0; i < _actors[role].length; i++) {
@@ -113,10 +117,6 @@ contract Actor is IActor {
     Status status = _actorStatus(actor_, role);
     if (status != Status.UNSET) revert ActorAlreadyAdded();
     _actors[role].push(Actor(actor_, status_, level));
-  }
-
-  function _role(string memory role_) internal pure returns (bytes32) {
-    return keccak256(bytes(role_));
   }
 
   /**

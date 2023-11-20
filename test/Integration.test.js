@@ -1,9 +1,10 @@
 const {expect} = require("chai");
 const {ethers} = require("hardhat");
 const {toChecksumAddress} = require("ethereumjs-util");
+
 let count = 9000;
-function cl() {
-  console.log(count++);
+function cl(...args) {
+  console.log(count++, ...args);
 }
 
 const {
@@ -22,11 +23,11 @@ describe("Integration", function () {
   let signatureValidator, vault;
   let factory;
   let usdc, usdt;
-  let deployer, bob, alice, fred;
+  let deployer, bob, alice, fred, mark, otto;
   let chainId, ts;
 
   before(async function () {
-    [deployer, bob, alice, fred] = await ethers.getSigners();
+    [deployer, bob, alice, fred, mark, otto] = await ethers.getSigners();
     signatureValidator = await deployContract("SignatureValidator", "Cruna", "1");
     chainId = await getChainId();
   });
@@ -85,13 +86,13 @@ describe("Integration", function () {
     expect(await manager.owner()).to.equal(bob.address);
   });
 
-  describe("Protectors management", function () {
+  describe("Protectors management", async function () {
     it("should add the first protector", async function () {
       let tokenId = await buyAVault(bob);
       const managerAddress = await vault.managerOf(tokenId);
       const manager = await ethers.getContractAt("Manager", managerAddress);
       // set Alice as first Bob's protector
-      await expect(manager.connect(bob).setProtector(alice.address,true, 0, 0, 0))
+      await expect(manager.connect(bob).setProtector(alice.address, true, 0, 0, 0))
         .to.emit(manager, "ProtectorUpdated")
         .withArgs(bob.address, alice.address, true);
     });
@@ -101,19 +102,25 @@ describe("Integration", function () {
       const managerAddress = await vault.managerOf(tokenId);
       const manager = await ethers.getContractAt("Manager", managerAddress);
       // set Alice as first Bob's protector
-      await expect(manager.connect(bob).setProtector(addr0,true, 0, 0, 0)).revertedWith("ZeroAddress()");
-      await expect(manager.connect(bob).setProtector(bob.address,true, 0, 0, 0)).revertedWith("CannotBeYourself()");
+      await expect(manager.connect(bob).setProtector(addr0, true, 0, 0, 0)).revertedWith("ZeroAddress()");
+      await expect(manager.connect(bob).setProtector(bob.address, true, 0, 0, 0)).revertedWith("CannotBeYourself()");
     });
 
     it("should add many protectors", async function () {
       let tokenId = await buyAVault(bob);
       const managerAddress = await vault.managerOf(tokenId);
       const manager = await ethers.getContractAt("Manager", managerAddress);
+
       // set Alice as first Bob's protector
-      await manager.connect(bob).setProtector(alice.address,true, 0, 0, 0);
+      await manager.connect(bob).setProtector(alice.address, true, 0, 0, 0);
       // Set Fred as Bob's protector
       // To do so Bob needs Alice's signature
+
+      let allProtectors = await manager.getProtectors();
+      expect(allProtectors[0].actor).equal(alice.address);
+
       let signature = await signRequest(
+        "PROTECTOR",
         bob.address,
         fred.address,
         tokenId,
@@ -128,21 +135,159 @@ describe("Integration", function () {
         .to.emit(manager, "ProtectorUpdated")
         .withArgs(bob.address, fred.address, true);
 
+      allProtectors = await manager.getProtectors();
+      expect(allProtectors[1].actor).equal(fred.address);
+
       // let Fred remove Alice as protector
       signature = await signRequest(
-          bob.address,
-          alice.address,
-          tokenId,
-          0,
-          ts,
-          3600,
-          chainId,
-          fred.address,
-          signatureValidator
+        "PROTECTOR",
+        bob.address,
+        alice.address,
+        tokenId,
+        0,
+        ts,
+        3600,
+        chainId,
+        fred.address,
+        signatureValidator
       );
       await expect(manager.connect(bob).setProtector(alice.address, false, ts, 3600, signature))
-          .to.emit(manager, "ProtectorUpdated")
-          .withArgs(bob.address, alice.address, false);
+        .to.emit(manager, "ProtectorUpdated")
+        .withArgs(bob.address, alice.address, false);
+    });
+  });
+
+  describe("Safe recipients", async function () {
+    it("should set up safe recipients", async function () {
+      // cl(true)
+      let tokenId = await buyAVault(bob);
+      const managerAddress = await vault.managerOf(tokenId);
+      const manager = await ethers.getContractAt("Manager", managerAddress);
+      // set Alice and Fred as a safe recipient
+      await expect(manager.connect(bob).setSafeRecipient(alice.address, 3, 0, 0, 0))
+        .to.emit(manager, "SafeRecipientUpdated")
+        .withArgs(bob.address, alice.address, 3);
+      await expect(manager.connect(bob).setSafeRecipient(fred.address, 2, 0, 0, 0))
+        .to.emit(manager, "SafeRecipientUpdated")
+        .withArgs(bob.address, fred.address, 2);
+      await expect(manager.connect(bob).setSafeRecipient(alice.address, 0, 0, 0, 0))
+        .to.emit(manager, "SafeRecipientUpdated")
+        .withArgs(bob.address, alice.address, 0);
+      // set Alice as a protector
+      await manager.connect(bob).setProtector(alice.address, true, 0, 0, 0);
+      // Set Mark as a safe recipient
+      let signature = await signRequest(
+        "SAFE_RECIPIENT",
+        bob.address,
+        mark.address,
+        tokenId,
+        3,
+        ts,
+        3600,
+        chainId,
+        alice.address,
+        signatureValidator
+      );
+      await expect(manager.connect(bob).setSafeRecipient(mark.address, 3, ts, 3600, signature))
+        .to.emit(manager, "SafeRecipientUpdated")
+        .withArgs(bob.address, mark.address, 3);
+
+      // // remove Fred as a safe recipient
+      signature = await signRequest(
+        "SAFE_RECIPIENT",
+        bob.address,
+        fred.address,
+        tokenId,
+        0,
+        ts,
+        3600,
+        chainId,
+        alice.address,
+        signatureValidator
+      );
+
+      await expect(manager.connect(bob).setSafeRecipient(fred.address, 0, 0, 0, 0)).revertedWith(
+        "NotPermittedWhenProtectorsAreActive()"
+      );
+
+      await expect(manager.connect(bob).setSafeRecipient(fred.address, 0, ts, 3600, signature))
+        .to.emit(manager, "SafeRecipientUpdated")
+        .withArgs(bob.address, fred.address, 0);
+    });
+  });
+
+  describe("Sentinels and beneficiary", async function () {
+    it("should set up sentinel", async function () {
+      let tokenId = await buyAVault(bob);
+      const managerAddress = await vault.managerOf(tokenId);
+      const manager = await ethers.getContractAt("Manager", managerAddress);
+      await expect(manager.connect(bob).setSentinel(alice.address, 1, 0, 0, 0))
+        .to.emit(manager, "SentinelUpdated")
+        .withArgs(bob.address, alice.address, 1);
+      await expect(manager.connect(bob).setSentinel(fred.address, 1, 0, 0, 0))
+        .to.emit(manager, "SentinelUpdated")
+        .withArgs(bob.address, fred.address, 1);
+      await expect(manager.connect(bob).setSentinel(alice.address, 0, 0, 0, 0))
+        .to.emit(manager, "SentinelUpdated")
+        .withArgs(bob.address, alice.address, 0);
+      // set Alice as a protector
+      await manager.connect(bob).setProtector(alice.address, true, 0, 0, 0);
+      // Set Mark as a safe recipient
+      let signature = await signRequest(
+        "SENTINEL",
+        bob.address,
+        mark.address,
+        tokenId,
+        1,
+        ts,
+        3600,
+        chainId,
+        alice.address,
+        signatureValidator
+      );
+      await expect(manager.connect(bob).setSentinel(mark.address, 1, ts, 3600, signature))
+        .to.emit(manager, "SentinelUpdated")
+        .withArgs(bob.address, mark.address, 1);
+
+      // // remove Fred as a safe recipient
+
+      signature = await signRequest(
+        "SENTINEL",
+        bob.address,
+        fred.address,
+        tokenId,
+        0,
+        ts,
+        1000,
+        chainId,
+        alice.address,
+        signatureValidator
+      );
+
+      await expect(manager.connect(bob).setSentinel(fred.address, 0, ts, 3600, signature)).revertedWith(
+        "WrongDataOrNotSignedByProtector()"
+      );
+
+      signature = await signRequest(
+        "SENTINEL",
+        bob.address,
+        fred.address,
+        tokenId,
+        0,
+        ts,
+        3600,
+        chainId,
+        alice.address,
+        signatureValidator
+      );
+
+      await expect(manager.connect(bob).setSentinel(fred.address, 0, 0, 0, 0)).revertedWith(
+        "NotPermittedWhenProtectorsAreActive()"
+      );
+
+      await expect(manager.connect(bob).setSentinel(fred.address, 0, ts, 3600, signature))
+        .to.emit(manager, "SentinelUpdated")
+        .withArgs(bob.address, fred.address, 0);
     });
   });
 });
