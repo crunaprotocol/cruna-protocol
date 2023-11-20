@@ -33,12 +33,12 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
   error TimestampZero();
   error AlreadyInitialized();
   error ZeroAddress();
+  error WrongDataOrNotSignedByProtector();
 
   IAccountGuardian public immutable GUARDIAN;
   SignatureValidator public immutable VALIDATOR;
   IERC6551Registry public immutable REGISTRY;
   Manager public immutable MANAGER;
-  //  ManagerProxy public immutable MANAGER_PROXY;
 
   bytes32 public salt = bytes32(uint256(400));
 
@@ -50,7 +50,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
 
   modifier onlyProtectorForTokenId(uint256 tokenId_) {
     address owner_ = ownerOf(tokenId_);
-    (uint256 i, IActor.Status status) = managers[tokenId_].findProtector(owner_, _msgSender());
+    (uint256 i, IActor.Status status) = managers[tokenId_].findProtector(_msgSender());
     if (status < IActor.Status.ACTIVE) revert NotAProtector();
     _;
   }
@@ -84,6 +84,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
     VALIDATOR = SignatureValidator(signatureValidator_);
     REGISTRY = IERC6551Registry(registry_);
     MANAGER = Manager(managerProxy_);
+    //    nextTokenId = block.chainid * 1000000;
     nextTokenId++;
   }
 
@@ -107,7 +108,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
       validFor,
       signature
     );
-    managers[tokenId].isSignerAProtector(ownerOf(tokenId), signer);
+    if (!managers[tokenId].isAProtector(signer)) revert WrongDataOrNotSignedByProtector();
     _approvedTransfers[tokenId] = true;
     _transfer(_msgSender(), to, tokenId);
     delete _approvedTransfers[tokenId];
@@ -145,9 +146,11 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
     else {
       _requireMinted(tokenId);
       return
-        managers[tokenId].countActiveProtectors(ownerOf(tokenId)) == 0 ||
+        managers[tokenId].countActiveProtectors() == 0 ||
+        // TODO move this function in the manager
+        // managers[tokenId].isTransfersApproved()
         _approvedTransfers[tokenId] ||
-        managers[tokenId].safeRecipientLevel(ownerOf(tokenId), to) == IActor.Level.HIGH;
+        managers[tokenId].safeRecipientLevel(to) == IActor.Level.HIGH;
     }
   }
 

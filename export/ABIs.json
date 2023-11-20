@@ -710,7 +710,7 @@
       },
       {
         "inputs": [],
-        "name": "QuorumCannotBeGreaterThanBeneficiaries",
+        "name": "QuorumCannotBeGreaterThanSentinels",
         "type": "error"
       },
       {
@@ -1589,7 +1589,7 @@
             "type": "address"
           }
         ],
-        "name": "getBeneficiaries",
+        "name": "getSentinels",
         "outputs": [
           {
             "components": [
@@ -1767,7 +1767,7 @@
             "type": "address"
           }
         ],
-        "name": "isProtectorFor",
+        "name": "isAProtector",
         "outputs": [
           {
             "internalType": "bool",

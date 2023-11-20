@@ -9,6 +9,8 @@ import {IActor} from "./IActor.sol";
 interface IManager {
   /**
    * @dev Emitted when a protector is set for an tokensOwner
+       The tokenOwner is useful for historic reason since the NFT can be later transferred to another address.
+       If that happens, all the protector will be removed, and the new tokenOwner will have to set them again.
    */
   event ProtectorUpdated(address indexed tokensOwner, address indexed protector, bool status);
 
@@ -18,46 +20,41 @@ interface IManager {
   event SafeRecipientUpdated(address indexed owner, address indexed recipient, IActor.Level level);
 
   /**
-   * @dev Emitted when a beneficiary is updated
+   * @dev Emitted when a sentinel is updated
    */
-  event BeneficiaryUpdated(address indexed owner, address indexed beneficiary, IActor.Status status);
+  event SentinelUpdated(address indexed owner, address indexed sentinel, IActor.Status status);
 
   event Inherited(address indexed protected, uint256 tokenId, address indexed from, address indexed to);
 
-  struct BeneficiaryConf {
+  struct InheritanceConf {
     uint256 quorum;
     uint256 proofOfLifeDurationInDays;
     uint256 lastProofOfLife;
   }
 
-  struct BeneficiaryRequest {
+  struct InheritanceRequest {
     address recipient;
     uint256 startedAt;
     address[] approvers;
-    // if there is a second thought about the recipient, the beneficiary can change it
+    // if there is a second thought about the recipient, the sentinel can change it
     // after the request is expired if not approved in the meantime
   }
 
   /**
-  * @dev Return the protectors set for the tokensOwner
-  * @notice It is not the specific tokenId that is protected, is all the tokens owned by
-     tokensOwner_ that are protected. So, protectors are set for the tokensOwner, not for the specific token.
-     It is this way to reduce gas consumption.
-  * @param tokensOwner_ The tokensOwner address
+  * @dev Return the protectors
   * @return The addresses of active protectors set for the tokensOwner
      The contract can implement intermediate statuses, like "pending" and "resigned", but the interface
      only requires a list of the "active" protectors
   */
-  function hasProtectors(address tokensOwner_) external view returns (address[] memory);
+  function listProtectors() external view returns (address[] memory);
 
   /**
-   * @dev Check if an address is a protector for an tokensOwner
-   * @param tokensOwner_ The tokensOwner address
+   * @dev Check if an address is a protector
    * @param protector_ The protector address
    * @return True if the protector is active for the tokensOwner.
    *   Pending protectors are not returned here
    */
-  function isProtectorFor(address tokensOwner_, address protector_) external view returns (bool);
+  function isAProtector(address protector_) external view returns (bool);
 
   function setProtector(
     address protector_,
@@ -67,15 +64,11 @@ interface IManager {
     bytes calldata signature
   ) external;
 
-  function findProtector(address tokensOwner_, address protector_) external view returns (uint256, IActor.Status);
+  function findProtector(address protector_) external view returns (uint256, IActor.Status);
 
-  function countActiveProtectors(address tokensOwner_) external view returns (uint256);
+  function countActiveProtectors() external view returns (uint256);
 
-  function signedByProtector(address tokenOwner_, bytes32 hash, bytes memory signature) external view returns (bool);
-
-  function isSignerAProtector(address tokenOwner_, address signer_) external view;
-
-  function invalidateSignatureFor(bytes32 hash, bytes calldata signature) external;
+  function getProtectors() external view returns (IActor.Actor[] memory);
 
   // safe recipients
 
@@ -87,27 +80,27 @@ interface IManager {
     bytes calldata signature
   ) external;
 
-  function safeRecipientLevel(address tokenOwner_, address recipient) external view returns (IActor.Level);
+  function safeRecipientLevel(address recipient) external view returns (IActor.Level);
 
-  function getSafeRecipients(address tokenOwner_) external view returns (IActor.Actor[] memory);
+  function getSafeRecipients() external view returns (IActor.Actor[] memory);
 
   // beneficiaries
 
-  function setBeneficiary(
-    address beneficiary,
+  function setSentinel(
+    address sentinel,
     IActor.Status status,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
   ) external;
 
-  function configureBeneficiary(uint256 quorum, uint256 proofOfLifeDurationInDays) external;
+  function configureInheritance(uint256 quorum, uint256 proofOfLifeDurationInDays) external;
 
-  function getBeneficiaries(address tokenOwner_) external view returns (IActor.Actor[] memory, BeneficiaryConf memory);
+  function getSentinels() external view returns (IActor.Actor[] memory, InheritanceConf memory);
 
   function proofOfLife() external;
 
-  function requestTransfer(address tokenOwner_, address beneficiaryRecipient) external;
+  function requestTransfer(address beneficiary) external;
 
-  function inherit(address tokenOwner_) external;
+  function inherit() external;
 }
