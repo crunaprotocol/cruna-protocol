@@ -2,17 +2,16 @@
 pragma solidity ^0.8.19;
 
 // Author: Francesco Sullo <francesco@sullo.co>
-
-error NoZeroAddress();
-error ActorNotFound(bytes32);
-error ActorAlreadyAdded();
-error TooManyActors();
-
 import {IActor} from "./IActor.sol";
 
 //import {console} from "hardhat/console.sol";
 
 contract Actor is IActor {
+  error ZeroAddress();
+  error ActorNotFound(bytes32);
+  error ActorAlreadyAdded();
+  error TooManyActors();
+
   mapping(bytes32 => mapping(address => Actor[])) private _actors;
   Actor private _emptyActor = Actor(address(0), Status.UNSET, Level.NONE);
 
@@ -106,7 +105,7 @@ contract Actor is IActor {
   }
 
   function _addActor(address owner_, address actor_, bytes32 role, Status status_, Level level) internal {
-    if (actor_ == address(0)) revert NoZeroAddress();
+    if (actor_ == address(0)) revert ZeroAddress();
     // We allow to add up to 16 actors per role per owner to avoid the risk of going out of gas
     // looping the array. Most likely, the user will set between 1 and 7 actors per role, so,
     // it should be fine

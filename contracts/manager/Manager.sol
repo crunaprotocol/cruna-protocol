@@ -15,45 +15,46 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 import {IERC6551Account} from "erc6551/interfaces/IERC6551Account.sol";
-import {SignatureValidator} from "./SignatureValidator.sol";
+import {SignatureValidator} from "../utils/SignatureValidator.sol";
 
-import {ProtectedNFT} from "./ProtectedNFT.sol";
+import {ProtectedNFT} from "../protected/ProtectedNFT.sol";
 import {Actor, IActor} from "./Actor.sol";
 import {IManager} from "./IManager.sol";
+import {Versioned} from "../utils/Versioned.sol";
 
 import "@tokenbound/contracts/utils/Errors.sol" as Errors;
 
 //import {console} from "hardhat/console.sol";
 
-error NoZeroAddress();
-error TimestampZero();
-error Forbidden();
-error NotTheTokenOwner();
-error ProtectorNotFound();
-error AssociatedToAnotherOwner();
-error ProtectorAlreadySet();
-error ProtectorAlreadySetByYou();
-error NotAProtector();
-error NotPermittedWhenProtectorsAreActive();
-error TimestampInvalidOrExpired();
-error WrongDataOrNotSignedByProtector();
-error WrongDataOrNotSignedByProposedProtector();
-error SignatureAlreadyUsed();
-error QuorumCannotBeZero();
-error QuorumCannotBeGreaterThanBeneficiaries();
-error BeneficiaryNotConfigured();
-error NotExpiredYet();
-error InconsistentRecipient();
-error NotABeneficiary();
-error RequestAlreadyApproved();
-error Unauthorized();
-error NotYourProtector();
-error NotAnActiveProtector();
-error CannotBeYourself();
-
-contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IERC1271 {
+contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgradeable, IERC1271 {
   using ECDSA for bytes32;
   using Strings for uint256;
+
+  error TimestampZero();
+  error Forbidden();
+  error NotTheTokenOwner();
+  error ProtectorNotFound();
+  error AssociatedToAnotherOwner();
+  error ProtectorAlreadySet();
+  error ProtectorAlreadySetByYou();
+  error NotAProtector();
+  error NotPermittedWhenProtectorsAreActive();
+  error TimestampInvalidOrExpired();
+  error WrongDataOrNotSignedByProtector();
+  error WrongDataOrNotSignedByProposedProtector();
+  error SignatureAlreadyUsed();
+  error QuorumCannotBeZero();
+  error QuorumCannotBeGreaterThanBeneficiaries();
+  error BeneficiaryNotConfigured();
+  error NotExpiredYet();
+  error InconsistentRecipient();
+  error NotABeneficiary();
+  error RequestAlreadyApproved();
+  error Unauthorized();
+  error NotYourProtector();
+  error NotAnActiveProtector();
+  error CannotBeYourself();
+
   IAccountGuardian public guardian;
   SignatureValidator public signatureValidator;
   ProtectedNFT public vault;
@@ -161,7 +162,7 @@ contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IER
     uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
-    if (protector_ == address(0)) revert NoZeroAddress();
+    if (protector_ == address(0)) revert ZeroAddress();
     if (protector_ == _msgSender()) revert CannotBeYourself();
     address signer = _signRequest(protector_, (active ? 1 : 0), timestamp, validFor, signature);
     if (active) {
@@ -213,7 +214,7 @@ contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IER
 
   function _signRequest(
     address actor,
-    uint256 levelOrStatus,
+    uint256 level,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
@@ -222,7 +223,7 @@ contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IER
     if (timestamp > block.timestamp || timestamp < block.timestamp - validFor) revert TimestampInvalidOrExpired();
     if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
     usedSignatures[keccak256(signature)] = true;
-    return signatureValidator.signRequest(owner(), tokenId(), actor, levelOrStatus, timestamp, validFor, signature);
+    return signatureValidator.recoverSigner(owner(), actor, tokenId(), level, timestamp, validFor, signature);
   }
 
   // safe recipients
@@ -310,7 +311,7 @@ contract Manager is IManager, Actor, Context, ERC721Holder, UUPSUpgradeable, IER
   }
 
   function requestTransfer(address tokenOwner_, address beneficiaryRecipient) external {
-    if (beneficiaryRecipient == address(0)) revert NoZeroAddress();
+    if (beneficiaryRecipient == address(0)) revert ZeroAddress();
     if (_beneficiaryConfs[tokenOwner_].proofOfLifeDurationInDays == 0) revert BeneficiaryNotConfigured();
     (, IActor.Actor storage actor) = _getActor(tokenOwner_, _msgSender(), _role("BENEFICIARY"));
     if (actor.status == Status.UNSET) revert NotABeneficiary();

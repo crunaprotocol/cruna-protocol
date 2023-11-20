@@ -10,7 +10,6 @@ contract CrunaFlexiVault is ProtectedNFT {
   using Strings for uint256;
 
   error NotTheFactory();
-  error ZeroAddress();
 
   address public factoryAddress;
 
@@ -20,21 +19,19 @@ contract CrunaFlexiVault is ProtectedNFT {
   }
 
   constructor(
+    // Notice that the registry address is fixed and could be hardcoded
+    // but if so, we cannot properly test the contract. So, we will pass it
+    // as a parameter in the deployment scripts.
     address registry_,
     address guardian_,
     address signatureValidator_,
-    address manager_,
     address managerProxy_
-  ) ProtectedNFT("Cruna Flexi Vault V1", "CRUNA1", registry_, guardian_, signatureValidator_, manager_, managerProxy_) {}
+  ) ProtectedNFT("Cruna Flexi Vault V1", "CRUNA1", registry_, guardian_, signatureValidator_, managerProxy_) {}
 
   // set factory to 0x0 to disable a factory
   function setFactory(address factory) external virtual onlyOwner {
     if (factory == address(0)) revert ZeroAddress();
     factoryAddress = factory;
-  }
-
-  function version() external pure virtual returns (string memory) {
-    return "1.0.0";
   }
 
   function _baseURI() internal view virtual override returns (string memory) {

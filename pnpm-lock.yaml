@@ -18,7 +18,7 @@ dependencies:
     specifier: ^4.9.3
     version: 4.9.3
   erc6551:
-    specifier: ^0.3.1
+    specifier: 0.3.1
     version: 0.3.1
   ethereumjs-abi:
     specifier: ^0.6.8
@@ -28,21 +28,18 @@ dependencies:
     version: 0.0.4(@account-abstraction/contracts@0.6.0)(@openzeppelin/contracts@4.9.3)(erc6551@0.3.1)
 
 devDependencies:
-  '@metamask/eth-sig-util':
-    specifier: ^7.0.0
-    version: 7.0.0
   '@nomiclabs/hardhat-ethers':
     specifier: ^2.2.3
-    version: 2.2.3(ethers@6.8.1)(hardhat@2.19.0)
+    version: 2.2.3(ethers@5.7.2)(hardhat@2.19.0)
   '@nomiclabs/hardhat-etherscan':
     specifier: ^3.1.7
     version: 3.1.7(hardhat@2.19.0)
   '@nomiclabs/hardhat-waffle':
-    specifier: ^2.0.6
-    version: 2.0.6(@nomiclabs/hardhat-ethers@2.2.3)(@types/sinon-chai@3.2.12)(ethereum-waffle@3.4.4)(ethers@6.8.1)(hardhat@2.19.0)
+    specifier: ^2.0.5
+    version: 2.0.6(@nomiclabs/hardhat-ethers@2.2.3)(@types/sinon-chai@3.2.12)(ethereum-waffle@3.4.4)(ethers@5.7.2)(hardhat@2.19.0)
   '@openzeppelin/hardhat-upgrades':
-    specifier: ^2.3.3
-    version: 2.3.3(@nomicfoundation/hardhat-ethers@3.0.4)(ethers@6.8.1)(hardhat@2.19.0)
+    specifier: ^1.24.0
+    version: 1.28.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.7)(ethers@5.7.2)(hardhat@2.19.0)
   '@openzeppelin/test-helpers':
     specifier: ^0.5.16
     version: 0.5.16(bn.js@5.2.1)
@@ -56,17 +53,23 @@ devDependencies:
     specifier: ^1.6.3
     version: 1.6.3
   chai:
-    specifier: ^4.3.10
+    specifier: ^4.3.7
     version: 4.3.10
   dotenv:
-    specifier: ^16.3.1
+    specifier: ^16.1.3
     version: 16.3.1
+  eth-sig-util:
+    specifier: ^3.0.1
+    version: 3.0.1
   ethereum-waffle:
     specifier: ^3.4.4
     version: 3.4.4(typescript@4.9.5)
+  ethereumjs-util:
+    specifier: ^7.1.5
+    version: 7.1.5
   ethers:
-    specifier: ^6.8.1
-    version: 6.8.1
+    specifier: ^5.7.2
+    version: 5.7.2
   fs-extra:
     specifier: ^11.1.1
     version: 11.1.1
@@ -74,7 +77,7 @@ devDependencies:
     specifier: ^2.19.0
     version: 2.19.0(typescript@4.9.5)
   hardhat-contract-sizer:
-    specifier: ^2.10.0
+    specifier: ^2.8.0
     version: 2.10.0(hardhat@2.19.0)
   hardhat-gas-reporter:
     specifier: ^1.0.9
@@ -89,7 +92,7 @@ devDependencies:
     specifier: ^2.8.8
     version: 2.8.8
   prettier-plugin-solidity:
-    specifier: ^1.2.0
+    specifier: ^1.1.3
     version: 1.2.0(prettier@2.8.8)
   pretty-quick:
     specifier: ^3.1.3
@@ -98,13 +101,13 @@ devDependencies:
     specifier: ^0.2.1
     version: 0.2.1
   rimraf:
-    specifier: ^5.0.5
+    specifier: ^5.0.0
     version: 5.0.5
   solhint:
-    specifier: ^3.6.2
+    specifier: ^3.4.1
     version: 3.6.2(typescript@4.9.5)
   solidity-coverage:
-    specifier: ^0.8.5
+    specifier: ^0.8.2
     version: 0.8.5(hardhat@2.19.0)
   typescript:
     specifier: ^4.9.5
@@ -115,10 +118,6 @@ packages:
   /@account-abstraction/contracts@0.6.0:
     resolution: {integrity: sha512-8ooRJuR7XzohMDM4MV34I12Ci2bmxfE9+cixakRL7lA4BAwJKQ3ahvd8FbJa9kiwkUPCUNtj+/zxDQWYYalLMQ==}
     dev: false
-
-  /@adraffy/ens-normalize@1.10.0:
-    resolution: {integrity: sha512-nA9XHtlAkYfJxY7bce8DcN7eKxWWCWkU+1GR9d+U6MbNpfwQp8TI7vqOsBsMcHoT4mBu2kypKoSKnghEzOOq5Q==}
-    dev: true
 
   /@aws-crypto/sha256-js@1.2.2:
     resolution: {integrity: sha512-Nr1QJIbW/afYYGzYvrF70LtaHrIRtd4TNAglX8BvlfxJLZ45SAmueIKYl5tWoNBPzp65ymXGFK0Bb1vZUpuc9g==}
@@ -350,13 +349,6 @@ packages:
       ethereumjs-util: 7.1.5
     dev: true
 
-  /@ethereumjs/common@3.2.0:
-    resolution: {integrity: sha512-pksvzI0VyLgmuEF2FA/JR/4/y6hcPq8OUail3/AvycBaW1d5VSauOZzqGvJ3RTmR4MU35lWE8KseKOsEhrFRBA==}
-    dependencies:
-      '@ethereumjs/util': 8.1.0
-      crc-32: 1.2.2
-    dev: true
-
   /@ethereumjs/rlp@4.0.1:
     resolution: {integrity: sha512-tqsQiBQDQdmPWE1xkkBq4rlSW5QZpLOUJ5RJh2/9fug+q9tnUhuZoVLk7s0scUIKTOzEtR72DFBXI4WiZcMpvw==}
     engines: {node: '>=14'}
@@ -366,7 +358,7 @@ packages:
   /@ethereumjs/tx@3.3.2:
     resolution: {integrity: sha512-6AaJhwg4ucmwTvw/1qLaZUX5miWrwZ4nLOUsKyb/HtzS3BMw/CasKhdi1ims9mBKeK9sOJCH4qGKOBGyJCeeog==}
     dependencies:
-      '@ethereumjs/common': 2.5.0
+      '@ethereumjs/common': 2.6.5
       ethereumjs-util: 7.1.5
     dev: true
 
@@ -375,16 +367,6 @@ packages:
     dependencies:
       '@ethereumjs/common': 2.6.5
       ethereumjs-util: 7.1.5
-    dev: true
-
-  /@ethereumjs/tx@4.2.0:
-    resolution: {integrity: sha512-1nc6VO4jtFd172BbSnTnDQVr9IYBFl1y4xPzZdtkrkKIncBCkdbgfdRV+MiTkJYAtTxvV12GRZLqBFT1PNK6Yw==}
-    engines: {node: '>=14'}
-    dependencies:
-      '@ethereumjs/common': 3.2.0
-      '@ethereumjs/rlp': 4.0.1
-      '@ethereumjs/util': 8.1.0
-      ethereum-cryptography: 2.1.2
     dev: true
 
   /@ethereumjs/util@8.1.0:
@@ -739,16 +721,6 @@ packages:
       call-bind: 1.0.5
     dev: true
 
-  /@metamask/abi-utils@2.0.2:
-    resolution: {integrity: sha512-B/A1dY/w4F/t6cDHUscklO6ovb/ztFsrsTXFd8QlqSByk/vyy+QbPE3VVpmmyI/7RX+PA1AJcvBdzCIz+r9dVQ==}
-    engines: {node: '>=16.0.0'}
-    dependencies:
-      '@metamask/utils': 8.2.1
-      superstruct: 1.0.3
-    transitivePeerDependencies:
-      - supports-color
-    dev: true
-
   /@metamask/eth-sig-util@4.0.1:
     resolution: {integrity: sha512-tghyZKLHZjcdlDqCA3gNZmLeR0XvOE9U1qoQO9ohyAZT6Pya+H9vkBPcsyXytmYLNgVoin7CKCmweo/R43V+tQ==}
     engines: {node: '>=12.0.0'}
@@ -760,47 +732,10 @@ packages:
       tweetnacl-util: 0.15.1
     dev: true
 
-  /@metamask/eth-sig-util@7.0.0:
-    resolution: {integrity: sha512-8KeXZB4SKx3EfNS5ahbjUMegyGvDQYk6Nk3hmM658sXpfAQR5ZlIXBgj+9RF+ZROqsU6EuNVgKt7Fr10re60PQ==}
-    engines: {node: ^16.20 || ^18.16 || >=20}
-    dependencies:
-      '@ethereumjs/util': 8.1.0
-      '@metamask/abi-utils': 2.0.2
-      '@metamask/utils': 8.2.1
-      ethereum-cryptography: 2.1.2
-      ethjs-util: 0.1.6
-      tweetnacl: 1.0.3
-      tweetnacl-util: 0.15.1
-    transitivePeerDependencies:
-      - supports-color
-    dev: true
-
-  /@metamask/utils@8.2.1:
-    resolution: {integrity: sha512-dlnpow8r0YHDDL1xKCEwUoTGOAo9icdv+gaJG0EbgDnkD/BDqW2eH1XMtm9i7rPaiHWo/aLtcrh9WBhkCq/viw==}
-    engines: {node: '>=16.0.0'}
-    dependencies:
-      '@ethereumjs/tx': 4.2.0
-      '@noble/hashes': 1.3.2
-      '@scure/base': 1.1.3
-      '@types/debug': 4.1.12
-      debug: 4.3.4(supports-color@8.1.1)
-      pony-cause: 2.1.10
-      semver: 7.5.4
-      superstruct: 1.0.3
-    transitivePeerDependencies:
-      - supports-color
-    dev: true
-
   /@noble/curves@1.1.0:
     resolution: {integrity: sha512-091oBExgENk/kGj3AZmtBDMpxQPDtxQABR2B9lb1JbVTs6ytdzZNwvhxQ4MWasRNEzlbEH8jCWFCwhF/Obj5AA==}
     dependencies:
       '@noble/hashes': 1.3.1
-    dev: true
-
-  /@noble/curves@1.2.0:
-    resolution: {integrity: sha512-oYclrNgRaM9SsBUBVbb8M6DTV7ZHRTKugureoYEncY5c65HOmRzvSiTE3y5CYaPYJA/GVkrhXEoF0M3Ya9PMnw==}
-    dependencies:
-      '@noble/hashes': 1.3.2
     dev: true
 
   /@noble/hashes@1.2.0:
@@ -1000,20 +935,6 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@nomicfoundation/hardhat-ethers@3.0.4(ethers@6.8.1)(hardhat@2.19.0):
-    resolution: {integrity: sha512-k9qbLoY7qn6C6Y1LI0gk2kyHXil2Tauj4kGzQ8pgxYXIGw8lWn8tuuL72E11CrlKaXRUvOgF0EXrv/msPI2SbA==}
-    peerDependencies:
-      ethers: ^6.1.0
-      hardhat: ^2.0.0
-    dependencies:
-      debug: 4.3.4(supports-color@8.1.1)
-      ethers: 6.8.1
-      hardhat: 2.19.0(typescript@4.9.5)
-      lodash.isequal: 4.5.0
-    transitivePeerDependencies:
-      - supports-color
-    dev: true
-
   /@nomicfoundation/solidity-analyzer-darwin-arm64@0.1.1:
     resolution: {integrity: sha512-KcTodaQw8ivDZyF+D76FokN/HdpgGpfjc/gFCImdLUyqB6eSWVaZPazMbeAjmfhx3R0zm/NYVzxwAokFKgrc0w==}
     engines: {node: '>= 10'}
@@ -1120,13 +1041,13 @@ packages:
       '@nomicfoundation/solidity-analyzer-win32-x64-msvc': 0.1.1
     dev: true
 
-  /@nomiclabs/hardhat-ethers@2.2.3(ethers@6.8.1)(hardhat@2.19.0):
+  /@nomiclabs/hardhat-ethers@2.2.3(ethers@5.7.2)(hardhat@2.19.0):
     resolution: {integrity: sha512-YhzPdzb612X591FOe68q+qXVXGG2ANZRvDo0RRUtimev85rCrAlv/TLMEZw5c+kq9AbzocLTVX/h2jVIFPL9Xg==}
     peerDependencies:
       ethers: ^5.0.0
       hardhat: ^2.0.0
     dependencies:
-      ethers: 6.8.1
+      ethers: 5.7.2
       hardhat: 2.19.0(typescript@4.9.5)
     dev: true
 
@@ -1150,7 +1071,7 @@ packages:
       - supports-color
     dev: true
 
-  /@nomiclabs/hardhat-waffle@2.0.6(@nomiclabs/hardhat-ethers@2.2.3)(@types/sinon-chai@3.2.12)(ethereum-waffle@3.4.4)(ethers@6.8.1)(hardhat@2.19.0):
+  /@nomiclabs/hardhat-waffle@2.0.6(@nomiclabs/hardhat-ethers@2.2.3)(@types/sinon-chai@3.2.12)(ethereum-waffle@3.4.4)(ethers@5.7.2)(hardhat@2.19.0):
     resolution: {integrity: sha512-+Wz0hwmJGSI17B+BhU/qFRZ1l6/xMW82QGXE/Gi+WTmwgJrQefuBs1lIf7hzQ1hLk6hpkvb/zwcNkpVKRYTQYg==}
     peerDependencies:
       '@nomiclabs/hardhat-ethers': ^2.0.0
@@ -1159,10 +1080,10 @@ packages:
       ethers: ^5.0.0
       hardhat: ^2.0.0
     dependencies:
-      '@nomiclabs/hardhat-ethers': 2.2.3(ethers@6.8.1)(hardhat@2.19.0)
+      '@nomiclabs/hardhat-ethers': 2.2.3(ethers@5.7.2)(hardhat@2.19.0)
       '@types/sinon-chai': 3.2.12
       ethereum-waffle: 3.4.4(typescript@4.9.5)
-      ethers: 6.8.1
+      ethers: 5.7.2
       hardhat: 2.19.0(typescript@4.9.5)
     dev: true
 
@@ -1181,21 +1102,6 @@ packages:
     resolution: {integrity: sha512-He3LieZ1pP2TNt5JbkPA4PNT9WC3gOTOlDcFGJW4Le4QKqwmiNJCRt44APfxMxvq7OugU/cqYuPcSBzOw38DAg==}
     dev: false
 
-  /@openzeppelin/defender-admin-client@1.52.0(debug@4.3.4):
-    resolution: {integrity: sha512-CKs5mMLL7+nXyugsHaAw0aPfLwFNA+vq7ftuJ3sWUKdbQRZsJ+/189HAwp2/BJC64yUbarEeWqOh3jNpaKRJLw==}
-    dependencies:
-      '@openzeppelin/defender-base-client': 1.52.0(debug@4.3.4)
-      axios: 1.6.1(debug@4.3.4)
-      ethers: 5.7.2
-      lodash: 4.17.21
-      node-fetch: 2.7.0
-    transitivePeerDependencies:
-      - bufferutil
-      - debug
-      - encoding
-      - utf-8-validate
-    dev: true
-
   /@openzeppelin/defender-base-client@1.52.0(debug@4.3.4):
     resolution: {integrity: sha512-VFNu/pjVpAnFKIfuKT1cn9dRpbcO8FO8EAmVZ2XrrAsKXEWDZ3TNBtACxmj7fAu0ad/TzRkb66o5rMts7Fv7jw==}
     dependencies:
@@ -1209,57 +1115,46 @@ packages:
       - encoding
     dev: true
 
-  /@openzeppelin/defender-sdk-base-client@1.5.0:
-    resolution: {integrity: sha512-8aN4sEE15/6LctA14ADr8c6QvEzEXfAtFlxo/Ys0N6UVfp8lRAYqDOpHd4mb8dMfkRzq5izMCuMYgAjC9GFflQ==}
-    dependencies:
-      amazon-cognito-identity-js: 6.3.7
-      async-retry: 1.3.3
-    transitivePeerDependencies:
-      - encoding
-    dev: true
-
-  /@openzeppelin/defender-sdk-deploy-client@1.5.0(debug@4.3.4):
-    resolution: {integrity: sha512-DbE4Rpa90vSN7o5/sim5qzAVVsSWkZBJ+Z9yjkc8qPRheh2dRk6oe2GhVoQfXI/04XwMb2uNvtfU1VAH8AzgaQ==}
-    dependencies:
-      '@ethersproject/abi': 5.7.0
-      '@openzeppelin/defender-sdk-base-client': 1.5.0
-      axios: 1.6.1(debug@4.3.4)
-      lodash: 4.17.21
-    transitivePeerDependencies:
-      - debug
-      - encoding
-    dev: true
-
-  /@openzeppelin/hardhat-upgrades@2.3.3(@nomicfoundation/hardhat-ethers@3.0.4)(ethers@6.8.1)(hardhat@2.19.0):
-    resolution: {integrity: sha512-rF87xYSz6Q2WFq5zcUF1T1tx3Kiq83hmke0xOBn5Qgrl++osseiDwS5oXfDK3NSWvj06oYGLERRGHcXnpQ31FQ==}
+  /@openzeppelin/hardhat-upgrades@1.28.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.7)(ethers@5.7.2)(hardhat@2.19.0):
+    resolution: {integrity: sha512-7sb/Jf+X+uIufOBnmHR0FJVWuxEs2lpxjJnLNN6eCJCP8nD0v+Ot5lTOW2Qb/GFnh+fLvJtEkhkowz4ZQ57+zQ==}
     hasBin: true
     peerDependencies:
-      '@nomicfoundation/hardhat-ethers': ^3.0.0
-      '@nomicfoundation/hardhat-verify': ^1.1.0
-      ethers: ^6.6.0
+      '@nomiclabs/hardhat-ethers': ^2.0.0
+      '@nomiclabs/hardhat-etherscan': ^3.1.0
+      '@nomiclabs/harhdat-etherscan': '*'
+      ethers: ^5.0.5
       hardhat: ^2.0.2
     peerDependenciesMeta:
-      '@nomicfoundation/hardhat-verify':
+      '@nomiclabs/harhdat-etherscan':
         optional: true
     dependencies:
-      '@nomicfoundation/hardhat-ethers': 3.0.4(ethers@6.8.1)(hardhat@2.19.0)
-      '@openzeppelin/defender-admin-client': 1.52.0(debug@4.3.4)
+      '@nomiclabs/hardhat-ethers': 2.2.3(ethers@5.7.2)(hardhat@2.19.0)
+      '@nomiclabs/hardhat-etherscan': 3.1.7(hardhat@2.19.0)
       '@openzeppelin/defender-base-client': 1.52.0(debug@4.3.4)
-      '@openzeppelin/defender-sdk-base-client': 1.5.0
-      '@openzeppelin/defender-sdk-deploy-client': 1.5.0(debug@4.3.4)
+      '@openzeppelin/platform-deploy-client': 0.8.0(debug@4.3.4)
       '@openzeppelin/upgrades-core': 1.31.1
       chalk: 4.1.2
       debug: 4.3.4(supports-color@8.1.1)
-      ethereumjs-util: 7.1.5
-      ethers: 6.8.1
+      ethers: 5.7.2
       hardhat: 2.19.0(typescript@4.9.5)
       proper-lockfile: 4.1.2
-      undici: 5.27.2
     transitivePeerDependencies:
-      - bufferutil
       - encoding
       - supports-color
-      - utf-8-validate
+    dev: true
+
+  /@openzeppelin/platform-deploy-client@0.8.0(debug@4.3.4):
+    resolution: {integrity: sha512-POx3AsnKwKSV/ZLOU/gheksj0Lq7Is1q2F3pKmcFjGZiibf+4kjGxr4eSMrT+2qgKYZQH1ZLQZ+SkbguD8fTvA==}
+    deprecated: '@openzeppelin/platform-deploy-client is deprecated. Please use @openzeppelin/defender-sdk-deploy-client'
+    dependencies:
+      '@ethersproject/abi': 5.7.0
+      '@openzeppelin/defender-base-client': 1.52.0(debug@4.3.4)
+      axios: 0.21.4(debug@4.3.4)
+      lodash: 4.17.21
+      node-fetch: 2.7.0
+    transitivePeerDependencies:
+      - debug
+      - encoding
     dev: true
 
   /@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1):
@@ -1693,7 +1588,7 @@ packages:
     dependencies:
       '@types/http-cache-semantics': 4.0.4
       '@types/keyv': 3.1.4
-      '@types/node': 12.20.55
+      '@types/node': 20.9.0
       '@types/responselike': 1.0.3
     dev: true
 
@@ -1704,19 +1599,13 @@ packages:
   /@types/concat-stream@1.6.1:
     resolution: {integrity: sha512-eHE4cQPoj6ngxBZMvVf6Hw7Mh4jMW4U9lpGmS5GBPB9RYxlFg+CHaVN7ErNY4W9XfLIEn20b4VDYaIrbq0q4uA==}
     dependencies:
-      '@types/node': 8.10.66
-    dev: true
-
-  /@types/debug@4.1.12:
-    resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
-    dependencies:
-      '@types/ms': 0.7.34
+      '@types/node': 20.9.0
     dev: true
 
   /@types/form-data@0.0.33:
     resolution: {integrity: sha1-yayFsqX9GENbjIXZ7LUObWyJP/g=}
     dependencies:
-      '@types/node': 8.10.66
+      '@types/node': 20.9.0
     dev: true
 
   /@types/glob@7.2.0:
@@ -1733,7 +1622,7 @@ packages:
   /@types/keyv@3.1.4:
     resolution: {integrity: sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==}
     dependencies:
-      '@types/node': 12.20.55
+      '@types/node': 20.9.0
     dev: true
 
   /@types/lru-cache@5.1.1:
@@ -1754,10 +1643,6 @@ packages:
       '@types/node': 20.9.0
     dev: true
 
-  /@types/ms@0.7.34:
-    resolution: {integrity: sha512-nG96G3Wp6acyAgJqGasjODb+acrI7KltPiRxzHPXnP3NgI28bpQDRv53olbqGXbfcgF5aiiHmO3xpwEpS5Ld9g==}
-    dev: true
-
   /@types/node-fetch@2.6.9:
     resolution: {integrity: sha512-bQVlnMLFJ2d35DkPNjEPmd9ueO/rh5EiaZt2bhqiSarPjZIuIV6bPQVqcrEyvNo+AfTrRGVazle1tl597w3gfA==}
     dependencies:
@@ -1771,10 +1656,6 @@ packages:
 
   /@types/node@12.20.55:
     resolution: {integrity: sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ==}
-    dev: true
-
-  /@types/node@18.15.13:
-    resolution: {integrity: sha512-N+0kuo9KgrUQ1Sn/ifDXsvg0TTleP7rIy4zOBGECxAljqvqfqpTfzx0Q1NUedOixRMBfe2Whhb056a42cWs26Q==}
     dev: true
 
   /@types/node@20.9.0:
@@ -1815,7 +1696,7 @@ packages:
   /@types/responselike@1.0.3:
     resolution: {integrity: sha512-H/+L+UkTV33uf49PH5pCAUBVPNj2nDBXTN+qS1dOwyyg24l3CcicicCA7ca+HMvJBZcFgl5r8e+RR6elsb4Lyw==}
     dependencies:
-      '@types/node': 12.20.55
+      '@types/node': 20.9.0
     dev: true
 
   /@types/secp256k1@4.0.6:
@@ -1918,10 +1799,6 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
-
-  /aes-js@4.0.0-beta.5:
-    resolution: {integrity: sha512-G965FqalsNyrPqgEGON7nIx1e/OVENSgiEIzyC63haUMuvNnwIgIjMs52hlTCKhkBny7A2ORNlfY9Zu+jmGk1Q==}
-    dev: true
 
   /agent-base@6.0.2:
     resolution: {integrity: sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==}
@@ -2276,6 +2153,14 @@ packages:
 
   /aws4@1.12.0:
     resolution: {integrity: sha512-NmWvPnx0F1SfrQbYwOi7OeaNGokp9XhzNioJ/CSBs8Qa4vxug81mhJEAVZwxXuBmYB5KDRfMq/F3RR0BIU7sWg==}
+    dev: true
+
+  /axios@0.21.4(debug@4.3.4):
+    resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
+    dependencies:
+      follow-redirects: 1.15.3(debug@4.3.4)
+    transitivePeerDependencies:
+      - debug
     dev: true
 
   /axios@1.6.1(debug@4.3.4):
@@ -4606,6 +4491,16 @@ packages:
       tweetnacl-util: 0.15.1
     dev: true
 
+  /eth-sig-util@3.0.1:
+    resolution: {integrity: sha512-0Us50HiGGvZgjtWTyAI/+qTzYPMLy5Q451D0Xy68bxq1QMWdoOddDwGvsqcFT27uohKgalM9z/yxplyt+mY2iQ==}
+    deprecated: Deprecated in favor of '@metamask/eth-sig-util'
+    dependencies:
+      ethereumjs-abi: 0.6.8
+      ethereumjs-util: 5.2.1
+      tweetnacl: 1.0.3
+      tweetnacl-util: 0.15.1
+    dev: true
+
   /eth-tx-summary@3.2.4:
     resolution: {integrity: sha512-NtlDnaVZah146Rm8HMRUNMgIwG/ED4jiqk0TME9zFheMl1jOp6jL1m0NKGjJwehXQ6ZKCPr16MTr+qspKpEXNg==}
     dependencies:
@@ -4934,22 +4829,6 @@ packages:
       '@ethersproject/wallet': 5.7.0
       '@ethersproject/web': 5.7.1
       '@ethersproject/wordlists': 5.7.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-    dev: true
-
-  /ethers@6.8.1:
-    resolution: {integrity: sha512-iEKm6zox5h1lDn6scuRWdIdFJUCGg3+/aQWu0F4K0GVyEZiktFkqrJbRjTn1FlYEPz7RKA707D6g5Kdk6j7Ljg==}
-    engines: {node: '>=14.0.0'}
-    dependencies:
-      '@adraffy/ens-normalize': 1.10.0
-      '@noble/curves': 1.2.0
-      '@noble/hashes': 1.3.2
-      '@types/node': 18.15.13
-      aes-js: 4.0.0-beta.5
-      tslib: 2.4.0
-      ws: 8.5.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -6956,7 +6835,7 @@ packages:
   /level-post@1.0.7:
     resolution: {integrity: sha512-PWYqG4Q00asOrLhX7BejSajByB4EmG2GaKHfj3h5UmmZ2duciXLPGYWIjBzLECFWUGOZWlm5B20h/n3Gs3HKew==}
     dependencies:
-      ltgt: 2.1.3
+      ltgt: 2.2.1
     dev: true
 
   /level-sublevel@6.6.4:
@@ -7088,10 +6967,6 @@ packages:
 
   /lodash.flatten@4.4.0:
     resolution: {integrity: sha512-C5N2Z3DgnnKr0LOpv/hKCgKdb7ZZwafIrsesve6lmzvZIRZRGaZ/l6Q8+2W7NaT+ZwO3fFlSCzCzrDCFdJfZ4g==}
-    dev: true
-
-  /lodash.isequal@4.5.0:
-    resolution: {integrity: sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==}
     dev: true
 
   /lodash.merge@4.6.2:
@@ -8266,11 +8141,6 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /pony-cause@2.1.10:
-    resolution: {integrity: sha512-3IKLNXclQgkU++2fSi93sQ6BznFuxSLB11HdvZQ6JW/spahf/P1pAHBQEahr20rs0htZW0UDkM1HmA+nZkXKsw==}
-    engines: {node: '>=12.0.0'}
-    dev: true
-
   /posix-character-classes@0.1.1:
     resolution: {integrity: sha512-xTgYBc3fuo7Yt7JbiuFxSYGToMoz8fLoE6TC9Wx1P/u+LfeThMOAqmuyECnlBaaJb+u1m9hHiXUEtwW4OzfUJg==}
     engines: {node: '>=0.10.0'}
@@ -8853,7 +8723,7 @@ packages:
     resolution: {integrity: sha512-uWjbaKIK3T1OSVptzX7Nl6PvQ3qAGtKEtVRjRuazjfL3Bx5eI409VZSqgND+4UNnmzLVdPj9FqFJNPqBZFve4w==}
     hasBin: true
     dependencies:
-      glob: 7.2.0
+      glob: 7.2.3
     dev: true
 
   /rimraf@5.0.5:
@@ -9673,11 +9543,6 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /superstruct@1.0.3:
-    resolution: {integrity: sha512-8iTn3oSS8nRGn+C2pgXSKPI3jmpm6FExNazNpjvqS6ZUJQCej3PUXEKM8NjHBOs54ExM+LPW/FBRhymrdcCiSg==}
-    engines: {node: '>=14.0.0'}
-    dev: true
-
   /supports-color@2.0.0:
     resolution: {integrity: sha512-KKNVtd6pCYgPIKU4cp2733HWYCpplQhddZLBUryaAHou723x+FRzQ5Df824Fj+IyyuiQTRoub4SnIFfIcrp70g==}
     engines: {node: '>=0.8.0'}
@@ -9970,10 +9835,6 @@ packages:
 
   /tslib@1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
-    dev: true
-
-  /tslib@2.4.0:
-    resolution: {integrity: sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==}
     dev: true
 
   /tslib@2.6.2:
@@ -11096,7 +10957,7 @@ packages:
       eventemitter3: 4.0.4
       underscore: 1.9.1
       web3-core-helpers: 1.2.11
-      websocket: 1.0.32
+      websocket: 1.0.34
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -11431,19 +11292,6 @@ packages:
   /ws@7.5.9:
     resolution: {integrity: sha512-F+P9Jil7UiSKSkppIiD94dN07AwvFixvLIj1Og1Rl9GGMuNipJnV9JzjD6XuqmAeiswGvUmNLjr5cFuXwNS77Q==}
     engines: {node: '>=8.3.0'}
-    peerDependencies:
-      bufferutil: ^4.0.1
-      utf-8-validate: ^5.0.2
-    peerDependenciesMeta:
-      bufferutil:
-        optional: true
-      utf-8-validate:
-        optional: true
-    dev: true
-
-  /ws@8.5.0:
-    resolution: {integrity: sha512-BWX0SWVgLPzYwF8lTzEy1egjhS4S4OEAHfsO8o65WOVsrnSRGaSiUaa9e0ggGlkMTtBlmOpEXiie9RUcBO86qg==}
-    engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
       utf-8-validate: ^5.0.2

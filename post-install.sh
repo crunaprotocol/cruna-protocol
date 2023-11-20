@@ -14,7 +14,7 @@ if [[ "$EXISTS" == "" ]]; then
     npx mrm@2 lint-staged
     npx husky-init
     pnpm i -D pretty-quick
-    npx husky set .husky/pre-commit "npx pretty-quick --staged && npm run lint && npm test"
+    npx husky set .husky/pre-commit "npx pretty-quick --staged && npm run lint && npm test && git add -A"
 fi
 
 node ./scripts/conditional-symlink.js

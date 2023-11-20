@@ -12,35 +12,35 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.
 import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
 import {IProtected} from "./IProtected.sol";
 import {IERC6454} from "./IERC6454.sol";
-import {IActor} from "./Actor.sol";
-import {Manager} from "./Manager.sol";
-import {SignatureValidator} from "./SignatureValidator.sol";
-import {ManagerProxy} from "./ManagerProxy.sol";
+import {IActor} from "../manager/Actor.sol";
+import {Manager} from "../manager/Manager.sol";
+import {SignatureValidator} from "../utils/SignatureValidator.sol";
+import {Versioned} from "../utils/Versioned.sol";
 
 //import {console} from "hardhat/console.sol";
 
-error NotTheTokenOwner();
-error NotAProtector();
-error NotATokensOwner();
-error TimestampInvalidOrExpired();
-error SignatureAlreadyUsed();
-error NotTransferable();
-error NotTheManager();
-error TimestampZero();
-error AlreadyInitialized();
-error NoZeroAddress();
-
-abstract contract ProtectedNFT is IProtected, IERC6454, ERC721, Ownable2Step, ReentrancyGuard {
+abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownable2Step, ReentrancyGuard {
   using ECDSA for bytes32;
   using Strings for uint256;
+
+  error NotTheTokenOwner();
+  error NotAProtector();
+  error NotATokensOwner();
+  error TimestampInvalidOrExpired();
+  error SignatureAlreadyUsed();
+  error NotTransferable();
+  error NotTheManager();
+  error TimestampZero();
+  error AlreadyInitialized();
+  error ZeroAddress();
 
   IAccountGuardian public immutable GUARDIAN;
   SignatureValidator public immutable VALIDATOR;
   IERC6551Registry public immutable REGISTRY;
   Manager public immutable MANAGER;
-  ManagerProxy public immutable MANAGER_PROXY;
+  //  ManagerProxy public immutable MANAGER_PROXY;
 
-  bytes32 public salt = keccak256("Cruna_Manager");
+  bytes32 public salt = bytes32(uint256(400));
 
   mapping(uint256 => Manager) public managers;
   uint256 public nextTokenId;
@@ -76,22 +76,15 @@ abstract contract ProtectedNFT is IProtected, IERC6454, ERC721, Ownable2Step, Re
     address registry_,
     address guardian_,
     address signatureValidator_,
-    address manager_,
     address managerProxy_
   ) ERC721(name_, symbol_) {
-    if (
-      registry_ == address(0) ||
-      guardian_ == address(0) ||
-      signatureValidator_ == address(0) ||
-      manager_ == address(0) ||
-      managerProxy_ == address(0)
-    ) revert NoZeroAddress();
-    if (address(registry_) != address(0)) revert AlreadyInitialized();
+    if (registry_ == address(0) || guardian_ == address(0) || signatureValidator_ == address(0) || managerProxy_ == address(0))
+      revert ZeroAddress();
     GUARDIAN = IAccountGuardian(guardian_);
     VALIDATOR = SignatureValidator(signatureValidator_);
     REGISTRY = IERC6551Registry(registry_);
-    MANAGER = Manager(manager_);
-    MANAGER_PROXY = ManagerProxy(payable(managerProxy_));
+    MANAGER = Manager(managerProxy_);
+    nextTokenId++;
   }
 
   function protectedTransfer(
@@ -105,10 +98,10 @@ abstract contract ProtectedNFT is IProtected, IERC6454, ERC721, Ownable2Step, Re
     if (timestamp > block.timestamp || timestamp < block.timestamp - validFor) revert TimestampInvalidOrExpired();
     if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
     usedSignatures[keccak256(signature)] = true;
-    address signer = managers[tokenId].signatureValidator().signRequest(
+    address signer = managers[tokenId].signatureValidator().recoverSigner(
       _msgSender(),
-      tokenId,
       to,
+      tokenId,
       0,
       timestamp,
       validFor,
@@ -158,11 +151,16 @@ abstract contract ProtectedNFT is IProtected, IERC6454, ERC721, Ownable2Step, Re
     }
   }
 
-  // minting new token binding the manager to it
+  // minting and initialization
 
   function _mintAndInit(address to) internal {
-    REGISTRY.createAccount(address(MANAGER_PROXY), salt, block.chainid, address(MANAGER), nextTokenId);
-    // managers[nextTokenId] = new Manager.sol(name(), version(), nextTokenId);
+    REGISTRY.createAccount(address(MANAGER), salt, block.chainid, address(this), nextTokenId);
+    managers[nextTokenId] = Manager(managerOf(nextTokenId));
+    managers[nextTokenId].init(address(GUARDIAN), address(VALIDATOR));
     _safeMint(to, nextTokenId++);
+  }
+
+  function managerOf(uint256 tokenId) public view returns (address) {
+    return REGISTRY.account(address(MANAGER), salt, block.chainid, address(this), tokenId);
   }
 }

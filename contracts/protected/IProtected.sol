@@ -3,7 +3,7 @@ pragma solidity ^0.8.19;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {IActor} from "./IActor.sol";
+import {IActor} from "../manager/IActor.sol";
 
 // erc165 interfaceId 0x8dca4bea
 interface IProtected {
