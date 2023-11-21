@@ -1,6 +1,6 @@
-const {expect} = require("chai");
-const {ethers} = require("hardhat");
-const {toChecksumAddress} = require("ethereumjs-util");
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
+const { toChecksumAddress } = require("ethereumjs-util");
 
 let count = 9000;
 function cl(...args) {
@@ -42,7 +42,7 @@ describe("Integration", function () {
       erc6551Registry.address,
       guardian.address,
       signatureValidator.address,
-      proxy.address
+      proxy.address,
     );
     factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
 
@@ -102,8 +102,8 @@ describe("Integration", function () {
       const managerAddress = await vault.managerOf(tokenId);
       const manager = await ethers.getContractAt("Manager", managerAddress);
       // set Alice as first Bob's protector
-      await expect(manager.connect(bob).setProtector(addr0, true, 0, 0, 0)).revertedWith("ZeroAddress()");
-      await expect(manager.connect(bob).setProtector(bob.address, true, 0, 0, 0)).revertedWith("CannotBeYourself()");
+      await expect(manager.connect(bob).setProtector(addr0, true, 0, 0, 0)).revertedWith("ZeroAddress");
+      await expect(manager.connect(bob).setProtector(bob.address, true, 0, 0, 0)).revertedWith("CannotBeYourself");
     });
 
     it("should add many protectors", async function () {
@@ -129,7 +129,7 @@ describe("Integration", function () {
         3600,
         chainId,
         alice.address,
-        signatureValidator
+        signatureValidator,
       );
       await expect(manager.connect(bob).setProtector(fred.address, true, ts, 3600, signature))
         .to.emit(manager, "ProtectorUpdated")
@@ -149,7 +149,7 @@ describe("Integration", function () {
         3600,
         chainId,
         fred.address,
-        signatureValidator
+        signatureValidator,
       );
       await expect(manager.connect(bob).setProtector(alice.address, false, ts, 3600, signature))
         .to.emit(manager, "ProtectorUpdated")
@@ -163,8 +163,8 @@ describe("Integration", function () {
       // set Alice as Bob's protector
       await manager.connect(bob).setProtector(alice.address, true, 0, 0, 0);
       await expect(
-        vault.connect(bob)["safeTransferFrom(address,address,uint256)"](bob.address, fred.address, tokenId)
-      ).to.be.revertedWith("NotTransferable()");
+        vault.connect(bob)["safeTransferFrom(address,address,uint256)"](bob.address, fred.address, tokenId),
+      ).to.be.revertedWith("NotTransferable");
       let signature = await signRequest(
         "PROTECTED_TRANSFER",
         bob.address,
@@ -175,7 +175,7 @@ describe("Integration", function () {
         3600,
         chainId,
         alice.address,
-        signatureValidator
+        signatureValidator,
       );
       await expect(vault.connect(bob).protectedTransfer(tokenId, fred.address, ts, 3600, signature))
         .to.emit(vault, "Transfer")
@@ -212,7 +212,7 @@ describe("Integration", function () {
         3600,
         chainId,
         alice.address,
-        signatureValidator
+        signatureValidator,
       );
       await expect(manager.connect(bob).setSafeRecipient(mark.address, 3, ts, 3600, signature))
         .to.emit(manager, "SafeRecipientUpdated")
@@ -229,11 +229,11 @@ describe("Integration", function () {
         3600,
         chainId,
         alice.address,
-        signatureValidator
+        signatureValidator,
       );
 
       await expect(manager.connect(bob).setSafeRecipient(fred.address, 0, 0, 0, 0)).revertedWith(
-        "NotPermittedWhenProtectorsAreActive()"
+        "NotPermittedWhenProtectorsAreActive",
       );
 
       await expect(manager.connect(bob).setSafeRecipient(fred.address, 0, ts, 3600, signature))
@@ -269,7 +269,7 @@ describe("Integration", function () {
         3600,
         chainId,
         alice.address,
-        signatureValidator
+        signatureValidator,
       );
       await expect(manager.connect(bob).setSentinel(mark.address, 1, ts, 3600, signature))
         .to.emit(manager, "SentinelUpdated")
@@ -287,11 +287,11 @@ describe("Integration", function () {
         1000,
         chainId,
         alice.address,
-        signatureValidator
+        signatureValidator,
       );
 
       await expect(manager.connect(bob).setSentinel(fred.address, 0, ts, 3600, signature)).revertedWith(
-        "WrongDataOrNotSignedByProtector()"
+        "WrongDataOrNotSignedByProtector",
       );
 
       signature = await signRequest(
@@ -304,11 +304,11 @@ describe("Integration", function () {
         3600,
         chainId,
         alice.address,
-        signatureValidator
+        signatureValidator,
       );
 
       await expect(manager.connect(bob).setSentinel(fred.address, 0, 0, 0, 0)).revertedWith(
-        "NotPermittedWhenProtectorsAreActive()"
+        "NotPermittedWhenProtectorsAreActive",
       );
 
       await expect(manager.connect(bob).setSentinel(fred.address, 0, ts, 3600, signature))

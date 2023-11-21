@@ -2,7 +2,7 @@ require("dotenv").config();
 const hre = require("hardhat");
 const ethers = hre.ethers;
 const DeployUtils = require("./lib/DeployUtils");
-const {normalize} = require("../test/helpers");
+const { normalize } = require("../test/helpers");
 let deployUtils;
 
 async function main() {
@@ -36,11 +36,11 @@ async function main() {
   flexiVaultManager = await deployUtils.deploy("FlexiVaultManager", flexiVault.address);
 
   await deployUtils.Tx(
-    flexiVaultManager.init(registry.address, proxyWallet.address, {gasLimit: 1500000}),
-    "flexiVaultManager.init"
+    flexiVaultManager.init(registry.address, proxyWallet.address, { gasLimit: 1500000 }),
+    "flexiVaultManager.init",
   );
 
-  await deployUtils.Tx(flexiVault.initVault(flexiVaultManager.address, {gasLimit: 150000}), "flexiVault.initVault");
+  await deployUtils.Tx(flexiVault.initVault(flexiVaultManager.address, { gasLimit: 150000 }), "flexiVault.initVault");
 
   console.log(`
   

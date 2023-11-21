@@ -1,12 +1,12 @@
-const {expect} = require("chai");
-const {ethers} = require("hardhat");
-const {toChecksumAddress} = require("ethereumjs-util");
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
+const { toChecksumAddress } = require("ethereumjs-util");
 let count = 9000;
 function cl() {
   console.log(count++);
 }
 
-const {amount, normalize, deployContractUpgradeable, addr0, getChainId, deployContract} = require("./helpers");
+const { amount, normalize, deployContractUpgradeable, addr0, getChainId, deployContract } = require("./helpers");
 
 describe("Factory", function () {
   let erc6551Registry, proxy, manager, guardian;
@@ -30,7 +30,7 @@ describe("Factory", function () {
       erc6551Registry.address,
       guardian.address,
       signatureValidator.address,
-      proxy.address
+      proxy.address,
     );
     factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
 
@@ -62,9 +62,9 @@ describe("Factory", function () {
         precalculatedAddress,
         toChecksumAddress(proxy.address),
         salt,
-        await getChainId(),
+        (await getChainId()).toString(),
         toChecksumAddress(vault.address),
-        nextTokenId
+        nextTokenId,
       );
   });
 

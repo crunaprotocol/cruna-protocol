@@ -67,7 +67,7 @@ An identical version of ${contract} has been previously flattened on ${prev}.
     flattened
       .replace(/SPDX-License-Identifier/, "LICENSE-ID")
       .replace(/SPDX-License-Identifier/g, "License")
-      .replace(/LICENSE-ID/, "SPDX-License-Identifier")
+      .replace(/LICENSE-ID/, "SPDX-License-Identifier"),
   );
 
   fs.unlinkSync(fn);

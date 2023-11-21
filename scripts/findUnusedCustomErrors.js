@@ -14,7 +14,7 @@ function findUnusedCustomErrors(contractContent) {
 }
 
 function analyzeContracts(dir) {
-  const entries = fs.readdirSync(dir, {withFileTypes: true});
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
   entries.forEach((entry) => {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {

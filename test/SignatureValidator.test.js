@@ -1,12 +1,12 @@
-const {expect} = require("chai");
-const {ethers} = require("hardhat");
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
 const DeployUtils = require("../scripts/lib/DeployUtils");
 let deployUtils;
 const helpers = require("./helpers");
-const {getTimestamp} = require("./helpers");
-const {domainType} = require("./helpers/eip712");
+const { getTimestamp } = require("./helpers");
+const { domainType } = require("./helpers/eip712");
 helpers.initEthers(ethers);
-const {privateKeyByWallet, deployContract, getChainId, makeSignature} = helpers;
+const { privateKeyByWallet, deployContract, getChainId, makeSignature } = helpers;
 
 describe("SignatureValidator", function () {
   deployUtils = new DeployUtils(ethers);
@@ -48,15 +48,15 @@ describe("SignatureValidator", function () {
       privateKeyByWallet[protector.address],
       "Auth",
       [
-        {name: "scope", type: "uint256"},
-        {name: "owner", type: "address"},
-        {name: "actor", type: "address"},
-        {name: "tokenId", type: "uint256"},
-        {name: "extraValue", type: "uint256"},
-        {name: "timestamp", type: "uint256"},
-        {name: "validFor", type: "uint256"},
+        { name: "scope", type: "uint256" },
+        { name: "owner", type: "address" },
+        { name: "actor", type: "address" },
+        { name: "tokenId", type: "uint256" },
+        { name: "extraValue", type: "uint256" },
+        { name: "timestamp", type: "uint256" },
+        { name: "validFor", type: "uint256" },
       ],
-      message
+      message,
     );
 
     expect(
@@ -68,8 +68,8 @@ describe("SignatureValidator", function () {
         message.extraValue,
         message.timestamp,
         message.validFor,
-        signature
-      )
+        signature,
+      ),
     ).equal(protector.address);
   });
 });
