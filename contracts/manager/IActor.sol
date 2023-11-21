@@ -4,13 +4,6 @@ pragma solidity ^0.8.19;
 // Author: Francesco Sullo <francesco@sullo.co>
 
 interface IActor {
-  enum Status {
-    UNSET,
-    PENDING,
-    ACTIVE,
-    RESIGNED
-  }
-
   /**
    * @dev Recipients can have different levels of protection
    */
@@ -26,7 +19,6 @@ interface IActor {
    */
   struct Actor {
     address actor;
-    Status status;
     Level level;
   }
 }

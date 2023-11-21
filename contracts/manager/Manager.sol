@@ -141,14 +141,13 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     return _countActiveActorsByRole(PROTECTOR);
   }
 
-  function findProtector(address protector_) public view override returns (uint256, Status) {
+  function findProtector(address protector_) public view override returns (uint256, Level) {
     (uint256 i, IActor.Actor storage actor) = _getActor(protector_, PROTECTOR);
-    return (i, actor.status);
+    return (i, actor.level);
   }
 
   function isAProtector(address protector_) public view returns (bool) {
-    Status status = _actorStatus(protector_, PROTECTOR);
-    return status == Status.ACTIVE;
+    return _isActiveActor(protector_, PROTECTOR);
   }
 
   function listProtectors() public view override returns (address[] memory) {
@@ -196,13 +195,13 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
 
   function setSentinel(
     address sentinel,
-    Status status,
+    Level level,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
   ) external override onlyTokenOwner {
-    _setSignedActor("SENTINEL", sentinel, SENTINEL, uint256(status), timestamp, validFor, signature, false);
-    emit SentinelUpdated(_msgSender(), sentinel, status);
+    _setSignedActor("SENTINEL", sentinel, SENTINEL, uint256(level), timestamp, validFor, signature, false);
+    emit SentinelUpdated(_msgSender(), sentinel, level);
   }
 
   // allow when protectors are active
@@ -230,7 +229,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     if (beneficiary == address(0)) revert ZeroAddress();
     if (_inheritanceConf.proofOfLifeDurationInDays == 0) revert InheritanceNotConfigured();
     (, IActor.Actor storage actor) = _getActor(_msgSender(), SENTINEL);
-    if (actor.status == Status.UNSET) revert NotASentinel();
+    if (actor.level == Level.NONE) revert NotASentinel();
     if (
       _inheritanceConf.lastProofOfLife + (_inheritanceConf.proofOfLifeDurationInDays * 1 hours) >
       // solhint-disable-next-line not-rely-on-time
@@ -306,16 +305,15 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     bytes calldata signature,
     bool actorIsProtector
   ) internal onlyTokenOwner {
-    uint256 scope = signatureValidator.getSupportedScope(scopeString);
     if (actor == address(0)) revert ZeroAddress();
     if (actor == _msgSender()) revert CannotBeYourself();
-    _validateRequest(scope, actor, extraValue, timestamp, validFor, signature);
+    _validateRequest(signatureValidator.getSupportedScope(scopeString), actor, extraValue, timestamp, validFor, signature);
     if (extraValue == 0) {
       if (timestamp != 0 && actorIsProtector && !isAProtector(actor)) revert ProtectorNotFound();
       _removeActor(actor, role_);
     } else {
       if (timestamp != 0 && actorIsProtector && isAProtector(actor)) revert ProtectorAlreadySetByYou();
-      _addActor(actor, role_, Status.ACTIVE, Level(extraValue));
+      _addActor(actor, role_, Level(extraValue));
     }
   }
 

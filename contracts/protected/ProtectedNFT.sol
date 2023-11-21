@@ -43,15 +43,15 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
   bytes32 public salt = bytes32(uint256(400));
 
   mapping(uint256 => Manager) public managers;
-  uint256 public nextTokenId;
+  uint256 public nextTokenId = 1;
 
   mapping(uint256 => bool) internal _approvedTransfers;
   mapping(bytes32 => bool) public usedSignatures;
 
   modifier onlyProtectorForTokenId(uint256 tokenId_) {
     address owner_ = ownerOf(tokenId_);
-    (uint256 i, IActor.Status status) = managers[tokenId_].findProtector(_msgSender());
-    if (status < IActor.Status.ACTIVE) revert NotAProtector();
+    (uint256 i, IActor.Level level) = managers[tokenId_].findProtector(_msgSender());
+    if (level < IActor.Level.NONE) revert NotAProtector();
     _;
   }
 
@@ -84,8 +84,6 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
     VALIDATOR = SignatureValidator(signatureValidator_);
     REGISTRY = IERC6551Registry(registry_);
     MANAGER = Manager(managerProxy_);
-    //    nextTokenId = block.chainid * 1000000;
-    nextTokenId++;
   }
 
   function protectedTransfer(

@@ -12,7 +12,7 @@ interface IManager {
        The token owner is useful for historic reason since the NFT can be later transferred to another address.
        If that happens, all the protector will be removed, and the new tokenOwner will have to set them again.
    */
-  event ProtectorUpdated(address indexed owner, address indexed protector, bool status);
+  event ProtectorUpdated(address indexed owner, address indexed protector, bool level);
 
   /**
    * @dev Emitted when the level of an allowed recipient is updated
@@ -22,7 +22,7 @@ interface IManager {
   /**
    * @dev Emitted when a sentinel is updated
    */
-  event SentinelUpdated(address indexed owner, address indexed sentinel, IActor.Status status);
+  event SentinelUpdated(address indexed owner, address indexed sentinel, IActor.Level level);
 
   event Inherited(address indexed protected, uint256 tokenId, address indexed from, address indexed to);
 
@@ -64,7 +64,7 @@ interface IManager {
     bytes calldata signature
   ) external;
 
-  function findProtector(address protector_) external view returns (uint256, IActor.Status);
+  function findProtector(address protector_) external view returns (uint256, IActor.Level);
 
   function countActiveProtectors() external view returns (uint256);
 
@@ -88,7 +88,7 @@ interface IManager {
 
   function setSentinel(
     address sentinel,
-    IActor.Status status,
+    IActor.Level level,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature

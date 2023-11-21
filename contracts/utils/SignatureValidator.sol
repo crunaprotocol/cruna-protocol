@@ -14,13 +14,13 @@ contract SignatureValidator is EIP712, Versioned {
 
   function getSupportedScope(string memory scope) public pure returns (uint256) {
     bytes32 scopeHash = keccak256(abi.encodePacked(scope));
-    if (scopeHash == keccak256(abi.encodePacked("PROTECTOR"))) {
+    if (scopeHash == keccak256("PROTECTOR")) {
       return 1;
-    } else if (scopeHash == keccak256(abi.encodePacked("SENTINEL"))) {
+    } else if (scopeHash == keccak256("SENTINEL")) {
       return 2;
-    } else if (scopeHash == keccak256(abi.encodePacked("SAFE_RECIPIENT"))) {
+    } else if (scopeHash == keccak256("SAFE_RECIPIENT")) {
       return 3;
-    } else if (scopeHash == keccak256(abi.encodePacked("PROTECTED_TRANSFER"))) {
+    } else if (scopeHash == keccak256("PROTECTED_TRANSFER")) {
       return 4;
     } else {
       revert UnsupportedScope(scope);
