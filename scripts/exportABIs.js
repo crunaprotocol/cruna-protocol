@@ -1,6 +1,6 @@
 const fs = require("fs-extra");
 const path = require("path");
-const {deployContract} = require("../test/helpers");
+const { deployContract } = require("../test/helpers");
 
 async function main() {
   const ABIs = {
