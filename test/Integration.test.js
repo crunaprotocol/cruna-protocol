@@ -155,6 +155,32 @@ describe("Integration", function () {
         .to.emit(manager, "ProtectorUpdated")
         .withArgs(bob.address, alice.address, false);
     });
+
+    it("should add a protector and transfer a vault", async function () {
+      let tokenId = await buyAVault(bob);
+      const managerAddress = await vault.managerOf(tokenId);
+      const manager = await ethers.getContractAt("Manager", managerAddress);
+      // set Alice as Bob's protector
+      await manager.connect(bob).setProtector(alice.address, true, 0, 0, 0);
+      await expect(
+        vault.connect(bob)["safeTransferFrom(address,address,uint256)"](bob.address, fred.address, tokenId)
+      ).to.be.revertedWith("NotTransferable()");
+      let signature = await signRequest(
+        "PROTECTED_TRANSFER",
+        bob.address,
+        fred.address,
+        tokenId,
+        0,
+        ts,
+        3600,
+        chainId,
+        alice.address,
+        signatureValidator
+      );
+      await expect(vault.connect(bob).protectedTransfer(tokenId, fred.address, ts, 3600, signature))
+        .to.emit(vault, "Transfer")
+        .withArgs(bob.address, fred.address, tokenId);
+    });
   });
 
   describe("Safe recipients", async function () {

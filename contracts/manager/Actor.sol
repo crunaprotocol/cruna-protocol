@@ -17,7 +17,7 @@ contract Actor is IActor {
   bytes32 public constant SAFE_RECIPIENT = keccak256(abi.encodePacked("SAFE_RECIPIENT"));
 
   mapping(bytes32 => Actor[]) private _actors;
-  Actor private _emptyActor = Actor(address(0), Status.UNSET, Level.NONE);
+  Actor private _emptyActor = Actor(address(0), Level.NONE);
 
   function _getActors(bytes32 role) internal view returns (Actor[] memory) {
     return _actors[role];
@@ -31,7 +31,6 @@ contract Actor is IActor {
         return (i, actors[i]);
       }
     }
-    // Caller must check _emptyActor.status
     // If not, must call _findActor, which reverts if actor not found
     return (0, _emptyActor);
   }
@@ -39,15 +38,10 @@ contract Actor is IActor {
   // similar to getActor, but reverts if actor not found
   function _findActor(address actor_, bytes32 role) internal view returns (uint256, Actor storage) {
     (uint256 i, Actor storage actor) = _getActor(actor_, role);
-    if (actor.status == Status.UNSET) {
+    if (actor.level == Level.NONE) {
       revert ActorNotFound(role);
     }
     return (i, actor);
-  }
-
-  function _actorStatus(address actor_, bytes32 role) internal view returns (Status) {
-    (, Actor storage actor) = _getActor(actor_, role);
-    return actor.status;
   }
 
   function _actorLength(bytes32 role) internal view returns (uint256) {
@@ -55,13 +49,12 @@ contract Actor is IActor {
   }
 
   function _actorLevel(address actor_, bytes32 role) internal view returns (Level) {
-    (, Actor storage actor) = _findActor(actor_, role);
+    (, Actor storage actor) = _getActor(actor_, role);
     return actor.level;
   }
 
   function _isActiveActor(address actor_, bytes32 role) internal view returns (bool) {
-    Status status = _actorStatus(actor_, role);
-    return status > Status.PENDING;
+    return _actorLevel(actor_, role) > Level.NONE;
   }
 
   function _listActiveActors(bytes32 role) internal view returns (address[] memory) {
@@ -69,7 +62,7 @@ contract Actor is IActor {
     address[] memory actors = new address[](count);
     uint256 j = 0;
     for (uint256 i = 0; i < _actors[role].length; i++) {
-      if (_actors[role][i].status > Status.PENDING) {
+      if (_actors[role][i].level > Level.NONE) {
         actors[j] = _actors[role][i].actor;
         j++;
       }
@@ -80,19 +73,11 @@ contract Actor is IActor {
   function _countActiveActorsByRole(bytes32 role) internal view returns (uint256) {
     uint256 count = 0;
     for (uint256 i = 0; i < _actors[role].length; i++) {
-      if (_actors[role][i].status > Status.PENDING) {
+      if (_actors[role][i].level > Level.NONE) {
         count++;
       }
     }
     return count;
-  }
-
-  function _updateStatus(uint256 i, bytes32 role, Status status_) internal {
-    _actors[role][i].status = status_;
-  }
-
-  function _updateLevel(uint256 i, bytes32 role, Level level_) internal {
-    _actors[role][i].level = level_;
   }
 
   function _removeActor(address actor_, bytes32 role) internal {
@@ -108,15 +93,14 @@ contract Actor is IActor {
     actors.pop();
   }
 
-  function _addActor(address actor_, bytes32 role, Status status_, Level level) internal {
+  function _addActor(address actor_, bytes32 role, Level level_) internal {
     if (actor_ == address(0)) revert ZeroAddress();
     // We allow to add up to 16 actors per role per owner to avoid the risk of going out of gas
     // looping the array. Most likely, the user will set between 1 and 7 actors per role, so,
     // it should be fine
     if (_actors[role].length > 16) revert TooManyActors();
-    Status status = _actorStatus(actor_, role);
-    if (status != Status.UNSET) revert ActorAlreadyAdded();
-    _actors[role].push(Actor(actor_, status_, level));
+    if (_actorLevel(actor_, role) != Level.NONE) revert ActorAlreadyAdded();
+    _actors[role].push(Actor(actor_, level_));
   }
 
   /**

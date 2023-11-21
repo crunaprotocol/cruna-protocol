@@ -20,7 +20,7 @@ interface IProtected {
   /**
    * @dev Emitted when a beneficiary is updated
    */
-  event BeneficiaryUpdated(address indexed owner, address indexed beneficiary, IActor.Status status);
+  event BeneficiaryUpdated(address indexed owner, address indexed beneficiary, IActor.Level status);
 
   /**
    * @dev Transfers a token to a recipient usign a valid signed transferRequest
