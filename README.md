@@ -107,7 +107,7 @@ A new family of Zero Knowledge based vaults will allow a high level of privacy.
 ## Test coverage
 
 ```
-  12 passing (7s)
+  12 passing (5s)
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |

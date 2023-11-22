@@ -56,7 +56,7 @@
     "chai": "^4.3.10",
     "dotenv": "^16.3.1",
     "eth-sig-util": "^3.0.1",
-    "ethereum-waffle": "^3.4.4",
+    "ethereum-waffle": "^4.0.10",
     "ethereumjs-util": "^7.1.5",
     "ethers": "^5.7.2",
     "fs-extra": "^11.1.1",
@@ -72,7 +72,7 @@
     "rimraf": "^5.0.5",
     "solhint": "^4.0.0",
     "solidity-coverage": "^0.8.5",
-    "typescript": "^4.9.5"
+    "typescript": "^5.3.2"
   },
   "lint-staged": {
     "*.js": "prettier --write"
