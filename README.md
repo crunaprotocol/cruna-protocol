@@ -1,88 +1,137 @@
-../cruna-prot # Cruna Core Protocol
+# Overview of Cruna and Protectors
 
-The Cruna Protocol is an NFT-based system that enables secure consolidation and management of digital assets across multiple blockchains. It allows users to link ownership of their assets to NFTs called Cruna Vaults, providing a unified interface for managing and transferring the assets.
+## CrunaFlexiVault
 
-The protocol implements robust security mechanisms including multi-factor authentication via entity termed Protectors. It also facilitates scheduled distribution and inheritance of assets held in the vaults. The first application in the protocol is the Flexi Vault, which offers safe storage and movement of tokens and NFTs.
+**CrunaFlexiVault** is a key component of the Cruna ecosystem, designed to enhance the capabilities of ERC-721 NFTs by integrating them with Ethereum's ERC-6551 standard. This integration allows each NFT to operate as its own smart contract, thus providing advanced functionalities.
 
-The Cruna Protocol aims to tackle key challenges like fragmented asset control, security risks, and lack of flexible distribution options faced by crypto users today. It expands the utility of NFTs beyond collectibles to active asset management functionalities.
+### Features:
 
-## Key Components
+- **Smart Contract Enabled NFTs**: Each NFT in the CrunaFlexiVault acts as an independent smart contract, capable of executing complex operations.
+- **Enhanced Security and Functionality**: The integration with ERC-6551 standard allows for additional layers of security and more dynamic interactions for NFTs.
 
-### 1. Cruna Vault, Non-Fungible Tokens (NFTs) and Protectors
+### Usage:
 
-The Cruna Vault represents the core of the Cruna Core Protocol. It is an NFT that a user must own to manage the vault, playing a crucial role in the structure and functionality of the protocol.
+The CrunaFlexiVault is used for creating and managing NFTs with advanced capabilities. These NFTs can interact with other contracts and perform operations beyond the scope of traditional NFTs.
 
-The owning token within this structure functions as a standard NFT, providing a bridge between the owner and the application(s) associated with the vault. To enhance security, the protocol incorporates ProtectedERC721 contracts—NFTs capable of adding special wallets, termed 'Protectors'.
+## Protector System
 
-The Protectors play a critical role in enhancing the security of the protocol. In the Cruna Vault, the NFT owner can appoint one or more Protectors. While Protectors lack the authority to initiate NFT transfers independently, they must pre-approve any transfer requests initiated by the owner, signing the request. This two-tier authentication mechanism significantly reduces the risk of unauthorized NFT transfers, even in cases where the owner's account may be compromised.
+The **Protector System** in Cruna is a security feature that allows NFT owners to assign protectors to their NFTs, further securing their digital assets.
 
-To add flexibility to the system, the vault owner can set Allowlisted recipient that can receive assets without requiring the pre-approval from a protector. This is particularly useful in a company environment, where some wallets receiving assets do not need approval. This feature must be used carefully, because can make the Protectors useless.
+### Key Concepts:
 
-Once the owner designates the first Protector, the second Protector needs the pre-approval of the first protector to be set up. For similar reasons, a Protector cannot be removed unilaterally by the owner but must provide a valid signature.
+- **Protector**: A protector is an Ethereum address (e.g., another user) designated to provide an additional layer of security and control over the NFT.
+- **Flexible Management**: Owners can add or remove protectors, providing flexibility in managing their NFTs.
 
-It is advisable to assign multiple Protectors to maintain access to the vault even if one Protector becomes inaccessible. Reasonably, if there is a need for more than two protectors, it may make sense to transfer the ownership of the vault to a multisig wallet.
+### Functionalities:
 
-#### Vault Operators
+- **Adding Protectors**: NFT owners can designate other addresses as protectors, enhancing the security of their NFTs.
+- **Approval Process**: Certain operations, like transferring the NFT, may require approval or signatures from assigned protectors.
+- **Protector Management**: Owners can manage protectors, adding multiple protectors and even allowing protectors to add or remove other protectors.
 
-Alongside Protectors, the vault can also have operators—wallets that have the authority to manage the assets in the vault akin to the owner. For example, an owner may possess an NFT in an externally owned account (EOA) wallet like MetaMask and set two protectors using a cold wallet, like a Ledger, and a secondary wallet that hasn't been imported into MetaMask. This setup ensures that the owner can interact with the NFT without the risk of being phished, as any actual token transfer would fail without the approval of one of the protectors.
+### Use Cases:
 
-A real-world example can be a CEO who purchases two vaults—one for Marketing and another for Development. The CEO can appoint the CFO as a Protector, and the CTO and CMO as operators for the respective vaults.
+- **Secured Transfers**: Transferring an NFT can be made secure with protector approval, preventing unauthorized transfers.
+- **Multi-Signature Operations**: Protectors can enable multi-signature operations for high-value NFTs, adding an extra layer of consensus before executing critical actions.
 
-While it is possible for an owner not to set any Protectors and manage the vault directly, this approach is not recommended due to potential security risks.
+### Example Workflow:
 
-#### Asset Recovery and Beneficiary Management
+#### Vault Purchase and Setup:
 
-The Cruna Vault provides a mechanism for asset recovery in case the owner loses access or passes away. The owner can designate beneficiaries and set a recovery quorum and expiration timeframe.
+- An NFT owner purchases a vault from the CrunaFlexiVault.
+- They set up their NFT within this vault, turning it into a smart contract capable NFT.
 
-Before the expiry, the owner has to trigger a proof-of-life event to indicate they still retain access. If the event isn't triggered, a designated beneficiary can initiate the recovery process and suggest a recipient wallet.
+#### Assigning Protectors:
 
-Other beneficiaries can confirm the transfer or reject it. If rejected, they can suggest an alternate recipient. The protocol is designed to prevent blocking of the process by hostile beneficiaries.
+- The owner assigns one or more protectors to their NFT for additional security.
 
-This beneficiary management system enables orderly transfer of assets to successors in case of incapacity or demise of the vault owner. It provides individuals and entities a way to ensure business continuity and asset inheritance in a secure manner.
+#### Performing Operations:
 
-### 2. The Flexi Vault
+- For operations like transfers, the owner initiates the action.
+- If required, protectors provide their approval or signature to complete the transaction.
 
-The Flexi Vault is a smart-contract managed by the Cruna Vault to securely store and protect assets (ERC20, ERC721, ERC1155). The ownership of the Flexi Vault is linked to the owning NFT, signifying that transferring the ownership of the NFT also transfers the ownership of the Flexi Vault.
+## Conclusion
 
-Since the Cruna Vault is a ProtectedERC721, the Flexi Vault inherits its security features. When the owner of the NFT has designated a Protector, any asset movement from the Flexi Vault to external wallets or other vaults not owned by the same owner necessitates a signature from the Protector, enhancing the security of asset transfers.
+The CrunaFlexiVault and Protector system offer a sophisticated approach to NFT security and functionality. By leveraging smart contract capabilities and a robust protector management system, Cruna enhances the utility and security of NFTs in the Ethereum ecosystem.
 
-On deployment, the Flexi Vault initiates a CrunaWallet, a distinct NFT designed to manage smart contract wallets using [ERC6551](https://eips.ethereum.org/EIPS/eip-6551) bound accounts. Any tokenId of the CrunaWallet is initially owned by the Flexi Vault and, by extension, by the Vault's owner.
+---
+## Safe Recipients in Cruna
 
-The owner reserves the right to eject their CrunaWallet at any moment, facilitating the transfer of an ID ownership from the Flexi Vault to the Cruna Vault's owner. This action can be reversed in the future, thereby reactivating the vault and resuming asset management.
+The "Safe Recipients" feature in Cruna is a crucial security mechanism that allows NFT owners to designate specific Ethereum addresses as trusted entities for transactions. This system plays a vital role in enhancing the control and safety of NFT transfers within the Cruna ecosystem.
 
-### 3. CrunaWallet, Smart Contracts, and Vault Migration
+### Key Concepts:
 
-The CrunaWallet, as an integral part of the Cruna Vault, is designed to offer flexibility in managing smart contract wallets. It can be ejected and re-injected into the vault, enabling migration between different versions of the vault. This feature is crucial considering that all smart contracts used in the Cruna Core Protocol are immutable, barring the exception of the ERC6551 bound account.
+- **Safe Recipient**: A designated Ethereum address recognized as a trusted recipient for an NFT. This address is considered secure for transactions and interactions with the NFT.
+- **Dynamic Management**: NFT owners have the ability to dynamically manage their list of safe recipients, adding or removing addresses as needed.
 
-After activation, the CrunaWallet functions as an upgradeable contract. However, its uniqueness lies in the exclusive authority granted to the owner of the Cruna Vault: only they can initiate an upgrade. This ensures that the decision to transition the CrunaWallet to a new version remains entirely in the hands of the Cruna Vault's owner.
+### Functionalities:
 
-#### Vault Migration Process
+- **Designation of Safe Recipients**: Owners can designate certain addresses as safe recipients, ensuring transactions are secure and trusted.
+- **Protector's Authorization**: In cases where protectors are assigned, they can authorize or influence the designation of safe recipients.
+- **Flexibility in Management**: The system allows for the easy addition or removal of safe recipients, adapting to the owner's changing requirements.
 
-The process of upgrading a Cruna Vault to a new version is straightforward, although it requires careful steps due to the immutable nature of smart contracts.
+### Use Cases:
 
-1. **Deployment of the New Contract**: The first step involves deploying the new contract for the upgraded Cruna Vault (V2).
-2. **Eject the CrunaWallet from the Old Vault**: The owner must then eject the CrunaWallet from the current vault (V1). This action transfers the ownership of the CrunaWallet ID from the Flexi Vault to the owner of the Cruna Vault.
-3. **Re-Inject the CrunaWallet into the New Vault**: The final step is to re-inject the ejected CrunaWallet into the new vault (V2). This effectively transfers the management of the assets from the old vault to the new one.
+- **Securing Transactions**: The feature ensures that NFTs are only transferred or interacted with by pre-approved, trustworthy addresses.
+- **Enhanced Oversight by Protectors**: Protectors play a critical role in overseeing and authorizing the setting of safe recipients, particularly important for high-value or sensitive NFTs.
 
-Through this migration process, users can seamlessly transition to newer versions of the Cruna Vault, ensuring they can take advantage of new features and improved security measures while maintaining the control and security of their assets.
+### Example Workflow:
 
-### Use Cases
+#### Setting Up Safe Recipients:
 
-- Consolidate all assets of a collection into a single Vault, allowing a seamless transfer of ownership without needing to move each asset individually. This offers significant improvements in security and user experience.
+- An NFT owner, like `bob`, designates trusted addresses such as `alice` and `fred` as safe recipients.
+- Protectors, if any, can approve or suggest changes to these designations.
 
-- Create asset bundles and list them for sale as a single NFT on popular marketplaces like OpenSea.
+#### Managing Recipients:
 
-- Deposit vested assets into a Flexi Vault for scheduled distribution to investors, team members, etc. Note that for this to work, the asset must be capable of managing the vesting schedule. In a future version of the Cruna Core Protocol, a Flexi Distributor will be introduced to handle the vesting of any assets.
+- Owners can update the list of safe recipients, adding new ones or removing existing ones, with or without the involvement of protectors.
 
-- Create a Flexi Vault for a DAO, allowing the DAO to manage its assets collectively.
+## Conclusion
 
-- Use a Cruna Vault to give assets to siblings. For example, a user can set a vault for his kids and when they are adult can just transfer the Vault to them, instead of transferring the assets one by one.
+The Safe Recipients system in Cruna offers a robust framework for ensuring that NFT transactions occur within a trusted and secure network. By providing NFT owners with the tools to manage who can receive their assets, Cruna significantly enhances the safety and control over digital asset transactions.
 
-- A company can put their reserves in a vault, "owned" by the CEO, with an inheritance process allowing the board directors to recover the assets in case the CEO becomes unavailable for any reason.
+---
+## Sentinels and Beneficiary in Cruna: Proof of Life System with Quorum
 
+In Cruna's ecosystem, the "Sentinels" and "Beneficiary" features form the core of the Proof of Life system. This system is designed for the secure management of NFTs, especially in continuity-critical situations. The Quorum system among Sentinels, which activates after the Proof of Life period expires, is key to ensuring collective decision-making in these scenarios.
+
+### Key Concepts:
+
+- **Sentinels**: Trusted Ethereum addresses, such as estate executors, lawyers, or family members, designated to manage NFTs when the owner is incapacitated or deceased.
+- **Quorum System**: A requirement for Sentinels to reach a consensus on decisions, particularly regarding the transfer of assets, thus ensuring balanced and secure management.
+
+### Functionalities:
+
+- **Sentinel Designation and Management**: Owners can appoint or remove Sentinels using the `setSentinel` function, with updates signified by `SentinelUpdated` events.
+- **Inheritance Configuration**: The `configureInheritance` function sets up the inheritance parameters, including the Quorum and the Proof of Life duration.
+- **Proof of Life Maintenance**: Owners can reset the Proof of Life timer via the `proofOfLife` function, impacting the Quorum system's activation.
+
+### Use Cases:
+
+- **Estate and Asset Management**: In the event of an owner's death or incapacity, Sentinels ensure that NFTs are managed or transferred according to the owner's wishes.
+- **Collective Decision-Making**: The Quorum system mandates that Sentinels make decisions collectively, fostering balanced and fair management of assets.
+
+### Example Workflow:
+
+#### Configuring Sentinels and Quorum:
+
+- An NFT owner assigns trusted individuals as Sentinels and configures the Quorum settings for collective decision-making.
+
+#### Engaging in Proof of Life:
+
+- The owner periodically updates their Proof of Life status, influencing the activation of the Quorum system among Sentinels.
+
+#### Sentinel-Led Asset Transfer:
+
+- Upon the owner's incapacity or death, Sentinels collectively decide on asset transfers, ensuring decisions are made per the owner's established guidelines.
+
+## Conclusion
+
+The Proof of Life system with Quorum, encompassing Sentinels and Beneficiary features in Cruna, offers a sophisticated approach to managing digital assets in sensitive situations. This system guarantees that NFTs are protected and transferred based on collective decisions, aligning with the original owner's intent and providing a robust framework for estate and asset management.
+
+---
 ### Future developments
 
-As the Cruna Core Protocol continues to evolve, many dditions are currently in the pipeline: the Distributor Vault and the Inheritance Vault. Each of these vaults caters to specific needs, expanding the applications of the Cruna Core Protocol in the realms of asset management and security.
+As the Cruna Core Protocol continues to evolve, many additions are currently in the pipeline: the Distributor Vault and the Inheritance Vault. Each of these vaults caters to specific needs, expanding the applications of the Cruna Core Protocol in the realms of asset management and security.
 
 #### Distributor Vault
 
@@ -107,7 +156,7 @@ A new family of Zero Knowledge based vaults will allow a high level of privacy.
 ## Test coverage
 
 ```
-  12 passing (5s)
+  12 passing (3s)
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
