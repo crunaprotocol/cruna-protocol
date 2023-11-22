@@ -72,6 +72,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     _;
   }
 
+  // @dev see {IManager-init}
   // this must be execute immediately after the deployment
   function init(address guardian_, address signatureValidator_) external {
     if (msg.sender != tokenAddress()) revert Forbidden();
@@ -84,6 +85,8 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     if (!guardian.isTrustedImplementation(implementation)) revert Errors.InvalidImplementation();
     if (!_isValidSigner(msg.sender)) revert Errors.NotAuthorized();
   }
+
+  // ERC6551 partial implementation
 
   function isValidSigner(address signer, bytes calldata) external view virtual returns (bytes4) {
     if (_isValidSigner(signer)) {
@@ -118,6 +121,8 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     return signer == owner();
   }
 
+  // end ERC6551
+
   function tokenAddress() public view returns (address) {
     (, address tokenContract_, ) = token();
     return tokenContract_;
@@ -128,7 +133,6 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     return tokenId_;
   }
 
-  // TODO unnecessary if we do not implement the assets distributor
   function onERC721Received(address, address, uint256, bytes memory) public virtual override returns (bytes4) {
     // This contract is not supposed to own vaults itself
     if (vault.balanceOf(address(this)) > 0) revert Errors.OwnershipCycle();
@@ -137,23 +141,29 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
 
   // actors
 
+  // @dev Counts the protectors.
   function countActiveProtectors() public view override returns (uint256) {
     return _countActiveActorsByRole(PROTECTOR);
   }
 
+  // @dev Find a specific protector and returns its level.
   function findProtector(address protector_) public view override returns (uint256, Level) {
     (uint256 i, IActor.Actor storage actor) = _getActor(protector_, PROTECTOR);
     return (i, actor.level);
   }
 
+  // @dev Returns true if the address is a protector.
+  // @param protector_ The protector address.
   function isAProtector(address protector_) public view returns (bool) {
     return _isActiveActor(protector_, PROTECTOR);
   }
 
+  // @dev Returns the list of protectors.
   function listProtectors() public view override returns (address[] memory) {
     return _listActiveActors(PROTECTOR);
   }
 
+  // @dev see {IManager-setProtector}
   function setProtector(
     address protector_,
     bool active,
@@ -165,12 +175,13 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     emit ProtectorUpdated(_msgSender(), protector_, active);
   }
 
+  // @dev see {IManager-getProtectors}
   function getProtectors() external view override returns (IActor.Actor[] memory) {
     return _getActors(PROTECTOR);
   }
 
   // safe recipients
-
+  // @dev see {IManager-setSafeRecipient}
   function setSafeRecipient(
     address recipient,
     Level level,
@@ -182,28 +193,31 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     emit SafeRecipientUpdated(_msgSender(), recipient, level);
   }
 
+  // @dev see {IManager-safeRecipientLevel}
   function safeRecipientLevel(address recipient) public view override returns (Level) {
     (, IActor.Actor memory actor) = _getActor(recipient, SAFE_RECIPIENT);
     return actor.level;
   }
 
+  // @dev see {IManager-getSafeRecipients}
   function getSafeRecipients() external view override returns (IActor.Actor[] memory) {
     return _getActors(SAFE_RECIPIENT);
   }
 
   // beneficiaries
-
+  // @dev see {IManager-setSentinel}
   function setSentinel(
     address sentinel,
-    Level level,
+    bool active,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
   ) external override onlyTokenOwner {
-    _setSignedActor("SENTINEL", sentinel, SENTINEL, uint256(level), timestamp, validFor, signature, false);
-    emit SentinelUpdated(_msgSender(), sentinel, level);
+    _setSignedActor("SENTINEL", sentinel, SENTINEL, active ? 1 : 0, timestamp, validFor, signature, false);
+    emit SentinelUpdated(_msgSender(), sentinel, active);
   }
 
+  // @dev see {IManager-configureInheritance}
   // allow when protectors are active
   function configureInheritance(uint256 quorum, uint256 proofOfLifeDurationInDays) external onlyTokenOwner {
     if (countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
@@ -214,10 +228,12 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     delete _inheritanceRequest;
   }
 
+  // @dev see {IManager-getSentinels}
   function getSentinels() external view returns (IActor.Actor[] memory, InheritanceConf memory) {
     return (_getActors(SENTINEL), _inheritanceConf);
   }
 
+  // @dev see {IManager-proofOfLife}
   function proofOfLife() external onlyTokenOwner {
     if (_inheritanceConf.proofOfLifeDurationInDays == 0) revert InheritanceNotConfigured();
     // solhint-disable-next-line not-rely-on-time
@@ -225,6 +241,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     delete _inheritanceRequest;
   }
 
+  // @dev see {IManager-requestTransfer}
   function requestTransfer(address beneficiary) external {
     if (beneficiary == address(0)) revert ZeroAddress();
     if (_inheritanceConf.proofOfLifeDurationInDays == 0) revert InheritanceNotConfigured();
@@ -256,6 +273,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
   }
 
   // TODO add a deadline after a while a new beneficiary can be set
+  // @dev see {IManager-inherit}
   function inherit() external {
     if (_inheritanceRequest.recipient == _msgSender() && _inheritanceRequest.approvers.length >= _inheritanceConf.quorum) {
       vault.managedTransfer(tokenId(), _msgSender());
@@ -266,6 +284,13 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
 
   // internal functions
 
+  // @dev Validates the request.
+  // @param scope The scope of the request.
+  // @param actor The actor of the request.
+  // @param extraValue The extra value of the request.
+  // @param timestamp The timestamp of the request.
+  // @param validFor The validity of the request.
+  // @param signature The signature of the request.
   function _validateRequest(
     uint256 scope,
     address actor,
@@ -295,6 +320,14 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     }
   }
 
+  // @dev Adds an actor, validating the data.
+  // @param scopeString The scope of the request, i.e., the type of actor.
+  // @param role_ The role of the actor.
+  // @param actor The actor address.
+  // @param extraValue The extra value of the request.
+  // @param timestamp The timestamp of the request.
+  // @param validFor The validity of the request.
+  // @param signature The signature of the request.
   function _setSignedActor(
     string memory scopeString,
     address actor,
@@ -317,6 +350,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     }
   }
 
+  // @dev Returns true if the sentinels have approved a request.
   function _hasApproved() internal view returns (bool) {
     for (uint256 i = 0; i < _inheritanceRequest.approvers.length; i++) {
       if (_msgSender() == _inheritanceRequest.approvers[i]) {
@@ -326,10 +360,9 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     return false;
   }
 
-  /**
-   * @dev This empty reserved space is put in place to allow future versions to add new
-   * variables without shifting down storage in the inheritance chain.
-   * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
-   */
+  // @dev This empty reserved space is put in place to allow future versions to add new
+  // variables without shifting down storage in the inheritance chain.
+  // See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+
   uint256[50] private __gap;
 }

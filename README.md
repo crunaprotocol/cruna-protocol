@@ -104,6 +104,39 @@ A new family of Zero Knowledge based vaults will allow a high level of privacy.
 
 - First version
 
+## Test coverage
+
+```
+  12 passing (5s)
+
+-----------------------------|----------|----------|----------|----------|----------------|
+File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
+-----------------------------|----------|----------|----------|----------|----------------|
+ contracts/                  |       60 |       40 |    66.67 |    71.43 |                |
+  CrunaFlexiVault.sol        |       60 |       40 |    66.67 |    71.43 |          50,55 |
+ contracts/factory/          |    57.14 |     37.5 |    81.82 |    58.18 |                |
+  IVaultFactory.sol          |      100 |      100 |      100 |      100 |                |
+  VaultFactory.sol           |    57.14 |     37.5 |    81.82 |    58.18 |... 126,130,143 |
+ contracts/manager/          |    56.48 |    32.65 |    59.52 |     54.4 |                |
+  Actor.sol                  |    78.13 |    44.44 |    81.82 |    72.97 |... 67,68,69,72 |
+  Guardian.sol               |      100 |      100 |        0 |      100 |                |
+  IActor.sol                 |      100 |      100 |      100 |      100 |                |
+  IManager.sol               |      100 |      100 |      100 |      100 |                |
+  Manager.sol                |    47.37 |       30 |    51.72 |    46.59 |... 356,357,360 |
+  ManagerProxy.sol           |      100 |      100 |      100 |      100 |                |
+ contracts/protected/        |    67.86 |    33.33 |    63.64 |    66.67 |                |
+  IERC6454.sol               |      100 |      100 |      100 |      100 |                |
+  IProtected.sol             |      100 |      100 |      100 |      100 |                |
+  ProtectedNFT.sol           |    67.86 |    33.33 |    63.64 |    66.67 |... 131,132,148 |
+ contracts/utils/            |    92.31 |    66.67 |    66.67 |    81.82 |                |
+  SignatureValidator.sol     |      100 |     87.5 |      100 |     87.5 |             31 |
+  UUPSUpgradableTemplate.sol |      100 |       25 |       50 |      100 |                |
+  Versioned.sol              |        0 |      100 |        0 |        0 |              9 |
+-----------------------------|----------|----------|----------|----------|----------------|
+All files                    |    60.71 |    36.19 |    64.47 |    59.07 |                |
+-----------------------------|----------|----------|----------|----------|----------------|
+```
+
 ## License
 
 Copyright (C) 2023 Cruna
