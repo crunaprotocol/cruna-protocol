@@ -2,56 +2,52 @@
 
 ## CrunaFlexiVault
 
-**CrunaFlexiVault** is a key component of the Cruna ecosystem, designed to enhance the capabilities of ERC-721 NFTs by integrating them with Ethereum's ERC-6551 standard. This integration allows each NFT to operate as its own smart contract, thus providing advanced functionalities.
+**CrunaFlexiVault** is an innovative component of the Cruna ecosystem, designed as an NFT that owns and protects an ERC-6551 smart wallet. This integration not only enhances the capabilities of ERC-721 NFTs but also brings a significant security enhancement to the ERC-6551 standard, which by itself does not include safeguards against certain vulnerabilities like phishing.
 
 ### Features:
 
-- **Smart Contract Enabled NFTs**: Each NFT in the CrunaFlexiVault acts as an independent smart contract, capable of executing complex operations.
-- **Enhanced Security and Functionality**: The integration with ERC-6551 standard allows for additional layers of security and more dynamic interactions for NFTs.
+- **Smart Wallet Ownership**: The CrunaFlexiVault, as an NFT, owns an ERC-6551 smart wallet, providing a secure environment for digital assets.
+- **Enhanced Security for ERC-6551 Wallets**: It adds crucial security layers to the standard ERC-6551 wallets, protecting against common vulnerabilities and threats.
 
 ### Usage:
 
-The CrunaFlexiVault is used for creating and managing NFTs with advanced capabilities. These NFTs can interact with other contracts and perform operations beyond the scope of traditional NFTs.
+The primary use of the CrunaFlexiVault is to create a secure ERC-6551 smart wallet. This wallet can interact with other contracts and perform operations with enhanced security, beyond what traditional NFTs and standard ERC-6551 wallets offer.
 
 ## Protector System
 
-The **Protector System** in Cruna is a security feature that allows NFT owners to assign protectors to their NFTs, further securing their digital assets.
+The **Protector System** in Cruna complements the CrunaFlexiVault by adding an extra layer of security. It allows NFT owners to assign protectors to their ERC-6551 smart wallets, safeguarded within the CrunaFlexiVault.
 
 ### Key Concepts:
 
-- **Protector**: A protector is an Ethereum address (e.g., another user) designated to provide an additional layer of security and control over the NFT.
-- **Flexible Management**: Owners can add or remove protectors, providing flexibility in managing their NFTs.
+- **Protector**: A designated Ethereum address to provide additional security for the ERC-6551 smart wallet owned by the CrunaFlexiVault.
+- **Flexible Management**: The system allows for dynamic management of protectors, enhancing the security of the ERC-6551 smart wallets.
 
 ### Functionalities:
 
-- **Adding Protectors**: NFT owners can designate other addresses as protectors, enhancing the security of their NFTs.
-- **Approval Process**: Certain operations, like transferring the NFT, may require approval or signatures from assigned protectors.
-- **Protector Management**: Owners can manage protectors, adding multiple protectors and even allowing protectors to add or remove other protectors.
+- **Adding Protectors to Smart Wallets**: Owners can assign protectors to their ERC-6551 wallets within the CrunaFlexiVault, bolstering their security.
+- **Approval Process for Transactions**: Protectors play a key role in authorizing high-stakes transactions, adding a layer of verification for operations involving the ERC-6551 wallet.
+- **Enhanced Protector Management**: Owners have the ability to manage protectors, which is crucial for the security of the ERC-6551 smart wallets housed within the CrunaFlexiVault.
 
 ### Use Cases:
 
-- **Secured Transfers**: Transferring an NFT can be made secure with protector approval, preventing unauthorized transfers.
-- **Multi-Signature Operations**: Protectors can enable multi-signature operations for high-value NFTs, adding an extra layer of consensus before executing critical actions.
+- **Secured Asset Storage**: The CrunaFlexiVault secures assets within the ERC-6551 smart wallets, safeguarding them from unauthorized access and phishing attacks.
+- **Protected High-Value Transactions**: For transactions involving significant assets in the ERC-6551 wallet, protectors provide necessary approvals, ensuring secure and verified transfers.
 
 ### Example Workflow:
 
-#### Vault Purchase and Setup:
+#### Setting Up CrunaFlexiVault:
 
-- An NFT owner purchases a vault from the CrunaFlexiVault.
-- They set up their NFT within this vault, turning it into a smart contract capable NFT.
+- An NFT owner sets up the CrunaFlexiVault, which creates and secures an ERC-6551 smart wallet.
+- They transfer their digital assets into this smart wallet for enhanced protection.
 
-#### Assigning Protectors:
+#### Managing Protectors:
 
-- The owner assigns one or more protectors to their NFT for additional security.
-
-#### Performing Operations:
-
-- For operations like transfers, the owner initiates the action.
-- If required, protectors provide their approval or signature to complete the transaction.
+- The owner assigns protectors to their ERC-6551 smart wallet, managed within the CrunaFlexiVault.
+- These protectors oversee and approve critical transactions, providing an additional security layer.
 
 ## Conclusion
 
-The CrunaFlexiVault and Protector system offer a sophisticated approach to NFT security and functionality. By leveraging smart contract capabilities and a robust protector management system, Cruna enhances the utility and security of NFTs in the Ethereum ecosystem.
+The CrunaFlexiVault, in conjunction with the Protector system, offers a groundbreaking approach to securing digital assets in the Ethereum ecosystem. By safeguarding an ERC-6551 smart wallet as an NFT, Cruna provides unparalleled security and functionality, addressing the inherent vulnerabilities in standard ERC-6551 wallets and elevating asset protection to new heights.
 
 ---
 ## Safe Recipients in Cruna
