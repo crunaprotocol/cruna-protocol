@@ -1,4 +1,4 @@
-../cruna-prot # Cruna Core Protocol
+# Cruna Core Protocol
 
 The Cruna Protocol is an NFT-based system that enables secure consolidation and management of digital assets across multiple blockchains. It allows users to link ownership of their assets to NFTs called Cruna Vaults, providing a unified interface for managing and transferring the assets.
 
