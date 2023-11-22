@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # must be run from the root
 
+SKIP_CRYPTOENV=true
+
 if [[ "$SKIP_COMPILE" == "" ]]; then
   npm run clean
   NODE_ENV=test npx hardhat compile

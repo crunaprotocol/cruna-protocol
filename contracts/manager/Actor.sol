@@ -6,12 +6,14 @@ import {IActor} from "./IActor.sol";
 
 //import {console} from "hardhat/console.sol";
 
+// @dev This contract manages actors
 contract Actor is IActor {
   error ZeroAddress();
   error ActorNotFound(bytes32);
   error ActorAlreadyAdded();
   error TooManyActors();
 
+  // @dev Roles of the supported actors
   bytes32 public constant PROTECTOR = keccak256(abi.encodePacked("PROTECTOR"));
   bytes32 public constant SENTINEL = keccak256(abi.encodePacked("SENTINEL"));
   bytes32 public constant SAFE_RECIPIENT = keccak256(abi.encodePacked("SAFE_RECIPIENT"));
@@ -103,10 +105,9 @@ contract Actor is IActor {
     _actors[role].push(Actor(actor_, level_));
   }
 
-  /**
-   * @dev This empty reserved space is put in place to allow future versions to add new
-   * variables without shifting down storage in the inheritance chain.
-   * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
-   */
+  // @dev This empty reserved space is put in place to allow future versions to add new
+  // variables without shifting down storage in the inheritance chain.
+  // See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+
   uint256[50] private __gap;
 }

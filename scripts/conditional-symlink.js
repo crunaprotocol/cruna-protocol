@@ -5,7 +5,7 @@ const sourceDir = path.resolve(__dirname, "../node_modules", "gargarollotto2");
 const targetDir = path.resolve(__dirname, "../node_modules", "@tokenbound", "contracts");
 
 if (!fs.existsSync(path.dirname(targetDir))) {
-  fs.mkdirSync(path.dirname(targetDir), {recursive: true});
+  fs.mkdirSync(path.dirname(targetDir), { recursive: true });
 }
 
 try {

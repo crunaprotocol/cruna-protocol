@@ -1,9 +1,9 @@
 const hre = require("hardhat");
-const {assert, expect} = require("chai");
+const { assert, expect } = require("chai");
 const BN = require("bn.js");
 const ethSigUtil = require("eth-sig-util");
 
-const {domainType} = require("./eip712");
+const { domainType } = require("./eip712");
 
 const Helpers = {
   initEthers(ethers) {
@@ -59,7 +59,7 @@ const Helpers = {
     const factoryContract = new this.ethers.Contract(
       Helpers.nickSFactoryAddress,
       ["function deploy(bytes _bytecode, bytes32 _salt) public returns (address)"],
-      deployer
+      deployer,
     );
 
     // const expectedAddress = this.ethers.utils.getCreate2Address(
@@ -76,7 +76,7 @@ const Helpers = {
     const address = this.ethers.utils.getCreate2Address(
       Helpers.nickSFactoryAddress,
       salt,
-      this.ethers.utils.keccak256(contractBytecode)
+      this.ethers.utils.keccak256(contractBytecode),
     );
     return address;
   },
@@ -112,7 +112,7 @@ const Helpers = {
   async signPackedData(
     hash,
     // hardhat account #4, starting from #0
-    privateKey = "0x47e179ec197488593b187f80a00eb0da91f1b9d0b13f8733639f19c30a34926a"
+    privateKey = "0x47e179ec197488593b187f80a00eb0da91f1b9d0b13f8733639f19c30a34926a",
   ) {
     const signingKey = new this.ethers.utils.SigningKey(privateKey);
     const signedDigest = signingKey.signDigest(hash);
@@ -154,14 +154,14 @@ const Helpers = {
       message,
     };
     data.types[primaryType] = types;
-    return ethSigUtil.signTypedMessage(Buffer.from(privateKey.slice(2), "hex"), {data});
+    return ethSigUtil.signTypedMessage(Buffer.from(privateKey.slice(2), "hex"), { data });
   },
 
   getTypesFromSelector(selector) {
     selector = selector.split(",").map((s) => s.split(" "));
     const types = [];
     for (const [type, name] of selector) {
-      types.push({name, type});
+      types.push({ name, type });
     }
     return types;
   },
@@ -184,15 +184,15 @@ const Helpers = {
       Helpers.privateKeyByWallet[signer],
       "Auth",
       [
-        {name: "scope", type: "uint256"},
-        {name: "owner", type: "address"},
-        {name: "actor", type: "address"},
-        {name: "tokenId", type: "uint256"},
-        {name: "extraValue", type: "uint256"},
-        {name: "timestamp", type: "uint256"},
-        {name: "validFor", type: "uint256"},
+        { name: "scope", type: "uint256" },
+        { name: "owner", type: "address" },
+        { name: "actor", type: "address" },
+        { name: "tokenId", type: "uint256" },
+        { name: "extraValue", type: "uint256" },
+        { name: "timestamp", type: "uint256" },
+        { name: "validFor", type: "uint256" },
       ],
-      message
+      message,
     );
   },
 };

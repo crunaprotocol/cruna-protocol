@@ -19,6 +19,7 @@ import {Versioned} from "../utils/Versioned.sol";
 
 //import {console} from "hardhat/console.sol";
 
+// @dev This contract is a base for NFTs with protected transfers.
 abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownable2Step, ReentrancyGuard {
   using ECDSA for bytes32;
   using Strings for uint256;
@@ -48,6 +49,8 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
   mapping(uint256 => bool) internal _approvedTransfers;
   mapping(bytes32 => bool) public usedSignatures;
 
+  // @dev This modifier will only allow the protector of a certain tokenId to call the function.
+  // @param tokenId_ The id of the token.
   modifier onlyProtectorForTokenId(uint256 tokenId_) {
     address owner_ = ownerOf(tokenId_);
     (uint256 i, IActor.Level level) = managers[tokenId_].findProtector(_msgSender());
@@ -55,21 +58,27 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
     _;
   }
 
+  // @dev This modifier will only allow the owner of a certain tokenId to call the function.
+  // @param tokenId_ The id of the token.
   modifier onlyTokenOwner(uint256 tokenId) {
     if (ownerOf(tokenId) != _msgSender()) revert NotTheTokenOwner();
     _;
   }
 
+  // @dev This modifier will only allow the manager of a certain tokenId to call the function.
+  // @param tokenId_ The id of the token.
   modifier onlyManager(uint256 tokenId) {
     if (address(managers[tokenId]) != _msgSender()) revert NotTheManager();
     _;
   }
 
-  modifier onlyTokensOwner() {
-    if (balanceOf(_msgSender()) == 0) revert NotATokensOwner();
-    _;
-  }
-
+  // @dev Constructor of the contract.
+  // @param name_ The name of the token.
+  // @param symbol_ The symbol of the token.
+  // @param registry_ The address of the registry contract.
+  // @param guardian_ The address of the Manager guardian.
+  // @param signatureValidator_ The address of the signature validator.
+  // @param managerProxy_ The address of the manager proxy.
   constructor(
     string memory name_,
     string memory symbol_,
@@ -86,6 +95,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
     MANAGER = Manager(managerProxy_);
   }
 
+  // @dev See {IProtected721-protectedTransfer}.
   function protectedTransfer(
     uint256 tokenId,
     address to,
@@ -113,6 +123,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
     delete _approvedTransfers[tokenId];
   }
 
+  // @dev See {IProtected721-managedTransfer}.
   function managedTransfer(uint256 tokenId, address to) external override onlyManager(tokenId) {
     _approvedTransfers[tokenId] = true;
     _approve(address(managers[tokenId]), tokenId);
@@ -121,6 +132,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
     delete _approvedTransfers[tokenId];
   }
 
+  // @dev See {ERC721-_beforeTokenTransfer}.
   function _beforeTokenTransfer(
     address from,
     address to,
@@ -131,12 +143,16 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
     super._beforeTokenTransfer(from, to, tokenId, batchSize);
   }
 
+  // @dev See {ERC165-supportsInterface}.
   function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721) returns (bool) {
     return interfaceId == type(IProtected).interfaceId || super.supportsInterface(interfaceId);
   }
 
-  // IERC6454
-
+  // @dev Function to define a token as transferable or not, according to IERC6454
+  // @param tokenId The id of the token.
+  // @param from The address of the sender.
+  // @param to The address of the recipient.
+  // @return true if the token is transferable, false otherwise.
   function isTransferable(uint256 tokenId, address from, address to) public view override returns (bool) {
     // Burnings and self transfers are not allowed
     if (to == address(0) || from == to) return false;
@@ -155,6 +171,8 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
 
   // minting and initialization
 
+  // @dev This function will mint a new token and initialize it.
+  // @param to The address of the recipient.
   function _mintAndInit(address to) internal {
     REGISTRY.createAccount(address(MANAGER), salt, block.chainid, address(this), nextTokenId);
     managers[nextTokenId] = Manager(managerOf(nextTokenId));
@@ -162,6 +180,8 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
     _safeMint(to, nextTokenId++);
   }
 
+  // @dev This function will return the address of the manager for tokenId.
+  // @param tokenId The id of the token.
   function managerOf(uint256 tokenId) public view returns (address) {
     return REGISTRY.account(address(MANAGER), salt, block.chainid, address(this), tokenId);
   }

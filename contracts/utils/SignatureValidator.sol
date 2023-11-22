@@ -5,6 +5,8 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import {Versioned} from "./Versioned.sol";
 
+// @dev This contract is used to validate signatures.
+//   It is based on EIP712 and supports typed messages V4.
 contract SignatureValidator is EIP712, Versioned {
   using ECDSA for bytes32;
 
@@ -12,6 +14,9 @@ contract SignatureValidator is EIP712, Versioned {
 
   constructor(string memory name, string memory version) EIP712(name, version) {}
 
+  // @dev This function lists the supported scopes.
+  // @return An integer with the supported scope.
+  //   It reverts if the scope is not supported.
   function getSupportedScope(string memory scope) public pure returns (uint256) {
     bytes32 scopeHash = keccak256(abi.encodePacked(scope));
     if (scopeHash == keccak256("PROTECTOR")) {
@@ -27,6 +32,16 @@ contract SignatureValidator is EIP712, Versioned {
     }
   }
 
+  // @dev This function validates a signature.
+  // @param scope The scope of the signature.
+  // @param owner The owner of the token.
+  // @param actor The actor being authorized.
+  //   It can be address(0) if the parameter is not needed.
+  // @param tokenId The id of the token.
+  // @param extraValue An extra value.
+  // @param timestamp The timestamp of the signature.
+  // @param validFor The validity of the signature.
+  // @param Returns the signer of the signature.
   function recoverSigner(
     uint256 scope,
     address owner,
