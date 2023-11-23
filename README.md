@@ -13,6 +13,8 @@ Lastly, the crown jewel of Cruna – the Sentinels. In an event where you're una
 
 In essence, Cruna is not just a platform; it's a paradigm shift in how digital assets are handled, offering unparalleled security, flexibility, and peace of mind. It's where your digital assets are not just stored but are truly secured, managed, and future-proofed.
 
+In the following sections, we invite you to explore the intricate workings of the Cruna ecosystem. You'll discover how each component – from the CrunaFlexiVault to the Protectors, Safe Recipients, and Sentinels – interplays to create a seamless and secure digital asset management experience. Whether you're a seasoned crypto enthusiast or new to the world of digital assets, the detailed insights provided will illuminate how Cruna stands at the forefront of blockchain innovation. Read on to understand how Cruna is not just enhancing the present but shaping the future of digital asset management.
+
 ## Overview of Cruna and Protectors
 
 ### CrunaFlexiVault
