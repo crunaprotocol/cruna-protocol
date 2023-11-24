@@ -2,9 +2,7 @@
 
 Cruna Vault is not just an NFT; it's a groundbreaking security tool designed to redefine the safety of digital assets. Created for seamless integration with ERC-6551 smart wallets, it brings two innovative features to the forefront: Protectors and Sentinels.
 
-## Key Components
-
-### Cruna Vault, Non-Fungible Tokens (NFTs) and Protectors
+## Cruna Vault, Non-Fungible Tokens (NFTs) and Protectors
 
 The Cruna Vault represents the core of the Cruna Core Protocol. It is an NFT that a user must own to manage the vault, playing a crucial role in the structure and functionality of the protocol.
 
@@ -18,7 +16,7 @@ Once the owner designates the first Protector, the second Protector needs the pr
 
 It is advisable to assign multiple Protectors to maintain access to the vault even if one Protector becomes inaccessible. Reasonably, if there is a need for more than two protectors, it may make sense to transfer the ownership of the vault to a multisig wallet.
 
-#### Asset Recovery and Inheritance Management
+### Asset Recovery and Inheritance Management
 
 The Cruna Vault provides a mechanism for asset recovery in case the owner loses access or passes away. The owner can designate sentinels and set a recovery quorum and expiration timeframe.
 
@@ -30,7 +28,7 @@ This inheritance management system enables orderly transfer of assets to success
 
 By integrating Protectors and Sentinels, Cruna Vault offers an unmatched level of security and peace of mind. It ensures that your digital assets are not only protected against external threats but also have a resilient plan for unforeseen circumstances. Cruna Vault is more than an NFT; it's a comprehensive digital asset protection system, safeguarding your investments today and into the future.
 
-### Use Cases
+## Use Cases
 
 - Consolidate all assets of a collection into a single Vault, allowing a seamless transfer of ownership without needing to move each asset individually. This offers significant improvements in security and user experience.
 
@@ -44,21 +42,21 @@ By integrating Protectors and Sentinels, Cruna Vault offers an unmatched level o
 
 - A company can put their reserves in a vault, "owned" by the CEO, with an inheritance process allowing the board directors to recover the assets in case the CEO becomes unavailable for any reason.
 
-### Future developments
+## Future developments
 
 As the Cruna Core Protocol continues to evolve, many additions are currently in the pipeline: the Distributor Vault. Each of these vaults caters to specific needs, expanding the applications of the Cruna Core Protocol in the realms of asset management and security.
 
-#### Distributor Vault
+### Distributor Vault
 
 The Distributor Vault is a specialized vault designed to streamline the process of scheduled asset distribution. An entity can pre-load this vault with assets, which are then automatically distributed to the designated beneficiaries according to a predetermined schedule.
 
 This functionality can be advantageous in numerous scenarios. For instance, a company wishing to distribute its governance tokens (ERC20) can purchase a Distributor Vault, fill it with the appropriate tokens, and set a vesting schedule. Once the NFT ownership of the Distributor Vault is given to an investor, the company no longer needs to actively manage token distribution. The tokens will be vested and delivered automatically as per the set schedule, providing the investor with an assurance of receiving their assets in a timely manner. This system is not only beneficial for investors, but it can also be employed for the scheduled distribution of tokens to employees, advisors, and other stakeholders.
 
-#### Hardware protectors
+### Hardware protectors
 
 Within the framework of the Cruna Protocol, we're introducing specialized USB keys designed to further bolster the security and functionality of our platform. These USB devices implement a streamlined wallet architecture singularly focused on executing typed V4 signatures. By narrowing down the wallet's capabilities to this specific type of signature, we ensure a higher level of protection against potential threats. When integrated with Cruna's unique Vault system, these USB keys serve as an inexpensive and robust protectors, amplifying the assurance our users have in the safety of their consolidated assets. This innovation reflects Cruna Protocol's commitment to staying at the forefront of cryptographic security, providing our users with tools that are both powerful and user-friendly.
 
-#### Privacy protected Vaults
+### Privacy protected Vaults
 
 A new family of Zero Knowledge based vaults will allow a high level of privacy.
 
@@ -71,7 +69,7 @@ A new family of Zero Knowledge based vaults will allow a high level of privacy.
 ## Test coverage
 
 ```
-  12 passing (5s)
+  12 passing (3s)
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |

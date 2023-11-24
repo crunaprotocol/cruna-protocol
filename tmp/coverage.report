@@ -47,27 +47,27 @@ Network Info
 
   Integration
     ✔ should deploy everything as expected
-    ✔ should get the token parameters from the manager (57ms)
+    ✔ should get the token parameters from the manager (60ms)
     Protectors management
-      ✔ should add the first protector (93ms)
-      ✔ should throw is wrong data for first protector (87ms)
-      ✔ should add many protectors (141ms)
-      ✔ should add a protector and transfer a vault (137ms)
+      ✔ should add the first protector (81ms)
+      ✔ should throw is wrong data for first protector (88ms)
+      ✔ should add many protectors (156ms)
+      ✔ should add a protector and transfer a vault (100ms)
     Safe recipients
-      ✔ should set up safe recipients (471ms)
+      ✔ should set up safe recipients (181ms)
     Sentinels and beneficiary
-      ✔ should set up sentinel (216ms)
+      ✔ should set up sentinel (213ms)
 
   SignatureValidator
     ✔ should recover the signer of a recoverSigner
 
   Factory
-    ✔ should get the precalculated address of the manager (58ms)
-    ✔ should allow bob and alice to purchase some vaults (173ms)
-    ✔ should allow bob and alice to purchase some vaults with a promoCode (158ms)
+    ✔ should get the precalculated address of the manager (39ms)
+    ✔ should allow bob and alice to purchase some vaults (116ms)
+    ✔ should allow bob and alice to purchase some vaults with a promoCode (105ms)
 
 
-  12 passing (5s)
+  12 passing (3s)
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
