@@ -3,6 +3,8 @@ Cruna Vault is not just an NFT; it's a groundbreaking security tool designed to 
 
 By augmenting ERC-6551 smart wallets with Cruna Vault's enhanced security capabilities, users gain an additional layer of protection that was previously missing. It's the perfect addition to the ERC-6551 ecosystem, elevating the overall security standard and providing users with a more robust, secure way to manage their digital assets. With Cruna Vault, asset owners can enjoy the benefits of ERC-6551 smart wallets while ensuring their assets are safeguarded with the latest in security innovation.
 
+If you want to dig deeper keep reading.
+
 ## Overview of Cruna and Protectors
 
 ### CrunaFlexiVault
