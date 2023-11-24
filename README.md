@@ -1,17 +1,5 @@
-# Cruna Core Protocol
-# Introduction to Cruna
-
-Welcome to Cruna, a blockchain-based platform focused on enhancing the security and management of digital assets. Cruna introduces an innovative approach to integrating asset management within the blockchain space, catering to both cryptocurrencies and NFTs.
-
-Central to Cruna is the CrunaFlexiVault, an NFT that not only stores digital assets but also serves as the owner of an ERC-6551 smart wallet. This integration extends the traditional functionality of NFTs by offering a higher level of security, addressing common vulnerabilities found in standard digital wallets.
-
-Cruna also features a Protector System, allowing users to assign trusted guardians for their assets. These Protectors oversee and authorize transactions, adding a layer of security to ensure that asset transfers happen as intended by the owner.
-
-Additionally, Cruna includes a Safe Recipients feature, which allows users to specify trusted Ethereum addresses for transactions, effectively creating a whitelist for secure interactions with their digital assets.
-
-A key element of Cruna is the Sentinels system. In scenarios where an asset owner is unable to manage their assets, designated Sentinels step in. They form a decision-making Quorum, collectively managing and transferring assets as per the owner's setup, ensuring continuity and security.
-
-Cruna represents a significant advancement in the way digital assets are managed and secured. In the following sections, we provide a detailed exploration of Cruna's components, including the CrunaFlexiVault, Protectors, Safe Recipients, and Sentinels. This documentation will guide you through how each element works together to offer a comprehensive digital asset management system, suitable for both experienced blockchain users and newcomers to digital assets.
+# Introducing Cruna Vault: The Next-Generation Security NFT
+Cruna Vault is not just an NFT; it's a groundbreaking security tool designed to redefine the safety of digital assets. Created for seamless integration with ERC-6551 smart wallets, it brings two innovative features to the forefront: Protectors and Sentinels.
 
 ## Overview of Cruna and Protectors
 
