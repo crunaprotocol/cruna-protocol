@@ -1,19 +1,17 @@
 # Cruna Core Protocol
-## Introduction to Cruna - Revolutionizing Digital Asset Management
+# Introduction to Cruna
 
-Welcome to Cruna, a pioneering platform in the blockchain world, where the security and management of digital assets are reimagined. Cruna stands out with its unique approach to consolidating and safeguarding your digital treasures, from cryptocurrencies to NFTs, all under one roof.
+Welcome to Cruna, a blockchain-based platform focused on enhancing the security and management of digital assets. Cruna introduces an innovative approach to integrating asset management within the blockchain space, catering to both cryptocurrencies and NFTs.
 
-At the heart of Cruna lies the CrunaFlexiVault – a marvel in the NFT space, which is much more than just a digital safe. Each vault is an NFT itself, ingeniously owning and protecting an ERC-6551 smart wallet. This not only elevates the typical capabilities of NFTs but also introduces a fortress-like security layer to your digital assets, shielding them from the vulnerabilities often seen in standard digital wallets.
+Central to Cruna is the CrunaFlexiVault, an NFT that not only stores digital assets but also serves as the owner of an ERC-6551 smart wallet. This integration extends the traditional functionality of NFTs by offering a higher level of security, addressing common vulnerabilities found in standard digital wallets.
 
-But that's not all. In the world of Cruna, you're not just owning a vault; you're embracing a complete ecosystem of protection and control. With the Protector System, imagine appointing trusted guardians for your assets. These Protectors act as your personal security detail, overseeing and authorizing high-stakes transactions, ensuring that your assets move only when you want them to, and how you want them to.
+Cruna also features a Protector System, allowing users to assign trusted guardians for their assets. These Protectors oversee and authorize transactions, adding a layer of security to ensure that asset transfers happen as intended by the owner.
 
-And there's more – the Safe Recipients feature. This lets you define a circle of trust, a whitelist of Ethereum addresses that are pre-approved for transactions. It's like having a VIP list for your digital assets, ensuring they interact only with the entities you trust.
+Additionally, Cruna includes a Safe Recipients feature, which allows users to specify trusted Ethereum addresses for transactions, effectively creating a whitelist for secure interactions with their digital assets.
 
-Lastly, the crown jewel of Cruna – the Sentinels. In an event where you're unable to manage your assets, these Sentinels, chosen by you, step in. They form a Quorum, a council of decision-makers, who collectively manage and transfer your assets, ensuring that your digital legacy is preserved and passed on just as you intended.
+A key element of Cruna is the Sentinels system. In scenarios where an asset owner is unable to manage their assets, designated Sentinels step in. They form a decision-making Quorum, collectively managing and transferring assets as per the owner's setup, ensuring continuity and security.
 
-In essence, Cruna is not just a platform; it's a paradigm shift in how digital assets are handled, offering unparalleled security, flexibility, and peace of mind. It's where your digital assets are not just stored but are truly secured, managed, and future-proofed.
-
-In the following sections, we invite you to explore the intricate workings of the Cruna ecosystem. You'll discover how each component – from the CrunaFlexiVault to the Protectors, Safe Recipients, and Sentinels – interplays to create a seamless and secure digital asset management experience. Whether you're a seasoned crypto enthusiast or new to the world of digital assets, the detailed insights provided will illuminate how Cruna stands at the forefront of blockchain innovation. Read on to understand how Cruna is not just enhancing the present but shaping the future of digital asset management.
+Cruna represents a significant advancement in the way digital assets are managed and secured. In the following sections, we provide a detailed exploration of Cruna's components, including the CrunaFlexiVault, Protectors, Safe Recipients, and Sentinels. This documentation will guide you through how each element works together to offer a comprehensive digital asset management system, suitable for both experienced blockchain users and newcomers to digital assets.
 
 ## Overview of Cruna and Protectors
 
