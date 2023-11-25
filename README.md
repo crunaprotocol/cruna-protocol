@@ -45,7 +45,7 @@ Cruna Vault isn't just limited to ERC-6551 integrations; it offers a robust foun
 
 * **Customizable Security**: Tailor Cruna Vault's robust security features, like Protectors and Sentinels, to fit the unique needs of your NFT project or platform.
 * **Brand Integration**: Seamlessly integrate Cruna Vault's functionalities into your NFTs while maintaining your brand identity.
-Trust and Assurance: Offer your users and collectors an added layer of security, increasing trust and value in your NFT offerings. 
+* **Trust and Assurance**: Offer your users and collectors an added layer of security, increasing trust and value in your NFT offerings. 
 
 **For Collectors and Investors:**
 
