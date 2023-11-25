@@ -91,7 +91,7 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 ## Test coverage
 
 ```
-  13 passing (5s)
+  13 passing (4s)
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -109,7 +109,7 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   Actor.sol                  |    94.74 |       60 |    88.89 |    95.65 |             49 |
   Guardian.sol               |      100 |      100 |        0 |      100 |                |
   IManager.sol               |      100 |      100 |      100 |      100 |                |
-  Manager.sol                |    78.82 |    57.95 |       70 |       81 |... 212,279,305 |
+  Manager.sol                |    78.82 |    57.95 |       70 |       81 |... 212,280,306 |
   ManagerProxy.sol           |      100 |      100 |      100 |      100 |                |
  contracts/protected/        |    86.21 |    42.86 |    76.92 |    89.74 |                |
   ProtectedNFT.sol           |    86.21 |    42.86 |    76.92 |    89.74 | 78,137,162,171 |

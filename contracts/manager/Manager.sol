@@ -149,7 +149,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
 
   // @dev Returns true if the address is a protector.
   // @param protector_ The protector address.
-  function isAProtector(address protector_) public view returns (bool) {
+  function isAProtector(address protector_) public view override returns (bool) {
     return _isActiveActor(protector_, PROTECTOR);
   }
 
@@ -234,7 +234,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
 
   // @dev see {IManager-configureInheritance}
   // allow when protectors are active
-  function configureInheritance(uint256 quorum, uint256 proofOfLifeDurationInDays) external onlyTokenOwner {
+  function configureInheritance(uint256 quorum, uint256 proofOfLifeDurationInDays) external override onlyTokenOwner {
     if (countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
     if (quorum == 0) revert QuorumCannotBeZero();
     if (quorum > _actorLength(SENTINEL)) revert QuorumCannotBeGreaterThanSentinels();
@@ -248,13 +248,14 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
   function getSentinelsAndInheritanceData()
     external
     view
+    override
     returns (address[] memory, InheritanceConf memory, InheritanceRequest memory)
   {
     return (getActors(SENTINEL), _inheritanceConf, _inheritanceRequest);
   }
 
   // @dev see {IManager-proofOfLife}
-  function proofOfLife() external onlyTokenOwner {
+  function proofOfLife() external override onlyTokenOwner {
     if (_inheritanceConf.proofOfLifeDurationInDays == 0) revert InheritanceNotConfigured();
     // solhint-disable-next-line not-rely-on-time
     _inheritanceConf.lastProofOfLife = block.timestamp;
@@ -263,7 +264,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
   }
 
   // @dev see {IManager-requestTransfer}
-  function requestTransfer(address beneficiary) external {
+  function requestTransfer(address beneficiary) external override {
     if (beneficiary == address(0)) revert ZeroAddress();
     if (_inheritanceConf.proofOfLifeDurationInDays == 0) revert InheritanceNotConfigured();
     uint256 i = _findActorIndex(_msgSender(), SENTINEL);
@@ -298,7 +299,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
   }
 
   // @dev see {IManager-inherit}
-  function inherit() external {
+  function inherit() external override {
     // we set an expiration time in case the beneficiary cannot inherit
     // so the sentinels can propose a new beneficiary
     if (block.timestamp - _inheritanceRequest.startedAt > 60 days) {

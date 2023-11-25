@@ -47,31 +47,31 @@ Network Info
 
   Testing contract deployments
     ✔ should deploy everything as expected
-    ✔ should get the token parameters from the manager (69ms)
+    ✔ should get the token parameters from the manager (62ms)
 
   Integration
-    ✔ should add the first protector (81ms)
-    ✔ should throw is wrong data for first protector (104ms)
-    ✔ should add many protectors (143ms)
-    ✔ should add a protector and transfer a vault (335ms)
+    ✔ should add the first protector (68ms)
+    ✔ should throw is wrong data for first protector (89ms)
+    ✔ should add many protectors (134ms)
+    ✔ should add a protector and transfer a vault (116ms)
 
   Protectors
-    ✔ should set up safe recipients (235ms)
+    ✔ should set up safe recipients (238ms)
 
   Integration
-    ✔ should set up sentinel (248ms)
-    ✔ should set up 5 sentinels and an inheritance with a quorum 3 (336ms)
+    ✔ should set up sentinel (253ms)
+    ✔ should set up 5 sentinels and an inheritance with a quorum 3 (300ms)
 
   SignatureValidator
     ✔ should recover the signer of a recoverSigner
 
   Factory
-    ✔ should get the precalculated address of the manager (46ms)
-    ✔ should allow bob and alice to purchase some vaults (169ms)
-    ✔ should allow bob and alice to purchase some vaults with a promoCode (149ms)
+    ✔ should get the precalculated address of the manager (47ms)
+    ✔ should allow bob and alice to purchase some vaults (166ms)
+    ✔ should allow bob and alice to purchase some vaults with a promoCode (145ms)
 
 
-  13 passing (5s)
+  13 passing (4s)
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -89,7 +89,7 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   Actor.sol                  |    94.74 |       60 |    88.89 |    95.65 |             49 |
   Guardian.sol               |      100 |      100 |        0 |      100 |                |
   IManager.sol               |      100 |      100 |      100 |      100 |                |
-  Manager.sol                |    78.82 |    57.95 |       70 |       81 |... 212,279,305 |
+  Manager.sol                |    78.82 |    57.95 |       70 |       81 |... 212,280,306 |
   ManagerProxy.sol           |      100 |      100 |      100 |      100 |                |
  contracts/protected/        |    86.21 |    42.86 |    76.92 |    89.74 |                |
   ProtectedNFT.sol           |    86.21 |    42.86 |    76.92 |    89.74 | 78,137,162,171 |
