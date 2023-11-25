@@ -1,112 +1,89 @@
-# Introducing Cruna Vault: The Next-Generation Security NFT
-Cruna Vault is not just an NFT; it's a groundbreaking security tool designed to redefine the safety of digital assets. Created for seamless integration with ERC-6551 smart wallets, it brings two innovative features to the forefront: Protectors and Sentinels. This integration is particularly crucial as it addresses a vital gap in the current ERC-6551 standard – the lack of advanced security features.
-
-By augmenting ERC-6551 smart wallets with Cruna Vault's enhanced security capabilities, users gain an additional layer of protection that was previously missing. It's the perfect addition to the ERC-6551 ecosystem, elevating the overall security standard and providing users with a more robust, secure way to manage their digital assets. With Cruna Vault, asset owners can enjoy the benefits of ERC-6551 smart wallets while ensuring their assets are safeguarded with the latest in security innovation.
-
-If you want to dig deeper keep reading.
-
-## Overview of Cruna and Protectors
-
-### CrunaFlexiVault
-The CrunaFlexiVault is an innovative NFT within the Cruna ecosystem, designed to own and protect an ERC-6551 smart wallet. This integration enhances ERC-721 NFTs capabilities and brings significant security enhancements to the ERC-6551 standard.
-
-#### Features:
-- **Smart Wallet Ownership**: The CrunaFlexiVault, as an NFT, owns an ERC-6551 smart wallet, providing a secure environment for digital assets.
-- **Enhanced Security for ERC-6551 Wallets**: Adds crucial security layers to standard ERC-6551 wallets, protecting against vulnerabilities like phishing.
-
-#### Usage:
-- The primary use of the CrunaFlexiVault is to create and manage a secure ERC-6551 smart wallet, enabling enhanced security and functionality beyond traditional NFTs and standard ERC-6551 wallets.
-
-### Protector System
-The Protector System complements the CrunaFlexiVault by adding an additional layer of security. It allows NFT owners to assign protectors to their ERC-6551 smart wallets, enhancing their safety.
-
-#### Key Concepts:
-- **Protector**: Ethereum addresses designated to provide additional security for the ERC-6551 smart wallet owned by the CrunaFlexiVault.
-- **Flexible Management**: Dynamic management of protectors to enhance the security of ERC-6551 smart wallets.
-
-#### Functionalities:
-- **Adding Protectors to Smart Wallets**: Bolsters security by enabling owners to assign protectors to their ERC-6551 wallets.
-- **Approval Process for Transactions**: Protectors authorize high-stakes transactions, adding a verification layer for ERC-6551 wallet operations.
-- **Enhanced Protector Management**: Crucial for the security of ERC-6551 smart wallets within the CrunaFlexiVault.
-
-#### Use Cases:
-- **Secured Asset Storage**: Secures assets within ERC-6551 smart wallets from unauthorized access and phishing attacks.
-- **Protected High-Value Transactions**: Protectors ensure secure and verified transfers of significant assets in ERC-6551 wallets.
-
-#### Example Workflow:
-- **Vault Setup**: Owners set up the CrunaFlexiVault, creating a secure ERC-6551 smart wallet.
-- **Managing Protectors**: Assign protectors to oversee and approve critical transactions within the CrunaFlexiVault.
-
-## Safe Recipients in Cruna
-The "Safe Recipients" feature is a critical security mechanism in Cruna, allowing NFT owners to designate specific Ethereum addresses for safe transactions.
-
-#### Key Concepts:
-- **Safe Recipient**: Trusted Ethereum addresses recognized as secure for NFT transactions and interactions.
-- **Dynamic Management**: Allows owners to manage their list of safe recipients dynamically.
-
-#### Functionalities:
-- **Designation of Safe Recipients**: Owners ensure transaction security by designating safe recipients.
-- **Protector's Authorization**: Protectors can authorize or influence the designation of safe recipients.
-- **Flexibility in Management**: Adaptation to the owner's changing requirements by easily adding or removing safe recipients.
-
-#### Use Cases:
-- **Securing Transactions**: Ensures NFTs are transferred or interacted with only by pre-approved addresses.
-- **Enhanced Oversight by Protectors**: Protectors oversee and authorize the setting of safe recipients, essential for high-value or sensitive NFTs.
-
-#### Example Workflow:
-- **Setting Up Safe Recipients**: Owners designate trusted addresses as safe recipients.
-- **Managing Recipients**: Update the list of safe recipients, with or without protector involvement.
-
-## Sentinels and Beneficiary in Cruna: Proof of Life System with Quorum
-The "Sentinels" and "Beneficiary" features are pivotal in Cruna's Proof of Life system, designed for the secure management of NFTs in continuity-critical situations.
-
-#### Key Concepts:
-- **Sentinels**: Trusted Ethereum addresses managing NFTs when the owner is incapacitated or deceased.
-- **Quorum System**: Requirement for Sentinels to reach a consensus on decisions, particularly regarding asset transfers.
-
-#### Functionalities:
-- **Sentinel Designation and Management**: Owners appoint or remove Sentinels for secure management.
-- **Inheritance Configuration**: Sets inheritance parameters including Quorum and Proof of Life duration.
-- **Proof of Life Maintenance**: Owners reset the Proof of Life timer, impacting the Quorum system's activation.
-
-#### Use Cases:
-- **Estate and Asset Management**: Sentinels manage or transfer NFTs according to the owner's wishes in their absence.
-- **Collective Decision-Making**: Quorum system mandates collective decisions among Sentinels for balanced asset management.
-
-#### Example Workflow:
-- **Configuring Sentinels and Quorum**: Owners assign Sentinels and configure Quorum settings.
-- **Engaging in Proof of Life**: Periodic updates by the owner influence the Quorum system among Sentinels.
-- **Sentinel-Led Asset Transfer**: Collective decision-making by Sentinels on asset transfers following the owner's guidelines.
+**Cruna Vault Protocol README.md**
 
 ---
-### Future developments
 
-As the Cruna Core Protocol continues to evolve, many additions are currently in the pipeline: the Distributor Vault and the Inheritance Vault. Each of these vaults caters to specific needs, expanding the applications of the Cruna Core Protocol in the realms of asset management and security.
+## Introduction
+Welcome to the **Cruna Vault Protocol**: a groundbreaking advancement in digital asset security across blockchain platforms. Merging with ERC-6551 smart wallets, Cruna Vault introduces 'Protectors' and 'Sentinels', transforming the security landscape for digital assets.
 
-#### Distributor Vault
+---
 
-The Distributor Vault is a specialized vault designed to streamline the process of scheduled asset distribution. An entity can pre-load this vault with assets, which are then automatically distributed to the designated beneficiaries according to a predetermined schedule.
+## Overview
+Cruna Vault is not merely an NFT; it's a sophisticated security mechanism. By integrating with ERC-6551 smart wallets, it addresses the existing security gaps in the ERC-6551 standard, providing a fortified layer of protection.
 
-This functionality can be advantageous in numerous scenarios. For instance, a company wishing to distribute its governance tokens (ERC20) can purchase a Distributor Vault, fill it with the appropriate tokens, and set a vesting schedule. Once the NFT ownership of the Distributor Vault is given to an investor, the company no longer needs to actively manage token distribution. The tokens will be vested and delivered automatically as per the set schedule, providing the investor with an assurance of receiving their assets in a timely manner. This system is not only beneficial for investors, but it can also be employed for the scheduled distribution of tokens to employees, advisors, and other stakeholders.
+---
 
-#### Hardware protectors
+## CrunaFlexiVault
+### Features
+- **Smart Wallet Ownership**: Owns an ERC-6551 smart wallet, offering a fortified environment for digital assets.
+- **Enhanced Security**: Elevates the security of standard ERC-6551 wallets, mitigating risks like phishing.
 
-Within the framework of the Cruna Protocol, we're introducing specialized USB keys designed to further bolster the security and functionality of our platform. These USB devices implement a streamlined wallet architecture singularly focused on executing typed V4 signatures. By narrowing down the wallet's capabilities to this specific type of signature, we ensure a higher level of protection against potential threats. When integrated with Cruna's unique Vault system, these USB keys serve as an inexpensive and robust protectors, amplifying the assurance our users have in the safety of their consolidated assets. This innovation reflects Cruna Protocol's commitment to staying at the forefront of cryptographic security, providing our users with tools that are both powerful and user-friendly.
+### Usage
+- Primarily used to create and manage secure ERC-6551 smart wallets, it extends beyond both conventional NFT functionalities and standard ERC-6551 wallets.
 
-#### Privacy protected Vaults
+---
 
-A new family of Zero Knowledge based vaults will allow a high level of privacy.
+## Protector System
+### Key Concepts
+- **Protector**: Ethereum addresses designated for additional security of the ERC-6551 smart wallet.
+- **Flexible Management**: Dynamic control over protectors to bolster wallet security.
+
+### Functionalities
+- **Adding Protectors**: Enhances wallet security by allowing owners to assign protectors.
+- **Transaction Approval**: Protectors validate high-stakes transactions, adding an extra security layer.
+
+### Use Cases
+- **Secured Asset Storage**: Safeguards assets in ERC-6551 smart wallets.
+- **Protected High-Value Transactions**: Ensures secure asset transfers in ERC-6551 wallets.
+
+---
+
+## Safe Recipients in Cruna
+### Key Concepts
+- **Safe Recipient**: Trusted Ethereum addresses marked safe for transactions.
+- **Dynamic Management**: Capability to adjust the list of safe recipients as needed.
+
+### Functionalities
+- **Designation of Safe Recipients**: Owners mark certain addresses as safe for transactions.
+- **Protector's Authorization**: Protectors have a say in setting up safe recipients.
+
+### Use Cases
+- **Securing Transactions**: Ensures secure transfers to pre-approved addresses.
+- **Enhanced Protector Oversight**: Protectors play a crucial role in managing safe recipients.
+
+---
+
+## Sentinels and Beneficiary: Proof of Life System with Quorum
+### Key Concepts
+- **Sentinels**: Trusted addresses managing NFTs during the owner's incapacity.
+- **Quorum System**: A consensus mechanism among Sentinels for decision-making.
+
+### Functionalities
+- **Sentinel Management**: Owners appoint or remove Sentinels.
+- **Inheritance Configuration**: Sets parameters for inheritance, including Quorum and Proof of Life duration.
+
+### Use Cases
+- **Estate and Asset Management**: Sentinels take charge of NFTs as per the owner's directives.
+- **Collective Decision-Making**: Ensures balanced asset management through the Quorum system.
+
+---
+
+## Future Developments
+- **Distributor Vault**: Streamlines scheduled asset distribution.
+- **Inheritance Vault**: Enhances the applications in asset management and security.
+- **Hardware Protectors**: Introduces USB keys for increased security.
+- **Privacy Protected Vaults**: Offers a high level of privacy using Zero Knowledge proofs.
+
+---
 
 ## History
+- **Version 0.0.1**: Initial release with comprehensive test coverage.
 
-**0.0.1**
-
-- First version
+---
 
 ## Test coverage
 
 ```
-  12 passing (3s)
+  12 passing (4s)
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
