@@ -74,13 +74,13 @@ This specialized vault is all about automating asset distribution. Load it with 
 
 We're introducing secure USB keys as an extra layer of security. These keys are tailored for Cruna Vaults, making them a simple yet powerful addition to your asset management toolkit.
 
-## In summary
-
-Cruna Vault is more than just an NFT; it's a comprehensive solution for securing and managing your digital assets, today and in the future. Join us in embracing this new era of digital asset security.
-
 ### Privacy protected Vaults
 
 A new family of Zero Knowledge based vaults will allow a high level of privacy.
+
+## In summary
+
+Cruna Vault is more than just an NFT; it's a comprehensive solution for securing and managing your digital assets, today and in the future. Join us in embracing this new era of digital asset security.
 
 ## History
 
@@ -91,7 +91,7 @@ A new family of Zero Knowledge based vaults will allow a high level of privacy.
 ## Test coverage
 
 ```
-  12 passing (4s)
+  12 passing (3s)
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
