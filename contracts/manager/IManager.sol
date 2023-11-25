@@ -3,20 +3,18 @@ pragma solidity ^0.8.19;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {IActor} from "./IActor.sol";
-
 // erc165 interfaceId 0x8dca4bea
 interface IManager {
   // @dev Emitted when a protector is set for an tokensOwner
   //   The token owner is useful for historic reason since the NFT can be later transferred to another address.
   //   If that happens, all the protector will be removed, and the new tokenOwner will have to set them again.
-  event ProtectorUpdated(address indexed owner, address indexed protector, bool active);
+  event ProtectorUpdated(address indexed owner, address indexed protector, bool status);
 
   // @dev Emitted when the level of an allowed recipient is updated
-  event SafeRecipientUpdated(address indexed owner, address indexed recipient, IActor.Level level);
+  event SafeRecipientUpdated(address indexed owner, address indexed recipient, bool status);
 
   // @dev Emitted when a sentinel is updated
-  event SentinelUpdated(address indexed owner, address indexed sentinel, bool active);
+  event SentinelUpdated(address indexed owner, address indexed sentinel, bool status);
 
   // @dev Emitted when a beneficiary inherits a token
   event Inherited(address indexed protected, uint256 tokenId, address indexed from, address indexed to);
@@ -63,36 +61,36 @@ interface IManager {
     bytes calldata signature
   ) external;
 
-  // @dev Finds a protector
+  // @dev Finds a PROTECTOR
   // @param protector_ The protector address
-  function findProtector(address protector_) external view returns (uint256, IActor.Level);
+  function findProtectorIndex(address protector_) external view returns (uint256);
 
   // @dev Return the number of active protectors
   function countActiveProtectors() external view returns (uint256);
 
   // @dev Return all the protectors
-  function getProtectors() external view returns (IActor.Actor[] memory);
+  function getProtectors() external view returns (address[] memory);
 
   // safe recipients
 
   // @dev Set a safe recipient for the token
   // @param recipient The recipient address
-  // @param level The level of the recipient
+  // @param status True if active
   // @param timestamp The timestamp of the signature
   // @param validFor The validity of the signature
   function setSafeRecipient(
     address recipient,
-    IActor.Level level,
+    bool status,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
   ) external;
 
-  // @dev Return the level of a safe recipient
-  function safeRecipientLevel(address recipient) external view returns (IActor.Level);
+  // @dev Return if the address is a safeRecipient
+  function isSafeRecipient(address recipient) external view returns (bool);
 
   // @dev Return all the safe recipients
-  function getSafeRecipients() external view returns (IActor.Actor[] memory);
+  function getSafeRecipients() external view returns (address[] memory);
 
   // beneficiaries
 
@@ -112,7 +110,7 @@ interface IManager {
   function configureInheritance(uint256 quorum, uint256 proofOfLifeDurationInDays) external;
 
   // @dev Return all the sentinels
-  function getSentinels() external view returns (IActor.Actor[] memory, InheritanceConf memory);
+  function getSentinels() external view returns (address[] memory, InheritanceConf memory);
 
   // @dev allows the user to trigger a Proof-of-Live
   function proofOfLife() external;

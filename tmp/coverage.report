@@ -15,7 +15,6 @@ Instrumenting for coverage...
 > factory/VaultFactory.sol
 > manager/Actor.sol
 > manager/Guardian.sol
-> manager/IActor.sol
 > manager/IManager.sol
 > manager/Manager.sol
 > manager/ManagerProxy.sol
@@ -36,7 +35,7 @@ Coverage skipped for:
 Compilation:
 ============
 
-Compiled 69 Solidity files successfully (evm target: paris).
+Compiled 68 Solidity files successfully (evm target: paris).
 
 Network Info
 ============
@@ -47,23 +46,23 @@ Network Info
 
   Integration
     ✔ should deploy everything as expected
-    ✔ should get the token parameters from the manager (60ms)
+    ✔ should get the token parameters from the manager (57ms)
     Protectors management
-      ✔ should add the first protector (81ms)
-      ✔ should throw is wrong data for first protector (88ms)
-      ✔ should add many protectors (156ms)
-      ✔ should add a protector and transfer a vault (100ms)
+      ✔ should add the first protector (63ms)
+      ✔ should throw is wrong data for first protector (91ms)
+      ✔ should add many protectors (142ms)
+      ✔ should add a protector and transfer a vault (97ms)
     Safe recipients
-      ✔ should set up safe recipients (181ms)
+      ✔ should set up safe recipients (174ms)
     Sentinels and beneficiary
-      ✔ should set up sentinel (213ms)
+      ✔ should set up sentinel (220ms)
 
   SignatureValidator
     ✔ should recover the signer of a recoverSigner
 
   Factory
     ✔ should get the precalculated address of the manager (39ms)
-    ✔ should allow bob and alice to purchase some vaults (116ms)
+    ✔ should allow bob and alice to purchase some vaults (110ms)
     ✔ should allow bob and alice to purchase some vaults with a promoCode (105ms)
 
 
@@ -77,23 +76,22 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
  contracts/factory/          |    57.14 |     37.5 |    81.82 |    58.18 |                |
   IVaultFactory.sol          |      100 |      100 |      100 |      100 |                |
   VaultFactory.sol           |    57.14 |     37.5 |    81.82 |    58.18 |... 126,130,143 |
- contracts/manager/          |    56.48 |    32.65 |    59.52 |     54.4 |                |
-  Actor.sol                  |    78.13 |    44.44 |    81.82 |    72.97 |... 67,68,69,72 |
+ contracts/manager/          |    56.99 |    33.33 |    58.97 |    55.66 |                |
+  Actor.sol                  |    94.74 |       60 |     87.5 |       95 |             49 |
   Guardian.sol               |      100 |      100 |        0 |      100 |                |
-  IActor.sol                 |      100 |      100 |      100 |      100 |                |
   IManager.sol               |      100 |      100 |      100 |      100 |                |
-  Manager.sol                |    47.37 |       30 |    51.72 |    46.59 |... 356,357,360 |
+  Manager.sol                |     47.3 |       30 |    51.72 |    46.51 |... 354,355,358 |
   ManagerProxy.sol           |      100 |      100 |      100 |      100 |                |
  contracts/protected/        |    67.86 |    33.33 |    63.64 |    66.67 |                |
   IERC6454.sol               |      100 |      100 |      100 |      100 |                |
   IProtected.sol             |      100 |      100 |      100 |      100 |                |
-  ProtectedNFT.sol           |    67.86 |    33.33 |    63.64 |    66.67 |... 131,132,148 |
+  ProtectedNFT.sol           |    67.86 |    33.33 |    63.64 |    66.67 |... 130,131,147 |
  contracts/utils/            |    92.31 |    66.67 |    66.67 |    81.82 |                |
   SignatureValidator.sol     |      100 |     87.5 |      100 |     87.5 |             31 |
   UUPSUpgradableTemplate.sol |      100 |       25 |       50 |      100 |                |
   Versioned.sol              |        0 |      100 |        0 |        0 |              9 |
 -----------------------------|----------|----------|----------|----------|----------------|
-All files                    |    60.71 |    36.19 |    64.47 |    59.07 |                |
+All files                    |    61.33 |    36.63 |    64.38 |    60.09 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
 
 > Istanbul reports written to ./coverage/ and ./coverage.json

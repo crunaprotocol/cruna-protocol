@@ -117,14 +117,14 @@ describe("Integration", function () {
       // To do so Bob needs Alice's signature
 
       let allProtectors = await manager.getProtectors();
-      expect(allProtectors[0].actor).equal(alice.address);
+      expect(allProtectors[0]).equal(alice.address);
 
       let signature = await signRequest(
         "PROTECTOR",
         bob.address,
         fred.address,
         tokenId,
-        1,
+        true,
         ts,
         3600,
         chainId,
@@ -136,7 +136,7 @@ describe("Integration", function () {
         .withArgs(bob.address, fred.address, true);
 
       allProtectors = await manager.getProtectors();
-      expect(allProtectors[1].actor).equal(fred.address);
+      expect(allProtectors[1]).equal(fred.address);
 
       // let Fred remove Alice as protector
       signature = await signRequest(
@@ -144,7 +144,7 @@ describe("Integration", function () {
         bob.address,
         alice.address,
         tokenId,
-        0,
+        false,
         ts,
         3600,
         chainId,
@@ -170,7 +170,7 @@ describe("Integration", function () {
         bob.address,
         fred.address,
         tokenId,
-        0,
+        false,
         ts,
         3600,
         chainId,
@@ -190,15 +190,15 @@ describe("Integration", function () {
       const managerAddress = await vault.managerOf(tokenId);
       const manager = await ethers.getContractAt("Manager", managerAddress);
       // set Alice and Fred as a safe recipient
-      await expect(manager.connect(bob).setSafeRecipient(alice.address, 3, 0, 0, 0))
+      await expect(manager.connect(bob).setSafeRecipient(alice.address, true, 0, 0, 0))
         .to.emit(manager, "SafeRecipientUpdated")
-        .withArgs(bob.address, alice.address, 3);
-      await expect(manager.connect(bob).setSafeRecipient(fred.address, 2, 0, 0, 0))
+        .withArgs(bob.address, alice.address, true);
+      await expect(manager.connect(bob).setSafeRecipient(fred.address, true, 0, 0, 0))
         .to.emit(manager, "SafeRecipientUpdated")
-        .withArgs(bob.address, fred.address, 2);
-      await expect(manager.connect(bob).setSafeRecipient(alice.address, 0, 0, 0, 0))
+        .withArgs(bob.address, fred.address, true);
+      await expect(manager.connect(bob).setSafeRecipient(alice.address, false, 0, 0, 0))
         .to.emit(manager, "SafeRecipientUpdated")
-        .withArgs(bob.address, alice.address, 0);
+        .withArgs(bob.address, alice.address, false);
       // set Alice as a protector
       await manager.connect(bob).setProtector(alice.address, true, 0, 0, 0);
       // Set Mark as a safe recipient
@@ -207,16 +207,16 @@ describe("Integration", function () {
         bob.address,
         mark.address,
         tokenId,
-        3,
+        true,
         ts,
         3600,
         chainId,
         alice.address,
         signatureValidator,
       );
-      await expect(manager.connect(bob).setSafeRecipient(mark.address, 3, ts, 3600, signature))
+      await expect(manager.connect(bob).setSafeRecipient(mark.address, true, ts, 3600, signature))
         .to.emit(manager, "SafeRecipientUpdated")
-        .withArgs(bob.address, mark.address, 3);
+        .withArgs(bob.address, mark.address, true);
 
       // // remove Fred as a safe recipient
       signature = await signRequest(
@@ -224,7 +224,7 @@ describe("Integration", function () {
         bob.address,
         fred.address,
         tokenId,
-        0,
+        false,
         ts,
         3600,
         chainId,
@@ -232,13 +232,13 @@ describe("Integration", function () {
         signatureValidator,
       );
 
-      await expect(manager.connect(bob).setSafeRecipient(fred.address, 0, 0, 0, 0)).revertedWith(
+      await expect(manager.connect(bob).setSafeRecipient(fred.address, false, 0, 0, 0)).revertedWith(
         "NotPermittedWhenProtectorsAreActive",
       );
 
-      await expect(manager.connect(bob).setSafeRecipient(fred.address, 0, ts, 3600, signature))
+      await expect(manager.connect(bob).setSafeRecipient(fred.address, false, ts, 3600, signature))
         .to.emit(manager, "SafeRecipientUpdated")
-        .withArgs(bob.address, fred.address, 0);
+        .withArgs(bob.address, fred.address, false);
     });
   });
 
@@ -264,7 +264,7 @@ describe("Integration", function () {
         bob.address,
         mark.address,
         tokenId,
-        1,
+        true,
         ts,
         3600,
         chainId,
@@ -282,7 +282,7 @@ describe("Integration", function () {
         bob.address,
         fred.address,
         tokenId,
-        0,
+        false,
         ts,
         1000,
         chainId,
@@ -299,7 +299,7 @@ describe("Integration", function () {
         bob.address,
         fred.address,
         tokenId,
-        0,
+        false,
         ts,
         3600,
         chainId,

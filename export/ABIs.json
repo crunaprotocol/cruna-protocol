@@ -1,5 +1,5 @@
 {
-  "when": "2023-11-24T02:23:02.293Z",
+  "when": "2023-11-25T01:57:52.809Z",
   "contracts": {
     "ERC6551Registry": [
       {
@@ -377,7 +377,7 @@
           {
             "indexed": false,
             "internalType": "bool",
-            "name": "active",
+            "name": "status",
             "type": "bool"
           }
         ],
@@ -401,9 +401,9 @@
           },
           {
             "indexed": false,
-            "internalType": "enum IActor.Level",
-            "name": "level",
-            "type": "uint8"
+            "internalType": "bool",
+            "name": "status",
+            "type": "bool"
           }
         ],
         "name": "SafeRecipientUpdated",
@@ -427,7 +427,7 @@
           {
             "indexed": false,
             "internalType": "bool",
-            "name": "active",
+            "name": "status",
             "type": "bool"
           }
         ],
@@ -446,6 +446,19 @@
         ],
         "name": "Upgraded",
         "type": "event"
+      },
+      {
+        "inputs": [],
+        "name": "MAX_ACTORS",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
       },
       {
         "inputs": [],
@@ -525,17 +538,31 @@
             "type": "address"
           }
         ],
-        "name": "findProtector",
+        "name": "findProtectorIndex",
         "outputs": [
           {
             "internalType": "uint256",
             "name": "",
             "type": "uint256"
-          },
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
           {
-            "internalType": "enum IActor.Level",
+            "internalType": "bytes32",
+            "name": "role",
+            "type": "bytes32"
+          }
+        ],
+        "name": "getActors",
+        "outputs": [
+          {
+            "internalType": "address[]",
             "name": "",
-            "type": "uint8"
+            "type": "address[]"
           }
         ],
         "stateMutability": "view",
@@ -546,21 +573,9 @@
         "name": "getProtectors",
         "outputs": [
           {
-            "components": [
-              {
-                "internalType": "address",
-                "name": "actor",
-                "type": "address"
-              },
-              {
-                "internalType": "enum IActor.Level",
-                "name": "level",
-                "type": "uint8"
-              }
-            ],
-            "internalType": "struct IActor.Actor[]",
+            "internalType": "address[]",
             "name": "",
-            "type": "tuple[]"
+            "type": "address[]"
           }
         ],
         "stateMutability": "view",
@@ -571,21 +586,9 @@
         "name": "getSafeRecipients",
         "outputs": [
           {
-            "components": [
-              {
-                "internalType": "address",
-                "name": "actor",
-                "type": "address"
-              },
-              {
-                "internalType": "enum IActor.Level",
-                "name": "level",
-                "type": "uint8"
-              }
-            ],
-            "internalType": "struct IActor.Actor[]",
+            "internalType": "address[]",
             "name": "",
-            "type": "tuple[]"
+            "type": "address[]"
           }
         ],
         "stateMutability": "view",
@@ -596,21 +599,9 @@
         "name": "getSentinels",
         "outputs": [
           {
-            "components": [
-              {
-                "internalType": "address",
-                "name": "actor",
-                "type": "address"
-              },
-              {
-                "internalType": "enum IActor.Level",
-                "name": "level",
-                "type": "uint8"
-              }
-            ],
-            "internalType": "struct IActor.Actor[]",
+            "internalType": "address[]",
             "name": "",
-            "type": "tuple[]"
+            "type": "address[]"
           },
           {
             "components": [
@@ -685,6 +676,25 @@
           }
         ],
         "name": "isAProtector",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "recipient",
+            "type": "address"
+          }
+        ],
+        "name": "isSafeRecipient",
         "outputs": [
           {
             "internalType": "bool",
@@ -840,31 +850,12 @@
         "inputs": [
           {
             "internalType": "address",
-            "name": "recipient",
-            "type": "address"
-          }
-        ],
-        "name": "safeRecipientLevel",
-        "outputs": [
-          {
-            "internalType": "enum IActor.Level",
-            "name": "",
-            "type": "uint8"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
             "name": "protector_",
             "type": "address"
           },
           {
             "internalType": "bool",
-            "name": "active",
+            "name": "status",
             "type": "bool"
           },
           {
@@ -896,9 +887,9 @@
             "type": "address"
           },
           {
-            "internalType": "enum IActor.Level",
-            "name": "level",
-            "type": "uint8"
+            "internalType": "bool",
+            "name": "status",
+            "type": "bool"
           },
           {
             "internalType": "uint256",
@@ -930,7 +921,7 @@
           },
           {
             "internalType": "bool",
-            "name": "active",
+            "name": "status",
             "type": "bool"
           },
           {
@@ -1236,31 +1227,6 @@
           {
             "indexed": true,
             "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "beneficiary",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "enum IActor.Level",
-            "name": "status",
-            "type": "uint8"
-          }
-        ],
-        "name": "BeneficiaryUpdated",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "address",
             "name": "previousOwner",
             "type": "address"
           },
@@ -1291,56 +1257,6 @@
           }
         ],
         "name": "OwnershipTransferred",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "tokensOwner",
-            "type": "address"
-          },
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "protector",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "bool",
-            "name": "status",
-            "type": "bool"
-          }
-        ],
-        "name": "ProtectorUpdated",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "recipient",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "enum IActor.Level",
-            "name": "level",
-            "type": "uint8"
-          }
-        ],
-        "name": "SafeRecipientUpdated",
         "type": "event"
       },
       {
@@ -2092,9 +2008,9 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint256",
-            "name": "extraValue",
-            "type": "uint256"
+            "internalType": "bool",
+            "name": "status",
+            "type": "bool"
           },
           {
             "internalType": "uint256",

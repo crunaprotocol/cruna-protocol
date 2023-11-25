@@ -166,7 +166,7 @@ const Helpers = {
     return types;
   },
 
-  async signRequest(scope, owner, actor, tokenId, extraValue, timestamp, validFor, chainId, signer, validator) {
+  async signRequest(scope, owner, actor, tokenId, status, timestamp, validFor, chainId, signer, validator) {
     scope = await validator.getSupportedScope(scope);
 
     const message = {
@@ -174,7 +174,7 @@ const Helpers = {
       owner,
       actor,
       tokenId: tokenId.toString(),
-      extraValue: extraValue.toString(),
+      status: status,
       timestamp: timestamp.toString(),
       validFor: validFor.toString(),
     };
@@ -188,7 +188,7 @@ const Helpers = {
         { name: "owner", type: "address" },
         { name: "actor", type: "address" },
         { name: "tokenId", type: "uint256" },
-        { name: "extraValue", type: "uint256" },
+        { name: "status", type: "bool" },
         { name: "timestamp", type: "uint256" },
         { name: "validFor", type: "uint256" },
       ],
