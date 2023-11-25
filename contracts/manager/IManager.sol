@@ -16,8 +16,16 @@ interface IManager {
   // @dev Emitted when a sentinel is updated
   event SentinelUpdated(address indexed owner, address indexed sentinel, bool status);
 
+  event InheritanceConfigured(address indexed owner, uint256 quorum, uint256 proofOfLifeDurationInDays);
+
+  event ProofOfLife(address indexed owner);
+
+  event TransferRequested(address indexed sentinel, address indexed beneficiary);
+
+  event TransferRequestApproved(address indexed sentinel);
+
   // @dev Emitted when a beneficiary inherits a token
-  event Inherited(address indexed protected, uint256 tokenId, address indexed from, address indexed to);
+  event InheritedBy(address indexed beneficiary);
 
   // @dev Struct to store the configuration for the inheritance
   struct InheritanceConf {
@@ -28,7 +36,7 @@ interface IManager {
 
   // @dev Struct to store the request for a transfer to an heir
   struct InheritanceRequest {
-    address recipient;
+    address beneficiary;
     uint256 startedAt;
     address[] approvers;
     // if there is a second thought about the recipient, the sentinel can change it
@@ -71,6 +79,8 @@ interface IManager {
   // @dev Return all the protectors
   function getProtectors() external view returns (address[] memory);
 
+  function hasProtectors() external view returns (bool);
+
   // safe recipients
 
   // @dev Set a safe recipient for the token
@@ -110,7 +120,10 @@ interface IManager {
   function configureInheritance(uint256 quorum, uint256 proofOfLifeDurationInDays) external;
 
   // @dev Return all the sentinels
-  function getSentinels() external view returns (address[] memory, InheritanceConf memory);
+  function getSentinelsAndInheritanceData()
+    external
+    view
+    returns (address[] memory, InheritanceConf memory, InheritanceRequest memory);
 
   // @dev allows the user to trigger a Proof-of-Live
   function proofOfLife() external;
