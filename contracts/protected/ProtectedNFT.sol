@@ -48,15 +48,6 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
   mapping(uint256 => bool) internal _approvedTransfers;
   mapping(bytes32 => bool) public usedSignatures;
 
-  // @dev This modifier will only allow the protector of a certain tokenId to call the function.
-  // @param tokenId_ The id of the token.
-  modifier onlyProtectorForTokenId(uint256 tokenId_) {
-    address owner_ = ownerOf(tokenId_);
-    uint256 i = managers[tokenId_].findProtectorIndex(_msgSender());
-    if (i == managers[tokenId_].MAX_ACTORS()) revert NotAProtector();
-    _;
-  }
-
   // @dev This modifier will only allow the owner of a certain tokenId to call the function.
   // @param tokenId_ The id of the token.
   modifier onlyTokenOwner(uint256 tokenId) {
