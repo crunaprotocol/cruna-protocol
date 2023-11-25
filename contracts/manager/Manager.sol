@@ -22,9 +22,6 @@ import {Actor} from "./Actor.sol";
 import {IManager} from "./IManager.sol";
 import {Versioned} from "../utils/Versioned.sol";
 
-// TODO maybe remove it
-import "@tokenbound/contracts/utils/Errors.sol" as Errors;
-
 //import {console} from "hardhat/console.sol";
 
 contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgradeable, IERC1271 {
@@ -35,14 +32,10 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
   error Forbidden();
   error NotTheTokenOwner();
   error ProtectorNotFound();
-  error AssociatedToAnotherOwner();
-  error ProtectorAlreadySet();
   error ProtectorAlreadySetByYou();
-  error NotAProtector();
   error NotPermittedWhenProtectorsAreActive();
   error TimestampInvalidOrExpired();
   error WrongDataOrNotSignedByProtector();
-  error WrongDataOrNotSignedByProposedProtector();
   error SignatureAlreadyUsed();
   error QuorumCannotBeZero();
   error QuorumCannotBeGreaterThanSentinels();
@@ -52,10 +45,10 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
   error NotASentinel();
   error RequestAlreadyApproved();
   error Unauthorized();
-  error NotAnActiveProtector();
   error CannotBeYourself();
-  error NotTheFirstProtector();
-  error FirstProtectorNotFound();
+  error InvalidImplementation();
+  error NotAuthorized();
+  error OwnershipCycle();
 
   bool public constant IS_MANAGER = true;
   bool public constant IS_NOT_MANAGER = false;
@@ -85,8 +78,8 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
   }
 
   function _authorizeUpgrade(address implementation) internal virtual override {
-    if (!guardian.isTrustedImplementation(implementation)) revert Errors.InvalidImplementation();
-    if (!_isValidSigner(msg.sender)) revert Errors.NotAuthorized();
+    if (!guardian.isTrustedImplementation(implementation)) revert InvalidImplementation();
+    if (!_isValidSigner(msg.sender)) revert NotAuthorized();
   }
 
   // ERC6551 partial implementation
@@ -138,7 +131,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
 
   function onERC721Received(address, address, uint256, bytes memory) public virtual override returns (bytes4) {
     // This contract is not supposed to own vaults itself
-    if (vault.balanceOf(address(this)) > 0) revert Errors.OwnershipCycle();
+    if (vault.balanceOf(address(this)) > 0) revert OwnershipCycle();
     return this.onERC721Received.selector;
   }
 
@@ -197,6 +190,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
 
   // safe recipients
   // @dev see {IManager-setSafeRecipient}
+  // We do not set a batch function because it can be dangerous
   function setSafeRecipient(
     address recipient,
     bool status,
@@ -226,9 +220,16 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
-  ) external override onlyTokenOwner {
+  ) public override onlyTokenOwner {
     _setSignedActor("SENTINEL", sentinel, SENTINEL, status, timestamp, validFor, signature, IS_NOT_MANAGER);
     emit SentinelUpdated(_msgSender(), sentinel, status);
+  }
+
+  // @dev see {IManager-setSentinels}
+  function setSentinels(address[] memory sentinels, bytes calldata emptySignature) external override onlyTokenOwner {
+    for (uint256 i = 0; i < sentinels.length; i++) {
+      setSentinel(sentinels[i], true, 0, 0, emptySignature);
+    }
   }
 
   // @dev see {IManager-configureInheritance}

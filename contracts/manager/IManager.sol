@@ -112,6 +112,15 @@ interface IManager {
   // @param signature The signature of the tokensOwner
   function setSentinel(address sentinel, bool active, uint256 timestamp, uint256 validFor, bytes calldata signature) external;
 
+  // @dev Set a list of sentinels for the token
+  //   It is a convenience function to set multiple sentinels at once, but it
+  //   works only if no protectors have been set up. Useful for initial settings.
+  // @param sentinels The sentinel addresses
+  // @param emptySignature The signature of the tokensOwner
+  //   It is needed to avoid compatibility with setSentinel which expect the
+  //   signature coming as calldata
+  function setSentinels(address[] memory sentinels, bytes calldata emptySignature) external;
+
   // @dev Configures an inheritance
   // @param quorum The number of sentinels required to approve a request
   // @param proofOfLifeDurationInDays The duration of the Proof-of-Live, i.e., the number

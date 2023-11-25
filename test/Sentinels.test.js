@@ -146,11 +146,7 @@ describe("Integration", function () {
     let tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
-    await manager.connect(bob).setSentinel(alice.address, true, 0, 0, 0);
-    await manager.connect(bob).setSentinel(fred.address, true, 0, 0, 0);
-    await manager.connect(bob).setSentinel(otto.address, true, 0, 0, 0);
-    await manager.connect(bob).setSentinel(mark.address, true, 0, 0, 0);
-    await manager.connect(bob).setSentinel(jerry.address, true, 0, 0, 0);
+    await manager.connect(bob).setSentinels([alice.address, fred.address, otto.address, mark.address, jerry.address], 0);
 
     let data = await manager.getSentinelsAndInheritanceData();
     expect(data[0].length).to.equal(5);

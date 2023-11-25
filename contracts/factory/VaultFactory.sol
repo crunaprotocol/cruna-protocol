@@ -14,12 +14,9 @@ import {IVaultFactory} from "./IVaultFactory.sol";
 //import {console} from "hardhat/console.sol";
 
 error ZeroAddress();
-error NotAContract();
-error NotAVault();
 error InsufficientFunds();
 error UnsupportedStableCoin();
 error TransferFailed();
-error InvalidPrice();
 error InvalidArguments();
 
 contract VaultFactory is IVaultFactory, UUPSUpgradableTemplate {

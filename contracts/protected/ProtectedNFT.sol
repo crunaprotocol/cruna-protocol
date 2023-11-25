@@ -24,14 +24,11 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   using Strings for uint256;
 
   error NotTheTokenOwner();
-  error NotAProtector();
-  error NotATokensOwner();
   error TimestampInvalidOrExpired();
   error SignatureAlreadyUsed();
   error NotTransferable();
   error NotTheManager();
   error TimestampZero();
-  error AlreadyInitialized();
   error ZeroAddress();
   error WrongDataOrNotSignedByProtector();
 
