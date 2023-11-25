@@ -18,7 +18,7 @@ import {IERC6551Account} from "erc6551/interfaces/IERC6551Account.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
 
 import {ProtectedNFT} from "../protected/ProtectedNFT.sol";
-import {Actor, IActor} from "./Actor.sol";
+import {Actor} from "./Actor.sol";
 import {IManager} from "./IManager.sol";
 import {Versioned} from "../utils/Versioned.sol";
 
@@ -143,13 +143,12 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
 
   // @dev Counts the protectors.
   function countActiveProtectors() public view override returns (uint256) {
-    return _countActiveActorsByRole(PROTECTOR);
+    return _actorLength(PROTECTOR);
   }
 
-  // @dev Find a specific protector and returns its level.
-  function findProtector(address protector_) public view override returns (uint256, Level) {
-    (uint256 i, IActor.Actor storage actor) = _getActor(protector_, PROTECTOR);
-    return (i, actor.level);
+  // @dev Find a specific protector
+  function findProtectorIndex(address protector_) public view override returns (uint256) {
+    return _findActorIndex(protector_, PROTECTOR);
   }
 
   // @dev Returns true if the address is a protector.
@@ -166,55 +165,54 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
   // @dev see {IManager-setProtector}
   function setProtector(
     address protector_,
-    bool active,
+    bool status,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
-    _setSignedActor("PROTECTOR", protector_, PROTECTOR, active ? 1 : 0, timestamp, validFor, signature, true);
-    emit ProtectorUpdated(_msgSender(), protector_, active);
+    _setSignedActor("PROTECTOR", protector_, PROTECTOR, status, timestamp, validFor, signature, true);
+    emit ProtectorUpdated(_msgSender(), protector_, status);
   }
 
   // @dev see {IManager-getProtectors}
-  function getProtectors() external view override returns (IActor.Actor[] memory) {
-    return _getActors(PROTECTOR);
+  function getProtectors() external view override returns (address[] memory) {
+    return getActors(PROTECTOR);
   }
 
   // safe recipients
   // @dev see {IManager-setSafeRecipient}
   function setSafeRecipient(
     address recipient,
-    Level level,
+    bool status,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
   ) external override onlyTokenOwner {
-    _setSignedActor("SAFE_RECIPIENT", recipient, SAFE_RECIPIENT, uint256(level), timestamp, validFor, signature, false);
-    emit SafeRecipientUpdated(_msgSender(), recipient, level);
+    _setSignedActor("SAFE_RECIPIENT", recipient, SAFE_RECIPIENT, status, timestamp, validFor, signature, false);
+    emit SafeRecipientUpdated(_msgSender(), recipient, status);
   }
 
-  // @dev see {IManager-safeRecipientLevel}
-  function safeRecipientLevel(address recipient) public view override returns (Level) {
-    (, IActor.Actor memory actor) = _getActor(recipient, SAFE_RECIPIENT);
-    return actor.level;
+  // @dev see {IManager-isSafeRecipient}
+  function isSafeRecipient(address recipient) public view override returns (bool) {
+    return _findActorIndex(recipient, SAFE_RECIPIENT) != MAX_ACTORS;
   }
 
   // @dev see {IManager-getSafeRecipients}
-  function getSafeRecipients() external view override returns (IActor.Actor[] memory) {
-    return _getActors(SAFE_RECIPIENT);
+  function getSafeRecipients() external view override returns (address[] memory) {
+    return getActors(SAFE_RECIPIENT);
   }
 
   // beneficiaries
   // @dev see {IManager-setSentinel}
   function setSentinel(
     address sentinel,
-    bool active,
+    bool status,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
   ) external override onlyTokenOwner {
-    _setSignedActor("SENTINEL", sentinel, SENTINEL, active ? 1 : 0, timestamp, validFor, signature, false);
-    emit SentinelUpdated(_msgSender(), sentinel, active);
+    _setSignedActor("SENTINEL", sentinel, SENTINEL, status, timestamp, validFor, signature, false);
+    emit SentinelUpdated(_msgSender(), sentinel, status);
   }
 
   // @dev see {IManager-configureInheritance}
@@ -222,15 +220,15 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
   function configureInheritance(uint256 quorum, uint256 proofOfLifeDurationInDays) external onlyTokenOwner {
     if (countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
     if (quorum == 0) revert QuorumCannotBeZero();
-    if (quorum > _countActiveActorsByRole(SENTINEL)) revert QuorumCannotBeGreaterThanSentinels();
+    if (quorum > _actorLength(SENTINEL)) revert QuorumCannotBeGreaterThanSentinels();
     // solhint-disable-next-line not-rely-on-time
     _inheritanceConf = InheritanceConf(quorum, proofOfLifeDurationInDays, block.timestamp);
     delete _inheritanceRequest;
   }
 
   // @dev see {IManager-getSentinels}
-  function getSentinels() external view returns (IActor.Actor[] memory, InheritanceConf memory) {
-    return (_getActors(SENTINEL), _inheritanceConf);
+  function getSentinels() external view returns (address[] memory, InheritanceConf memory) {
+    return (getActors(SENTINEL), _inheritanceConf);
   }
 
   // @dev see {IManager-proofOfLife}
@@ -245,8 +243,8 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
   function requestTransfer(address beneficiary) external {
     if (beneficiary == address(0)) revert ZeroAddress();
     if (_inheritanceConf.proofOfLifeDurationInDays == 0) revert InheritanceNotConfigured();
-    (, IActor.Actor storage actor) = _getActor(_msgSender(), SENTINEL);
-    if (actor.level == Level.NONE) revert NotASentinel();
+    uint256 i = _findActorIndex(_msgSender(), SENTINEL);
+    if (i == MAX_ACTORS) revert NotASentinel();
     if (
       _inheritanceConf.lastProofOfLife + (_inheritanceConf.proofOfLifeDurationInDays * 1 hours) >
       // solhint-disable-next-line not-rely-on-time
@@ -287,14 +285,14 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
   // @dev Validates the request.
   // @param scope The scope of the request.
   // @param actor The actor of the request.
-  // @param extraValue The extra value of the request.
+  // @param status The status of the actor
   // @param timestamp The timestamp of the request.
   // @param validFor The validity of the request.
   // @param signature The signature of the request.
   function _validateRequest(
     uint256 scope,
     address actor,
-    uint256 extraValue,
+    bool status,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
@@ -310,7 +308,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
         owner(),
         actor,
         tokenId(),
-        extraValue,
+        status,
         timestamp,
         validFor,
         signature
@@ -324,7 +322,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
   // @param scopeString The scope of the request, i.e., the type of actor.
   // @param role_ The role of the actor.
   // @param actor The actor address.
-  // @param extraValue The extra value of the request.
+  // @param status The status of the request.
   // @param timestamp The timestamp of the request.
   // @param validFor The validity of the request.
   // @param signature The signature of the request.
@@ -332,7 +330,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     string memory scopeString,
     address actor,
     bytes32 role_,
-    uint256 extraValue,
+    bool status,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature,
@@ -340,13 +338,13 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
   ) internal onlyTokenOwner {
     if (actor == address(0)) revert ZeroAddress();
     if (actor == _msgSender()) revert CannotBeYourself();
-    _validateRequest(signatureValidator.getSupportedScope(scopeString), actor, extraValue, timestamp, validFor, signature);
-    if (extraValue == 0) {
+    _validateRequest(signatureValidator.getSupportedScope(scopeString), actor, status, timestamp, validFor, signature);
+    if (!status) {
       if (timestamp != 0 && actorIsProtector && !isAProtector(actor)) revert ProtectorNotFound();
       _removeActor(actor, role_);
     } else {
       if (timestamp != 0 && actorIsProtector && isAProtector(actor)) revert ProtectorAlreadySetByYou();
-      _addActor(actor, role_, Level(extraValue));
+      _addActor(actor, role_);
     }
   }
 

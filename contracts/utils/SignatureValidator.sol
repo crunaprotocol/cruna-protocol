@@ -38,7 +38,7 @@ contract SignatureValidator is EIP712, Versioned {
   // @param actor The actor being authorized.
   //   It can be address(0) if the parameter is not needed.
   // @param tokenId The id of the token.
-  // @param extraValue An extra value.
+  // @param status The status
   // @param timestamp The timestamp of the signature.
   // @param validFor The validity of the signature.
   // @param Returns the signer of the signature.
@@ -47,7 +47,7 @@ contract SignatureValidator is EIP712, Versioned {
     address owner,
     address actor,
     uint256 tokenId,
-    uint256 extraValue,
+    bool status,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
@@ -57,13 +57,13 @@ contract SignatureValidator is EIP712, Versioned {
         keccak256(
           abi.encode(
             keccak256(
-              "Auth(uint256 scope,address owner,address actor,uint256 tokenId,uint256 extraValue,uint256 timestamp,uint256 validFor)"
+              "Auth(uint256 scope,address owner,address actor,uint256 tokenId,bool status,uint256 timestamp,uint256 validFor)"
             ),
             scope,
             owner,
             actor,
             tokenId,
-            extraValue,
+            status,
             timestamp,
             validFor
           )

@@ -12,7 +12,6 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.
 import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
 import {IProtected} from "./IProtected.sol";
 import {IERC6454} from "./IERC6454.sol";
-import {IActor} from "../manager/Actor.sol";
 import {Manager} from "../manager/Manager.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {Versioned} from "../utils/Versioned.sol";
@@ -48,15 +47,6 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
 
   mapping(uint256 => bool) internal _approvedTransfers;
   mapping(bytes32 => bool) public usedSignatures;
-
-  // @dev This modifier will only allow the protector of a certain tokenId to call the function.
-  // @param tokenId_ The id of the token.
-  modifier onlyProtectorForTokenId(uint256 tokenId_) {
-    address owner_ = ownerOf(tokenId_);
-    (uint256 i, IActor.Level level) = managers[tokenId_].findProtector(_msgSender());
-    if (level < IActor.Level.NONE) revert NotAProtector();
-    _;
-  }
 
   // @dev This modifier will only allow the owner of a certain tokenId to call the function.
   // @param tokenId_ The id of the token.
@@ -112,7 +102,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
       _msgSender(),
       to,
       tokenId,
-      0,
+      false,
       timestamp,
       validFor,
       signature
@@ -124,7 +114,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
   }
 
   // @dev See {IProtected721-managedTransfer}.
-  function managedTransfer(uint256 tokenId, address to) external override onlyManager(tokenId) {
+  function managedTransfer(uint256 tokenId, address to) external onlyManager(tokenId) {
     _approvedTransfers[tokenId] = true;
     _approve(address(managers[tokenId]), tokenId);
     safeTransferFrom(ownerOf(tokenId), to, tokenId);
@@ -165,7 +155,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
         // TODO move this function in the manager
         // managers[tokenId].isTransfersApproved()
         _approvedTransfers[tokenId] ||
-        managers[tokenId].safeRecipientLevel(to) == IActor.Level.HIGH;
+        managers[tokenId].isSafeRecipient(to);
     }
   }
 
