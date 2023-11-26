@@ -30,7 +30,8 @@ describe("SignatureValidator", function () {
   });
 
   it("should recover the signer of a recoverSigner", async function () {
-    let scope = await validator.getSupportedScope("SENTINEL");
+    const sentinelBytes = ethers.utils.toUtf8Bytes("SENTINEL");
+    const scope = ethers.utils.keccak256(sentinelBytes);
 
     const message = {
       scope: scope.toString(),
@@ -48,7 +49,7 @@ describe("SignatureValidator", function () {
       privateKeyByWallet[protector.address],
       "Auth",
       [
-        { name: "scope", type: "uint256" },
+        { name: "scope", type: "bytes32" },
         { name: "owner", type: "address" },
         { name: "actor", type: "address" },
         { name: "tokenId", type: "uint256" },

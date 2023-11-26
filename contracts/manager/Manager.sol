@@ -9,7 +9,6 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts/proxy/utils/UUPSUpgradeab
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {ERC721Holder} from "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
-import {IAccountGuardian} from "@tokenbound/contracts/interfaces/IAccountGuardian.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
@@ -17,6 +16,7 @@ import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 import {IERC6551Account} from "erc6551/interfaces/IERC6551Account.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
 
+import {Guardian} from "./Guardian.sol";
 import {ProtectedNFT} from "../protected/ProtectedNFT.sol";
 import {Actor} from "./Actor.sol";
 import {IManager} from "./IManager.sol";
@@ -53,7 +53,11 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
   bool public constant IS_MANAGER = true;
   bool public constant IS_NOT_MANAGER = false;
 
-  IAccountGuardian public guardian;
+  bytes32 public constant PROTECTOR = keccak256(abi.encodePacked("PROTECTOR"));
+  bytes32 public constant SENTINEL = keccak256(abi.encodePacked("SENTINEL"));
+  bytes32 public constant SAFE_RECIPIENT = keccak256(abi.encodePacked("SAFE_RECIPIENT"));
+
+  Guardian public guardian;
   SignatureValidator public signatureValidator;
   ProtectedNFT public vault;
 
@@ -71,14 +75,17 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
   // @dev see {IManager-init}
   // this must be execute immediately after the deployment
   function init(address guardian_, address signatureValidator_) external {
+    _addRole(keccak256("PROTECTOR"));
+    _addRole(keccak256("SAFE_RECIPIENT"));
+    _addRole(keccak256("SENTINEL"));
     if (msg.sender != tokenAddress()) revert Forbidden();
-    guardian = IAccountGuardian(guardian_);
+    guardian = Guardian(guardian_);
     signatureValidator = SignatureValidator(signatureValidator_);
     vault = ProtectedNFT(msg.sender);
   }
 
   function _authorizeUpgrade(address implementation) internal virtual override {
-    if (!guardian.isTrustedImplementation(implementation)) revert InvalidImplementation();
+    if (!guardian.isTrustedImplementation(keccak256("Manager"), implementation)) revert InvalidImplementation();
     if (!_isValidSigner(msg.sender)) revert NotAuthorized();
   }
 
@@ -324,7 +331,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
   // @param validFor The validity of the request.
   // @param signature The signature of the request.
   function _validateRequest(
-    uint256 scope,
+    bytes32 scope,
     address actor,
     bool status,
     uint256 timestamp,
@@ -370,9 +377,10 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     bytes calldata signature,
     bool actorIsProtector
   ) internal onlyTokenOwner {
+    bytes32 scope = keccak256(abi.encodePacked(scopeString));
     if (actor == address(0)) revert ZeroAddress();
     if (actor == _msgSender()) revert CannotBeYourself();
-    _validateRequest(signatureValidator.getSupportedScope(scopeString), actor, status, timestamp, validFor, signature);
+    _validateRequest(scope, actor, status, timestamp, validFor, signature);
     if (!status) {
       if (timestamp != 0 && actorIsProtector && !isAProtector(actor)) revert ProtectorNotFound();
       _removeActor(actor, role_);

@@ -11,13 +11,20 @@ contract Actor {
   error ActorNotFound(bytes32);
   error ActorAlreadyAdded();
   error TooManyActors();
+  error RoleAlreadyAdded();
 
   uint256 public constant MAX_ACTORS = 16;
 
-  // @dev Roles of the supported actors
-  bytes32 public constant PROTECTOR = keccak256(abi.encodePacked("PROTECTOR"));
-  bytes32 public constant SENTINEL = keccak256(abi.encodePacked("SENTINEL"));
-  bytes32 public constant SAFE_RECIPIENT = keccak256(abi.encodePacked("SAFE_RECIPIENT"));
+  uint256 public lastRoleIndex;
+  mapping(bytes32 => uint256) public roleIndex;
+  mapping(uint256 => bytes32) public roleNames;
+
+  function _addRole(bytes32 role) internal {
+    if (roleIndex[role] != 0) revert RoleAlreadyAdded();
+    lastRoleIndex++;
+    roleIndex[role] = lastRoleIndex;
+    roleNames[lastRoleIndex] = role;
+  }
 
   mapping(bytes32 => address[]) private _actors;
 
@@ -73,9 +80,9 @@ contract Actor {
   }
 
   function _resetActors() internal {
-    delete _actors[PROTECTOR];
-    delete _actors[SENTINEL];
-    delete _actors[SAFE_RECIPIENT];
+    for (uint256 i = 1; i <= lastRoleIndex; i++) {
+      delete _actors[roleNames[i]];
+    }
   }
 
   // @dev This empty reserved space is put in place to allow future versions to add new

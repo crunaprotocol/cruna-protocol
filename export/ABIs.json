@@ -1,5 +1,5 @@
 {
-  "when": "2023-11-25T23:29:59.940Z",
+  "when": "2023-11-26T20:48:55.937Z",
   "contracts": {
     "ERC6551Registry": [
       {
@@ -219,6 +219,11 @@
       {
         "inputs": [],
         "name": "RequestAlreadyApproved",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "RoleAlreadyAdded",
         "type": "error"
       },
       {
@@ -699,7 +704,7 @@
         "name": "guardian",
         "outputs": [
           {
-            "internalType": "contract IAccountGuardian",
+            "internalType": "contract Guardian",
             "name": "",
             "type": "address"
           }
@@ -833,6 +838,19 @@
       },
       {
         "inputs": [],
+        "name": "lastRoleIndex",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
         "name": "listProtectors",
         "outputs": [
           {
@@ -922,6 +940,44 @@
         "name": "requestTransfer",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "name": "roleIndex",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "roleNames",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "stateMutability": "view",
         "type": "function"
       },
       {
@@ -2070,17 +2126,6 @@
         "type": "error"
       },
       {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "scope",
-            "type": "string"
-          }
-        ],
-        "name": "UnsupportedScope",
-        "type": "error"
-      },
-      {
         "anonymous": false,
         "inputs": [],
         "name": "EIP712DomainChanged",
@@ -2132,28 +2177,9 @@
       {
         "inputs": [
           {
-            "internalType": "string",
+            "internalType": "bytes32",
             "name": "scope",
-            "type": "string"
-          }
-        ],
-        "name": "getSupportedScope",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "pure",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "scope",
-            "type": "uint256"
+            "type": "bytes32"
           },
           {
             "internalType": "address",
@@ -2229,6 +2255,11 @@
         "type": "constructor"
       },
       {
+        "inputs": [],
+        "name": "ZeroAddress",
+        "type": "error"
+      },
+      {
         "anonymous": false,
         "inputs": [
           {
@@ -2271,23 +2302,10 @@
         "inputs": [
           {
             "indexed": false,
-            "internalType": "address",
-            "name": "executor",
-            "type": "address"
+            "internalType": "bytes32",
+            "name": "scope",
+            "type": "bytes32"
           },
-          {
-            "indexed": false,
-            "internalType": "bool",
-            "name": "trusted",
-            "type": "bool"
-          }
-        ],
-        "name": "TrustedExecutorUpdated",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
           {
             "indexed": false,
             "internalType": "address",
@@ -2314,27 +2332,13 @@
       {
         "inputs": [
           {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "name": "isTrustedExecutor",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
+            "internalType": "bytes32",
+            "name": "scope",
+            "type": "bytes32"
+          },
           {
             "internalType": "address",
-            "name": "",
+            "name": "implementation",
             "type": "address"
           }
         ],
@@ -2385,23 +2389,10 @@
       {
         "inputs": [
           {
-            "internalType": "address",
-            "name": "executor",
-            "type": "address"
+            "internalType": "bytes32",
+            "name": "scope",
+            "type": "bytes32"
           },
-          {
-            "internalType": "bool",
-            "name": "trusted",
-            "type": "bool"
-          }
-        ],
-        "name": "setTrustedExecutor",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
           {
             "internalType": "address",
             "name": "implementation",
