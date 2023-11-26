@@ -72,6 +72,12 @@ contract Actor {
     _actors[role_].push(actor_);
   }
 
+  function _resetActors() internal {
+    delete _actors[PROTECTOR];
+    delete _actors[SENTINEL];
+    delete _actors[SAFE_RECIPIENT];
+  }
+
   // @dev This empty reserved space is put in place to allow future versions to add new
   // variables without shifting down storage in the inheritance chain.
   // See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps

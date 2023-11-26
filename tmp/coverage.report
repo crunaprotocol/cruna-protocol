@@ -13,13 +13,14 @@ Instrumenting for coverage...
 > CrunaFlexiVault.sol
 > factory/IVaultFactory.sol
 > factory/VaultFactory.sol
+> interfaces/IERC6454.sol
+> interfaces/IERC6982.sol
+> interfaces/IProtected.sol
 > manager/Actor.sol
 > manager/Guardian.sol
 > manager/IManager.sol
 > manager/Manager.sol
 > manager/ManagerProxy.sol
-> protected/IERC6454.sol
-> protected/IProtected.sol
 > protected/ProtectedNFT.sol
 > utils/SignatureValidator.sol
 > utils/UUPSUpgradableTemplate.sol
@@ -35,7 +36,7 @@ Coverage skipped for:
 Compilation:
 ============
 
-Compiled 68 Solidity files successfully (evm target: paris).
+Compiled 67 Solidity files successfully (evm target: paris).
 
 Network Info
 ============
@@ -44,29 +45,33 @@ Network Info
 
 
 
-  Integration
+  Testing contract deployments
     ✔ should deploy everything as expected
-    ✔ should get the token parameters from the manager (55ms)
-    Protectors management
-      ✔ should add the first protector (62ms)
-      ✔ should throw is wrong data for first protector (84ms)
-      ✔ should add many protectors (127ms)
-      ✔ should add a protector and transfer a vault (95ms)
-    Safe recipients
-      ✔ should set up safe recipients (191ms)
-    Sentinels and beneficiary
-      ✔ should set up sentinel (199ms)
+    ✔ should get the token parameters from the manager (62ms)
+
+  Integration
+    ✔ should add the first protector (68ms)
+    ✔ should throw is wrong data for first protector (89ms)
+    ✔ should add many protectors (134ms)
+    ✔ should add a protector and transfer a vault (116ms)
+
+  Protectors
+    ✔ should set up safe recipients (238ms)
+
+  Integration
+    ✔ should set up sentinel (253ms)
+    ✔ should set up 5 sentinels and an inheritance with a quorum 3 (300ms)
 
   SignatureValidator
     ✔ should recover the signer of a recoverSigner
 
   Factory
-    ✔ should get the precalculated address of the manager
-    ✔ should allow bob and alice to purchase some vaults (109ms)
-    ✔ should allow bob and alice to purchase some vaults with a promoCode (99ms)
+    ✔ should get the precalculated address of the manager (47ms)
+    ✔ should allow bob and alice to purchase some vaults (166ms)
+    ✔ should allow bob and alice to purchase some vaults with a promoCode (145ms)
 
 
-  12 passing (3s)
+  13 passing (4s)
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -75,23 +80,25 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   CrunaFlexiVault.sol        |       60 |       40 |    66.67 |    71.43 |          50,55 |
  contracts/factory/          |    57.14 |     37.5 |    81.82 |    58.18 |                |
   IVaultFactory.sol          |      100 |      100 |      100 |      100 |                |
-  VaultFactory.sol           |    57.14 |     37.5 |    81.82 |    58.18 |... 126,130,143 |
- contracts/manager/          |    56.99 |    33.33 |    58.97 |    55.66 |                |
-  Actor.sol                  |    94.74 |       60 |     87.5 |       95 |             49 |
+  VaultFactory.sol           |    57.14 |     37.5 |    81.82 |    58.18 |... 123,127,140 |
+ contracts/interfaces/       |      100 |      100 |      100 |      100 |                |
+  IERC6454.sol               |      100 |      100 |      100 |      100 |                |
+  IERC6982.sol               |      100 |      100 |      100 |      100 |                |
+  IProtected.sol             |      100 |      100 |      100 |      100 |                |
+ contracts/manager/          |    81.73 |    58.16 |    73.17 |    83.74 |                |
+  Actor.sol                  |    94.74 |       60 |    88.89 |    95.65 |             49 |
   Guardian.sol               |      100 |      100 |        0 |      100 |                |
   IManager.sol               |      100 |      100 |      100 |      100 |                |
-  Manager.sol                |     47.3 |       30 |    51.72 |    46.51 |... 354,355,358 |
+  Manager.sol                |    78.82 |    57.95 |       70 |       81 |... 212,280,306 |
   ManagerProxy.sol           |      100 |      100 |      100 |      100 |                |
- contracts/protected/        |       76 |       35 |       70 |    74.29 |                |
-  IERC6454.sol               |      100 |      100 |      100 |      100 |                |
-  IProtected.sol             |      100 |      100 |      100 |      100 |                |
-  ProtectedNFT.sol           |       76 |       35 |       70 |    74.29 |... 121,122,138 |
+ contracts/protected/        |    86.21 |    42.86 |    76.92 |    89.74 |                |
+  ProtectedNFT.sol           |    86.21 |    42.86 |    76.92 |    89.74 | 78,137,162,171 |
  contracts/utils/            |    92.31 |    66.67 |    66.67 |    81.82 |                |
   SignatureValidator.sol     |      100 |     87.5 |      100 |     87.5 |             31 |
   UUPSUpgradableTemplate.sol |      100 |       25 |       50 |      100 |                |
   Versioned.sol              |        0 |      100 |        0 |        0 |              9 |
 -----------------------------|----------|----------|----------|----------|----------------|
-All files                    |    62.36 |       37 |    65.28 |    61.21 |                |
+All files                    |     77.2 |       50 |    74.03 |     78.3 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
 
 > Istanbul reports written to ./coverage/ and ./coverage.json

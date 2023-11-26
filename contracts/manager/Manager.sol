@@ -22,9 +22,6 @@ import {Actor} from "./Actor.sol";
 import {IManager} from "./IManager.sol";
 import {Versioned} from "../utils/Versioned.sol";
 
-// TODO maybe remove it
-import "@tokenbound/contracts/utils/Errors.sol" as Errors;
-
 //import {console} from "hardhat/console.sol";
 
 contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgradeable, IERC1271 {
@@ -35,27 +32,26 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
   error Forbidden();
   error NotTheTokenOwner();
   error ProtectorNotFound();
-  error AssociatedToAnotherOwner();
-  error ProtectorAlreadySet();
   error ProtectorAlreadySetByYou();
-  error NotAProtector();
   error NotPermittedWhenProtectorsAreActive();
   error TimestampInvalidOrExpired();
   error WrongDataOrNotSignedByProtector();
-  error WrongDataOrNotSignedByProposedProtector();
   error SignatureAlreadyUsed();
   error QuorumCannotBeZero();
   error QuorumCannotBeGreaterThanSentinels();
   error InheritanceNotConfigured();
-  error NotExpiredYet();
+  error StillAlive();
   error InconsistentRecipient();
   error NotASentinel();
   error RequestAlreadyApproved();
   error Unauthorized();
-  error NotAnActiveProtector();
   error CannotBeYourself();
-  error NotTheFirstProtector();
-  error FirstProtectorNotFound();
+  error InvalidImplementation();
+  error NotAuthorized();
+  error OwnershipCycle();
+
+  bool public constant IS_MANAGER = true;
+  bool public constant IS_NOT_MANAGER = false;
 
   IAccountGuardian public guardian;
   SignatureValidator public signatureValidator;
@@ -82,8 +78,8 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
   }
 
   function _authorizeUpgrade(address implementation) internal virtual override {
-    if (!guardian.isTrustedImplementation(implementation)) revert Errors.InvalidImplementation();
-    if (!_isValidSigner(msg.sender)) revert Errors.NotAuthorized();
+    if (!guardian.isTrustedImplementation(implementation)) revert InvalidImplementation();
+    if (!_isValidSigner(msg.sender)) revert NotAuthorized();
   }
 
   // ERC6551 partial implementation
@@ -135,7 +131,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
 
   function onERC721Received(address, address, uint256, bytes memory) public virtual override returns (bytes4) {
     // This contract is not supposed to own vaults itself
-    if (vault.balanceOf(address(this)) > 0) revert Errors.OwnershipCycle();
+    if (vault.balanceOf(address(this)) > 0) revert OwnershipCycle();
     return this.onERC721Received.selector;
   }
 
@@ -153,13 +149,17 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
 
   // @dev Returns true if the address is a protector.
   // @param protector_ The protector address.
-  function isAProtector(address protector_) public view returns (bool) {
+  function isAProtector(address protector_) public view override returns (bool) {
     return _isActiveActor(protector_, PROTECTOR);
   }
 
   // @dev Returns the list of protectors.
   function listProtectors() public view override returns (address[] memory) {
     return _listActiveActors(PROTECTOR);
+  }
+
+  function hasProtectors() public view override returns (bool) {
+    return _actorLength(PROTECTOR) > 0;
   }
 
   // @dev see {IManager-setProtector}
@@ -170,8 +170,17 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
-    _setSignedActor("PROTECTOR", protector_, PROTECTOR, status, timestamp, validFor, signature, true);
+    _setSignedActor("PROTECTOR", protector_, PROTECTOR, status, timestamp, validFor, signature, IS_MANAGER);
     emit ProtectorUpdated(_msgSender(), protector_, status);
+    if (status) {
+      if (countActiveProtectors() == 1) {
+        vault.emitLockedEvent(tokenId(), true);
+      }
+    } else {
+      if (countActiveProtectors() == 0) {
+        vault.emitLockedEvent(tokenId(), false);
+      }
+    }
   }
 
   // @dev see {IManager-getProtectors}
@@ -181,6 +190,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
 
   // safe recipients
   // @dev see {IManager-setSafeRecipient}
+  // We do not set a batch function because it can be dangerous
   function setSafeRecipient(
     address recipient,
     bool status,
@@ -188,7 +198,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     uint256 validFor,
     bytes calldata signature
   ) external override onlyTokenOwner {
-    _setSignedActor("SAFE_RECIPIENT", recipient, SAFE_RECIPIENT, status, timestamp, validFor, signature, false);
+    _setSignedActor("SAFE_RECIPIENT", recipient, SAFE_RECIPIENT, status, timestamp, validFor, signature, IS_NOT_MANAGER);
     emit SafeRecipientUpdated(_msgSender(), recipient, status);
   }
 
@@ -202,7 +212,7 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     return getActors(SAFE_RECIPIENT);
   }
 
-  // beneficiaries
+  // sentinels and beneficiaries
   // @dev see {IManager-setSentinel}
   function setSentinel(
     address sentinel,
@@ -210,73 +220,97 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
-  ) external override onlyTokenOwner {
-    _setSignedActor("SENTINEL", sentinel, SENTINEL, status, timestamp, validFor, signature, false);
+  ) public override onlyTokenOwner {
+    _setSignedActor("SENTINEL", sentinel, SENTINEL, status, timestamp, validFor, signature, IS_NOT_MANAGER);
     emit SentinelUpdated(_msgSender(), sentinel, status);
+  }
+
+  // @dev see {IManager-setSentinels}
+  function setSentinels(address[] memory sentinels, bytes calldata emptySignature) external override onlyTokenOwner {
+    for (uint256 i = 0; i < sentinels.length; i++) {
+      setSentinel(sentinels[i], true, 0, 0, emptySignature);
+    }
   }
 
   // @dev see {IManager-configureInheritance}
   // allow when protectors are active
-  function configureInheritance(uint256 quorum, uint256 proofOfLifeDurationInDays) external onlyTokenOwner {
+  function configureInheritance(uint256 quorum, uint256 proofOfLifeDurationInDays) external override onlyTokenOwner {
     if (countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
     if (quorum == 0) revert QuorumCannotBeZero();
     if (quorum > _actorLength(SENTINEL)) revert QuorumCannotBeGreaterThanSentinels();
     // solhint-disable-next-line not-rely-on-time
     _inheritanceConf = InheritanceConf(quorum, proofOfLifeDurationInDays, block.timestamp);
     delete _inheritanceRequest;
+    emit InheritanceConfigured(_msgSender(), quorum, proofOfLifeDurationInDays);
   }
 
-  // @dev see {IManager-getSentinels}
-  function getSentinels() external view returns (address[] memory, InheritanceConf memory) {
-    return (getActors(SENTINEL), _inheritanceConf);
+  // @dev see {IManager-getSentinelsAndInheritanceData}
+  function getSentinelsAndInheritanceData()
+    external
+    view
+    override
+    returns (address[] memory, InheritanceConf memory, InheritanceRequest memory)
+  {
+    return (getActors(SENTINEL), _inheritanceConf, _inheritanceRequest);
   }
 
   // @dev see {IManager-proofOfLife}
-  function proofOfLife() external onlyTokenOwner {
+  function proofOfLife() external override onlyTokenOwner {
     if (_inheritanceConf.proofOfLifeDurationInDays == 0) revert InheritanceNotConfigured();
     // solhint-disable-next-line not-rely-on-time
     _inheritanceConf.lastProofOfLife = block.timestamp;
     delete _inheritanceRequest;
+    emit ProofOfLife(_msgSender());
   }
 
   // @dev see {IManager-requestTransfer}
-  function requestTransfer(address beneficiary) external {
+  function requestTransfer(address beneficiary) external override {
     if (beneficiary == address(0)) revert ZeroAddress();
     if (_inheritanceConf.proofOfLifeDurationInDays == 0) revert InheritanceNotConfigured();
     uint256 i = _findActorIndex(_msgSender(), SENTINEL);
     if (i == MAX_ACTORS) revert NotASentinel();
     if (
-      _inheritanceConf.lastProofOfLife + (_inheritanceConf.proofOfLifeDurationInDays * 1 hours) >
+      _inheritanceConf.lastProofOfLife + (_inheritanceConf.proofOfLifeDurationInDays * 1 days) >
       // solhint-disable-next-line not-rely-on-time
       block.timestamp
-    ) revert NotExpiredYet();
+    ) revert StillAlive();
     // the following prevents hostile beneficiaries from blocking the process not allowing them to reset the recipient
-    if (_hasApproved()) revert RequestAlreadyApproved();
-    // a sentinel is proposing a new recipient
-    if (_inheritanceRequest.recipient != beneficiary) {
-      // solhint-disable-next-line not-rely-on-time
+    for (i = 0; i < _inheritanceRequest.approvers.length; i++) {
+      if (_msgSender() == _inheritanceRequest.approvers[i]) {
+        revert RequestAlreadyApproved();
+      }
+    }
+    if (_inheritanceRequest.beneficiary != beneficiary) {
+      // a sentinel can propose a new beneficiary only after the first request expires
       if (block.timestamp - _inheritanceRequest.startedAt > 30 days) {
-        // reset the request
         delete _inheritanceRequest;
       } else revert InconsistentRecipient();
     }
-    if (_inheritanceRequest.recipient == address(0)) {
-      _inheritanceRequest.recipient = beneficiary;
+    if (_inheritanceRequest.beneficiary == address(0)) {
+      _inheritanceRequest.beneficiary = beneficiary;
       // solhint-disable-next-line not-rely-on-time
       _inheritanceRequest.startedAt = block.timestamp;
       _inheritanceRequest.approvers.push(_msgSender());
+      emit TransferRequested(_msgSender(), beneficiary);
     } else {
       _inheritanceRequest.approvers.push(_msgSender());
+      emit TransferRequestApproved(_msgSender());
     }
   }
 
-  // TODO add a deadline after a while a new beneficiary can be set
   // @dev see {IManager-inherit}
-  function inherit() external {
-    if (_inheritanceRequest.recipient == _msgSender() && _inheritanceRequest.approvers.length >= _inheritanceConf.quorum) {
-      vault.managedTransfer(tokenId(), _msgSender());
-      emit Inherited(tokenAddress(), tokenId(), owner(), _msgSender());
+  function inherit() external override {
+    // we set an expiration time in case the beneficiary cannot inherit
+    // so the sentinels can propose a new beneficiary
+    if (block.timestamp - _inheritanceRequest.startedAt > 60 days) {
       delete _inheritanceRequest;
+    }
+    if (_inheritanceRequest.beneficiary == _msgSender() && _inheritanceRequest.approvers.length >= _inheritanceConf.quorum) {
+      delete _inheritanceConf;
+      delete _inheritanceRequest;
+      _resetActors();
+      vault.managedTransfer(tokenId(), _msgSender());
+      emit InheritedBy(_msgSender());
     } else revert Unauthorized();
   }
 
@@ -346,16 +380,6 @@ contract Manager is IManager, Actor, Context, Versioned, ERC721Holder, UUPSUpgra
       if (timestamp != 0 && actorIsProtector && isAProtector(actor)) revert ProtectorAlreadySetByYou();
       _addActor(actor, role_);
     }
-  }
-
-  // @dev Returns true if the sentinels have approved a request.
-  function _hasApproved() internal view returns (bool) {
-    for (uint256 i = 0; i < _inheritanceRequest.approvers.length; i++) {
-      if (_msgSender() == _inheritanceRequest.approvers[i]) {
-        return true;
-      }
-    }
-    return false;
   }
 
   // @dev This empty reserved space is put in place to allow future versions to add new

@@ -8,10 +8,10 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {IAccountGuardian} from "@tokenbound/contracts/interfaces/IAccountGuardian.sol";
-import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
-import {IProtected} from "./IProtected.sol";
-import {IERC6454} from "./IERC6454.sol";
+import {IProtected} from "../interfaces/IProtected.sol";
+import {IERC6454} from "../interfaces/IERC6454.sol";
+import {IERC6982} from "../interfaces/IERC6982.sol";
 import {Manager} from "../manager/Manager.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {Versioned} from "../utils/Versioned.sol";
@@ -19,19 +19,16 @@ import {Versioned} from "../utils/Versioned.sol";
 //import {console} from "hardhat/console.sol";
 
 // @dev This contract is a base for NFTs with protected transfers.
-abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownable2Step, ReentrancyGuard {
+abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC721, Ownable2Step {
   using ECDSA for bytes32;
   using Strings for uint256;
 
   error NotTheTokenOwner();
-  error NotAProtector();
-  error NotATokensOwner();
   error TimestampInvalidOrExpired();
   error SignatureAlreadyUsed();
   error NotTransferable();
   error NotTheManager();
   error TimestampZero();
-  error AlreadyInitialized();
   error ZeroAddress();
   error WrongDataOrNotSignedByProtector();
 
@@ -83,6 +80,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
     VALIDATOR = SignatureValidator(signatureValidator_);
     REGISTRY = IERC6551Registry(registry_);
     MANAGER = Manager(managerProxy_);
+    emit DefaultLocked(false);
   }
 
   // @dev See {IProtected721-protectedTransfer}.
@@ -118,7 +116,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
     _approvedTransfers[tokenId] = true;
     _approve(address(managers[tokenId]), tokenId);
     safeTransferFrom(ownerOf(tokenId), to, tokenId);
-    _transfer(ownerOf(tokenId), to, tokenId);
+    _approve(address(0), tokenId);
     delete _approvedTransfers[tokenId];
   }
 
@@ -129,14 +127,17 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
     uint256 tokenId,
     uint256 batchSize
   ) internal virtual override(ERC721) {
-    if (!isTransferable(tokenId, from, to)) revert NotTransferable();
-    super._beforeTokenTransfer(from, to, tokenId, batchSize);
+    if (isTransferable(tokenId, from, to)) {
+      super._beforeTokenTransfer(from, to, tokenId, batchSize);
+    } else revert NotTransferable();
   }
 
   // @dev See {ERC165-supportsInterface}.
   function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721) returns (bool) {
     return interfaceId == type(IProtected).interfaceId || super.supportsInterface(interfaceId);
   }
+
+  // ERC6454
 
   // @dev Function to define a token as transferable or not, according to IERC6454
   // @param tokenId The id of the token.
@@ -151,12 +152,27 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, ERC721, Ownab
     else {
       _requireMinted(tokenId);
       return
-        managers[tokenId].countActiveProtectors() == 0 ||
-        // TODO move this function in the manager
-        // managers[tokenId].isTransfersApproved()
-        _approvedTransfers[tokenId] ||
-        managers[tokenId].isSafeRecipient(to);
+        managers[tokenId].countActiveProtectors() == 0 || _approvedTransfers[tokenId] || managers[tokenId].isSafeRecipient(to);
     }
+  }
+
+  // ERC6982
+
+  function defaultLocked() external pure override returns (bool) {
+    return false;
+  }
+
+  // This function returns the lock status of a specific token.
+  // If no Locked event has been emitted for a given tokenId, it MUST return
+  // the value that defaultLocked() returns, which represents the default
+  // lock status.
+  // This function MUST revert if the token does not exist.
+  function locked(uint256 tokenId) external view override returns (bool) {
+    return managers[tokenId].hasProtectors();
+  }
+
+  function emitLockedEvent(uint256 tokenId, bool locked_) external onlyManager(tokenId) {
+    emit Locked(tokenId, locked_);
   }
 
   // minting and initialization

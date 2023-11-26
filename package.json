@@ -14,7 +14,7 @@
     "test:gas": "NODE_ENV=test GAS_REPORT=yes npx hardhat test",
     "compile": "NODE_ENV=test npx hardhat compile",
     "compile:one": "NODE_ENV=test npx hardhat compile --file contracts/$1.sol",
-    "lint": "prettier --write 'contracts/**/*.sol' && solhint 'contracts/**/*.sol' && npx prettier --write ./test/**/*.js ./**/*.js",
+    "lint": "prettier --write 'contracts/**/*.sol' && solhint 'contracts/**/*.sol' && npx prettier --write ./test/**/*.js ./**/*.js && node scripts/find-unused-custom-errors.js",
     "coverage": "rimraf coverage coverage.json && NODE_ENV=test npx hardhat coverage",
     "prepare": "husky install",
     "size": "NODE_ENV=test npx hardhat size-contracts",

@@ -1,5 +1,5 @@
 {
-  "when": "2023-11-25T18:59:03.871Z",
+  "when": "2023-11-25T23:29:59.940Z",
   "contracts": {
     "ERC6551Registry": [
       {
@@ -148,17 +148,7 @@
       },
       {
         "inputs": [],
-        "name": "AssociatedToAnotherOwner",
-        "type": "error"
-      },
-      {
-        "inputs": [],
         "name": "CannotBeYourself",
-        "type": "error"
-      },
-      {
-        "inputs": [],
-        "name": "FirstProtectorNotFound",
         "type": "error"
       },
       {
@@ -183,17 +173,7 @@
       },
       {
         "inputs": [],
-        "name": "NotAProtector",
-        "type": "error"
-      },
-      {
-        "inputs": [],
         "name": "NotASentinel",
-        "type": "error"
-      },
-      {
-        "inputs": [],
-        "name": "NotAnActiveProtector",
         "type": "error"
       },
       {
@@ -203,17 +183,7 @@
       },
       {
         "inputs": [],
-        "name": "NotExpiredYet",
-        "type": "error"
-      },
-      {
-        "inputs": [],
         "name": "NotPermittedWhenProtectorsAreActive",
-        "type": "error"
-      },
-      {
-        "inputs": [],
-        "name": "NotTheFirstProtector",
         "type": "error"
       },
       {
@@ -224,11 +194,6 @@
       {
         "inputs": [],
         "name": "OwnershipCycle",
-        "type": "error"
-      },
-      {
-        "inputs": [],
-        "name": "ProtectorAlreadySet",
         "type": "error"
       },
       {
@@ -263,6 +228,11 @@
       },
       {
         "inputs": [],
+        "name": "StillAlive",
+        "type": "error"
+      },
+      {
+        "inputs": [],
         "name": "TimestampInvalidOrExpired",
         "type": "error"
       },
@@ -279,11 +249,6 @@
       {
         "inputs": [],
         "name": "Unauthorized",
-        "type": "error"
-      },
-      {
-        "inputs": [],
-        "name": "WrongDataOrNotSignedByProposedProtector",
         "type": "error"
       },
       {
@@ -334,29 +299,49 @@
           {
             "indexed": true,
             "internalType": "address",
-            "name": "protected",
+            "name": "owner",
             "type": "address"
           },
           {
             "indexed": false,
             "internalType": "uint256",
-            "name": "tokenId",
+            "name": "quorum",
             "type": "uint256"
           },
           {
-            "indexed": true,
-            "internalType": "address",
-            "name": "from",
-            "type": "address"
-          },
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "proofOfLifeDurationInDays",
+            "type": "uint256"
+          }
+        ],
+        "name": "InheritanceConfigured",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
           {
             "indexed": true,
             "internalType": "address",
-            "name": "to",
+            "name": "beneficiary",
             "type": "address"
           }
         ],
-        "name": "Inherited",
+        "name": "InheritedBy",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          }
+        ],
+        "name": "ProofOfLife",
         "type": "event"
       },
       {
@@ -440,12 +425,70 @@
           {
             "indexed": true,
             "internalType": "address",
+            "name": "sentinel",
+            "type": "address"
+          }
+        ],
+        "name": "TransferRequestApproved",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "sentinel",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "beneficiary",
+            "type": "address"
+          }
+        ],
+        "name": "TransferRequested",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
             "name": "implementation",
             "type": "address"
           }
         ],
         "name": "Upgraded",
         "type": "event"
+      },
+      {
+        "inputs": [],
+        "name": "IS_MANAGER",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "IS_NOT_MANAGER",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
       },
       {
         "inputs": [],
@@ -596,7 +639,7 @@
       },
       {
         "inputs": [],
-        "name": "getSentinels",
+        "name": "getSentinelsAndInheritanceData",
         "outputs": [
           {
             "internalType": "address[]",
@@ -624,6 +667,28 @@
             "internalType": "struct IManager.InheritanceConf",
             "name": "",
             "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "beneficiary",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "startedAt",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address[]",
+                "name": "approvers",
+                "type": "address[]"
+              }
+            ],
+            "internalType": "struct IManager.InheritanceRequest",
+            "name": "",
+            "type": "tuple"
           }
         ],
         "stateMutability": "view",
@@ -637,6 +702,19 @@
             "internalType": "contract IAccountGuardian",
             "name": "",
             "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "hasProtectors",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
           }
         ],
         "stateMutability": "view",
@@ -946,6 +1024,24 @@
         "type": "function"
       },
       {
+        "inputs": [
+          {
+            "internalType": "address[]",
+            "name": "sentinels",
+            "type": "address[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "emptySignature",
+            "type": "bytes"
+          }
+        ],
+        "name": "setSentinels",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
         "inputs": [],
         "name": "signatureValidator",
         "outputs": [
@@ -1113,21 +1209,6 @@
       },
       {
         "inputs": [],
-        "name": "AlreadyInitialized",
-        "type": "error"
-      },
-      {
-        "inputs": [],
-        "name": "NotAProtector",
-        "type": "error"
-      },
-      {
-        "inputs": [],
-        "name": "NotATokensOwner",
-        "type": "error"
-      },
-      {
-        "inputs": [],
         "name": "NotTheFactory",
         "type": "error"
       },
@@ -1219,6 +1300,38 @@
           }
         ],
         "name": "ApprovalForAll",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "bool",
+            "name": "locked",
+            "type": "bool"
+          }
+        ],
+        "name": "DefaultLocked",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "bool",
+            "name": "locked",
+            "type": "bool"
+          }
+        ],
+        "name": "Locked",
         "type": "event"
       },
       {
@@ -1395,6 +1508,37 @@
       },
       {
         "inputs": [],
+        "name": "defaultLocked",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "locked_",
+            "type": "bool"
+          }
+        ],
+        "name": "emitLockedEvent",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
         "name": "factoryAddress",
         "outputs": [
           {
@@ -1468,6 +1612,25 @@
           }
         ],
         "name": "isTransferable",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          }
+        ],
+        "name": "locked",
         "outputs": [
           {
             "internalType": "bool",

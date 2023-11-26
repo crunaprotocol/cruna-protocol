@@ -123,7 +123,7 @@ const Helpers = {
     return (await this.ethers.provider.getBlock()).timestamp;
   },
 
-  addr0: "0x0000000000000000000000000000000000000000",
+  addr0: "0x" + "0".repeat(40),
 
   async increaseBlockTimestampBy(offset) {
     await this.ethers.provider.send("evm_increaseTime", [offset]);
@@ -166,7 +166,7 @@ const Helpers = {
     return types;
   },
 
-  async signRequest(scope, owner, actor, tokenId, status, timestamp, validFor, chainId, signer, validator) {
+  async signRequest(scope, owner, actor, tokenId, extraValue, timestamp, validFor, chainId, signer, validator) {
     scope = await validator.getSupportedScope(scope);
 
     const message = {
@@ -174,7 +174,7 @@ const Helpers = {
       owner,
       actor,
       tokenId: tokenId.toString(),
-      status: status,
+      status: extraValue,
       timestamp: timestamp.toString(),
       validFor: validFor.toString(),
     };

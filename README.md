@@ -91,7 +91,7 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 ## Test coverage
 
 ```
-  12 passing (3s)
+  13 passing (4s)
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -100,23 +100,25 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   CrunaFlexiVault.sol        |       60 |       40 |    66.67 |    71.43 |          50,55 |
  contracts/factory/          |    57.14 |     37.5 |    81.82 |    58.18 |                |
   IVaultFactory.sol          |      100 |      100 |      100 |      100 |                |
-  VaultFactory.sol           |    57.14 |     37.5 |    81.82 |    58.18 |... 126,130,143 |
- contracts/manager/          |    56.99 |    33.33 |    58.97 |    55.66 |                |
-  Actor.sol                  |    94.74 |       60 |     87.5 |       95 |             49 |
+  VaultFactory.sol           |    57.14 |     37.5 |    81.82 |    58.18 |... 123,127,140 |
+ contracts/interfaces/       |      100 |      100 |      100 |      100 |                |
+  IERC6454.sol               |      100 |      100 |      100 |      100 |                |
+  IERC6982.sol               |      100 |      100 |      100 |      100 |                |
+  IProtected.sol             |      100 |      100 |      100 |      100 |                |
+ contracts/manager/          |    81.73 |    58.16 |    73.17 |    83.74 |                |
+  Actor.sol                  |    94.74 |       60 |    88.89 |    95.65 |             49 |
   Guardian.sol               |      100 |      100 |        0 |      100 |                |
   IManager.sol               |      100 |      100 |      100 |      100 |                |
-  Manager.sol                |     47.3 |       30 |    51.72 |    46.51 |... 354,355,358 |
+  Manager.sol                |    78.82 |    57.95 |       70 |       81 |... 212,280,306 |
   ManagerProxy.sol           |      100 |      100 |      100 |      100 |                |
- contracts/protected/        |       76 |       35 |       70 |    74.29 |                |
-  IERC6454.sol               |      100 |      100 |      100 |      100 |                |
-  IProtected.sol             |      100 |      100 |      100 |      100 |                |
-  ProtectedNFT.sol           |       76 |       35 |       70 |    74.29 |... 121,122,138 |
+ contracts/protected/        |    86.21 |    42.86 |    76.92 |    89.74 |                |
+  ProtectedNFT.sol           |    86.21 |    42.86 |    76.92 |    89.74 | 78,137,162,171 |
  contracts/utils/            |    92.31 |    66.67 |    66.67 |    81.82 |                |
   SignatureValidator.sol     |      100 |     87.5 |      100 |     87.5 |             31 |
   UUPSUpgradableTemplate.sol |      100 |       25 |       50 |      100 |                |
   Versioned.sol              |        0 |      100 |        0 |        0 |              9 |
 -----------------------------|----------|----------|----------|----------|----------------|
-All files                    |    62.36 |       37 |    65.28 |    61.21 |                |
+All files                    |     77.2 |       50 |    74.03 |     78.3 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
 ```
 
