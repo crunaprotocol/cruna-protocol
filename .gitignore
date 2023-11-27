@@ -67,3 +67,5 @@ db
 /test/fixtures/csv
 /export/deployed.json
 /flattened
+tmp
+!tmp/.gitkeep
