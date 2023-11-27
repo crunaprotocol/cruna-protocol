@@ -71,7 +71,7 @@ describe("Sentinel and Inheritance", function () {
     const manager = await ethers.getContractAt("Manager", await vault.managerOf(nextTokenId));
     inheritanceManager = await deployContract("InheritanceManager");
     proxy2 = await deployContract("ManagersProxy", inheritanceManager.address);
-    await expect(manager.connect(bob).plug("InheritanceManager", proxy2.address)).to.be.revertedWith("InvalidImplementation()");
+    await expect(manager.connect(bob).plug("InheritanceManager", proxy2.address)).to.be.revertedWith("InvalidImplementation");
     const scope = keccak256("InheritanceManager");
     await guardian.setTrustedImplementation(scope, proxy2.address, true);
     let pluginAddress = await manager.plugins(scope);
