@@ -105,7 +105,7 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   IERC6454.sol               |      100 |      100 |      100 |      100 |                |
   IERC6982.sol               |      100 |      100 |      100 |      100 |                |
   IProtected.sol             |      100 |      100 |      100 |      100 |                |
- contracts/managers/         |    82.83 |    56.58 |     77.5 |    84.96 |                |
+ contracts/manager/          |    82.83 |    56.58 |     77.5 |    84.96 |                |
   Actor.sol                  |    95.24 |    58.33 |       90 |    96.15 |             56 |
   ERC6551AccountEmulator.sol |    47.06 |    16.67 |    57.14 |       50 |... 25,26,29,44 |
   Guardian.sol               |      100 |       50 |      100 |    83.33 |             19 |

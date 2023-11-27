@@ -49,7 +49,7 @@ describe("Factory", function () {
     ts = (await getTimestamp()) - 100;
   });
 
-  it("should get the precalculated address of the managers", async function () {
+  it("should get the precalculated address of the manager", async function () {
     let price = await factory.finalPrice(usdc.address, "");
     await usdc.connect(bob).approve(factory.address, price);
     const nextTokenId = await vault.nextTokenId();

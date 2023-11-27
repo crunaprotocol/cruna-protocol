@@ -10,12 +10,12 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
 
-import {Guardian} from "../managers/Guardian.sol";
-import {Manager} from "../managers/Manager.sol";
+import {Guardian} from "../manager/Guardian.sol";
+import {Manager} from "../manager/Manager.sol";
 import {IInheritanceManager} from "./IInheritanceManager.sol";
 import {Versioned} from "../utils/Versioned.sol";
 import {IPlugin} from "./IPlugin.sol";
-import {ERC6551AccountEmulator} from "../managers/ERC6551AccountEmulator.sol";
+import {ERC6551AccountEmulator} from "../manager/ERC6551AccountEmulator.sol";
 
 //import {console} from "hardhat/console.sol";
 

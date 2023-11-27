@@ -73,7 +73,7 @@ describe("Testing contract deployments", function () {
     // test the beforeEach
   });
 
-  it("should get the token parameters from the managers", async function () {
+  it("should get the token parameters from the manager", async function () {
     let price = await factory.finalPrice(usdc.address, "");
     await usdc.connect(bob).approve(factory.address, price);
     const nextTokenId = await vault.nextTokenId();

@@ -27,7 +27,7 @@ contract CrunaFlexiVault is ProtectedNFT {
   // @param registry_ The address of the registry contract.
   // @param guardian_ The address of the Manager.sol guardian.
   // @param signatureValidator_ The address of the signature validator.
-  // @param managerProxy_ The address of the managers proxy.
+  // @param managerProxy_ The address of the manager proxy.
   constructor(
     address registry_,
     address guardian_,
