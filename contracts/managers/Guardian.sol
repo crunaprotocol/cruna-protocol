@@ -15,7 +15,7 @@ contract Guardian is Ownable2Step, Versioned {
   event TrustedImplementationUpdated(bytes32 scope, address implementation, bool trusted);
 
   constructor(address owner) {
-    if (owner != address(0)) {
+    if (owner == address(0)) {
       revert ZeroAddress();
     }
     _transferOwnership(owner);

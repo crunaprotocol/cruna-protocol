@@ -32,7 +32,7 @@ contract Actor {
     return _actors[role];
   }
 
-  function _findActorIndex(address actor_, bytes32 role) internal view returns (uint256) {
+  function actorIndex(address actor_, bytes32 role) public view returns (uint256) {
     address[] storage actors = _actors[role];
     // This may go out of gas if there are too many actors
     for (uint256 i = 0; i < actors.length; i++) {
@@ -43,12 +43,12 @@ contract Actor {
     return MAX_ACTORS;
   }
 
-  function _actorLength(bytes32 role) internal view returns (uint256) {
+  function actorCount(bytes32 role) public view returns (uint256) {
     return _actors[role].length;
   }
 
   function _isActiveActor(address actor_, bytes32 role) internal view returns (bool) {
-    uint256 i = _findActorIndex(actor_, role);
+    uint256 i = actorIndex(actor_, role);
     return i < MAX_ACTORS;
   }
 
@@ -57,7 +57,7 @@ contract Actor {
   }
 
   function _removeActor(address actor_, bytes32 role) internal {
-    uint256 i = _findActorIndex(actor_, role);
+    uint256 i = actorIndex(actor_, role);
     _removeActorByIndex(i, role);
   }
 

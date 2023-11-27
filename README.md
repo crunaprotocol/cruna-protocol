@@ -91,7 +91,7 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 ## Test coverage
 
 ```
-  13 passing (4s)
+  14 passing (4s)
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -105,12 +105,17 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   IERC6454.sol               |      100 |      100 |      100 |      100 |                |
   IERC6982.sol               |      100 |      100 |      100 |      100 |                |
   IProtected.sol             |      100 |      100 |      100 |      100 |                |
- contracts/manager/          |    79.82 |    55.77 |    70.45 |    80.88 |                |
+ contracts/managers/         |    82.83 |    56.58 |     77.5 |    84.96 |                |
   Actor.sol                  |    95.24 |    58.33 |       90 |    96.15 |             56 |
-  Guardian.sol               |        0 |        0 |        0 |        0 |... 21,29,30,34 |
+  ERC6551AccountEmulator.sol |    47.06 |    16.67 |    57.14 |       50 |... 25,26,29,44 |
+  Guardian.sol               |      100 |       50 |      100 |    83.33 |             19 |
   IManager.sol               |      100 |      100 |      100 |      100 |                |
-  Manager.sol                |    79.78 |    57.95 |       70 |    81.73 |... 219,287,313 |
-  ManagerProxy.sol           |      100 |      100 |      100 |      100 |                |
+  Manager.sol                |    87.72 |    61.11 |    73.68 |    89.23 |... 126,145,176 |
+  ManagersProxy.sol          |      100 |      100 |      100 |      100 |                |
+ contracts/plugins/          |    94.29 |    56.82 |    90.91 |    92.16 |                |
+  IInheritanceManager.sol    |      100 |      100 |      100 |      100 |                |
+  IPlugin.sol                |      100 |      100 |      100 |      100 |                |
+  InheritanceManager.sol     |    94.29 |    56.82 |    90.91 |    92.16 |  79,80,148,174 |
  contracts/protected/        |    86.21 |    42.86 |    76.92 |    89.74 |                |
   ProtectedNFT.sol           |    86.21 |    42.86 |    76.92 |    89.74 | 78,137,162,171 |
  contracts/utils/            |       75 |       25 |       60 |       75 |                |
@@ -118,7 +123,7 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   UUPSUpgradableTemplate.sol |      100 |       25 |       50 |      100 |                |
   Versioned.sol              |        0 |      100 |        0 |        0 |              9 |
 -----------------------------|----------|----------|----------|----------|----------------|
-All files                    |    75.26 |     47.6 |    72.15 |    76.76 |                |
+All files                    |    79.44 |    48.66 |    77.91 |    81.04 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
 ```
 

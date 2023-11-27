@@ -166,10 +166,13 @@ const Helpers = {
     return types;
   },
 
-  async signRequest(scope, owner, actor, tokenId, extraValue, timestamp, validFor, chainId, signer, validator) {
-    const sentinelBytes = ethers.utils.toUtf8Bytes(scope);
-    scope = ethers.utils.keccak256(sentinelBytes);
+  keccak256(str) {
+    const bytes = ethers.utils.toUtf8Bytes(str);
+    return ethers.utils.keccak256(bytes);
+  },
 
+  async signRequest(scope, owner, actor, tokenId, extraValue, timestamp, validFor, chainId, signer, validator) {
+    scope = Helpers.keccak256(scope);
     const message = {
       scope: scope.toString(),
       owner,

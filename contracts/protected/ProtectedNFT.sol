@@ -12,7 +12,7 @@ import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
 import {IProtected} from "../interfaces/IProtected.sol";
 import {IERC6454} from "../interfaces/IERC6454.sol";
 import {IERC6982} from "../interfaces/IERC6982.sol";
-import {Manager} from "../manager/Manager.sol";
+import {Manager} from "../managers/Manager.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {Versioned} from "../utils/Versioned.sol";
 
@@ -52,7 +52,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
     _;
   }
 
-  // @dev This modifier will only allow the manager of a certain tokenId to call the function.
+  // @dev This modifier will only allow the managers of a certain tokenId to call the function.
   // @param tokenId_ The id of the token.
   modifier onlyManager(uint256 tokenId) {
     if (address(managers[tokenId]) != _msgSender()) revert NotTheManager();
@@ -63,9 +63,9 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   // @param name_ The name of the token.
   // @param symbol_ The symbol of the token.
   // @param registry_ The address of the registry contract.
-  // @param guardian_ The address of the Manager guardian.
+  // @param guardian_ The address of the Manager.sol guardian.
   // @param signatureValidator_ The address of the signature validator.
-  // @param managerProxy_ The address of the manager proxy.
+  // @param managerProxy_ The address of the managers proxy.
   constructor(
     string memory name_,
     string memory symbol_,
@@ -182,11 +182,11 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   function _mintAndInit(address to) internal {
     REGISTRY.createAccount(address(MANAGER), salt, block.chainid, address(this), nextTokenId);
     managers[nextTokenId] = Manager(managerOf(nextTokenId));
-    managers[nextTokenId].init(address(GUARDIAN), address(VALIDATOR));
+    managers[nextTokenId].init(address(REGISTRY), address(GUARDIAN), address(VALIDATOR));
     _safeMint(to, nextTokenId++);
   }
 
-  // @dev This function will return the address of the manager for tokenId.
+  // @dev This function will return the address of the managers for tokenId.
   // @param tokenId The id of the token.
   function managerOf(uint256 tokenId) public view returns (address) {
     return REGISTRY.account(address(MANAGER), salt, block.chainid, address(this), tokenId);
