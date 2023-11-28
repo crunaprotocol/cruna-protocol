@@ -93,6 +93,8 @@ describe("Protectors", function () {
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
 
+    expect(await manager.hasProtectors()).to.equal(false);
+
     // set Alice as first Bob's protector
     await manager.connect(bob).setProtector(alice.address, true, 0, 0, 0);
     // Set Fred as Bob's protector
@@ -119,6 +121,11 @@ describe("Protectors", function () {
 
     allProtectors = await manager.getProtectors();
     expect(allProtectors[1]).equal(fred.address);
+
+    let totalProtectors = await manager.listProtectors();
+    expect(await totalProtectors.length).to.equal(2);
+
+    expect(await manager.hasProtectors()).to.equal(true);
 
     // let Fred remove Alice as protector
     signature = await signRequest(
