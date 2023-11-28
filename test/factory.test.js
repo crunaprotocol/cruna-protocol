@@ -20,11 +20,12 @@ describe("Factory", function () {
     signatureValidator = await deployContract("SignatureValidator", "Cruna", "1");
   });
 
+  //here we test the contract
   beforeEach(async function () {
     erc6551Registry = await deployContract("ERC6551Registry");
     manager = await deployContract("Manager");
     guardian = await deployContract("Guardian", deployer.address);
-    proxy = await deployContract("ManagersProxy", manager.address);
+    proxy = await deployContract("ManagerProxy", manager.address);
 
     vault = await deployContract(
       "CrunaFlexiVault",

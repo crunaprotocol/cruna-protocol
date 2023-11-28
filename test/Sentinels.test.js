@@ -38,7 +38,7 @@ describe("Sentinel and Inheritance", function () {
     erc6551Registry = await deployContract("ERC6551Registry");
     manager = await deployContract("Manager");
     guardian = await deployContract("Guardian", deployer.address);
-    proxy = await deployContract("ManagersProxy", manager.address);
+    proxy = await deployContract("ManagerProxy", manager.address);
 
     vault = await deployContract(
       "CrunaFlexiVault",
@@ -70,7 +70,7 @@ describe("Sentinel and Inheritance", function () {
     await factory.connect(bob).buyVaults(usdc.address, 1, "");
     const manager = await ethers.getContractAt("Manager", await vault.managerOf(nextTokenId));
     inheritanceManager = await deployContract("InheritanceManager");
-    proxy2 = await deployContract("ManagersProxy", inheritanceManager.address);
+    proxy2 = await deployContract("ManagerProxy", inheritanceManager.address);
     await expect(manager.connect(bob).plug("InheritanceManager", proxy2.address)).to.be.revertedWith("InvalidImplementation");
     const scope = keccak256("InheritanceManager");
     await guardian.setTrustedImplementation(scope, proxy2.address, true);

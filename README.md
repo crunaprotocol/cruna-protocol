@@ -135,7 +135,7 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   Guardian.sol               |      100 |       50 |      100 |    83.33 |             19 |
   IManager.sol               |      100 |      100 |      100 |      100 |                |
   Manager.sol                |    89.47 |    61.11 |    78.95 |    90.77 |... 126,145,176 |
-  ManagersProxy.sol          |      100 |      100 |      100 |      100 |                |
+  ManagerProxy.sol          |      100 |      100 |      100 |      100 |                |
  contracts/plugins/          |    94.29 |    56.82 |    90.91 |    92.16 |                |
   IInheritanceManager.sol    |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                |      100 |      100 |      100 |      100 |                |

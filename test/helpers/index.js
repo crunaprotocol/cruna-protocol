@@ -55,7 +55,12 @@ const Helpers = {
     }
   },
 
-  async deployContractViaNickSFactory(deployer, contractBytecode, salt, constructorArgs, constructorTypes, gasLimit) {
+  async deployContractViaNickSFactory(deployer, contractName, folderName, constructorTypes, constructorArgs, gasLimit) {
+    const salt = Helpers.keccak256("Cruna");
+    const json = require(`../../artifacts/${folderName}/${contractName}.sol/${contractName}.json`);
+    let contractBytecode = json.bytecode;
+    let bytecode = contractBytecode;
+
     // examples:
     // const constructorArgs = [arg1, arg2, arg3];
     // const constructorTypes = ["type1", "type2", "type3"];

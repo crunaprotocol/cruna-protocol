@@ -3,9 +3,9 @@ const hre = require("hardhat");
 const ethers = hre.ethers;
 
 const { expect } = require("chai");
-const { deployNickSFactory, deployContractViaNickSFactory, getChainId } = require("./helpers");
+const { deployNickSFactory, deployContractViaNickSFactory, getChainId, keccak256 } = require("./helpers");
 
-describe.only("Nick's factory", function () {
+describe("Nick's factory", function () {
   let deployer;
   let erc6551Registry, proxy, manager, guardian, signatureValidator, vault;
   let chainId;
@@ -14,27 +14,36 @@ describe.only("Nick's factory", function () {
     [deployer, bob, alice, fred, mark, otto] = await ethers.getSigners();
     chainId = await getChainId();
     await deployNickSFactory(deployer);
-    erc6551Registry = await deployContractViaNickSFactory(deployer, "ERC6551Registry", "erc6551");
-    expect(erc6551Registry.address).equal("0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0");
 
-    return;
-    manager = await deployContractViaNickSFactory(deployer, "Manager", "contracts/manager");
-    expect(manager.address).equal("0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9");
-    guardian = await deployContractViaNickSFactory(deployer, "Guardian", "contracts/manager", deployer.address);
-    expect(guardian.address).equal("0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9");
-    proxy = await deployContractViaNickSFactory(deployer, "ManagerProxy", "contracts/manager", manager.address);
-    expect(proxy.address).equal("0x5FC8d32690cc91D4c39d9d3abcBD16989F875707");
-    vault = await deployContractViaNickSFactory(
+    const managerAddress = await deployContractViaNickSFactory(deployer, "Manager", "contracts/manager");
+    manager = await ethers.getContractAt("Manager", managerAddress);
+    expect(manager.address).equal("0x00b483FEfC7645eF05EA2508914Eb15A54Bf1999");
+    expect(await manager.version()).equal("1.0.0");
+
+    const erc6551RegistryAddress = await deployContractViaNickSFactory(deployer, "ERC6551Registry", "erc6551");
+    expect(erc6551RegistryAddress).equal("0x9B25dbEe5a7Dc1F3f9081CdD6bf3a8557Ab09196");
+    erc6551Registry = await ethers.getContractAt("ERC6551Registry", erc6551RegistryAddress);
+    const account = await erc6551Registry.account(otto.address, keccak256("otto"), chainId.toString(), fred.address, 1);
+    expect(account).to.be.not.equal(undefined);
+
+    const signatureValidatorAddress = await deployContractViaNickSFactory(deployer, "SignatureValidator", "contracts/utils", ["string", "string"], ["Cruna", "1"]);
+    expect(signatureValidatorAddress).equal("0xe34861e95F791fa845FcBfA41053EFC24cCb0a73");
+
+    const guardianAddress = await deployContractViaNickSFactory(deployer, "Guardian", "contracts/manager",["address"], [deployer.address]);
+    expect(guardianAddress).equal("0xEc05d35EBE42f5aF046de9Ffcb2f12476699580c");
+    const proxyAddress = await deployContractViaNickSFactory(deployer, "ManagerProxy", "contracts/manager", ["address"], [manager.address]);
+    expect(proxyAddress).equal("0xf39dD60fd62094639Cb990d24892431EbA7208d3");
+    const vaultAddress = await deployContractViaNickSFactory(
       deployer,
       "CrunaFlexiVault",
-      "contracts",
-      erc6551Registry.address,
-      guardian.address,
-      signatureValidator.address,
-      proxy.address,
+      "contracts", ["address", "address", "address","address"],
+        [
+            erc6551RegistryAddress,
+      guardianAddress,
+      signatureValidatorAddress,
+      proxyAddress],
     );
-    expect(vault.address).equal("0x0165878A594ca255338adfa4d48449f69242Eb8F");
-    signatureValidator = await deployContractViaNickSFactory(deployer, "SignatureValidator", "contracts/utils", "Cruna", "1");
+    expect(vaultAddress).equal("0x19135272b40EcEad8D350a1ea8B7FabFA5C746b7");
   });
 
   it("should mint a vault and deploy the relative manager", async function () {
