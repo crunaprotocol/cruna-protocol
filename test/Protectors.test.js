@@ -122,8 +122,12 @@ describe("Protectors", function () {
     allProtectors = await manager.getProtectors();
     expect(allProtectors[1]).equal(fred.address);
 
+    // test listProtectors is of type arrya and that it has two protector addresses
+    // and that the second address is fred's.
     let totalProtectors = await manager.listProtectors();
+    expect(totalProtectors).to.be.an('array');
     expect(await totalProtectors.length).to.equal(2);
+    expect(totalProtectors[1]).equal(fred.address);
 
     expect(await manager.hasProtectors()).to.equal(true);
 
