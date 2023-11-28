@@ -91,7 +91,7 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 ## Test coverage
 
 ```
-  14 passing (4s)
+  14 passing (9s)
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -105,12 +105,12 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   IERC6454.sol               |      100 |      100 |      100 |      100 |                |
   IERC6982.sol               |      100 |      100 |      100 |      100 |                |
   IProtected.sol             |      100 |      100 |      100 |      100 |                |
- contracts/manager/          |    82.83 |    56.58 |     77.5 |    84.96 |                |
+ contracts/manager/          |    83.84 |    56.58 |       80 |    85.84 |                |
   Actor.sol                  |    95.24 |    58.33 |       90 |    96.15 |             56 |
   ERC6551AccountEmulator.sol |    47.06 |    16.67 |    57.14 |       50 |... 25,26,29,44 |
   Guardian.sol               |      100 |       50 |      100 |    83.33 |             19 |
   IManager.sol               |      100 |      100 |      100 |      100 |                |
-  Manager.sol                |    87.72 |    61.11 |    73.68 |    89.23 |... 126,145,176 |
+  Manager.sol                |    89.47 |    61.11 |    78.95 |    90.77 |... 126,145,176 |
   ManagersProxy.sol          |      100 |      100 |      100 |      100 |                |
  contracts/plugins/          |    94.29 |    56.82 |    90.91 |    92.16 |                |
   IInheritanceManager.sol    |      100 |      100 |      100 |      100 |                |
@@ -123,7 +123,7 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   UUPSUpgradableTemplate.sol |      100 |       25 |       50 |      100 |                |
   Versioned.sol              |        0 |      100 |        0 |        0 |              9 |
 -----------------------------|----------|----------|----------|----------|----------------|
-All files                    |    79.44 |    48.66 |    77.91 |    81.04 |                |
+All files                    |    79.91 |    48.66 |    79.07 |    81.41 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
 ```
 

@@ -136,6 +136,8 @@ describe("Protectors", function () {
     await expect(manager.connect(bob).setProtector(alice.address, false, ts, 3600, signature))
       .to.emit(manager, "ProtectorUpdated")
       .withArgs(bob.address, alice.address, false);
+
+    expect(await manager.findProtectorIndex(fred.address)).to.equal(0);
   });
 
   it("should add a protector and transfer a vault", async function () {
