@@ -48,37 +48,42 @@ const Helpers = {
       });
       await txResponse.wait();
 
-      const txSserialized = `0xf8a58085174876e800830186a08080b853604580600e600039806000f350fe7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe03601600081602082378035828234f58015156039578182fd5b8082525050506014600cf31ba02222222222222222222222222222222222222222222222222222222222222222a02222222222222222222222222222222222222222222222222222222222222222`;
+      const serializedTx = `0xf8a58085174876e800830186a08080b853604580600e600039806000f350fe7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe03601600081602082378035828234f58015156039578182fd5b8082525050506014600cf31ba02222222222222222222222222222222222222222222222222222222222222222a02222222222222222222222222222222222222222222222222222222222222222`;
 
-      txResponse = await this.ethers.provider.sendTransaction(txSserialized);
+      txResponse = await this.ethers.provider.sendTransaction(serializedTx);
       return txResponse.wait();
     }
   },
 
-  async deployContractViaNickSFactory(deployer, contractBytecode, salt) {
-    const factoryContract = new this.ethers.Contract(
-      Helpers.nickSFactoryAddress,
-      ["function deploy(bytes _bytecode, bytes32 _salt) public returns (address)"],
-      deployer,
-    );
+  async deployContractViaNickSFactory(deployer, contractName, folderName, constructorTypes, constructorArgs, gasLimit) {
+    const salt = Helpers.keccak256("Cruna");
+    const json = require(`../../artifacts/${folderName}/${contractName}.sol/${contractName}.json`);
+    let contractBytecode = json.bytecode;
+    let bytecode = contractBytecode;
 
-    // const expectedAddress = this.ethers.utils.getCreate2Address(
-    //     Helpers.nickSFactoryAddress,
-    //     salt,
-    //     this.ethers.utils.keccak256(contractBytecode)
-    // );
-    //
-    // console.log(contractBytecode);
+    // examples:
+    // const constructorArgs = [arg1, arg2, arg3];
+    // const constructorTypes = ["type1", "type2", "type3"];
 
-    const tx = await factoryContract.deploy(contractBytecode, salt);
-    await tx.wait();
+    if (constructorTypes) {
+      // ABI-encode the constructor arguments
+      const encodedArgs = ethers.utils.defaultAbiCoder.encode(constructorTypes, constructorArgs);
+      contractBytecode = contractBytecode + encodedArgs.substring(2); // Remove '0x' from encoded args
+    }
 
-    const address = this.ethers.utils.getCreate2Address(
+    const data = salt + contractBytecode.substring(2);
+    const tx = {
+      to: Helpers.nickSFactoryAddress,
+      data,
+      gasLimit,
+    };
+    const transaction = await deployer.sendTransaction(tx);
+    await transaction.wait();
+    return this.ethers.utils.getCreate2Address(
       Helpers.nickSFactoryAddress,
       salt,
       this.ethers.utils.keccak256(contractBytecode),
     );
-    return address;
   },
 
   async deployContract(contractName, ...args) {
