@@ -1,4 +1,7 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npm run lint && bin/get-coverage.sh && bin/export.sh && git add -A
+if [[ "$SKIP_PRECOMMIT" != "" ]]
+then
+  npm run lint && bin/get-coverage.sh && bin/export.sh && git add -A
+fi

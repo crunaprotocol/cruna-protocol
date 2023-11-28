@@ -55,30 +55,30 @@ const Helpers = {
     }
   },
 
-  async deployContractViaNickSFactory(deployer, contractBytecode, salt) {
-    const factoryContract = new this.ethers.Contract(
-      Helpers.nickSFactoryAddress,
-      ["function deploy(bytes _bytecode, bytes32 _salt) public returns (address)"],
-      deployer,
-    );
+  async deployContractViaNickSFactory(deployer, contractBytecode, salt, constructorArgs, constructorTypes, gasLimit) {
+    // examples:
+    // const constructorArgs = [arg1, arg2, arg3];
+    // const constructorTypes = ["type1", "type2", "type3"];
 
-    // const expectedAddress = this.ethers.utils.getCreate2Address(
-    //     Helpers.nickSFactoryAddress,
-    //     salt,
-    //     this.ethers.utils.keccak256(contractBytecode)
-    // );
-    //
-    // console.log(contractBytecode);
+    if (constructorTypes) {
+      // ABI-encode the constructor arguments
+      const encodedArgs = ethers.utils.defaultAbiCoder.encode(constructorTypes, constructorArgs);
+      contractBytecode = contractBytecode + encodedArgs.substring(2); // Remove '0x' from encoded args
+    }
 
-    const tx = await factoryContract.deploy(contractBytecode, salt);
-    await tx.wait();
-
-    const address = this.ethers.utils.getCreate2Address(
+    const data = salt + contractBytecode.substring(2);
+    const tx = {
+      to: Helpers.nickSFactoryAddress,
+      data,
+      gasLimit,
+    };
+    const transaction = await deployer.sendTransaction(tx);
+    await transaction.wait();
+    return this.ethers.utils.getCreate2Address(
       Helpers.nickSFactoryAddress,
       salt,
       this.ethers.utils.keccak256(contractBytecode),
     );
-    return address;
   },
 
   async deployContract(contractName, ...args) {
