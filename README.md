@@ -24,6 +24,30 @@ Imagine a system that safeguards your assets even if you lose access or in case 
 
 This feature is not just about security; it's about peace of mind and ensuring your digital legacy is preserved and passed on as intended.
 
+## Cruna Vault Plugin Architecture
+
+The Cruna Protocol introduces a flexible Plugin Architecture with every Cruna Vault minted. Alongside the Vault, a Manager contract owned by the Vault is deployed, acting as the central hub for managing various functionalities.
+
+### Manager's Role
+The Manager plays a key role in overseeing crucial aspects of the Vault:
+
+* Protectors and Safe Recipients: It handles the appointment and management of Protectors and Safe Recipients, ensuring robust security mechanisms.
+* Plugin Management: The Manager is also in charge of managing the Vault’s plugins. For instance, functionalities like Sentinels and Beneficiaries are handled by the InheritanceManager, a specialized plugin within the system.
+### Plugin Integration and Verification
+When users want to enhance their Vault with additional features, they can integrate plugins into the Manager:
+
+* Implementation Approval: Before a plugin is activated, its implementation is thoroughly vetted and approved by the Manager.
+* Proxy Deployment: Upon approval, the Manager deploys a proxy for the plugin, seamlessly integrating it with the Vault’s ecosystem.
+### Ownership and Control
+Despite the integration of various plugins, the ultimate control and ownership remain with the Cruna Vault owner:
+
+* Sole Authority: The Vault owner is the exclusive authority over the plugin, retaining complete control over its functionalities.
+### Advantages of the Plugin Architecture
+This architecture offers significant benefits in terms of scalability and flexibility:
+
+* Seamless Upgradability: It enables the addition of new features to Cruna Vaults without altering the core contract code, ensuring a smooth upgradation path.
+* Compatibility with Token Bound Accounts: The architecture ensures that any Token Bound Account (TBA) set for the Cruna Vault remains compatible with new features, eliminating the need for contract migrations or TBA modifications.
+
 ## Real-World Applications with ERC-6551
 
 Cruna Vault's flexibility means it can be used in various ways:
@@ -91,7 +115,7 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 ## Test coverage
 
 ```
-  14 passing (9s)
+  14 passing (4s)
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
