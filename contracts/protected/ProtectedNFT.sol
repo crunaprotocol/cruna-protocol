@@ -63,7 +63,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   // @param name_ The name of the token.
   // @param symbol_ The symbol of the token.
   // @param registry_ The address of the registry contract.
-  // @param guardian_ The address of the Manager guardian.
+  // @param guardian_ The address of the Manager.sol guardian.
   // @param signatureValidator_ The address of the signature validator.
   // @param managerProxy_ The address of the manager proxy.
   constructor(
@@ -96,7 +96,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
     if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
     usedSignatures[keccak256(signature)] = true;
     address signer = managers[tokenId].signatureValidator().recoverSigner(
-      managers[tokenId].signatureValidator().getSupportedScope("PROTECTED_TRANSFER"),
+      keccak256("PROTECTED_TRANSFER"),
       _msgSender(),
       to,
       tokenId,
@@ -182,7 +182,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   function _mintAndInit(address to) internal {
     REGISTRY.createAccount(address(MANAGER), salt, block.chainid, address(this), nextTokenId);
     managers[nextTokenId] = Manager(managerOf(nextTokenId));
-    managers[nextTokenId].init(address(GUARDIAN), address(VALIDATOR));
+    managers[nextTokenId].init(address(REGISTRY), address(GUARDIAN), address(VALIDATOR));
     _safeMint(to, nextTokenId++);
   }
 

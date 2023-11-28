@@ -35,8 +35,9 @@ describe("Testing contract deployments", function () {
   beforeEach(async function () {
     erc6551Registry = await deployContract("ERC6551Registry");
     manager = await deployContract("Manager");
-    guardian = await deployContract("AccountGuardian", deployer.address);
-    proxy = await deployContract("ManagerProxy", manager.address);
+    guardian = await deployContract("Guardian", deployer.address);
+    proxy = await deployContract("ManagersProxy", manager.address);
+
     vault = await deployContract(
       "CrunaFlexiVault",
       erc6551Registry.address,

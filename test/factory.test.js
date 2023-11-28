@@ -6,7 +6,7 @@ function cl() {
   console.log(count++);
 }
 
-const { amount, normalize, deployContractUpgradeable, addr0, getChainId, deployContract } = require("./helpers");
+const { amount, normalize, deployContractUpgradeable, addr0, getChainId, deployContract, getTimestamp } = require("./helpers");
 
 describe("Factory", function () {
   let erc6551Registry, proxy, manager, guardian;
@@ -23,8 +23,9 @@ describe("Factory", function () {
   beforeEach(async function () {
     erc6551Registry = await deployContract("ERC6551Registry");
     manager = await deployContract("Manager");
-    guardian = await deployContract("AccountGuardian", deployer.address);
-    proxy = await deployContract("ManagerProxy", manager.address);
+    guardian = await deployContract("Guardian", deployer.address);
+    proxy = await deployContract("ManagersProxy", manager.address);
+
     vault = await deployContract(
       "CrunaFlexiVault",
       erc6551Registry.address,
@@ -45,6 +46,7 @@ describe("Factory", function () {
     await expect(factory.setPrice(990)).to.emit(factory, "PriceSet").withArgs(990);
     await expect(factory.setStableCoin(usdc.address, true)).to.emit(factory, "StableCoinSet").withArgs(usdc.address, true);
     await expect(factory.setStableCoin(usdt.address, true)).to.emit(factory, "StableCoinSet").withArgs(usdt.address, true);
+    ts = (await getTimestamp()) - 100;
   });
 
   it("should get the precalculated address of the manager", async function () {

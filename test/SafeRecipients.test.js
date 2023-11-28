@@ -35,8 +35,9 @@ describe("Protectors", function () {
   beforeEach(async function () {
     erc6551Registry = await deployContract("ERC6551Registry");
     manager = await deployContract("Manager");
-    guardian = await deployContract("AccountGuardian", deployer.address);
-    proxy = await deployContract("ManagerProxy", manager.address);
+    guardian = await deployContract("Guardian", deployer.address);
+    proxy = await deployContract("ManagersProxy", manager.address);
+
     vault = await deployContract(
       "CrunaFlexiVault",
       erc6551Registry.address,
@@ -54,9 +55,9 @@ describe("Protectors", function () {
     await usdc.mint(bob.address, normalize("900"));
     await usdt.mint(alice.address, normalize("600", 6));
 
-    await factory.setPrice(990);
-    await factory.setStableCoin(usdc.address, true);
-    await factory.setStableCoin(usdt.address, true);
+    await expect(factory.setPrice(990)).to.emit(factory, "PriceSet").withArgs(990);
+    await expect(factory.setStableCoin(usdc.address, true)).to.emit(factory, "StableCoinSet").withArgs(usdc.address, true);
+    await expect(factory.setStableCoin(usdt.address, true)).to.emit(factory, "StableCoinSet").withArgs(usdt.address, true);
     ts = (await getTimestamp()) - 100;
   });
 

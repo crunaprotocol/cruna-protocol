@@ -166,9 +166,13 @@ const Helpers = {
     return types;
   },
 
-  async signRequest(scope, owner, actor, tokenId, extraValue, timestamp, validFor, chainId, signer, validator) {
-    scope = await validator.getSupportedScope(scope);
+  keccak256(str) {
+    const bytes = ethers.utils.toUtf8Bytes(str);
+    return ethers.utils.keccak256(bytes);
+  },
 
+  async signRequest(scope, owner, actor, tokenId, extraValue, timestamp, validFor, chainId, signer, validator) {
+    scope = Helpers.keccak256(scope);
     const message = {
       scope: scope.toString(),
       owner,
@@ -184,7 +188,7 @@ const Helpers = {
       Helpers.privateKeyByWallet[signer],
       "Auth",
       [
-        { name: "scope", type: "uint256" },
+        { name: "scope", type: "bytes32" },
         { name: "owner", type: "address" },
         { name: "actor", type: "address" },
         { name: "tokenId", type: "uint256" },

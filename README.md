@@ -24,6 +24,30 @@ Imagine a system that safeguards your assets even if you lose access or in case 
 
 This feature is not just about security; it's about peace of mind and ensuring your digital legacy is preserved and passed on as intended.
 
+## Cruna Vault Plugin Architecture
+
+The Cruna Protocol introduces a flexible Plugin Architecture with every Cruna Vault minted. Alongside the Vault, a Manager contract owned by the Vault is deployed, acting as the central hub for managing various functionalities.
+
+### Manager's Role
+The Manager plays a key role in overseeing crucial aspects of the Vault:
+
+* Protectors and Safe Recipients: It handles the appointment and management of Protectors and Safe Recipients, ensuring robust security mechanisms.
+* Plugin Management: The Manager is also in charge of managing the Vault’s plugins. For instance, functionalities like Sentinels and Beneficiaries are handled by the InheritanceManager, a specialized plugin within the system.
+### Plugin Integration and Verification
+When users want to enhance their Vault with additional features, they can integrate plugins into the Manager:
+
+* Implementation Approval: Before a plugin is activated, its implementation is thoroughly vetted and approved by the Manager.
+* Proxy Deployment: Upon approval, the Manager deploys a proxy for the plugin, seamlessly integrating it with the Vault’s ecosystem.
+### Ownership and Control
+Despite the integration of various plugins, the ultimate control and ownership remain with the Cruna Vault owner:
+
+* Sole Authority: The Vault owner is the exclusive authority over the plugin, retaining complete control over its functionalities.
+### Advantages of the Plugin Architecture
+This architecture offers significant benefits in terms of scalability and flexibility:
+
+* Seamless Upgradability: It enables the addition of new features to Cruna Vaults without altering the core contract code, ensuring a smooth upgradation path.
+* Compatibility with Token Bound Accounts: The architecture ensures that any Token Bound Account (TBA) set for the Cruna Vault remains compatible with new features, eliminating the need for contract migrations or TBA modifications.
+
 ## Real-World Applications with ERC-6551
 
 Cruna Vault's flexibility means it can be used in various ways:
@@ -91,7 +115,7 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 ## Test coverage
 
 ```
-  13 passing (4s)
+  14 passing (4s)
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -105,20 +129,25 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   IERC6454.sol               |      100 |      100 |      100 |      100 |                |
   IERC6982.sol               |      100 |      100 |      100 |      100 |                |
   IProtected.sol             |      100 |      100 |      100 |      100 |                |
- contracts/manager/          |    81.73 |    58.16 |    73.17 |    83.74 |                |
-  Actor.sol                  |    94.74 |       60 |    88.89 |    95.65 |             49 |
-  Guardian.sol               |      100 |      100 |        0 |      100 |                |
+ contracts/manager/          |    83.84 |    56.58 |       80 |    85.84 |                |
+  Actor.sol                  |    95.24 |    58.33 |       90 |    96.15 |             56 |
+  ERC6551AccountEmulator.sol |    47.06 |    16.67 |    57.14 |       50 |... 25,26,29,44 |
+  Guardian.sol               |      100 |       50 |      100 |    83.33 |             19 |
   IManager.sol               |      100 |      100 |      100 |      100 |                |
-  Manager.sol                |    78.82 |    57.95 |       70 |       81 |... 212,280,306 |
-  ManagerProxy.sol           |      100 |      100 |      100 |      100 |                |
+  Manager.sol                |    89.47 |    61.11 |    78.95 |    90.77 |... 126,145,176 |
+  ManagersProxy.sol          |      100 |      100 |      100 |      100 |                |
+ contracts/plugins/          |    94.29 |    56.82 |    90.91 |    92.16 |                |
+  IInheritanceManager.sol    |      100 |      100 |      100 |      100 |                |
+  IPlugin.sol                |      100 |      100 |      100 |      100 |                |
+  InheritanceManager.sol     |    94.29 |    56.82 |    90.91 |    92.16 |  79,80,148,174 |
  contracts/protected/        |    86.21 |    42.86 |    76.92 |    89.74 |                |
   ProtectedNFT.sol           |    86.21 |    42.86 |    76.92 |    89.74 | 78,137,162,171 |
- contracts/utils/            |    92.31 |    66.67 |    66.67 |    81.82 |                |
-  SignatureValidator.sol     |      100 |     87.5 |      100 |     87.5 |             31 |
+ contracts/utils/            |       75 |       25 |       60 |       75 |                |
+  SignatureValidator.sol     |      100 |      100 |      100 |      100 |                |
   UUPSUpgradableTemplate.sol |      100 |       25 |       50 |      100 |                |
   Versioned.sol              |        0 |      100 |        0 |        0 |              9 |
 -----------------------------|----------|----------|----------|----------|----------------|
-All files                    |     77.2 |       50 |    74.03 |     78.3 |                |
+All files                    |    79.91 |    48.66 |    79.07 |    81.41 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
 ```
 
