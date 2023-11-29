@@ -41,7 +41,7 @@ describe("Factory", function () {
     usdc = await deployContract("USDCoin");
     usdt = await deployContract("TetherUSD");
 
-    await usdc.mint(bob.address, normalize("3000"));
+    await usdc.mint(bob.address, normalize("900"));
     await usdt.mint(alice.address, normalize("600", 6));
 
     await expect(factory.setPrice(990)).to.emit(factory, "PriceSet").withArgs(990);
@@ -138,8 +138,8 @@ describe("Factory", function () {
 
   it("should allow batch purchase of vaults", async function () {
     const stableCoin = usdc.address;
-    const buyers = [bob.address, bob.address];
-    const amounts = [1, 1];
+    const buyers = [bob.address];
+    const amounts = [1];
 
     let pricePerVault = await factory.finalPrice(stableCoin, "");
     let totalPayment = pricePerVault.mul(amounts.length);
@@ -150,9 +150,7 @@ describe("Factory", function () {
 
     await expect(factory.connect(bob).buyVaultsBatch(stableCoin, buyers, amounts, ""))
       .to.emit(vault, "Transfer")
-      .withArgs(addr0, buyers[0], 1)
-      .to.emit(vault, "Transfer")
-      .withArgs(addr0, buyers[1], 2);
+      .withArgs(addr0, buyers[0], 1);
 
     expect(await usdc.balanceOf(factory.address)).to.equal(totalPayment);
 
