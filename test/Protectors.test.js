@@ -69,10 +69,13 @@ describe("Protectors", function () {
     return nextTokenId;
   };
 
-  it("should add the first protector", async function () {
+  it.only("should add the first protector", async function () {
     let tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
+    expect(await manager.tokenId()).to.equal(tokenId);
+    expect(await manager.tokenAddress()).to.equal(vault.address);
+
     // set Alice as first Bob's protector
     await expect(manager.connect(bob).setProtector(alice.address, true, 0, 0, 0))
       .to.emit(manager, "ProtectorUpdated")
