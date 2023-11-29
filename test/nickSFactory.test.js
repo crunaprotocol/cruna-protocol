@@ -26,22 +26,37 @@ describe("Nick's factory", function () {
     const account = await erc6551Registry.account(otto.address, keccak256("otto"), chainId.toString(), fred.address, 1);
     expect(account).to.be.not.equal(undefined);
 
-    const signatureValidatorAddress = await deployContractViaNickSFactory(deployer, "SignatureValidator", "contracts/utils", ["string", "string"], ["Cruna", "1"]);
+    const signatureValidatorAddress = await deployContractViaNickSFactory(
+      deployer,
+      "SignatureValidator",
+      "contracts/utils",
+      ["string", "string"],
+      ["Cruna", "1"],
+    );
     expect(signatureValidatorAddress).equal("0xe34861e95F791fa845FcBfA41053EFC24cCb0a73");
 
-    const guardianAddress = await deployContractViaNickSFactory(deployer, "Guardian", "contracts/manager",["address"], [deployer.address]);
+    const guardianAddress = await deployContractViaNickSFactory(
+      deployer,
+      "Guardian",
+      "contracts/manager",
+      ["address"],
+      [deployer.address],
+    );
     expect(guardianAddress).equal("0xEc05d35EBE42f5aF046de9Ffcb2f12476699580c");
-    const proxyAddress = await deployContractViaNickSFactory(deployer, "ManagerProxy", "contracts/manager", ["address"], [manager.address]);
+    const proxyAddress = await deployContractViaNickSFactory(
+      deployer,
+      "ManagerProxy",
+      "contracts/manager",
+      ["address"],
+      [manager.address],
+    );
     expect(proxyAddress).equal("0xf39dD60fd62094639Cb990d24892431EbA7208d3");
     const vaultAddress = await deployContractViaNickSFactory(
       deployer,
       "CrunaFlexiVault",
-      "contracts", ["address", "address", "address","address"],
-        [
-            erc6551RegistryAddress,
-      guardianAddress,
-      signatureValidatorAddress,
-      proxyAddress],
+      "contracts",
+      ["address", "address", "address", "address"],
+      [erc6551RegistryAddress, guardianAddress, signatureValidatorAddress, proxyAddress],
     );
     expect(vaultAddress).equal("0x19135272b40EcEad8D350a1ea8B7FabFA5C746b7");
   });

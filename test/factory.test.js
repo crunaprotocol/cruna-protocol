@@ -28,11 +28,11 @@ describe("Factory", function () {
     proxy = await deployContract("ManagerProxy", manager.address);
 
     vault = await deployContract(
-        "CrunaFlexiVault",
-        erc6551Registry.address,
-        guardian.address,
-        signatureValidator.address,
-        proxy.address,
+      "CrunaFlexiVault",
+      erc6551Registry.address,
+      guardian.address,
+      signatureValidator.address,
+      proxy.address,
     );
     factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
 
@@ -58,17 +58,17 @@ describe("Factory", function () {
     const salt = ethers.utils.hexZeroPad(ethers.BigNumber.from("400").toHexString(), 32);
 
     await expect(factory.connect(bob).buyVaults(usdc.address, 1, ""))
-        .to.emit(vault, "Transfer")
-        .withArgs(addr0, bob.address, nextTokenId)
-        .to.emit(erc6551Registry, "ERC6551AccountCreated")
-        .withArgs(
-            precalculatedAddress,
-            toChecksumAddress(proxy.address),
-            salt,
-            (await getChainId()).toString(),
-            toChecksumAddress(vault.address),
-            nextTokenId,
-        );
+      .to.emit(vault, "Transfer")
+      .withArgs(addr0, bob.address, nextTokenId)
+      .to.emit(erc6551Registry, "ERC6551AccountCreated")
+      .withArgs(
+        precalculatedAddress,
+        toChecksumAddress(proxy.address),
+        salt,
+        (await getChainId()).toString(),
+        toChecksumAddress(vault.address),
+        nextTokenId,
+      );
   });
 
   async function buyVault(token, amount, buyer, promoCode = "") {
@@ -76,12 +76,12 @@ describe("Factory", function () {
     await token.connect(buyer).approve(factory.address, price.mul(amount));
 
     await expect(factory.connect(buyer).buyVaults(token.address, amount, promoCode))
-        .to.emit(vault, "Transfer")
-        .withArgs(addr0, buyer.address, 1)
-        .to.emit(vault, "Transfer")
-        .withArgs(addr0, buyer.address, 2)
-        .to.emit(token, "Transfer")
-        .withArgs(buyer.address, factory.address, price.mul(amount));
+      .to.emit(vault, "Transfer")
+      .withArgs(addr0, buyer.address, 1)
+      .to.emit(vault, "Transfer")
+      .withArgs(addr0, buyer.address, 2)
+      .to.emit(token, "Transfer")
+      .withArgs(buyer.address, factory.address, price.mul(amount));
   }
 
   it("should allow bob and alice to purchase some vaults", async function () {
@@ -94,11 +94,11 @@ describe("Factory", function () {
     expect(price.toString()).to.equal("9900000");
 
     await expect(factory.withdrawProceeds(fred.address, usdc.address, normalize("10")))
-        .to.emit(usdc, "Transfer")
-        .withArgs(factory.address, fred.address, normalize("10"));
+      .to.emit(usdc, "Transfer")
+      .withArgs(factory.address, fred.address, normalize("10"));
     await expect(factory.withdrawProceeds(fred.address, usdc.address, 0))
-        .to.emit(usdc, "Transfer")
-        .withArgs(factory.address, fred.address, amount("9.8"));
+      .to.emit(usdc, "Transfer")
+      .withArgs(factory.address, fred.address, amount("9.8"));
   });
 
   it("should allow bob and alice to purchase some vaults with a promoCode", async function () {
@@ -115,9 +115,7 @@ describe("Factory", function () {
   });
 
   it("should remove a stableCoin when active is false", async function () {
-    await expect(factory.setStableCoin(usdc.address, false))
-        .to.emit(factory, "StableCoinSet")
-        .withArgs(usdc.address, false);
+    await expect(factory.setStableCoin(usdc.address, false)).to.emit(factory, "StableCoinSet").withArgs(usdc.address, false);
 
     const updatedStableCoins = await factory.getStableCoins();
     expect(updatedStableCoins).to.not.include(usdc.address);
@@ -151,10 +149,10 @@ describe("Factory", function () {
     await usdc.connect(bob).approve(factory.address, totalPayment);
 
     await expect(factory.connect(bob).buyVaultsBatch(stableCoin, buyers, amounts, ""))
-        .to.emit(vault, "Transfer")
-        .withArgs(addr0, buyers[0], 1)
-        .to.emit(vault, "Transfer")
-        .withArgs(addr0, buyers[1], 2);
+      .to.emit(vault, "Transfer")
+      .withArgs(addr0, buyers[0], 1)
+      .to.emit(vault, "Transfer")
+      .withArgs(addr0, buyers[1], 2);
 
     expect(await usdc.balanceOf(factory.address)).to.equal(totalPayment);
 
