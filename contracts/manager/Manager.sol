@@ -36,7 +36,6 @@ contract Manager is IManager, Actor, Context, Versioned, UUPSUpgradeable, Manage
   error SignatureAlreadyUsed();
   error CannotBeYourself();
   error InvalidImplementation();
-  error NotAuthorized();
   error NotTheInheritanceManager();
   error PluginAlreadyPlugged();
   error RoleNotFound();
@@ -64,7 +63,7 @@ contract Manager is IManager, Actor, Context, Versioned, UUPSUpgradeable, Manage
 
   // @dev see {IInheritanceManager.sol-init}
   // this must be execute immediately after the deployment
-  function init(address registry_, address guardian_, address signatureValidator_) external override {
+  function init(address registry_, address guardian_, address signatureValidator_) external virtual override {
     _addRole(keccak256("PROTECTOR"));
     _addRole(keccak256("SAFE_RECIPIENT"));
     if (msg.sender != tokenAddress()) revert Forbidden();
@@ -78,7 +77,7 @@ contract Manager is IManager, Actor, Context, Versioned, UUPSUpgradeable, Manage
     if (!guardian.isTrustedImplementation(keccak256("Manager"), implementation)) revert InvalidImplementation();
   }
 
-  function plug(string memory name, address implementation) external override onlyTokenOwner {
+  function plug(string memory name, address implementation) external virtual override onlyTokenOwner {
     bytes32 salt = keccak256(abi.encodePacked(name));
     if (address(plugins[salt]) != address(0)) revert PluginAlreadyPlugged();
     if (!guardian.isTrustedImplementation(salt, implementation)) revert InvalidImplementation();
@@ -96,32 +95,32 @@ contract Manager is IManager, Actor, Context, Versioned, UUPSUpgradeable, Manage
   }
 
   // simulate ERC-721 to allow plugins to be deployed via ERC-6551 Registry
-  function ownerOf(uint256) external view override returns (address) {
+  function ownerOf(uint256) external view virtual override returns (address) {
     return owner();
   }
 
   // @dev Counts the protectors.
-  function countActiveProtectors() public view override returns (uint256) {
+  function countActiveProtectors() public view virtual override returns (uint256) {
     return actorCount(PROTECTOR);
   }
 
   // @dev Find a specific protector
-  function findProtectorIndex(address protector_) public view override returns (uint256) {
+  function findProtectorIndex(address protector_) public view virtual override returns (uint256) {
     return actorIndex(protector_, PROTECTOR);
   }
 
   // @dev Returns true if the address is a protector.
   // @param protector_ The protector address.
-  function isAProtector(address protector_) public view override returns (bool) {
+  function isAProtector(address protector_) public view virtual override returns (bool) {
     return _isActiveActor(protector_, PROTECTOR);
   }
 
   // @dev Returns the list of protectors.
-  function listProtectors() public view override returns (address[] memory) {
-    return _listActiveActors(PROTECTOR);
+  function listProtectors() public view virtual override returns (address[] memory) {
+    return getActors(PROTECTOR);
   }
 
-  function hasProtectors() public view override returns (bool) {
+  function hasProtectors() public view virtual override returns (bool) {
     return actorCount(PROTECTOR) > 0;
   }
 
@@ -147,7 +146,7 @@ contract Manager is IManager, Actor, Context, Versioned, UUPSUpgradeable, Manage
   }
 
   // @dev see {IInheritanceManager.sol-getProtectors}
-  function getProtectors() external view override returns (address[] memory) {
+  function getProtectors() external view virtual override returns (address[] memory) {
     return getActors(PROTECTOR);
   }
 
@@ -160,18 +159,18 @@ contract Manager is IManager, Actor, Context, Versioned, UUPSUpgradeable, Manage
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
-  ) external override onlyTokenOwner {
+  ) external virtual override onlyTokenOwner {
     _setSignedActor("SAFE_RECIPIENT", recipient, SAFE_RECIPIENT, status, timestamp, validFor, signature, IS_NOT_MANAGER);
     emit SafeRecipientUpdated(_msgSender(), recipient, status);
   }
 
   // @dev see {IInheritanceManager.sol-isSafeRecipient}
-  function isSafeRecipient(address recipient) public view override returns (bool) {
+  function isSafeRecipient(address recipient) public view virtual override returns (bool) {
     return actorIndex(recipient, SAFE_RECIPIENT) != MAX_ACTORS;
   }
 
   // @dev see {IInheritanceManager.sol-getSafeRecipients}
-  function getSafeRecipients() external view override returns (address[] memory) {
+  function getSafeRecipients() external view virtual override returns (address[] memory) {
     return getActors(SAFE_RECIPIENT);
   }
 
@@ -191,7 +190,7 @@ contract Manager is IManager, Actor, Context, Versioned, UUPSUpgradeable, Manage
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
-  ) internal {
+  ) internal virtual {
     if (timestamp == 0) {
       if (countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
     } else {
@@ -230,7 +229,7 @@ contract Manager is IManager, Actor, Context, Versioned, UUPSUpgradeable, Manage
     uint256 validFor,
     bytes calldata signature,
     bool actorIsProtector
-  ) internal {
+  ) internal virtual {
     bytes32 scope = keccak256(abi.encodePacked(roleString));
     if (actor == address(0)) revert ZeroAddress();
     if (actor == _msgSender()) revert CannotBeYourself();
@@ -253,7 +252,7 @@ contract Manager is IManager, Actor, Context, Versioned, UUPSUpgradeable, Manage
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
-  ) external override {
+  ) external virtual override {
     bytes32 scope = keccak256(abi.encodePacked(roleString));
     if (roleIndex[scope] == 0) revert RoleNotFound();
     if (address(plugins[pluginByRole[scope]]) != _msgSender()) revert Forbidden();
@@ -261,7 +260,7 @@ contract Manager is IManager, Actor, Context, Versioned, UUPSUpgradeable, Manage
   }
 
   // @dev See {IProtected721-managedTransfer}.
-  function managedTransfer(uint256 tokenId, address to) external override {
+  function managedTransfer(uint256 tokenId, address to) external virtual override {
     if (address(plugins[keccak256("InheritanceManager")]) != _msgSender()) revert NotTheInheritanceManager();
     vault.managedTransfer(tokenId, to);
     _resetActors();

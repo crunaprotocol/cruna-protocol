@@ -16,10 +16,11 @@ const {
   deployContract,
   getTimestamp,
   signRequest,
+  keccak256,
 } = require("./helpers");
 
-describe("Protectors", function () {
-  let erc6551Registry, proxy, manager, guardian;
+describe("Safe Recipients", function () {
+  let erc6551Registry, proxy, managerImpl, guardian;
   let signatureValidator, vault;
   let factory;
   let usdc, usdt;
@@ -34,9 +35,9 @@ describe("Protectors", function () {
 
   beforeEach(async function () {
     erc6551Registry = await deployContract("ERC6551Registry");
-    manager = await deployContract("Manager");
+    managerImpl = await deployContract("Manager");
     guardian = await deployContract("Guardian", deployer.address);
-    proxy = await deployContract("ManagerProxy", manager.address);
+    proxy = await deployContract("ManagerProxy", managerImpl.address);
 
     vault = await deployContract(
       "CrunaFlexiVault",
@@ -71,7 +72,7 @@ describe("Protectors", function () {
 
   it("should set up safe recipients", async function () {
     // cl(true)
-    let tokenId = await buyAVault(bob);
+    const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
     // set Alice and Fred as a safe recipient
@@ -81,11 +82,15 @@ describe("Protectors", function () {
     await expect(manager.connect(bob).setSafeRecipient(fred.address, true, 0, 0, 0))
       .to.emit(manager, "SafeRecipientUpdated")
       .withArgs(bob.address, fred.address, true);
+
+    expect(await manager.getSafeRecipients()).deep.equal([alice.address, fred.address]);
+
     await expect(manager.connect(bob).setSafeRecipient(alice.address, false, 0, 0, 0))
       .to.emit(manager, "SafeRecipientUpdated")
       .withArgs(bob.address, alice.address, false);
     // set Alice as a protector
     await manager.connect(bob).setProtector(alice.address, true, 0, 0, 0);
+
     // Set Mark as a safe recipient
     let signature = await signRequest(
       "SAFE_RECIPIENT",
@@ -102,6 +107,8 @@ describe("Protectors", function () {
     await expect(manager.connect(bob).setSafeRecipient(mark.address, true, ts, 3600, signature))
       .to.emit(manager, "SafeRecipientUpdated")
       .withArgs(bob.address, mark.address, true);
+
+    expect(await vault.isTransferable(tokenId, bob.address, mark.address)).to.be.true;
 
     // // remove Fred as a safe recipient
     signature = await signRequest(

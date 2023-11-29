@@ -81,6 +81,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
     REGISTRY = IERC6551Registry(registry_);
     MANAGER = Manager(managerProxy_);
     emit DefaultLocked(false);
+    nextTokenId = block.chainid * 1e6 + 1;
   }
 
   // @dev See {IProtected721-protectedTransfer}.

@@ -115,13 +115,14 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 ## Test coverage
 
 ```
-  17 passing (5s)
+  20 passing (6s)
+  1 pending
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
 -----------------------------|----------|----------|----------|----------|----------------|
- contracts/                  |       60 |       40 |    66.67 |    71.43 |                |
-  CrunaFlexiVault.sol        |       60 |       40 |    66.67 |    71.43 |          50,55 |
+ contracts/                  |      100 |       40 |      100 |      100 |                |
+  CrunaFlexiVault.sol        |      100 |       40 |      100 |      100 |                |
  contracts/factory/          |      100 |    60.42 |      100 |    98.18 |                |
   IVaultFactory.sol          |      100 |      100 |      100 |      100 |                |
   VaultFactory.sol           |      100 |    60.42 |      100 |    98.18 |            113 |
@@ -129,26 +130,29 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   IERC6454.sol               |      100 |      100 |      100 |      100 |                |
   IERC6982.sol               |      100 |      100 |      100 |      100 |                |
   IProtected.sol             |      100 |      100 |      100 |      100 |                |
- contracts/manager/          |    92.22 |    59.72 |    86.49 |    93.27 |                |
-  Actor.sol                  |    95.24 |    58.33 |       90 |    96.15 |             56 |
+ contracts/manager/          |    97.75 |     62.5 |    97.22 |    98.06 |                |
+  Actor.sol                  |      100 |    66.67 |      100 |      100 |                |
   Guardian.sol               |      100 |       50 |      100 |    83.33 |             19 |
   IManager.sol               |      100 |      100 |      100 |      100 |                |
-  Manager.sol                |    91.07 |    61.11 |    78.95 |    92.19 |... 125,144,175 |
+  Manager.sol                |    98.21 |    62.96 |    94.74 |    98.44 |             77 |
   ManagerBase.sol            |    88.89 |       50 |      100 |      100 |                |
   ManagerProxy.sol           |      100 |      100 |      100 |      100 |                |
  contracts/plugins/          |    97.06 |    56.82 |    90.91 |       94 |                |
   IInheritanceManager.sol    |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                |      100 |      100 |      100 |      100 |                |
-  InheritanceManager.sol     |    97.06 |    56.82 |    90.91 |       94 |     79,147,173 |
- contracts/protected/        |    86.21 |    42.86 |    76.92 |    89.74 |                |
-  ProtectedNFT.sol           |    86.21 |    42.86 |    76.92 |    89.74 | 78,137,162,171 |
- contracts/utils/            |       75 |       25 |       60 |       75 |                |
+  InheritanceManager.sol     |    97.06 |    56.82 |    90.91 |       94 |     78,146,172 |
+ contracts/protected/        |      100 |    57.14 |      100 |     97.5 |                |
+  ProtectedNFT.sol           |      100 |    57.14 |      100 |     97.5 |             78 |
+ contracts/utils/            |      100 |       25 |       80 |      100 |                |
   SignatureValidator.sol     |      100 |      100 |      100 |      100 |                |
   UUPSUpgradableTemplate.sol |      100 |       25 |       50 |      100 |                |
-  Versioned.sol              |        0 |      100 |        0 |        0 |              9 |
+  Versioned.sol              |      100 |      100 |      100 |      100 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
-All files                    |    92.65 |    54.55 |    84.34 |    93.05 |                |
+All files                    |    98.52 |    58.18 |    96.34 |     97.3 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
+
+> Istanbul reports written to ./coverage/ and ./coverage.json
+
 ```
 
 ## License

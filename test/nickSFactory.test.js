@@ -22,7 +22,7 @@ describe("Nick's factory", function () {
 
     const managerAddress = await deployContractViaNickSFactory(deployer, "Manager", "contracts/manager");
     manager = await ethers.getContractAt("Manager", managerAddress);
-    expect(manager.address).equal("0x00b483FEfC7645eF05EA2508914Eb15A54Bf1999");
+    expect(manager.address).equal("0x85FD61a9FE599bd6e1e2c3E99b0dc08Ea8067F44");
     expect(await manager.version()).equal("1.0.0");
 
     const erc6551RegistryAddress = await deployContractViaNickSFactory(deployer, "ERC6551Registry", "erc6551");
@@ -48,22 +48,15 @@ describe("Nick's factory", function () {
       [deployer.address],
     );
     expect(guardianAddress).equal("0xEc05d35EBE42f5aF046de9Ffcb2f12476699580c");
-    const proxyAddress = await deployContractViaNickSFactory(
-      deployer,
-      "ManagerProxy",
-      "contracts/manager",
-      ["address"],
-      [manager.address],
-    );
-    expect(proxyAddress).equal("0xf39dD60fd62094639Cb990d24892431EbA7208d3");
+
     const vaultAddress = await deployContractViaNickSFactory(
       deployer,
       "CrunaFlexiVault",
       "contracts",
       ["address", "address", "address", "address"],
-      [erc6551RegistryAddress, guardianAddress, signatureValidatorAddress, proxyAddress],
+      [erc6551RegistryAddress, guardianAddress, signatureValidatorAddress, managerAddress],
     );
-    expect(vaultAddress).equal("0x19135272b40EcEad8D350a1ea8B7FabFA5C746b7");
+    expect(vaultAddress).equal("0x8AeeCaa26e1f31fb8e169CdA8FcE0280DA1c489A");
   });
 
   it("should mint a vault and deploy the relative manager", async function () {

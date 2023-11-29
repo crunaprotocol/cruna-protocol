@@ -4,7 +4,6 @@ pragma solidity ^0.8.19;
 // Author: Francesco Sullo <francesco@sullo.co>
 
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import {IERC6551Account} from "erc6551/interfaces/IERC6551Account.sol";
 import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 
 //import {console} from "hardhat/console.sol";

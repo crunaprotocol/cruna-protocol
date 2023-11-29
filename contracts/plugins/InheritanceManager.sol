@@ -36,7 +36,6 @@ contract InheritanceManager is IPlugin, IInheritanceManager, Context, Versioned,
   error RequestAlreadyApproved();
   error Unauthorized();
   error InvalidImplementation();
-  error NotAuthorized();
 
   bool public constant IS_MANAGER = true;
   bool public constant IS_NOT_MANAGER = false;
