@@ -113,4 +113,47 @@ describe("Factory", function () {
     price = await factory.finalPrice(usdt.address, promoCode);
     expect(price.toString()).to.equal("8910000");
   });
+
+  it("should remove a stableCoin when active is false", async function () {
+    await expect(factory.setStableCoin(usdc.address, false)).to.emit(factory, "StableCoinSet").withArgs(usdc.address, false);
+
+    const updatedStableCoins = await factory.getStableCoins();
+    expect(updatedStableCoins).to.not.include(usdc.address);
+  });
+
+  it("should remove the effect of a promo code when its discount is set to zero", async function () {
+    const promoCode = "TheRoundTable".toLowerCase();
+    const discount = 10;
+    const zeroDiscount = 0;
+    const stableCoin = usdc.address;
+
+    await factory.setPromoCode(promoCode, discount);
+
+    await factory.setPromoCode(promoCode, zeroDiscount);
+    let priceAfterDiscountReset = await factory.finalPrice(stableCoin, promoCode);
+
+    let regularPrice = await factory.finalPrice(stableCoin, "");
+    expect(priceAfterDiscountReset).to.equal(regularPrice);
+  });
+
+  it("should allow batch purchase of vaults", async function () {
+    const stableCoin = usdc.address;
+    const buyers = [bob.address];
+    const amounts = [1];
+
+    let pricePerVault = await factory.finalPrice(stableCoin, "");
+    let totalPayment = pricePerVault.mul(amounts.length);
+
+    await usdc.mint(bob.address, totalPayment.add(normalize("1000")));
+
+    await usdc.connect(bob).approve(factory.address, totalPayment);
+
+    await expect(factory.connect(bob).buyVaultsBatch(stableCoin, buyers, amounts, ""))
+      .to.emit(vault, "Transfer")
+      .withArgs(addr0, buyers[0], 1);
+
+    expect(await usdc.balanceOf(factory.address)).to.equal(totalPayment);
+
+    expect(await vault.balanceOf(bob.address)).to.equal(amounts.length);
+  });
 });

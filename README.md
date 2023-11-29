@@ -115,16 +115,16 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 ## Test coverage
 
 ```
-  14 passing (4s)
+  17 passing (5s)
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
 -----------------------------|----------|----------|----------|----------|----------------|
  contracts/                  |       60 |       40 |    66.67 |    71.43 |                |
   CrunaFlexiVault.sol        |       60 |       40 |    66.67 |    71.43 |          50,55 |
- contracts/factory/          |    57.14 |     37.5 |    81.82 |    58.18 |                |
+ contracts/factory/          |      100 |    60.42 |      100 |    98.18 |                |
   IVaultFactory.sol          |      100 |      100 |      100 |      100 |                |
-  VaultFactory.sol           |    57.14 |     37.5 |    81.82 |    58.18 |... 123,127,140 |
+  VaultFactory.sol           |      100 |    60.42 |      100 |    98.18 |            113 |
  contracts/interfaces/       |      100 |      100 |      100 |      100 |                |
   IERC6454.sol               |      100 |      100 |      100 |      100 |                |
   IERC6982.sol               |      100 |      100 |      100 |      100 |                |
@@ -135,7 +135,7 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   Guardian.sol               |      100 |       50 |      100 |    83.33 |             19 |
   IManager.sol               |      100 |      100 |      100 |      100 |                |
   Manager.sol                |    89.47 |    61.11 |    78.95 |    90.77 |... 126,145,176 |
-  ManagerProxy.sol          |      100 |      100 |      100 |      100 |                |
+  ManagerProxy.sol           |      100 |      100 |      100 |      100 |                |
  contracts/plugins/          |    94.29 |    56.82 |    90.91 |    92.16 |                |
   IInheritanceManager.sol    |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                |      100 |      100 |      100 |      100 |                |
@@ -147,7 +147,7 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   UUPSUpgradableTemplate.sol |      100 |       25 |       50 |      100 |                |
   Versioned.sol              |        0 |      100 |        0 |        0 |              9 |
 -----------------------------|----------|----------|----------|----------|----------------|
-All files                    |    79.91 |    48.66 |    79.07 |    81.41 |                |
+All files                    |    88.32 |    53.57 |     81.4 |    89.59 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
 ```
 
