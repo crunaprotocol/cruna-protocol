@@ -1,5 +1,5 @@
 {
-  "when": "2023-11-29T01:11:50.495Z",
+  "when": "2023-11-29T01:18:42.547Z",
   "contracts": {
     "ERC6551Registry": [
       {
@@ -630,54 +630,6 @@
             "internalType": "bool",
             "name": "",
             "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "bytes32",
-            "name": "hash",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "bytes",
-            "name": "signature",
-            "type": "bytes"
-          }
-        ],
-        "name": "isValidSignature",
-        "outputs": [
-          {
-            "internalType": "bytes4",
-            "name": "magicValue",
-            "type": "bytes4"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "signer",
-            "type": "address"
-          },
-          {
-            "internalType": "bytes",
-            "name": "",
-            "type": "bytes"
-          }
-        ],
-        "name": "isValidSigner",
-        "outputs": [
-          {
-            "internalType": "bytes4",
-            "name": "",
-            "type": "bytes4"
           }
         ],
         "stateMutability": "view",

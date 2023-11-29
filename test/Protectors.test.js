@@ -69,12 +69,15 @@ describe("Protectors", function () {
     return nextTokenId;
   };
 
-  it.only("should add the first protector", async function () {
+  it("should add the first protector", async function () {
     let tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
     expect(await manager.tokenId()).to.equal(tokenId);
     expect(await manager.tokenAddress()).to.equal(vault.address);
+    expect(await manager.owner()).to.equal(bob.address);
+    const token = await manager.token();
+    expect(await manager.token()).deep.equal([ethers.BigNumber.from(chainId.toString()), vault.address, tokenId]);
 
     // set Alice as first Bob's protector
     await expect(manager.connect(bob).setProtector(alice.address, true, 0, 0, 0))

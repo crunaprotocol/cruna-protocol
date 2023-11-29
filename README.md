@@ -115,39 +115,39 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 ## Test coverage
 
 ```
-  1 passing (416ms)
+  17 passing (5s)
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
 -----------------------------|----------|----------|----------|----------|----------------|
  contracts/                  |       60 |       40 |    66.67 |    71.43 |                |
   CrunaFlexiVault.sol        |       60 |       40 |    66.67 |    71.43 |          50,55 |
- contracts/factory/          |    40.48 |    18.75 |    63.64 |    38.18 |                |
+ contracts/factory/          |      100 |    60.42 |      100 |    98.18 |                |
   IVaultFactory.sol          |      100 |      100 |      100 |      100 |                |
-  VaultFactory.sol           |    40.48 |    18.75 |    63.64 |    38.18 |... 135,136,140 |
+  VaultFactory.sol           |      100 |    60.42 |      100 |    98.18 |            113 |
  contracts/interfaces/       |      100 |      100 |      100 |      100 |                |
   IERC6454.sol               |      100 |      100 |      100 |      100 |                |
   IERC6982.sol               |      100 |      100 |      100 |      100 |                |
   IProtected.sol             |      100 |      100 |      100 |      100 |                |
- contracts/manager/          |    37.37 |    21.05 |       40 |    39.82 |                |
-  Actor.sol                  |    52.38 |    33.33 |       50 |    53.85 |... 67,69,83,84 |
-  ERC6551AccountEmulator.sol |    29.41 |        0 |    42.86 |    31.25 |... 37,38,40,44 |
-  Guardian.sol               |       50 |       25 |    33.33 |    33.33 |    19,29,30,34 |
+ contracts/manager/          |    92.22 |    59.72 |    86.49 |    93.27 |                |
+  Actor.sol                  |    95.24 |    58.33 |       90 |    96.15 |             56 |
+  Guardian.sol               |      100 |       50 |      100 |    83.33 |             19 |
   IManager.sol               |      100 |      100 |      100 |      100 |                |
-  Manager.sol                |    33.33 |    20.37 |    31.58 |    36.92 |... 266,267,268 |
+  Manager.sol                |    91.07 |    61.11 |    78.95 |    92.19 |... 125,144,175 |
+  ManagerBase.sol            |    88.89 |       50 |      100 |      100 |                |
   ManagerProxy.sol           |      100 |      100 |      100 |      100 |                |
- contracts/plugins/          |        0 |        0 |        0 |        0 |                |
+ contracts/plugins/          |    97.06 |    56.82 |    90.91 |       94 |                |
   IInheritanceManager.sol    |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                |      100 |      100 |      100 |      100 |                |
-  InheritanceManager.sol     |        0 |        0 |        0 |        0 |... 178,179,180 |
- contracts/protected/        |    44.83 |    14.29 |    53.85 |    43.59 |                |
-  ProtectedNFT.sol           |    44.83 |    14.29 |    53.85 |    43.59 |... 154,162,171 |
- contracts/utils/            |       50 |       25 |       40 |       50 |                |
-  SignatureValidator.sol     |        0 |      100 |       50 |        0 |             36 |
+  InheritanceManager.sol     |    97.06 |    56.82 |    90.91 |       94 |     79,147,173 |
+ contracts/protected/        |    86.21 |    42.86 |    76.92 |    89.74 |                |
+  ProtectedNFT.sol           |    86.21 |    42.86 |    76.92 |    89.74 | 78,137,162,171 |
+ contracts/utils/            |       75 |       25 |       60 |       75 |                |
+  SignatureValidator.sol     |      100 |      100 |      100 |      100 |                |
   UUPSUpgradableTemplate.sol |      100 |       25 |       50 |      100 |                |
   Versioned.sol              |        0 |      100 |        0 |        0 |              9 |
 -----------------------------|----------|----------|----------|----------|----------------|
-All files                    |    33.64 |    16.07 |    41.86 |    33.46 |                |
+All files                    |    92.65 |    54.55 |    84.34 |    93.05 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
 ```
 

@@ -17,11 +17,11 @@ import {Actor} from "./Actor.sol";
 import {IManager} from "./IManager.sol";
 import {Versioned} from "../utils/Versioned.sol";
 import {IPlugin} from "../plugins/IPlugin.sol";
-import {ERC6551AccountEmulator} from "./ERC6551AccountEmulator.sol";
+import {ManagerBase} from "./ManagerBase.sol";
 
 //import {console} from "hardhat/console.sol";
 
-contract Manager is IManager, Actor, Context, Versioned, UUPSUpgradeable, ERC6551AccountEmulator {
+contract Manager is IManager, Actor, Context, Versioned, UUPSUpgradeable, ManagerBase {
   using ECDSA for bytes32;
   using Strings for uint256;
 
@@ -74,9 +74,8 @@ contract Manager is IManager, Actor, Context, Versioned, UUPSUpgradeable, ERC655
     registry = IERC6551Registry(registry_);
   }
 
-  function _authorizeUpgrade(address implementation) internal virtual override {
+  function _authorizeUpgrade(address implementation) internal virtual override onlyTokenOwner {
     if (!guardian.isTrustedImplementation(keccak256("Manager"), implementation)) revert InvalidImplementation();
-    if (!_isValidSigner(msg.sender)) revert NotAuthorized();
   }
 
   function plug(string memory name, address implementation) external override onlyTokenOwner {
