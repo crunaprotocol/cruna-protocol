@@ -20,7 +20,7 @@ const {
 } = require("./helpers");
 
 describe("Sentinel and Inheritance", function () {
-  let erc6551Registry, proxy, manager, guardian;
+  let erc6551Registry, proxy, managerImpl, guardian;
   let signatureValidator, vault, proxy2, inheritanceManager;
   let factory;
   let usdc, usdt;
@@ -36,9 +36,9 @@ describe("Sentinel and Inheritance", function () {
 
   beforeEach(async function () {
     erc6551Registry = await deployContract("ERC6551Registry");
-    manager = await deployContract("Manager");
+    managerImpl = await deployContract("Manager");
     guardian = await deployContract("Guardian", deployer.address);
-    proxy = await deployContract("ManagerProxy", manager.address);
+    proxy = await deployContract("ManagerProxy", managerImpl.address);
 
     vault = await deployContract(
       "CrunaFlexiVault",
@@ -70,13 +70,14 @@ describe("Sentinel and Inheritance", function () {
     await factory.connect(bob).buyVaults(usdc.address, 1, "");
     const manager = await ethers.getContractAt("Manager", await vault.managerOf(nextTokenId));
     inheritanceManager = await deployContract("InheritanceManager");
-    proxy2 = await deployContract("ManagerProxy", inheritanceManager.address);
-    await expect(manager.connect(bob).plug("InheritanceManager", proxy2.address)).to.be.revertedWith("InvalidImplementation");
+    await expect(manager.connect(bob).plug("InheritanceManager", inheritanceManager.address)).to.be.revertedWith(
+      "InvalidImplementation",
+    );
     const scope = keccak256("InheritanceManager");
-    await guardian.setTrustedImplementation(scope, proxy2.address, true);
+    await guardian.setTrustedImplementation(scope, inheritanceManager.address, true);
     let pluginAddress = await manager.plugins(scope);
     expect(pluginAddress).to.equal(addr0);
-    await expect(manager.connect(bob).plug("InheritanceManager", proxy2.address)).to.emit(manager, "PluginPlugged");
+    await expect(manager.connect(bob).plug("InheritanceManager", inheritanceManager.address)).to.emit(manager, "PluginPlugged");
     pluginAddress = await manager.plugins(scope);
     expect(pluginAddress).to.not.equal(addr0);
     return nextTokenId;
@@ -87,7 +88,7 @@ describe("Sentinel and Inheritance", function () {
   });
 
   it("should set up sentinel", async function () {
-    let tokenId = await buyAVault(bob);
+    const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
     const inheritanceManagerAddress = await manager.plugins(keccak256("InheritanceManager"));
@@ -162,7 +163,7 @@ describe("Sentinel and Inheritance", function () {
   });
 
   it("should set up 5 sentinels and an inheritance with a quorum 3", async function () {
-    let tokenId = await buyAVault(bob);
+    const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
     const inheritanceManagerAddress = await manager.plugins(keccak256("InheritanceManager"));

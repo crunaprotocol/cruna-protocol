@@ -15,11 +15,11 @@ import {Manager} from "../manager/Manager.sol";
 import {IInheritanceManager} from "./IInheritanceManager.sol";
 import {Versioned} from "../utils/Versioned.sol";
 import {IPlugin} from "./IPlugin.sol";
-import {ERC6551AccountEmulator} from "../manager/ERC6551AccountEmulator.sol";
+import {ManagerBase} from "../manager/ManagerBase.sol";
 
 //import {console} from "hardhat/console.sol";
 
-contract InheritanceManager is IPlugin, IInheritanceManager, Context, Versioned, UUPSUpgradeable, ERC6551AccountEmulator {
+contract InheritanceManager is IPlugin, IInheritanceManager, Context, Versioned, UUPSUpgradeable, ManagerBase {
   using ECDSA for bytes32;
   using Strings for uint256;
 
@@ -36,7 +36,6 @@ contract InheritanceManager is IPlugin, IInheritanceManager, Context, Versioned,
   error RequestAlreadyApproved();
   error Unauthorized();
   error InvalidImplementation();
-  error NotAuthorized();
 
   bool public constant IS_MANAGER = true;
   bool public constant IS_NOT_MANAGER = false;
@@ -75,9 +74,8 @@ contract InheritanceManager is IPlugin, IInheritanceManager, Context, Versioned,
     return roles;
   }
 
-  function _authorizeUpgrade(address implementation) internal virtual override {
+  function _authorizeUpgrade(address implementation) internal virtual override onlyTokenOwner {
     if (!guardian.isTrustedImplementation(keccak256("InheritanceManager"), implementation)) revert InvalidImplementation();
-    if (!_isValidSigner(msg.sender)) revert NotAuthorized();
   }
 
   // sentinels and beneficiaries

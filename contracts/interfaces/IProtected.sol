@@ -3,7 +3,7 @@ pragma solidity ^0.8.19;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-// erc165 interfaceId 0x8dca4bea
+// erc165 interfaceId 0x0009b66d
 interface IProtected {
   // @dev Allow to transfer a token when at least 1 protector has been set.
   //   This is necessary because when a protector is set, the token is not

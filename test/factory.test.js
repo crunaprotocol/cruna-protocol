@@ -6,10 +6,19 @@ function cl() {
   console.log(count++);
 }
 
-const { amount, normalize, deployContractUpgradeable, addr0, getChainId, deployContract, getTimestamp } = require("./helpers");
+const {
+  amount,
+  normalize,
+  deployContractUpgradeable,
+  addr0,
+  getChainId,
+  deployContract,
+  getTimestamp,
+  keccak256,
+} = require("./helpers");
 
 describe("Factory", function () {
-  let erc6551Registry, proxy, manager, guardian;
+  let erc6551Registry, proxy, managerImpl, guardian;
   let signatureValidator, vault;
   let factory;
   let usdc, usdt;
@@ -23,9 +32,9 @@ describe("Factory", function () {
   //here we test the contract
   beforeEach(async function () {
     erc6551Registry = await deployContract("ERC6551Registry");
-    manager = await deployContract("Manager");
+    managerImpl = await deployContract("Manager");
     guardian = await deployContract("Guardian", deployer.address);
-    proxy = await deployContract("ManagerProxy", manager.address);
+    proxy = await deployContract("ManagerProxy", managerImpl.address);
 
     vault = await deployContract(
       "CrunaFlexiVault",
@@ -150,7 +159,7 @@ describe("Factory", function () {
 
     await expect(factory.connect(bob).buyVaultsBatch(stableCoin, buyers, amounts, ""))
       .to.emit(vault, "Transfer")
-      .withArgs(addr0, buyers[0], 1);
+      .withArgs(addr0, buyers[0], (await getChainId()) * 1e6 + 1);
 
     expect(await usdc.balanceOf(factory.address)).to.equal(totalPayment);
 

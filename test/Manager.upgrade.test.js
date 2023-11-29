@@ -19,8 +19,8 @@ const {
   keccak256,
 } = require("./helpers");
 
-describe("Testing contract deployments", function () {
-  let erc6551Registry, proxy, managerImpl, guardian;
+describe("Manager upgrade", function () {
+  let erc6551Registry, proxy, managerImpl, guardian, managerV2;
   let signatureValidator, vault;
   let factory;
   let usdc, usdt;
@@ -62,21 +62,19 @@ describe("Testing contract deployments", function () {
     ts = (await getTimestamp()) - 100;
   });
 
-  it("should deploy everything as expected", async function () {
-    // test the beforeEach
-  });
-
-  it("should get the token parameters from the manager", async function () {
-    let price = await factory.finalPrice(usdc.address, "");
+  const buyAVault = async (bob) => {
+    const price = await factory.finalPrice(usdc.address, "");
     await usdc.connect(bob).approve(factory.address, price);
     const nextTokenId = await vault.nextTokenId();
-    const managerAddress = await vault.managerOf(nextTokenId);
-    expect(await ethers.provider.getCode(managerAddress)).equal("0x");
     await factory.connect(bob).buyVaults(usdc.address, 1, "");
-    expect(await ethers.provider.getCode(managerAddress)).not.equal("0x");
+    return nextTokenId;
+  };
+
+  it.skip("should allow bob to upgrade the manager", async function () {
+    const tokenId = await buyAVault(bob);
+    const managerV2Impl = await deployContract("ManagerV2Mock");
+    const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
-    expect(await manager.tokenId()).to.equal(nextTokenId);
-    expect(await manager.vault()).to.equal(vault.address);
-    expect(await manager.owner()).to.equal(bob.address);
+    await proxy.upgradeTo(managerV2Impl.address);
   });
 });

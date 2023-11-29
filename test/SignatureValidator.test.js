@@ -6,7 +6,7 @@ const helpers = require("./helpers");
 const { getTimestamp } = require("./helpers");
 const { domainType } = require("./helpers/eip712");
 helpers.initEthers(ethers);
-const { privateKeyByWallet, deployContract, getChainId, makeSignature } = helpers;
+const { privateKeyByWallet, deployContract, getChainId, makeSignature, keccak256 } = helpers;
 
 describe("SignatureValidator", function () {
   deployUtils = new DeployUtils(ethers);

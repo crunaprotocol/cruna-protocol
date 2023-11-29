@@ -52,10 +52,6 @@ contract Actor {
     return i < MAX_ACTORS;
   }
 
-  function _listActiveActors(bytes32 role) internal view returns (address[] memory) {
-    return _actors[role];
-  }
-
   function _removeActor(address actor_, bytes32 role) internal {
     uint256 i = actorIndex(actor_, role);
     _removeActorByIndex(i, role);
