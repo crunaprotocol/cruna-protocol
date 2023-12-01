@@ -115,7 +115,7 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 ## Test coverage
 
 ```
-  22 passing (6s)
+  22 passing (7s)
 
 ------------------------------|----------|----------|----------|----------|----------------|
 File                          |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |

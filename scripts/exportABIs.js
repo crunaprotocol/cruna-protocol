@@ -3,7 +3,6 @@ const path = require("path");
 
 async function main() {
   const ABIs = {
-    when: new Date().toISOString(),
     contracts: {},
   };
 
