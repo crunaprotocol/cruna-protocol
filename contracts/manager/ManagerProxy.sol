@@ -7,4 +7,9 @@ import {ERC6551AccountProxy} from "erc6551/examples/upgradeable/ERC6551AccountPr
 //   Look at ERC6551AccountProxy for more details.
 contract ManagerProxy is ERC6551AccountProxy {
   constructor(address _initialImplementation) ERC6551AccountProxy(_initialImplementation) {}
+
+  // to avoid that we plug a non-proxy contract
+  function isProxy() external pure returns (bool) {
+    return true;
+  }
 }

@@ -1,5 +1,5 @@
 {
-  "when": "2023-12-01T05:11:48.015Z",
+  "when": "2023-12-01T05:30:57.111Z",
   "contracts": {
     "ERC6551Registry": [
       {
@@ -159,6 +159,11 @@
       {
         "inputs": [],
         "name": "InvalidImplementation",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "NotAProxy",
         "type": "error"
       },
       {

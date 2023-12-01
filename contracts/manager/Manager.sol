@@ -17,6 +17,10 @@ import {Guardian, ManagerBase} from "./ManagerBase.sol";
 
 //import {console} from "hardhat/console.sol";
 
+interface IProxy {
+  function isProxy() external pure returns (bool);
+}
+
 contract Manager is IManager, Actor, Versioned, ManagerBase {
   using ECDSA for bytes32;
   using Strings for uint256;
@@ -33,6 +37,7 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
   error NotTheInheritanceManager();
   error PluginAlreadyPlugged();
   error RoleNotFound();
+  error NotAProxy();
 
   bool public constant IS_MANAGER = true;
   bool public constant IS_NOT_MANAGER = false;
@@ -63,6 +68,9 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
   }
 
   function plug(string memory name, address pluginProxy) external virtual override onlyTokenOwner {
+    try IProxy(pluginProxy).isProxy() returns (bool) {} catch {
+      revert NotAProxy();
+    }
     bytes32 salt = keccak256(abi.encodePacked(name));
     if (address(plugins[salt]) != address(0)) revert PluginAlreadyPlugged();
     if (!guardian.isTrustedImplementation(salt, pluginProxy)) revert InvalidImplementation();

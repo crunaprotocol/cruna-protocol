@@ -115,7 +115,7 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 ## Test coverage
 
 ```
-  22 passing (12s)
+  22 passing (7s)
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -129,7 +129,7 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   IERC6454.sol               |      100 |      100 |      100 |      100 |                |
   IERC6982.sol               |      100 |      100 |      100 |      100 |                |
   IProtected.sol             |      100 |      100 |      100 |      100 |                |
- contracts/manager/          |     98.9 |    68.06 |      100 |    99.07 |                |
+ contracts/manager/          |    98.92 |    68.06 |      100 |    99.09 |                |
   Actor.sol                  |      100 |    66.67 |      100 |      100 |                |
   Guardian.sol               |      100 |       50 |      100 |    83.33 |             19 |
   IManager.sol               |      100 |      100 |      100 |      100 |                |
@@ -147,7 +147,7 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   UUPSUpgradableTemplate.sol |      100 |       25 |       50 |      100 |                |
   Versioned.sol              |      100 |      100 |      100 |      100 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
-All files                    |    99.51 |    61.21 |    98.77 |    98.08 |                |
+All files                    |    99.51 |    61.21 |    98.78 |    98.11 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
 ```
 
