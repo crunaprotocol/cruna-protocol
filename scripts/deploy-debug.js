@@ -2,8 +2,10 @@ require("dotenv").config();
 const hre = require("hardhat");
 const ethers = hre.ethers;
 const DeployUtils = require("./lib/DeployUtils");
-const { normalize } = require("../test/helpers");
+const { normalize, deployContract } = require("../test/helpers");
 let deployUtils;
+
+const { expect } = require("chai");
 
 async function main() {
   deployUtils = new DeployUtils(ethers);
@@ -14,33 +16,42 @@ async function main() {
     process.exit(1);
   }
 
-  const [owner, h1, h2, h3, h4, h5] = await ethers.getSigners();
+  const [deployer] = await ethers.getSigners();
 
-  let flexiVault, flexiVaultManager;
-  let registry, account, proxyWallet, signatureValidator, actorsManager, guardian;
-  let usdc, usdt;
+  const erc6551Registry = await deployUtils.deploy("ERC6551Registry");
+  const managerImpl = await deployUtils.deploy("Manager");
+  const guardian = await deployUtils.deploy("Guardian", deployer.address);
+  const managerProxy = await deployUtils.deploy("ManagerProxy", managerImpl.address);
 
-  actorsManager = await deployUtils.deploy("ActorsManager");
-  guardian = await deployUtils.deploy("AccountGuardian");
-  signatureValidator = await deployUtils.deploy("SignatureValidator", "Cruna", "1");
+  const inheritanceManagerImpl = await deployUtils.deploy("InheritanceManager");
+  const inheritanceManagerProxy = await deployUtils.deploy("InheritanceManagerProxy", inheritanceManagerImpl.address);
 
-  flexiVault = await deployUtils.deploy("CrunaFlexiVault", actorsManager.address, signatureValidator.address);
+  const signatureValidator = await deployUtils.deploy("SignatureValidator", "Cruna", "1");
 
-  // factory = await deployUtils.deployProxy("CrunaClusterFactory", flexiVault.address);
-  // await flexiVault.allowFactoryFor(factory.address, 0);
-
-  registry = await deployUtils.deploy("ERC6551Registry");
-  let implementation = await deployUtils.deploy("FlexiAccount", guardian.address);
-  proxyWallet = await deployUtils.deploy("AccountProxy", implementation.address);
-
-  flexiVaultManager = await deployUtils.deploy("FlexiVaultManager", flexiVault.address);
-
-  await deployUtils.Tx(
-    flexiVaultManager.init(registry.address, proxyWallet.address, { gasLimit: 1500000 }),
-    "flexiVaultManager.init",
+  const vault = await deployUtils.deploy(
+    "CrunaFlexiVault",
+    erc6551Registry.address,
+    guardian.address,
+    signatureValidator.address,
+    managerProxy.address,
   );
+  const factory = await deployUtils.deployProxy("VaultFactory", vault.address);
 
-  await deployUtils.Tx(flexiVault.initVault(flexiVaultManager.address, { gasLimit: 150000 }), "flexiVault.initVault");
+  await deployUtils.Tx(vault.setFactory(factory.address), "Set the factory");
+
+  const usdc = await deployUtils.deploy("USDCoin");
+  const usdt = await deployUtils.deploy("TetherUSD");
+
+  // to get USDC and USDT on local development set a variable
+  // DOLLAR_RECEIVER in the .env
+  if (process.env.DOLLAR_RECEIVER) {
+    await deployUtils.Tx(usdc.mint(process.env.DOLLAR_RECEIVER, normalize("900")), "Minting USDC");
+    await deployUtils.Tx(usdt.mint(process.env.DOLLAR_RECEIVER, normalize("600", 6)), "Minting USDT");
+  }
+
+  await deployUtils.Tx(factory.setPrice(990), "Setting price");
+  await deployUtils.Tx(factory.setStableCoin(usdc.address, true), "Set USDC as stable coin");
+  await deployUtils.Tx(factory.setStableCoin(usdt.address, true), "Set USDT as stable coin");
 
   console.log(`
   

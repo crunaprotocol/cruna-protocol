@@ -71,7 +71,7 @@ describe("Sentinel and Inheritance", function () {
     await factory.connect(bob).buyVaults(usdc.address, 1, "");
     const manager = await ethers.getContractAt("Manager", await vault.managerOf(nextTokenId));
     inheritanceManagerImpl = await deployContract("InheritanceManager");
-    inheritanceManagerProxy = await deployContract("ManagerProxy", inheritanceManagerImpl.address);
+    inheritanceManagerProxy = await deployContract("InheritanceManagerProxy", inheritanceManagerImpl.address);
     await expect(manager.connect(bob).plug("InheritanceManager", inheritanceManagerImpl.address)).to.be.revertedWith(
       "NotAProxy",
     );
