@@ -34,7 +34,7 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
   error WrongDataOrNotSignedByProtector();
   error SignatureAlreadyUsed();
   error CannotBeYourself();
-  error NotTheInheritanceManager();
+  error NotTheInheritancePlugin();
   error PluginAlreadyPlugged();
   error RoleNotFound();
   error NotAProxy();
@@ -54,7 +54,7 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
   mapping(bytes32 => bytes32) public pluginByRole;
   mapping(bytes32 => bool) public usedSignatures;
 
-  // @dev see {IInheritanceManager.sol-init}
+  // @dev see {IInheritancePlugin.sol-init}
   // this must be execute immediately after the deployment
   function init(address registry_, address guardian_, address signatureValidator_) external virtual override {
     _nameHash = keccak256("Manager");
@@ -78,7 +78,7 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
     registry.createAccount(pluginProxy, salt, block.chainid, address(this), tokenId());
     address pluginAddress = registry.account(pluginProxy, salt, block.chainid, address(this), tokenId());
     plugins[salt] = IPlugin(pluginAddress);
-    plugins[salt].init(address(guardian), address(signatureValidator));
+    plugins[salt].init(address(guardian));
     bytes32[] memory roles = plugins[salt].pluginRoles();
     for (uint256 i = 0; i < roles.length; i++) {
       _addRole(roles[i]);
@@ -117,7 +117,7 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
     return actorCount(PROTECTOR) > 0;
   }
 
-  // @dev see {IInheritanceManager.sol-setProtector}
+  // @dev see {IInheritancePlugin.sol-setProtector}
   function setProtector(
     address protector_,
     bool status,
@@ -138,13 +138,13 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
     }
   }
 
-  // @dev see {IInheritanceManager.sol-getProtectors}
+  // @dev see {IInheritancePlugin.sol-getProtectors}
   function getProtectors() external view virtual override returns (address[] memory) {
     return getActors(PROTECTOR);
   }
 
   // safe recipients
-  // @dev see {IInheritanceManager.sol-setSafeRecipient}
+  // @dev see {IInheritancePlugin.sol-setSafeRecipient}
   // We do not set a batch function because it can be dangerous
   function setSafeRecipient(
     address recipient,
@@ -157,12 +157,12 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
     emit SafeRecipientUpdated(_msgSender(), recipient, status);
   }
 
-  // @dev see {IInheritanceManager.sol-isSafeRecipient}
+  // @dev see {IInheritancePlugin.sol-isSafeRecipient}
   function isSafeRecipient(address recipient) public view virtual override returns (bool) {
     return actorIndex(recipient, SAFE_RECIPIENT) != MAX_ACTORS;
   }
 
-  // @dev see {IInheritanceManager.sol-getSafeRecipients}
+  // @dev see {IInheritancePlugin.sol-getSafeRecipients}
   function getSafeRecipients() external view virtual override returns (address[] memory) {
     return getActors(SAFE_RECIPIENT);
   }
@@ -254,7 +254,7 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
 
   // @dev See {IProtected721-managedTransfer}.
   function managedTransfer(uint256 tokenId, address to) external virtual override {
-    if (address(plugins[keccak256("InheritanceManager")]) != _msgSender()) revert NotTheInheritanceManager();
+    if (address(plugins[keccak256("InheritancePlugin")]) != _msgSender()) revert NotTheInheritancePlugin();
     vault.managedTransfer(tokenId, to);
     _resetActors();
   }

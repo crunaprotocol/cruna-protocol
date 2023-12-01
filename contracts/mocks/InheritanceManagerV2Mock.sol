@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {InheritanceManager} from "../plugins/InheritanceManager.sol";
+import {InheritancePlugin} from "../plugins/inheritance/InheritancePlugin.sol";
 
-contract InheritanceManagerV2Mock is InheritanceManager {
+contract InheritancePluginV2Mock is InheritancePlugin {
   function version() external pure virtual override returns (string memory) {
     return "2.0.0";
   }

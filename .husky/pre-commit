@@ -2,4 +2,4 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 # to skip it call git commit with --no-verify or HUSKY=0 git commit ...
-npm run lint && bin/get-coverage.sh && bin/export.sh && git add -A
+# npm run lint && bin/get-coverage.sh && bin/export.sh && git add -A

@@ -5,7 +5,7 @@ const ethers = hre.ethers;
 const { expect } = require("chai");
 const { deployNickSFactory, deployContractViaNickSFactory, getChainId, keccak256 } = require("./helpers");
 
-describe.skip("Nick's factory", function () {
+describe("Nick's factory", function () {
   if (process.env.IS_COVERAGE) {
     return;
   }
@@ -33,7 +33,7 @@ describe.skip("Nick's factory", function () {
 
     const managerAddress = await deployContractViaNickSFactory(deployer, "Manager", "contracts/manager");
     manager = await ethers.getContractAt("Manager", managerAddress);
-    expect(manager.address).equal("0x85FD61a9FE599bd6e1e2c3E99b0dc08Ea8067F44");
+    expect(manager.address).equal("0xD2A29EB07BBb556225D48e6C5BC52E2d0DCE1140");
     expect(await manager.version()).equal("1.0.0");
 
     const account = await erc6551Registry.account(otto.address, keccak256("otto"), chainId.toString(), fred.address, 1);
@@ -46,7 +46,7 @@ describe.skip("Nick's factory", function () {
       ["string", "string"],
       ["Cruna", "1"],
     );
-    expect(signatureValidatorAddress).equal("0xe34861e95F791fa845FcBfA41053EFC24cCb0a73");
+    expect(signatureValidatorAddress).equal("0x5Ce315ae7749876f3E6E00ac13373Ca31f6eD02e");
 
     const guardianAddress = await deployContractViaNickSFactory(
       deployer,
@@ -55,7 +55,7 @@ describe.skip("Nick's factory", function () {
       ["address"],
       [deployer.address],
     );
-    expect(guardianAddress).equal("0xEc05d35EBE42f5aF046de9Ffcb2f12476699580c");
+    expect(guardianAddress).equal("0x1b9De07B0AF7939B98233479dc618ed9f2BF3A12");
 
     const vaultAddress = await deployContractViaNickSFactory(
       deployer,
@@ -64,7 +64,7 @@ describe.skip("Nick's factory", function () {
       ["address", "address", "address", "address"],
       [erc6551RegistryAddress, guardianAddress, signatureValidatorAddress, managerAddress],
     );
-    expect(vaultAddress).equal("0x9eea54cA43233887b08bB237C62a605813B79B5c");
+    expect(vaultAddress).equal("0xF21095e85283Eb2a29f967461081f8E9eE547734");
   });
 
   it("should mint a vault and deploy the relative manager", async function () {

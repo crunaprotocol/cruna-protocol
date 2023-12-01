@@ -1,6 +1,6 @@
-# Cruna Vault: The Future of Secure Digital Asset Management
+# Cruna Protocol: The Future of Secure Digital Asset Management
 
-Welcome to Cruna Vault, a groundbreaking innovation in the world of NFTs (Non-Fungible Tokens). Unlike ordinary NFTs, Cruna Vault is a powerful tool designed to enhance the safety and management of your digital assets, perfect for pairing with [ERC-6551](https://eips.ethereum.org/EIPS/eip-6551) smart wallets.
+Welcome to Cruna Protocol, a groundbreaking innovation in the world of NFTs (Non-Fungible Tokens). Unlike ordinary NFTs, Protected NFTs, and in particular Cruna Vault tokens, are powerful tools designed to enhance the safety and management of your digital assets, perfect for pairing with [ERC-6551](https://eips.ethereum.org/EIPS/eip-6551) smart wallets.
 
 ## Cruna Vault + ERC-6551: A Game-Changer in Asset Security
 
@@ -32,7 +32,7 @@ The Cruna Protocol introduces a flexible Plugin Architecture with every Cruna Va
 The Manager plays a key role in overseeing crucial aspects of the Vault:
 
 * Protectors and Safe Recipients: It handles the appointment and management of Protectors and Safe Recipients, ensuring robust security mechanisms.
-* Plugin Management: The Manager is also in charge of managing the Vault’s plugins. For instance, functionalities like Sentinels and Beneficiaries are handled by the InheritanceManager, a specialized plugin within the system.
+* Plugin Management: The Manager is also in charge of managing the Vault’s plugins. For instance, functionalities like Sentinels and Beneficiaries are handled by the InheritancePlugin, a specialized plugin within the system.
 ### Plugin Integration and Verification
 When users want to enhance their Vault with additional features, they can integrate plugins into the Manager:
 
@@ -106,11 +106,36 @@ A new family of Zero Knowledge based vaults will allow a high level of privacy.
 
 Cruna Vault is more than just an NFT; it's a comprehensive solution for securing and managing your digital assets, today and in the future. Join us in embracing this new era of digital asset security.
 
+## Development
+
+If you like to develop on Cruna Protocol, you can install it in your Javascript app with its dependencies using 
+
+```sh
+npm install @cruna/protocol @openzeppelin/contracts erc6551
+```
+or similar commands using Yarn or Pnpm, and use in your Solidity smart contracts, for example, as
+
+```
+import {ProtectedNFT} from "@cruna/protocol/contracts/protected/ProtectedNFT.sol";
+
+contract MySuperToken is ProtectedNFT {
+   
+    constructor(
+    address registry_,
+    address guardian_,
+    address signatureValidator_,
+    address managerProxy_
+  ) ProtectedNFT("My Super Token", "MST", registry_, guardian_, signatureValidator_, managerProxy_) {}
+}
+```
+
+If your goal is to build a plugin, look at the two contracts in [contracts/mocks/plugin-template](./contracts/mocks/plugin-template) to start from.
+
 ## History
 
-**0.0.1**
+**1.0.0-beta.0**
 
-- First version
+- First version of the new protocol. The first one, published as @cruna/cruna-protocol, has been deprecated.
 
 ## Test coverage
 
@@ -137,10 +162,10 @@ File                          |  % Stmts | % Branch |  % Funcs |  % Lines |Uncov
   ManagerBase.sol             |    92.31 |       75 |      100 |      100 |                |
   ManagerProxy.sol            |      100 |      100 |      100 |      100 |                |
  contracts/plugins/           |      100 |    63.16 |      100 |    95.83 |                |
-  IInheritanceManager.sol     |      100 |      100 |      100 |      100 |                |
+  IInheritancePlugin.sol     |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                 |      100 |      100 |      100 |      100 |                |
-  InheritanceManager.sol      |      100 |    63.16 |      100 |    95.83 |        125,151 |
-  InheritanceManagerProxy.sol |      100 |      100 |      100 |      100 |                |
+  InheritancePlugin.sol      |      100 |    63.16 |      100 |    95.83 |        125,151 |
+  InheritancePluginProxy.sol |      100 |      100 |      100 |      100 |                |
  contracts/protected/         |      100 |    57.14 |      100 |     97.5 |                |
   ProtectedNFT.sol            |      100 |    57.14 |      100 |     97.5 |             78 |
  contracts/utils/             |      100 |       25 |       80 |      100 |                |
