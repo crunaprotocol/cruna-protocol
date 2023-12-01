@@ -13,9 +13,9 @@ async function main() {
   }
   abi("ERC6551Registry", "erc6551");
   abi("Manager", "contracts/manager");
-  abi("FlexiProxy", "contracts/manager");
-  abi("InheritancePlugin", "contracts/manager");
-  abi("InheritancePluginProxy", "contracts/manager");
+  abi("FlexiProxy", "contracts/utils");
+  abi("InheritancePlugin", "contracts/plugins/inheritance");
+  abi("InheritancePluginProxy", "contracts/plugins/inheritance");
   abi("CrunaFlexiVault", "contracts");
   abi("SignatureValidator", "contracts/utils");
   abi("Guardian", "contracts/manager");
