@@ -154,11 +154,11 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   IERC6454.sol                  |      100 |      100 |      100 |      100 |                |
   IERC6982.sol                  |      100 |      100 |      100 |      100 |                |
   IProtected.sol                |      100 |      100 |      100 |      100 |                |
- contracts/manager/             |    98.91 |    68.06 |      100 |    99.08 |                |
+ contracts/manager/             |    98.92 |    66.22 |      100 |    99.09 |                |
   Actor.sol                     |      100 |    66.67 |      100 |      100 |                |
   FlexiGuardian.sol             |      100 |       50 |      100 |    83.33 |             19 |
   IManager.sol                  |      100 |      100 |      100 |      100 |                |
-  Manager.sol                   |      100 |    68.75 |      100 |      100 |                |
+  Manager.sol                   |      100 |       66 |      100 |      100 |                |
   ManagerBase.sol               |    92.31 |       75 |      100 |      100 |                |
  contracts/plugins/             |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                   |      100 |      100 |      100 |      100 |                |
@@ -174,7 +174,7 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   UUPSUpgradableTemplate.sol    |      100 |       25 |       50 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |    99.51 |    61.21 |     98.8 |     98.1 |                |
+All files                       |    99.51 |    60.65 |     98.8 |    98.11 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 

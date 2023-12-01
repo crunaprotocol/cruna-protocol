@@ -54,7 +54,7 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
   mapping(bytes32 => bytes32) public pluginByRole;
   mapping(bytes32 => bool) public usedSignatures;
 
-  // @dev see {IInheritancePlugin.sol-init}
+  // @dev see {IManager-init}
   // this must be execute immediately after the deployment
   function init(address registry_, address guardian_, address signatureValidator_) external virtual override {
     _nameHash = keccak256("Manager");
@@ -117,7 +117,7 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
     return actorCount(PROTECTOR) > 0;
   }
 
-  // @dev see {IInheritancePlugin.sol-setProtector}
+  // @dev see {IManager-setProtector}
   function setProtector(
     address protector_,
     bool status,
@@ -138,13 +138,13 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
     }
   }
 
-  // @dev see {IInheritancePlugin.sol-getProtectors}
+  // @dev see {IManager-getProtectors}
   function getProtectors() external view virtual override returns (address[] memory) {
     return getActors(PROTECTOR);
   }
 
   // safe recipients
-  // @dev see {IInheritancePlugin.sol-setSafeRecipient}
+  // @dev see {IManager-setSafeRecipient}
   // We do not set a batch function because it can be dangerous
   function setSafeRecipient(
     address recipient,
@@ -157,12 +157,12 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
     emit SafeRecipientUpdated(_msgSender(), recipient, status);
   }
 
-  // @dev see {IInheritancePlugin.sol-isSafeRecipient}
+  // @dev see {IManager-isSafeRecipient}
   function isSafeRecipient(address recipient) public view virtual override returns (bool) {
     return actorIndex(recipient, SAFE_RECIPIENT) != MAX_ACTORS;
   }
 
-  // @dev see {IInheritancePlugin.sol-getSafeRecipients}
+  // @dev see {IManager-getSafeRecipients}
   function getSafeRecipients() external view virtual override returns (address[] memory) {
     return getActors(SAFE_RECIPIENT);
   }
@@ -253,8 +253,10 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
   }
 
   // @dev See {IProtected721-managedTransfer}.
+  // This is a special function that can be called only by the InheritancePlugin
   function managedTransfer(uint256 tokenId, address to) external virtual override {
-    if (address(plugins[keccak256("InheritancePlugin")]) != _msgSender()) revert NotTheInheritancePlugin();
+    address authorized = address(plugins[keccak256("InheritancePlugin")]);
+    if (authorized == address(0) || _msgSender() != authorized) revert NotTheInheritancePlugin();
     vault.managedTransfer(tokenId, to);
     _resetActors();
   }
