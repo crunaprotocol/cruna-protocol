@@ -19,8 +19,8 @@ const {
   keccak256,
 } = require("./helpers");
 
-describe("Manager upgrade", function () {
-  let erc6551Registry, proxy, managerImpl, guardian, managerV2;
+describe("Manager : Safe Recipients", function () {
+  let erc6551Registry, proxy, managerImpl, guardian;
   let signatureValidator, vault;
   let factory;
   let usdc, usdt;
@@ -70,11 +70,66 @@ describe("Manager upgrade", function () {
     return nextTokenId;
   };
 
-  it.skip("should allow bob to upgrade the manager", async function () {
+  it("should set up safe recipients", async function () {
+    // cl(true)
     const tokenId = await buyAVault(bob);
-    const managerV2Impl = await deployContract("ManagerV2Mock");
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
-    await proxy.upgradeTo(managerV2Impl.address);
+    // set Alice and Fred as a safe recipient
+    await expect(manager.connect(bob).setSafeRecipient(alice.address, true, 0, 0, 0))
+      .to.emit(manager, "SafeRecipientUpdated")
+      .withArgs(bob.address, alice.address, true);
+    await expect(manager.connect(bob).setSafeRecipient(fred.address, true, 0, 0, 0))
+      .to.emit(manager, "SafeRecipientUpdated")
+      .withArgs(bob.address, fred.address, true);
+
+    expect(await manager.getSafeRecipients()).deep.equal([alice.address, fred.address]);
+
+    await expect(manager.connect(bob).setSafeRecipient(alice.address, false, 0, 0, 0))
+      .to.emit(manager, "SafeRecipientUpdated")
+      .withArgs(bob.address, alice.address, false);
+    // set Alice as a protector
+    await manager.connect(bob).setProtector(alice.address, true, 0, 0, 0);
+
+    // Set Mark as a safe recipient
+    let signature = await signRequest(
+      "SAFE_RECIPIENT",
+      bob.address,
+      mark.address,
+      tokenId,
+      true,
+      ts,
+      3600,
+      chainId,
+      alice.address,
+      signatureValidator,
+    );
+    await expect(manager.connect(bob).setSafeRecipient(mark.address, true, ts, 3600, signature))
+      .to.emit(manager, "SafeRecipientUpdated")
+      .withArgs(bob.address, mark.address, true);
+
+    expect(await vault.isTransferable(tokenId, bob.address, mark.address)).to.be.true;
+
+    // // remove Fred as a safe recipient
+    signature = await signRequest(
+      "SAFE_RECIPIENT",
+      bob.address,
+      fred.address,
+      tokenId,
+      false,
+      ts,
+      3600,
+      chainId,
+      alice.address,
+      signatureValidator,
+    );
+
+    await expect(manager.connect(bob).setSafeRecipient(fred.address, false, 0, 0, 0)).revertedWith(
+      "NotPermittedWhenProtectorsAreActive",
+    );
+
+    await expect(manager.connect(bob).setSafeRecipient(fred.address, false, ts, 3600, signature))
+      .to.emit(manager, "SafeRecipientUpdated")
+      .withArgs(bob.address, fred.address, false);
   });
 });

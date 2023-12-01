@@ -17,11 +17,12 @@ const {
   getTimestamp,
   signRequest,
   keccak256,
+  attach,
 } = require("./helpers");
 
 describe("Sentinel and Inheritance", function () {
-  let erc6551Registry, proxy, managerImpl, guardian;
-  let signatureValidator, vault, proxy2, inheritanceManager;
+  let erc6551Registry, managerProxy, managerImpl, guardian;
+  let signatureValidator, vault, inheritanceManagerProxy, inheritanceManagerImpl;
   let factory;
   let usdc, usdt;
   let deployer, bob, alice, fred, mark, otto, jerry, beneficiary1, beneficiary2;
@@ -38,14 +39,14 @@ describe("Sentinel and Inheritance", function () {
     erc6551Registry = await deployContract("ERC6551Registry");
     managerImpl = await deployContract("Manager");
     guardian = await deployContract("Guardian", deployer.address);
-    proxy = await deployContract("ManagerProxy", managerImpl.address);
+    managerProxy = await deployContract("ManagerProxy", managerImpl.address);
 
     vault = await deployContract(
       "CrunaFlexiVault",
       erc6551Registry.address,
       guardian.address,
       signatureValidator.address,
-      proxy.address,
+      managerProxy.address,
     );
     factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
 
@@ -69,15 +70,22 @@ describe("Sentinel and Inheritance", function () {
     const nextTokenId = await vault.nextTokenId();
     await factory.connect(bob).buyVaults(usdc.address, 1, "");
     const manager = await ethers.getContractAt("Manager", await vault.managerOf(nextTokenId));
-    inheritanceManager = await deployContract("InheritanceManager");
-    await expect(manager.connect(bob).plug("InheritanceManager", inheritanceManager.address)).to.be.revertedWith(
+    inheritanceManagerImpl = await deployContract("InheritanceManager");
+    inheritanceManagerProxy = await deployContract("ManagerProxy", inheritanceManagerImpl.address);
+    await expect(manager.connect(bob).plug("InheritanceManager", inheritanceManagerImpl.address)).to.be.revertedWith(
+      "NotAProxy",
+    );
+    await expect(manager.connect(bob).plug("InheritanceManager", inheritanceManagerProxy.address)).to.be.revertedWith(
       "InvalidImplementation",
     );
     const scope = keccak256("InheritanceManager");
-    await guardian.setTrustedImplementation(scope, inheritanceManager.address, true);
+    await guardian.setTrustedImplementation(scope, inheritanceManagerProxy.address, true);
     let pluginAddress = await manager.plugins(scope);
     expect(pluginAddress).to.equal(addr0);
-    await expect(manager.connect(bob).plug("InheritanceManager", inheritanceManager.address)).to.emit(manager, "PluginPlugged");
+    await expect(manager.connect(bob).plug("InheritanceManager", inheritanceManagerProxy.address)).to.emit(
+      manager,
+      "PluginPlugged",
+    );
     pluginAddress = await manager.plugins(scope);
     expect(pluginAddress).to.not.equal(addr0);
     return nextTokenId;
@@ -269,5 +277,41 @@ describe("Sentinel and Inheritance", function () {
     expect(data[2].beneficiary).to.equal(addr0);
     expect(data[2].startedAt).to.equal(0);
     expect(data[2].approvers.length).to.equal(0);
+  });
+
+  it("should upgrade the plugin", async function () {
+    const tokenId = await buyAVault(bob);
+    const managerAddress = await vault.managerOf(tokenId);
+    const manager = await ethers.getContractAt("Manager", managerAddress);
+    const inheritanceManagerAddress = await manager.plugins(keccak256("InheritanceManager"));
+    const inheritanceManager = await ethers.getContractAt("InheritanceManager", inheritanceManagerAddress);
+    expect(await inheritanceManager.version()).to.equal("1.0.0");
+
+    await inheritanceManager.connect(bob).setSentinels([alice.address, fred.address], 0);
+
+    let data = await inheritanceManager.getSentinelsAndInheritanceData();
+    expect(data[0].length).to.equal(2);
+
+    const inheritanceManagerV2Impl = await deployContract("InheritanceManagerV2Mock");
+
+    await expect(inheritanceManager.upgrade(inheritanceManagerV2Impl.address)).to.be.revertedWith("NotTheTokenOwner");
+    await expect(inheritanceManager.connect(bob).upgrade(inheritanceManagerV2Impl.address)).to.be.revertedWith(
+      "InvalidImplementation",
+    );
+
+    await guardian.setTrustedImplementation(keccak256("InheritanceManager"), inheritanceManagerV2Impl.address, true);
+
+    expect(await inheritanceManager.getImplementation()).to.equal(addr0);
+
+    await inheritanceManager.connect(bob).upgrade(inheritanceManagerV2Impl.address);
+    expect(await inheritanceManager.getImplementation()).to.equal(inheritanceManagerV2Impl.address);
+
+    const newInheritanceManager = await ethers.getContractAt("InheritanceManagerV2Mock", inheritanceManagerAddress);
+
+    expect(await newInheritanceManager.isMock()).to.be.true;
+    expect(await newInheritanceManager.version()).to.equal("2.0.0");
+
+    data = await newInheritanceManager.getSentinelsAndInheritanceData();
+    expect(data[0].length).to.equal(2);
   });
 });

@@ -19,7 +19,7 @@ const {
   keccak256,
 } = require("./helpers");
 
-describe("Protectors", function () {
+describe("Manager : Protectors", function () {
   let erc6551Registry, proxy, managerImpl, guardian;
   let signatureValidator, vault;
   let factory;
@@ -243,5 +243,33 @@ describe("Protectors", function () {
     await expect(vault.connect(bob).protectedTransfer(tokenId, fred.address, ts, 3600, signature))
       .to.emit(vault, "Transfer")
       .withArgs(bob.address, fred.address, tokenId);
+  });
+
+  it("should allow bob to upgrade the manager", async function () {
+    const tokenId = await buyAVault(bob);
+    const managerV2Impl = await deployContract("ManagerV2Mock");
+    const managerAddress = await vault.managerOf(tokenId);
+    const manager = await ethers.getContractAt("Manager", managerAddress);
+    expect(await manager.version()).to.equal("1.0.0");
+
+    await manager.connect(bob).setProtector(alice.address, true, 0, 0, 0);
+    expect(await manager.hasProtectors()).to.equal(true);
+
+    await expect(manager.upgrade(managerV2Impl.address)).to.be.revertedWith("NotTheTokenOwner");
+
+    await expect(manager.connect(bob).upgrade(managerV2Impl.address)).to.be.revertedWith("InvalidImplementation");
+
+    await guardian.setTrustedImplementation(keccak256("Manager"), managerV2Impl.address, true);
+
+    expect(await manager.getImplementation()).to.equal(addr0);
+
+    await manager.connect(bob).upgrade(managerV2Impl.address);
+    expect(await manager.getImplementation()).to.equal(managerV2Impl.address);
+
+    expect(await manager.version()).to.equal("2.0.0");
+    expect(await manager.hasProtectors()).to.equal(true);
+
+    const managerV2 = await ethers.getContractAt("ManagerV2Mock", managerAddress);
+    expect(await managerV2.isMock()).to.be.true;
   });
 });
