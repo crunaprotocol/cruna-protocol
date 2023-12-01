@@ -20,7 +20,7 @@ async function main() {
 
   const erc6551Registry = await deployUtils.deploy("ERC6551Registry");
   const managerImpl = await deployUtils.deploy("Manager");
-  const guardian = await deployUtils.deploy("Guardian", deployer.address);
+  const guardian = await deployUtils.deploy("FlexiGuardian", deployer.address);
   const managerProxy = await deployUtils.deploy("FlexiProxy", managerImpl.address);
 
   const inheritancePluginImpl = await deployUtils.deploy("InheritancePlugin");

@@ -36,7 +36,7 @@ describe("Manager : Protectors", function () {
   beforeEach(async function () {
     erc6551Registry = await deployContract("ERC6551Registry");
     managerImpl = await deployContract("Manager");
-    guardian = await deployContract("Guardian", deployer.address);
+    guardian = await deployContract("FlexiGuardian", deployer.address);
     proxy = await deployContract("FlexiProxy", managerImpl.address);
 
     vault = await deployContract(

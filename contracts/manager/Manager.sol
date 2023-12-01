@@ -13,7 +13,7 @@ import {Actor} from "./Actor.sol";
 import {IManager} from "./IManager.sol";
 import {Versioned} from "../utils/Versioned.sol";
 import {IPlugin} from "../plugins/IPlugin.sol";
-import {Guardian, ManagerBase} from "./ManagerBase.sol";
+import {FlexiGuardian, ManagerBase} from "./ManagerBase.sol";
 
 //import {console} from "hardhat/console.sol";
 
@@ -61,7 +61,7 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
     _addRole(keccak256("PROTECTOR"));
     _addRole(keccak256("SAFE_RECIPIENT"));
     if (msg.sender != tokenAddress()) revert Forbidden();
-    guardian = Guardian(guardian_);
+    guardian = FlexiGuardian(guardian_);
     signatureValidator = SignatureValidator(signatureValidator_);
     vault = ProtectedNFT(msg.sender);
     registry = IERC6551Registry(registry_);

@@ -18,7 +18,7 @@ async function main() {
   abi("InheritancePluginProxy", "contracts/plugins/inheritance");
   abi("CrunaFlexiVault", "contracts");
   abi("SignatureValidator", "contracts/utils");
-  abi("Guardian", "contracts/manager");
+  abi("FlexiGuardian", "contracts/manager");
   abi("VaultFactory", "contracts/factory");
 
   // for dev only

@@ -140,7 +140,7 @@ If your goal is to build a plugin, look at the two contracts in [contracts/mocks
 ## Test coverage
 
 ```
-  22 passing (6s)
+  22 passing (7s)
 
 --------------------------------|----------|----------|----------|----------|----------------|
 File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -156,7 +156,7 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   IProtected.sol                |      100 |      100 |      100 |      100 |                |
  contracts/manager/             |    98.91 |    68.06 |      100 |    99.08 |                |
   Actor.sol                     |      100 |    66.67 |      100 |      100 |                |
-  Guardian.sol                  |      100 |       50 |      100 |    83.33 |             19 |
+  FlexiGuardian.sol             |      100 |       50 |      100 |    83.33 |             19 |
   IManager.sol                  |      100 |      100 |      100 |      100 |                |
   Manager.sol                   |      100 |    68.75 |      100 |      100 |                |
   ManagerBase.sol               |    92.31 |       75 |      100 |      100 |                |

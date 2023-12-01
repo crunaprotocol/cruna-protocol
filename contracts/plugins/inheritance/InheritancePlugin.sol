@@ -10,7 +10,7 @@ import {Manager} from "../../manager/Manager.sol";
 import {IInheritancePlugin} from "./IInheritancePlugin.sol";
 import {Versioned} from "../../utils/Versioned.sol";
 import {IPlugin} from "../IPlugin.sol";
-import {Guardian, ManagerBase} from "../../manager/ManagerBase.sol";
+import {FlexiGuardian, ManagerBase} from "../../manager/ManagerBase.sol";
 
 //import {console} from "hardhat/console.sol";
 
@@ -42,7 +42,7 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, Versioned, ManagerBas
   function init(address guardian_) external virtual {
     _nameHash = keccak256("InheritancePlugin");
     if (msg.sender != tokenAddress()) revert Forbidden();
-    guardian = Guardian(guardian_);
+    guardian = FlexiGuardian(guardian_);
     manager = Manager(msg.sender);
   }
 

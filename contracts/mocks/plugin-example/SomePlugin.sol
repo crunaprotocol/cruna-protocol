@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 // Author: Francesco Sullo <francesco@sullo.co>
 
 import {Manager} from "../../manager/Manager.sol";
-import {Guardian, ManagerBase} from "../../manager/ManagerBase.sol";
+import {FlexiGuardian, ManagerBase} from "../../manager/ManagerBase.sol";
 import {Versioned} from "../../utils/Versioned.sol";
 import {IPlugin} from "../../plugins/IPlugin.sol";
 
@@ -20,7 +20,7 @@ contract SomePlugin is IPlugin, Versioned, ManagerBase {
     // replace with the name of your plugin
     _nameHash = keccak256("SomePlugin");
     if (msg.sender != tokenAddress()) revert Forbidden();
-    guardian = Guardian(guardian_);
+    guardian = FlexiGuardian(guardian_);
     manager = Manager(msg.sender);
   }
 
