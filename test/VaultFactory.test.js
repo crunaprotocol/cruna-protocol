@@ -17,7 +17,7 @@ const {
   keccak256,
 } = require("./helpers");
 
-describe("Factory", function () {
+describe("VaultFactory", function () {
   let erc6551Registry, proxy, managerImpl, guardian;
   let signatureValidator, vault;
   let factory;

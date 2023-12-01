@@ -117,38 +117,39 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 ```
   22 passing (7s)
 
------------------------------|----------|----------|----------|----------|----------------|
-File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
------------------------------|----------|----------|----------|----------|----------------|
- contracts/                  |      100 |       40 |      100 |      100 |                |
-  CrunaFlexiVault.sol        |      100 |       40 |      100 |      100 |                |
- contracts/factory/          |      100 |    60.42 |      100 |    98.18 |                |
-  IVaultFactory.sol          |      100 |      100 |      100 |      100 |                |
-  VaultFactory.sol           |      100 |    60.42 |      100 |    98.18 |            113 |
- contracts/interfaces/       |      100 |      100 |      100 |      100 |                |
-  IERC6454.sol               |      100 |      100 |      100 |      100 |                |
-  IERC6982.sol               |      100 |      100 |      100 |      100 |                |
-  IProtected.sol             |      100 |      100 |      100 |      100 |                |
- contracts/manager/          |    98.92 |    68.06 |      100 |    99.09 |                |
-  Actor.sol                  |      100 |    66.67 |      100 |      100 |                |
-  Guardian.sol               |      100 |       50 |      100 |    83.33 |             19 |
-  IManager.sol               |      100 |      100 |      100 |      100 |                |
-  Manager.sol                |      100 |    68.75 |      100 |      100 |                |
-  ManagerBase.sol            |    92.31 |       75 |      100 |      100 |                |
-  ManagerProxy.sol           |      100 |      100 |      100 |      100 |                |
- contracts/plugins/          |      100 |    63.16 |      100 |    95.83 |                |
-  IInheritanceManager.sol    |      100 |      100 |      100 |      100 |                |
-  IPlugin.sol                |      100 |      100 |      100 |      100 |                |
-  InheritanceManager.sol     |      100 |    63.16 |      100 |    95.83 |        125,151 |
- contracts/protected/        |      100 |    57.14 |      100 |     97.5 |                |
-  ProtectedNFT.sol           |      100 |    57.14 |      100 |     97.5 |             78 |
- contracts/utils/            |      100 |       25 |       80 |      100 |                |
-  SignatureValidator.sol     |      100 |      100 |      100 |      100 |                |
-  UUPSUpgradableTemplate.sol |      100 |       25 |       50 |      100 |                |
-  Versioned.sol              |      100 |      100 |      100 |      100 |                |
------------------------------|----------|----------|----------|----------|----------------|
-All files                    |    99.51 |    61.21 |    98.78 |    98.11 |                |
------------------------------|----------|----------|----------|----------|----------------|
+------------------------------|----------|----------|----------|----------|----------------|
+File                          |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
+------------------------------|----------|----------|----------|----------|----------------|
+ contracts/                   |      100 |       40 |      100 |      100 |                |
+  CrunaFlexiVault.sol         |      100 |       40 |      100 |      100 |                |
+ contracts/factory/           |      100 |    60.42 |      100 |    98.18 |                |
+  IVaultFactory.sol           |      100 |      100 |      100 |      100 |                |
+  VaultFactory.sol            |      100 |    60.42 |      100 |    98.18 |            113 |
+ contracts/interfaces/        |      100 |      100 |      100 |      100 |                |
+  IERC6454.sol                |      100 |      100 |      100 |      100 |                |
+  IERC6982.sol                |      100 |      100 |      100 |      100 |                |
+  IProtected.sol              |      100 |      100 |      100 |      100 |                |
+ contracts/manager/           |    98.92 |    68.06 |      100 |    99.09 |                |
+  Actor.sol                   |      100 |    66.67 |      100 |      100 |                |
+  Guardian.sol                |      100 |       50 |      100 |    83.33 |             19 |
+  IManager.sol                |      100 |      100 |      100 |      100 |                |
+  Manager.sol                 |      100 |    68.75 |      100 |      100 |                |
+  ManagerBase.sol             |    92.31 |       75 |      100 |      100 |                |
+  ManagerProxy.sol            |      100 |      100 |      100 |      100 |                |
+ contracts/plugins/           |      100 |    63.16 |      100 |    95.83 |                |
+  IInheritanceManager.sol     |      100 |      100 |      100 |      100 |                |
+  IPlugin.sol                 |      100 |      100 |      100 |      100 |                |
+  InheritanceManager.sol      |      100 |    63.16 |      100 |    95.83 |        125,151 |
+  InheritanceManagerProxy.sol |      100 |      100 |      100 |      100 |                |
+ contracts/protected/         |      100 |    57.14 |      100 |     97.5 |                |
+  ProtectedNFT.sol            |      100 |    57.14 |      100 |     97.5 |             78 |
+ contracts/utils/             |      100 |       25 |       80 |      100 |                |
+  SignatureValidator.sol      |      100 |      100 |      100 |      100 |                |
+  UUPSUpgradableTemplate.sol  |      100 |       25 |       50 |      100 |                |
+  Versioned.sol               |      100 |      100 |      100 |      100 |                |
+------------------------------|----------|----------|----------|----------|----------------|
+All files                     |    99.51 |    61.21 |     98.8 |    98.11 |                |
+------------------------------|----------|----------|----------|----------|----------------|
 ```
 
 ## License
