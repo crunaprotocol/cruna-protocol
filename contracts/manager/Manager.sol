@@ -3,31 +3,26 @@ pragma solidity ^0.8.19;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {UUPSUpgradeable} from "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
-
 import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
 
-import {Guardian} from "./Guardian.sol";
 import {ProtectedNFT} from "../protected/ProtectedNFT.sol";
 import {Actor} from "./Actor.sol";
 import {IManager} from "./IManager.sol";
 import {Versioned} from "../utils/Versioned.sol";
 import {IPlugin} from "../plugins/IPlugin.sol";
-import {ManagerBase} from "./ManagerBase.sol";
+import {Guardian, ManagerBase} from "./ManagerBase.sol";
 
 //import {console} from "hardhat/console.sol";
 
-contract Manager is IManager, Actor, Context, Versioned, UUPSUpgradeable, ManagerBase {
+contract Manager is IManager, Actor, Versioned, ManagerBase {
   using ECDSA for bytes32;
   using Strings for uint256;
 
   error TimestampZero();
   error Forbidden();
-  error NotTheTokenOwner();
   error ProtectorNotFound();
   error ProtectorAlreadySetByYou();
   error NotPermittedWhenProtectorsAreActive();
@@ -35,7 +30,6 @@ contract Manager is IManager, Actor, Context, Versioned, UUPSUpgradeable, Manage
   error WrongDataOrNotSignedByProtector();
   error SignatureAlreadyUsed();
   error CannotBeYourself();
-  error InvalidImplementation();
   error NotTheInheritanceManager();
   error PluginAlreadyPlugged();
   error RoleNotFound();
@@ -47,7 +41,6 @@ contract Manager is IManager, Actor, Context, Versioned, UUPSUpgradeable, Manage
   bytes32 public constant SENTINEL = keccak256(abi.encodePacked("SENTINEL"));
   bytes32 public constant SAFE_RECIPIENT = keccak256(abi.encodePacked("SAFE_RECIPIENT"));
 
-  Guardian public guardian;
   IERC6551Registry public registry;
   SignatureValidator public signatureValidator;
   ProtectedNFT public vault;
@@ -56,14 +49,10 @@ contract Manager is IManager, Actor, Context, Versioned, UUPSUpgradeable, Manage
   mapping(bytes32 => bytes32) public pluginByRole;
   mapping(bytes32 => bool) public usedSignatures;
 
-  modifier onlyTokenOwner() {
-    if (vault.ownerOf(tokenId()) != _msgSender()) revert NotTheTokenOwner();
-    _;
-  }
-
   // @dev see {IInheritanceManager.sol-init}
   // this must be execute immediately after the deployment
   function init(address registry_, address guardian_, address signatureValidator_) external virtual override {
+    _nameHash = keccak256("Manager");
     _addRole(keccak256("PROTECTOR"));
     _addRole(keccak256("SAFE_RECIPIENT"));
     if (msg.sender != tokenAddress()) revert Forbidden();
@@ -73,17 +62,13 @@ contract Manager is IManager, Actor, Context, Versioned, UUPSUpgradeable, Manage
     registry = IERC6551Registry(registry_);
   }
 
-  function _authorizeUpgrade(address implementation) internal virtual override onlyTokenOwner {
-    if (!guardian.isTrustedImplementation(keccak256("Manager"), implementation)) revert InvalidImplementation();
-  }
-
-  function plug(string memory name, address implementation) external virtual override onlyTokenOwner {
+  function plug(string memory name, address pluginProxy) external virtual override onlyTokenOwner {
     bytes32 salt = keccak256(abi.encodePacked(name));
     if (address(plugins[salt]) != address(0)) revert PluginAlreadyPlugged();
-    if (!guardian.isTrustedImplementation(salt, implementation)) revert InvalidImplementation();
+    if (!guardian.isTrustedImplementation(salt, pluginProxy)) revert InvalidImplementation();
     // the manager pretends to be an NFT to use the ERC-6551 registry
-    registry.createAccount(implementation, salt, block.chainid, address(this), tokenId());
-    address pluginAddress = registry.account(implementation, salt, block.chainid, address(this), tokenId());
+    registry.createAccount(pluginProxy, salt, block.chainid, address(this), tokenId());
+    address pluginAddress = registry.account(pluginProxy, salt, block.chainid, address(this), tokenId());
     plugins[salt] = IPlugin(pluginAddress);
     plugins[salt].init(address(guardian), address(signatureValidator));
     bytes32[] memory roles = plugins[salt].pluginRoles();

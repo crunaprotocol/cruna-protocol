@@ -35,7 +35,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   IAccountGuardian public immutable GUARDIAN;
   SignatureValidator public immutable VALIDATOR;
   IERC6551Registry public immutable REGISTRY;
-  Manager public immutable MANAGER;
+  Manager public immutable MANAGER_PROXY;
 
   bytes32 public salt = bytes32(uint256(400));
 
@@ -79,7 +79,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
     GUARDIAN = IAccountGuardian(guardian_);
     VALIDATOR = SignatureValidator(signatureValidator_);
     REGISTRY = IERC6551Registry(registry_);
-    MANAGER = Manager(managerProxy_);
+    MANAGER_PROXY = Manager(managerProxy_);
     emit DefaultLocked(false);
     nextTokenId = block.chainid * 1e6 + 1;
   }
@@ -181,7 +181,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   // @dev This function will mint a new token and initialize it.
   // @param to The address of the recipient.
   function _mintAndInit(address to) internal {
-    REGISTRY.createAccount(address(MANAGER), salt, block.chainid, address(this), nextTokenId);
+    REGISTRY.createAccount(address(MANAGER_PROXY), salt, block.chainid, address(this), nextTokenId);
     managers[nextTokenId] = Manager(managerOf(nextTokenId));
     managers[nextTokenId].init(address(REGISTRY), address(GUARDIAN), address(VALIDATOR));
     _safeMint(to, nextTokenId++);
@@ -190,6 +190,6 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   // @dev This function will return the address of the manager for tokenId.
   // @param tokenId The id of the token.
   function managerOf(uint256 tokenId) public view returns (address) {
-    return REGISTRY.account(address(MANAGER), salt, block.chainid, address(this), tokenId);
+    return REGISTRY.account(address(MANAGER_PROXY), salt, block.chainid, address(this), tokenId);
   }
 }

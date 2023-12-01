@@ -115,8 +115,7 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 ## Test coverage
 
 ```
-  20 passing (6s)
-  1 pending
+  22 passing (12s)
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -130,17 +129,17 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   IERC6454.sol               |      100 |      100 |      100 |      100 |                |
   IERC6982.sol               |      100 |      100 |      100 |      100 |                |
   IProtected.sol             |      100 |      100 |      100 |      100 |                |
- contracts/manager/          |    97.75 |     62.5 |    97.22 |    98.06 |                |
+ contracts/manager/          |     98.9 |    68.06 |      100 |    99.07 |                |
   Actor.sol                  |      100 |    66.67 |      100 |      100 |                |
   Guardian.sol               |      100 |       50 |      100 |    83.33 |             19 |
   IManager.sol               |      100 |      100 |      100 |      100 |                |
-  Manager.sol                |    98.21 |    62.96 |    94.74 |    98.44 |             77 |
-  ManagerBase.sol            |    88.89 |       50 |      100 |      100 |                |
+  Manager.sol                |      100 |    68.75 |      100 |      100 |                |
+  ManagerBase.sol            |    92.31 |       75 |      100 |      100 |                |
   ManagerProxy.sol           |      100 |      100 |      100 |      100 |                |
- contracts/plugins/          |    97.06 |    56.82 |    90.91 |       94 |                |
+ contracts/plugins/          |      100 |    63.16 |      100 |    95.83 |                |
   IInheritanceManager.sol    |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                |      100 |      100 |      100 |      100 |                |
-  InheritanceManager.sol     |    97.06 |    56.82 |    90.91 |       94 |     78,146,172 |
+  InheritanceManager.sol     |      100 |    63.16 |      100 |    95.83 |        125,151 |
  contracts/protected/        |      100 |    57.14 |      100 |     97.5 |                |
   ProtectedNFT.sol           |      100 |    57.14 |      100 |     97.5 |             78 |
  contracts/utils/            |      100 |       25 |       80 |      100 |                |
@@ -148,11 +147,8 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   UUPSUpgradableTemplate.sol |      100 |       25 |       50 |      100 |                |
   Versioned.sol              |      100 |      100 |      100 |      100 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
-All files                    |    98.52 |    58.18 |    96.34 |     97.3 |                |
+All files                    |    99.51 |    61.21 |    98.77 |    98.08 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
-
-> Istanbul reports written to ./coverage/ and ./coverage.json
-
 ```
 
 ## License

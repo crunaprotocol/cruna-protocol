@@ -30,6 +30,11 @@ const Helpers = {
     }
   },
 
+  async attach(chainId, contractName, contractAddress) {
+    const contract = await this.ethers.getContractFactory(contractName);
+    return contract.attach(contractAddress);
+  },
+
   async deployContractBy(contractName, owner, ...args) {
     const Contract = await this.ethers.getContractFactory(contractName);
     const contract = await Contract.connect(owner).deploy(...args);
@@ -55,11 +60,16 @@ const Helpers = {
     }
   },
 
-  async deployContractViaNickSFactory(deployer, contractName, folderName, constructorTypes, constructorArgs, gasLimit) {
-    const salt = Helpers.keccak256("Cruna");
+  async deployContractViaNickSFactory(
+    deployer,
+    contractName,
+    folderName,
+    constructorTypes,
+    constructorArgs,
+    salt = Helpers.keccak256("Cruna"),
+  ) {
     const json = require(`../../artifacts/${folderName}/${contractName}.sol/${contractName}.json`);
     let contractBytecode = json.bytecode;
-    let bytecode = contractBytecode;
 
     // examples:
     // const constructorArgs = [arg1, arg2, arg3];
@@ -75,7 +85,6 @@ const Helpers = {
     const tx = {
       to: Helpers.nickSFactoryAddress,
       data,
-      gasLimit,
     };
     const transaction = await deployer.sendTransaction(tx);
     await transaction.wait();
