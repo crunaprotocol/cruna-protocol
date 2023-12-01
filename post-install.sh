@@ -11,10 +11,13 @@ if [[ -f "./.husky/pre-commit" ]]; then
 fi
 
 if [[ "$EXISTS" == "" ]]; then
-    npx mrm@2 lint-staged
     npx husky-init
     pnpm i -D pretty-quick
-    npx husky set .husky/pre-commit "if [[ "$SKIP_PRECOMMIT" != "" ]]; then npm run lint && bin/get-coverage.sh && bin/export.sh && git add -A; fi"
+    npx husky set .husky/pre-commit "# to skip it call git commit with HUSKY=0 git commit ...
+if [[ \"\$HUSKY\" != \"0\" ]]; then
+ npm run lint && bin/get-coverage.sh && bin/export.sh && git add -A
+fi
+"
 fi
 
 node ./scripts/conditional-symlink.js

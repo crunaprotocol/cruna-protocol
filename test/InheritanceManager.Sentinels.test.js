@@ -72,9 +72,7 @@ describe("Sentinel and Inheritance", function () {
     const manager = await ethers.getContractAt("Manager", await vault.managerOf(nextTokenId));
     inheritancePluginImpl = await deployContract("InheritancePlugin");
     inheritancePluginProxy = await deployContract("InheritancePluginProxy", inheritancePluginImpl.address);
-    await expect(manager.connect(bob).plug("InheritancePlugin", inheritancePluginImpl.address)).to.be.revertedWith(
-      "NotAProxy",
-    );
+    await expect(manager.connect(bob).plug("InheritancePlugin", inheritancePluginImpl.address)).to.be.revertedWith("NotAProxy");
     await expect(manager.connect(bob).plug("InheritancePlugin", inheritancePluginProxy.address)).to.be.revertedWith(
       "InvalidImplementation",
     );
@@ -211,9 +209,7 @@ describe("Sentinel and Inheritance", function () {
 
     await increaseBlockTimestampBy(89 * days);
 
-    await expect(inheritancePlugin.connect(bob).proofOfLife())
-      .to.emit(inheritancePlugin, "ProofOfLife")
-      .withArgs(bob.address);
+    await expect(inheritancePlugin.connect(bob).proofOfLife()).to.emit(inheritancePlugin, "ProofOfLife").withArgs(bob.address);
 
     lastTs = await getTimestamp();
 

@@ -77,7 +77,7 @@ devDependencies:
     specifier: ^1.0.9
     version: 1.0.9(hardhat@2.19.1)
   husky:
-    specifier: ^8.0.3
+    specifier: ^8.0.0
     version: 8.0.3
   keccak256:
     specifier: ^1.0.6

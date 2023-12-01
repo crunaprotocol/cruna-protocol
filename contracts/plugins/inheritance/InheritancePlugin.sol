@@ -6,8 +6,6 @@ pragma solidity ^0.8.19;
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
-import {SignatureValidator} from "../../utils/SignatureValidator.sol";
-
 import {Manager} from "../../manager/Manager.sol";
 import {IInheritancePlugin} from "./IInheritancePlugin.sol";
 import {Versioned} from "../../utils/Versioned.sol";
