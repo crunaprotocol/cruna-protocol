@@ -11,11 +11,13 @@ import {IPlugin} from "../../plugins/IPlugin.sol";
 contract SomePlugin is IPlugin, Versioned, ManagerBase {
   error Forbidden();
 
+  // Replace with the roles required by the plugin, if any, or delete it
   bytes32 public constant SOME_ROLE = keccak256("SOME_ROLE");
 
   Manager public manager;
 
   function init(address guardian_) external virtual {
+    // replace with the name of your plugin
     _nameHash = keccak256("SomePlugin");
     if (msg.sender != tokenAddress()) revert Forbidden();
     guardian = Guardian(guardian_);
@@ -24,6 +26,7 @@ contract SomePlugin is IPlugin, Versioned, ManagerBase {
 
   function pluginRoles() external pure virtual returns (bytes32[] memory) {
     bytes32[] memory roles = new bytes32[](1);
+    // return your roles, if any
     roles[0] = SOME_ROLE;
     return roles;
   }

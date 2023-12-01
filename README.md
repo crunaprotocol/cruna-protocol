@@ -129,7 +129,7 @@ contract MySuperToken is ProtectedNFT {
 }
 ```
 
-If your goal is to build a plugin, look at the two contracts in [contracts/mocks/plugin-template](./contracts/mocks/plugin-template) to start from.
+If your goal is to build a plugin, look at the two contracts in [contracts/mocks/plugin-example](./contracts/mocks/plugin-example) to start from.
 
 ## History
 
