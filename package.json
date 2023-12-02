@@ -1,6 +1,6 @@
 {
-  "name": "@cruna/cruna-vault",
-  "version": "0.0.1",
+  "name": "@cruna/protocol",
+  "version": "1.0.0-beta.0",
   "description": "The Cruna protocol",
   "publishConfig": {
     "access": "public"
@@ -18,7 +18,7 @@
     "coverage": "rimraf coverage coverage.json && NODE_ENV=test IS_COVERAGE=1 npx hardhat coverage",
     "prepare": "husky install",
     "size": "NODE_ENV=test npx hardhat size-contracts",
-    "prepublishOnly": "./check-hardhat-console.js && npm run compile && npm test",
+    "prepublishOnly": "echo 'Error: Please use 'scripts/publish.sh' to publish.' && exit 1",
     "publish-package": "scripts/publish.sh",
     "postinstall": "./post-install.sh"
   },
@@ -36,15 +36,13 @@
   "homepage": "https://github.com/cruna-cc/cruna-protocol#readme",
   "license": "GPL3",
   "dependencies": {
-    "@account-abstraction/contracts": "^0.6.0",
-    "@ethersproject/contracts": "^5.7.0",
     "@openzeppelin/contracts": "^4.9.3",
-    "@openzeppelin/contracts-upgradeable": "^4.9.3",
-    "erc6551": "0.3.1",
-    "ethereumjs-abi": "^0.6.8",
-    "gargarollotto2": "^0.0.4"
+    "erc6551": "0.3.1"
   },
   "devDependencies": {
+    "@openzeppelin/contracts-upgradeable": "^4.9.3",
+    "ethereumjs-abi": "^0.6.8",
+    "@ethersproject/contracts": "^5.7.0",
     "@nomiclabs/hardhat-ethers": "^2.2.3",
     "@nomiclabs/hardhat-etherscan": "^3.1.7",
     "@nomiclabs/hardhat-waffle": "^2.0.6",
@@ -63,7 +61,7 @@
     "hardhat": "^2.19.1",
     "hardhat-contract-sizer": "^2.10.0",
     "hardhat-gas-reporter": "^1.0.9",
-    "husky": "^8.0.3",
+    "husky": "^8.0.0",
     "keccak256": "^1.0.6",
     "prettier": "^3.1.0",
     "prettier-plugin-solidity": "^1.2.0",
@@ -75,6 +73,7 @@
     "typescript": "^5.3.2"
   },
   "lint-staged": {
-    "*.js": "prettier --write"
+    "*.js": "prettier --write",
+    "*.{js,css,md}": "prettier --write"
   }
 }

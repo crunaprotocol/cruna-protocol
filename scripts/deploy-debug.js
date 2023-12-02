@@ -20,11 +20,11 @@ async function main() {
 
   const erc6551Registry = await deployUtils.deploy("ERC6551Registry");
   const managerImpl = await deployUtils.deploy("Manager");
-  const guardian = await deployUtils.deploy("Guardian", deployer.address);
-  const managerProxy = await deployUtils.deploy("ManagerProxy", managerImpl.address);
+  const guardian = await deployUtils.deploy("FlexiGuardian", deployer.address);
+  const managerProxy = await deployUtils.deploy("FlexiProxy", managerImpl.address);
 
-  const inheritanceManagerImpl = await deployUtils.deploy("InheritanceManager");
-  const inheritanceManagerProxy = await deployUtils.deploy("InheritanceManagerProxy", inheritanceManagerImpl.address);
+  const inheritancePluginImpl = await deployUtils.deploy("InheritancePlugin");
+  const inheritancePluginProxy = await deployUtils.deploy("InheritancePluginProxy", inheritancePluginImpl.address);
 
   const signatureValidator = await deployUtils.deploy("SignatureValidator", "Cruna", "1");
 

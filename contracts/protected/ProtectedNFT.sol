@@ -7,7 +7,7 @@ import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
-import {IAccountGuardian} from "@tokenbound/contracts/interfaces/IAccountGuardian.sol";
+import {FlexiGuardian} from "../manager/FlexiGuardian.sol";
 import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
 import {IProtected} from "../interfaces/IProtected.sol";
 import {IERC6454} from "../interfaces/IERC6454.sol";
@@ -32,7 +32,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   error ZeroAddress();
   error WrongDataOrNotSignedByProtector();
 
-  IAccountGuardian public immutable GUARDIAN;
+  FlexiGuardian public immutable GUARDIAN;
   SignatureValidator public immutable VALIDATOR;
   IERC6551Registry public immutable REGISTRY;
   Manager public immutable MANAGER_PROXY;
@@ -76,7 +76,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   ) ERC721(name_, symbol_) {
     if (registry_ == address(0) || guardian_ == address(0) || signatureValidator_ == address(0) || managerProxy_ == address(0))
       revert ZeroAddress();
-    GUARDIAN = IAccountGuardian(guardian_);
+    GUARDIAN = FlexiGuardian(guardian_);
     VALIDATOR = SignatureValidator(signatureValidator_);
     REGISTRY = IERC6551Registry(registry_);
     MANAGER_PROXY = Manager(managerProxy_);

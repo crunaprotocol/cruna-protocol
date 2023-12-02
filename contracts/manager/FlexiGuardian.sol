@@ -7,7 +7,7 @@ import {Versioned} from "../utils/Versioned.sol";
 /**
  * @dev Manages upgrade and cross-chain execution settings for accounts
  */
-contract Guardian is Ownable2Step, Versioned {
+contract FlexiGuardian is Ownable2Step, Versioned {
   error ZeroAddress();
 
   mapping(bytes32 => mapping(address => bool)) private _isTrustedImplementation;

@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 // Author: Francesco Sullo <francesco@sullo.co>
 
 // erc165 interfaceId 0x8dca4bea
-interface IInheritanceManager {
+interface IInheritancePlugin {
   // @dev Emitted when a sentinel is updated
   event SentinelUpdated(address indexed owner, address indexed sentinel, bool status);
 

@@ -13,12 +13,12 @@ async function main() {
   }
   abi("ERC6551Registry", "erc6551");
   abi("Manager", "contracts/manager");
-  abi("ManagerProxy", "contracts/manager");
-  abi("InheritanceManager", "contracts/manager");
-  abi("InheritanceManagerProxy", "contracts/manager");
+  abi("FlexiProxy", "contracts/utils");
+  abi("InheritancePlugin", "contracts/plugins/inheritance");
+  abi("InheritancePluginProxy", "contracts/plugins/inheritance");
   abi("CrunaFlexiVault", "contracts");
   abi("SignatureValidator", "contracts/utils");
-  abi("Guardian", "contracts/manager");
+  abi("FlexiGuardian", "contracts/manager");
   abi("VaultFactory", "contracts/factory");
 
   // for dev only

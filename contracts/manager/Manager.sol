@@ -13,7 +13,7 @@ import {Actor} from "./Actor.sol";
 import {IManager} from "./IManager.sol";
 import {Versioned} from "../utils/Versioned.sol";
 import {IPlugin} from "../plugins/IPlugin.sol";
-import {Guardian, ManagerBase} from "./ManagerBase.sol";
+import {FlexiGuardian, ManagerBase} from "./ManagerBase.sol";
 
 //import {console} from "hardhat/console.sol";
 
@@ -34,7 +34,7 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
   error WrongDataOrNotSignedByProtector();
   error SignatureAlreadyUsed();
   error CannotBeYourself();
-  error NotTheInheritanceManager();
+  error NotTheInheritancePlugin();
   error PluginAlreadyPlugged();
   error RoleNotFound();
   error NotAProxy();
@@ -54,14 +54,14 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
   mapping(bytes32 => bytes32) public pluginByRole;
   mapping(bytes32 => bool) public usedSignatures;
 
-  // @dev see {IInheritanceManager.sol-init}
+  // @dev see {IManager-init}
   // this must be execute immediately after the deployment
   function init(address registry_, address guardian_, address signatureValidator_) external virtual override {
     _nameHash = keccak256("Manager");
     _addRole(keccak256("PROTECTOR"));
     _addRole(keccak256("SAFE_RECIPIENT"));
     if (msg.sender != tokenAddress()) revert Forbidden();
-    guardian = Guardian(guardian_);
+    guardian = FlexiGuardian(guardian_);
     signatureValidator = SignatureValidator(signatureValidator_);
     vault = ProtectedNFT(msg.sender);
     registry = IERC6551Registry(registry_);
@@ -78,7 +78,7 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
     registry.createAccount(pluginProxy, salt, block.chainid, address(this), tokenId());
     address pluginAddress = registry.account(pluginProxy, salt, block.chainid, address(this), tokenId());
     plugins[salt] = IPlugin(pluginAddress);
-    plugins[salt].init(address(guardian), address(signatureValidator));
+    plugins[salt].init(address(guardian));
     bytes32[] memory roles = plugins[salt].pluginRoles();
     for (uint256 i = 0; i < roles.length; i++) {
       _addRole(roles[i]);
@@ -117,7 +117,7 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
     return actorCount(PROTECTOR) > 0;
   }
 
-  // @dev see {IInheritanceManager.sol-setProtector}
+  // @dev see {IManager-setProtector}
   function setProtector(
     address protector_,
     bool status,
@@ -138,13 +138,13 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
     }
   }
 
-  // @dev see {IInheritanceManager.sol-getProtectors}
+  // @dev see {IManager-getProtectors}
   function getProtectors() external view virtual override returns (address[] memory) {
     return getActors(PROTECTOR);
   }
 
   // safe recipients
-  // @dev see {IInheritanceManager.sol-setSafeRecipient}
+  // @dev see {IManager-setSafeRecipient}
   // We do not set a batch function because it can be dangerous
   function setSafeRecipient(
     address recipient,
@@ -157,12 +157,12 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
     emit SafeRecipientUpdated(_msgSender(), recipient, status);
   }
 
-  // @dev see {IInheritanceManager.sol-isSafeRecipient}
+  // @dev see {IManager-isSafeRecipient}
   function isSafeRecipient(address recipient) public view virtual override returns (bool) {
     return actorIndex(recipient, SAFE_RECIPIENT) != MAX_ACTORS;
   }
 
-  // @dev see {IInheritanceManager.sol-getSafeRecipients}
+  // @dev see {IManager-getSafeRecipients}
   function getSafeRecipients() external view virtual override returns (address[] memory) {
     return getActors(SAFE_RECIPIENT);
   }
@@ -253,8 +253,10 @@ contract Manager is IManager, Actor, Versioned, ManagerBase {
   }
 
   // @dev See {IProtected721-managedTransfer}.
+  // This is a special function that can be called only by the InheritancePlugin
   function managedTransfer(uint256 tokenId, address to) external virtual override {
-    if (address(plugins[keccak256("InheritanceManager")]) != _msgSender()) revert NotTheInheritanceManager();
+    address authorized = address(plugins[keccak256("InheritancePlugin")]);
+    if (authorized == address(0) || _msgSender() != authorized) revert NotTheInheritancePlugin();
     vault.managedTransfer(tokenId, to);
     _resetActors();
   }

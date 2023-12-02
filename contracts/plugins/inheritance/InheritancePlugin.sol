@@ -6,17 +6,15 @@ pragma solidity ^0.8.19;
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
-import {SignatureValidator} from "../utils/SignatureValidator.sol";
-
-import {Manager} from "../manager/Manager.sol";
-import {IInheritanceManager} from "./IInheritanceManager.sol";
-import {Versioned} from "../utils/Versioned.sol";
-import {IPlugin} from "./IPlugin.sol";
-import {Guardian, ManagerBase} from "../manager/ManagerBase.sol";
+import {Manager} from "../../manager/Manager.sol";
+import {IInheritancePlugin} from "./IInheritancePlugin.sol";
+import {Versioned} from "../../utils/Versioned.sol";
+import {IPlugin} from "../IPlugin.sol";
+import {FlexiGuardian, ManagerBase} from "../../manager/ManagerBase.sol";
 
 //import {console} from "hardhat/console.sol";
 
-contract InheritanceManager is IPlugin, IInheritanceManager, Versioned, ManagerBase {
+contract InheritancePlugin is IPlugin, IInheritancePlugin, Versioned, ManagerBase {
   using ECDSA for bytes32;
   using Strings for uint256;
 
@@ -34,19 +32,17 @@ contract InheritanceManager is IPlugin, IInheritanceManager, Versioned, ManagerB
 
   bytes32 public constant SENTINEL = keccak256(abi.encodePacked("SENTINEL"));
 
-  SignatureValidator public signatureValidator;
   Manager public manager;
 
   InheritanceRequest internal _inheritanceRequest;
   InheritanceConf internal _inheritanceConf;
 
-  // @dev see {IInheritanceManager.sol-init}
+  // @dev see {IInheritancePlugin.sol-init}
   // this must be execute immediately after the deployment
-  function init(address guardian_, address signatureValidator_) external virtual {
-    _nameHash = keccak256("InheritanceManager");
+  function init(address guardian_) external virtual {
+    _nameHash = keccak256("InheritancePlugin");
     if (msg.sender != tokenAddress()) revert Forbidden();
-    guardian = Guardian(guardian_);
-    signatureValidator = SignatureValidator(signatureValidator_);
+    guardian = FlexiGuardian(guardian_);
     manager = Manager(msg.sender);
   }
 
@@ -57,7 +53,7 @@ contract InheritanceManager is IPlugin, IInheritanceManager, Versioned, ManagerB
   }
 
   // sentinels and beneficiaries
-  // @dev see {IInheritanceManager.sol-setSentinel}
+  // @dev see {IInheritancePlugin.sol-setSentinel}
   function setSentinel(
     address sentinel,
     bool status,
@@ -69,14 +65,14 @@ contract InheritanceManager is IPlugin, IInheritanceManager, Versioned, ManagerB
     emit SentinelUpdated(_msgSender(), sentinel, status);
   }
 
-  // @dev see {IInheritanceManager.sol-setSentinels}
+  // @dev see {IInheritancePlugin.sol-setSentinels}
   function setSentinels(address[] memory sentinels, bytes calldata emptySignature) external virtual override onlyTokenOwner {
     for (uint256 i = 0; i < sentinels.length; i++) {
       setSentinel(sentinels[i], true, 0, 0, emptySignature);
     }
   }
 
-  // @dev see {IInheritanceManager.sol-configureInheritance}
+  // @dev see {IInheritancePlugin.sol-configureInheritance}
   // allow when protectors are active
   function configureInheritance(uint256 quorum, uint256 proofOfLifeDurationInDays) external virtual override onlyTokenOwner {
     if (manager.countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
@@ -88,7 +84,7 @@ contract InheritanceManager is IPlugin, IInheritanceManager, Versioned, ManagerB
     emit InheritanceConfigured(_msgSender(), quorum, proofOfLifeDurationInDays);
   }
 
-  // @dev see {IInheritanceManager.sol-getSentinelsAndInheritanceData}
+  // @dev see {IInheritancePlugin.sol-getSentinelsAndInheritanceData}
   function getSentinelsAndInheritanceData()
     external
     view
@@ -99,7 +95,7 @@ contract InheritanceManager is IPlugin, IInheritanceManager, Versioned, ManagerB
     return (manager.getActors(SENTINEL), _inheritanceConf, _inheritanceRequest);
   }
 
-  // @dev see {IInheritanceManager.sol-proofOfLife}
+  // @dev see {IInheritancePlugin.sol-proofOfLife}
   function proofOfLife() external virtual override onlyTokenOwner {
     if (_inheritanceConf.proofOfLifeDurationInDays == 0) revert InheritanceNotConfigured();
     // solhint-disable-next-line not-rely-on-time
@@ -108,7 +104,7 @@ contract InheritanceManager is IPlugin, IInheritanceManager, Versioned, ManagerB
     emit ProofOfLife(_msgSender());
   }
 
-  // @dev see {IInheritanceManager.sol-requestTransfer}
+  // @dev see {IInheritancePlugin.sol-requestTransfer}
   function requestTransfer(address beneficiary) external virtual override {
     if (beneficiary == address(0)) revert ZeroAddress();
     if (_inheritanceConf.proofOfLifeDurationInDays == 0) revert InheritanceNotConfigured();
@@ -143,7 +139,7 @@ contract InheritanceManager is IPlugin, IInheritanceManager, Versioned, ManagerB
     }
   }
 
-  // @dev see {IInheritanceManager.sol-inherit}
+  // @dev see {IInheritancePlugin.sol-inherit}
   function inherit() external virtual override {
     // we set an expiration time in case the beneficiary cannot inherit
     // so the sentinels can propose a new beneficiary
