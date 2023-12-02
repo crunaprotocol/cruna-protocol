@@ -8,13 +8,12 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 import {Manager} from "../../manager/Manager.sol";
 import {IInheritancePlugin} from "./IInheritancePlugin.sol";
-import {Versioned} from "../../utils/Versioned.sol";
 import {IPlugin} from "../IPlugin.sol";
 import {FlexiGuardian, ManagerBase} from "../../manager/ManagerBase.sol";
 
 //import {console} from "hardhat/console.sol";
 
-contract InheritancePlugin is IPlugin, IInheritancePlugin, Versioned, ManagerBase {
+contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
   using ECDSA for bytes32;
   using Strings for uint256;
 

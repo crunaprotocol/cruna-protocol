@@ -2,7 +2,7 @@ require("dotenv").config();
 const hre = require("hardhat");
 const ethers = hre.ethers;
 const DeployUtils = require("./lib/DeployUtils");
-const { normalize, deployContract } = require("../test/helpers");
+const { normalize } = require("../test/helpers");
 let deployUtils;
 
 const { expect } = require("chai");

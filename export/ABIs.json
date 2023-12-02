@@ -162,6 +162,11 @@
       },
       {
         "inputs": [],
+        "name": "InvalidVersion",
+        "type": "error"
+      },
+      {
+        "inputs": [],
         "name": "NotAProxy",
         "type": "error"
       },
@@ -536,6 +541,19 @@
             "internalType": "bool",
             "name": "",
             "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "implementationVersion",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
           }
         ],
         "stateMutability": "view",
@@ -1006,9 +1024,9 @@
         "name": "version",
         "outputs": [
           {
-            "internalType": "string",
+            "internalType": "uint256",
             "name": "",
-            "type": "string"
+            "type": "uint256"
           }
         ],
         "stateMutability": "pure",
@@ -1118,6 +1136,11 @@
       {
         "inputs": [],
         "name": "InvalidImplementation",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "InvalidVersion",
         "type": "error"
       },
       {
@@ -1389,6 +1412,19 @@
       },
       {
         "inputs": [],
+        "name": "implementationVersion",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
         "name": "inherit",
         "outputs": [],
         "stateMutability": "nonpayable",
@@ -1584,9 +1620,9 @@
         "name": "version",
         "outputs": [
           {
-            "internalType": "string",
+            "internalType": "uint256",
             "name": "",
-            "type": "string"
+            "type": "uint256"
           }
         ],
         "stateMutability": "pure",
@@ -2524,9 +2560,9 @@
         "name": "version",
         "outputs": [
           {
-            "internalType": "string",
+            "internalType": "uint256",
             "name": "",
-            "type": "string"
+            "type": "uint256"
           }
         ],
         "stateMutability": "pure",
@@ -2674,9 +2710,9 @@
         "name": "version",
         "outputs": [
           {
-            "internalType": "string",
+            "internalType": "uint256",
             "name": "",
-            "type": "string"
+            "type": "uint256"
           }
         ],
         "stateMutability": "pure",
@@ -2868,9 +2904,9 @@
         "name": "version",
         "outputs": [
           {
-            "internalType": "string",
+            "internalType": "uint256",
             "name": "",
-            "type": "string"
+            "type": "uint256"
           }
         ],
         "stateMutability": "pure",

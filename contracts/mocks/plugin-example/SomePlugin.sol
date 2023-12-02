@@ -5,10 +5,9 @@ pragma solidity ^0.8.19;
 
 import {Manager} from "../../manager/Manager.sol";
 import {FlexiGuardian, ManagerBase} from "../../manager/ManagerBase.sol";
-import {Versioned} from "../../utils/Versioned.sol";
 import {IPlugin} from "../../plugins/IPlugin.sol";
 
-contract SomePlugin is IPlugin, Versioned, ManagerBase {
+contract SomePlugin is IPlugin, ManagerBase {
   error Forbidden();
 
   // Replace with the roles required by the plugin, if any, or delete it

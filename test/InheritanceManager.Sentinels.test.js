@@ -281,7 +281,7 @@ describe("Sentinel and Inheritance", function () {
     const manager = await ethers.getContractAt("Manager", managerAddress);
     const inheritancePluginAddress = await manager.plugins(keccak256("InheritancePlugin"));
     const inheritancePlugin = await ethers.getContractAt("InheritancePlugin", inheritancePluginAddress);
-    expect(await inheritancePlugin.version()).to.equal("1.0.0");
+    expect(await inheritancePlugin.version()).to.equal(1);
 
     await inheritancePlugin.connect(bob).setSentinels([alice.address, fred.address], 0);
 
@@ -290,24 +290,32 @@ describe("Sentinel and Inheritance", function () {
 
     const inheritancePluginV2Impl = await deployContract("InheritancePluginV2Mock");
 
-    await expect(inheritancePlugin.upgrade(inheritancePluginV2Impl.address)).to.be.revertedWith("NotTheTokenOwner");
-    await expect(inheritancePlugin.connect(bob).upgrade(inheritancePluginV2Impl.address)).to.be.revertedWith(
+    const inheritancePluginV3Impl = await deployContract("InheritancePluginV3Mock");
+
+    await expect(inheritancePlugin.upgrade(inheritancePluginV3Impl.address)).to.be.revertedWith("NotTheTokenOwner");
+    await expect(inheritancePlugin.connect(bob).upgrade(inheritancePluginV3Impl.address)).to.be.revertedWith(
       "InvalidImplementation",
     );
 
     await guardian.setTrustedImplementation(keccak256("InheritancePlugin"), inheritancePluginV2Impl.address, true);
 
+    await guardian.setTrustedImplementation(keccak256("InheritancePlugin"), inheritancePluginV3Impl.address, true);
+
     expect(await inheritancePlugin.getImplementation()).to.equal(addr0);
 
-    await inheritancePlugin.connect(bob).upgrade(inheritancePluginV2Impl.address);
-    expect(await inheritancePlugin.getImplementation()).to.equal(inheritancePluginV2Impl.address);
+    await inheritancePlugin.connect(bob).upgrade(inheritancePluginV3Impl.address);
+    expect(await inheritancePlugin.getImplementation()).to.equal(inheritancePluginV3Impl.address);
 
-    const newInheritancePlugin = await ethers.getContractAt("InheritancePluginV2Mock", inheritancePluginAddress);
+    const newInheritancePlugin = await ethers.getContractAt("InheritancePluginV3Mock", inheritancePluginAddress);
 
     expect(await newInheritancePlugin.isMock()).to.be.true;
-    expect(await newInheritancePlugin.version()).to.equal("2.0.0");
+    expect(await newInheritancePlugin.version()).to.equal(3);
+    expect(await newInheritancePlugin.SOME_OTHER_VARIABLE()).to.be.true;
+    expect(await newInheritancePlugin.SOME_VARIABLE()).to.equal(3);
 
     data = await newInheritancePlugin.getSentinelsAndInheritanceData();
     expect(data[0].length).to.equal(2);
+
+    await expect(inheritancePlugin.connect(bob).upgrade(inheritancePluginV2Impl.address)).to.be.revertedWith("InvalidVersion");
   });
 });

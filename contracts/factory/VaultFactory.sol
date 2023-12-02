@@ -5,9 +5,10 @@ pragma solidity ^0.8.19;
 // (c) Superpower Labs Inc.
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {Initializable, UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import {CrunaFlexiVault} from "../CrunaFlexiVault.sol";
-import {UUPSUpgradableTemplate} from "../utils/UUPSUpgradableTemplate.sol";
 
 import {IVaultFactory} from "./IVaultFactory.sol";
 
@@ -19,7 +20,7 @@ error UnsupportedStableCoin();
 error TransferFailed();
 error InvalidArguments();
 
-contract VaultFactory is IVaultFactory, UUPSUpgradableTemplate {
+contract VaultFactory is IVaultFactory, Initializable, OwnableUpgradeable, UUPSUpgradeable {
   CrunaFlexiVault public vault;
   uint256 public price;
   mapping(address => bool) public stableCoins;
@@ -33,9 +34,13 @@ contract VaultFactory is IVaultFactory, UUPSUpgradableTemplate {
   }
 
   function initialize(address vault_) public initializer {
-    __UUPSUpgradableTemplate_init();
+    __Ownable_init();
+    __UUPSUpgradeable_init();
     vault = CrunaFlexiVault(vault_);
   }
+
+  // solhint-disable-next-line no-empty-blocks
+  function _authorizeUpgrade(address newImplementation) internal virtual override onlyOwner {}
 
   // @notice The price is in points, so that 1 point = 0.01 USD
   function setPrice(uint256 price_) external override onlyOwner {

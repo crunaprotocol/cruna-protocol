@@ -8,12 +8,14 @@ import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 import {FlexiGuardian} from "./FlexiGuardian.sol";
+import {Versioned} from "../utils/Versioned.sol";
 
 //import {console} from "hardhat/console.sol";
 
-contract ManagerBase is Context {
+contract ManagerBase is Context, Versioned {
   error NotTheTokenOwner();
   error InvalidImplementation();
+  error InvalidVersion();
 
   /**
    * @dev Storage slot with the address of the current implementation.
@@ -24,6 +26,12 @@ contract ManagerBase is Context {
 
   bytes32 internal _nameHash;
   FlexiGuardian public guardian;
+
+  uint256 public implementationVersion;
+
+  constructor() {
+    implementationVersion = version();
+  }
 
   modifier onlyTokenOwner() {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
@@ -53,6 +61,9 @@ contract ManagerBase is Context {
   function upgrade(address implementation_) external virtual {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     if (!guardian.isTrustedImplementation(_nameHash, implementation_)) revert InvalidImplementation();
+    uint256 _version = Versioned(implementation_).version();
+    if (_version <= implementationVersion) revert InvalidVersion();
+    implementationVersion = _version;
     StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
   }
 
