@@ -7,25 +7,32 @@ if [ "$current_branch" != "main" ]; then
     exit 1
 fi
 
-# Check for uncommitted changes
+ Check for uncommitted changes
 if ! git diff-index --quiet HEAD --; then
     echo "Error: There are uncommitted changes."
     exit 1
 fi
 
 if [ -d "./bin" ]; then
-  echo "Publishing started..."
+  echo "Task started..."
 else
-  echo "You must run this script from the root of the repository."
+  echo "Error: You must run this script from the root of the repository."
   exit 1
 fi
 
-script_dir=$(dirname "$0")
-version=$($script_dir/get-package-version.js)
+bin_dir=$(dirname "$0")
+version=$($bin_dir/../scripts/get-package-version.js)
+
+if [[ $version == "" ]]; then
+  echo "Error: Could not get the package version."
+  exit 1
+fi
 
 cp README.md contracts/README.md
 cd contracts
 
+echo "Publishing contracts version $version"
+exit 0
 if [[ $version == *"-alpha"* ]]; then
   echo "Publishing alpha version $version"
   npm publish --tag alpha

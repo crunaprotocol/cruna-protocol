@@ -140,7 +140,7 @@ If your goal is to build a plugin, look at the two contracts in [contracts/mocks
 ## Test coverage
 
 ```
-  22 passing (6s)
+  22 passing (7s)
 
 --------------------------------|----------|----------|----------|----------|----------------|
 File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
