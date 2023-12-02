@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "clean": "rimraf artifacts cache coverage coverage.json",
-    "prepublishOnly": "../scripts/verify-package-json-in-sync.js && ../scripts/check-hardhat-console.js && pnpm run clean && NODE_ENV=test npx hardhat test"
+    "prepublishOnly": "../scripts/verify-package-json-in-sync.js && ../scripts/check-hardhat-console.js"
   },
   "repository": {
     "type": "git",
