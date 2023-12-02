@@ -1,19 +1,32 @@
 #!/usr/bin/env bash
 
-SCRIPT_DIR=$(dirname "$0")
-VERSION=$($SCRIPT_DIR/get-package-version.js)
+# Check if the current branch is 'main'
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+if [ "$current_branch" != "main" ]; then
+    echo "Error: Not on the 'main' branch."
+    exit 1
+fi
+
+# Check for uncommitted changes
+if ! git diff-index --quiet HEAD --; then
+    echo "Error: There are uncommitted changes."
+    exit 1
+fi
+
+script_dir=$(dirname "$0")
+version=$($script_dir/get-package-version.js)
 
 cp README.md contracts/README.md
 cd contracts
 
-if [[ $VERSION == *"-alpha"* ]]; then
-  echo "Publishing alpha version $VERSION"
+if [[ $version == *"-alpha"* ]]; then
+  echo "Publishing alpha version $version"
   npm publish --tag alpha
-elif [[ $VERSION == *"-beta"* ]]; then
-  echo "Publishing beta version $VERSION"
+elif [[ $version == *"-beta"* ]]; then
+  echo "Publishing beta version $version"
   npm publish --tag beta
 else
-  echo "Publishing stable version $VERSION"
+  echo "Publishing stable version $version"
   npm publish
 fi
 
