@@ -21,7 +21,9 @@ else
 fi
 
 bin_dir=$(dirname "$0")
-version=$($bin_dir/../scripts/get-package-version.js)
+# we call the script explicitly via node because if not, if the file is
+# missing, the version will just be empty and no error is returned
+version=$(node $bin_dir/../scripts/get-package-version.js)
 
 if [[ $version == "" ]]; then
   echo "Error: Could not get the package version."
