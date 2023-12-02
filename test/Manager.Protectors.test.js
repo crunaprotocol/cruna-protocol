@@ -88,7 +88,7 @@ describe("Manager : Protectors", function () {
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
 
-    expect(await manager.version()).to.equal("1.0.0");
+    expect(await manager.version()).to.equal(1);
     expect(await manager.tokenId()).to.equal(tokenId);
     expect(await manager.tokenAddress()).to.equal(vault.address);
     expect(await manager.owner()).to.equal(bob.address);
@@ -250,7 +250,7 @@ describe("Manager : Protectors", function () {
     const managerV2Impl = await deployContract("ManagerV2Mock");
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
-    expect(await manager.version()).to.equal("1.0.0");
+    expect(await manager.version()).to.equal(1);
 
     await manager.connect(bob).setProtector(alice.address, true, 0, 0, 0);
     expect(await manager.hasProtectors()).to.equal(true);
@@ -266,7 +266,7 @@ describe("Manager : Protectors", function () {
     await manager.connect(bob).upgrade(managerV2Impl.address);
     expect(await manager.getImplementation()).to.equal(managerV2Impl.address);
 
-    expect(await manager.version()).to.equal("2.0.0");
+    expect(await manager.version()).to.equal(2);
     expect(await manager.hasProtectors()).to.equal(true);
 
     const managerV2 = await ethers.getContractAt("ManagerV2Mock", managerAddress);

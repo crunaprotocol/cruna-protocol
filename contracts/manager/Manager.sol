@@ -11,7 +11,6 @@ import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {ProtectedNFT} from "../protected/ProtectedNFT.sol";
 import {Actor} from "./Actor.sol";
 import {IManager} from "./IManager.sol";
-import {Versioned} from "../utils/Versioned.sol";
 import {IPlugin} from "../plugins/IPlugin.sol";
 import {FlexiGuardian, ManagerBase} from "./ManagerBase.sol";
 
@@ -21,7 +20,7 @@ interface IProxy {
   function isProxy() external pure returns (bool);
 }
 
-contract Manager is IManager, Actor, Versioned, ManagerBase {
+contract Manager is IManager, Actor, ManagerBase {
   using ECDSA for bytes32;
   using Strings for uint256;
 

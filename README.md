@@ -140,41 +140,40 @@ If your goal is to build a plugin, look at the two contracts in [contracts/mocks
 ## Test coverage
 
 ```
-  22 passing (7s)
+  22 passing (8s)
 
 --------------------------------|----------|----------|----------|----------|----------------|
 File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
 --------------------------------|----------|----------|----------|----------|----------------|
  contracts/                     |      100 |       40 |      100 |      100 |                |
   CrunaFlexiVault.sol           |      100 |       40 |      100 |      100 |                |
- contracts/factory/             |      100 |    60.42 |      100 |    98.18 |                |
+ contracts/factory/             |      100 |       58 |    91.67 |    98.21 |                |
   IVaultFactory.sol             |      100 |      100 |      100 |      100 |                |
-  VaultFactory.sol              |      100 |    60.42 |      100 |    98.18 |            113 |
+  VaultFactory.sol              |      100 |       58 |    91.67 |    98.21 |            118 |
  contracts/interfaces/          |      100 |      100 |      100 |      100 |                |
   IERC6454.sol                  |      100 |      100 |      100 |      100 |                |
   IERC6982.sol                  |      100 |      100 |      100 |      100 |                |
   IProtected.sol                |      100 |      100 |      100 |      100 |                |
- contracts/manager/             |    98.92 |    66.22 |      100 |    99.09 |                |
+ contracts/manager/             |    98.95 |    67.11 |      100 |    99.12 |                |
   Actor.sol                     |      100 |    66.67 |      100 |      100 |                |
   FlexiGuardian.sol             |      100 |       50 |      100 |    83.33 |             19 |
   IManager.sol                  |      100 |      100 |      100 |      100 |                |
   Manager.sol                   |      100 |       66 |      100 |      100 |                |
-  ManagerBase.sol               |    92.31 |       75 |      100 |      100 |                |
+  ManagerBase.sol               |    93.33 |       80 |      100 |      100 |                |
  contracts/plugins/             |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                   |      100 |      100 |      100 |      100 |                |
  contracts/plugins/inheritance/ |      100 |    63.16 |      100 |    95.74 |                |
   IInheritancePlugin.sol        |      100 |      100 |      100 |      100 |                |
-  InheritancePlugin.sol         |      100 |    63.16 |      100 |    95.74 |        121,147 |
+  InheritancePlugin.sol         |      100 |    63.16 |      100 |    95.74 |        120,146 |
   InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
  contracts/protected/           |      100 |    57.14 |      100 |     97.5 |                |
   ProtectedNFT.sol              |      100 |    57.14 |      100 |     97.5 |             78 |
- contracts/utils/               |      100 |       25 |    85.71 |      100 |                |
+ contracts/utils/               |      100 |      100 |      100 |      100 |                |
   FlexiProxy.sol                |      100 |      100 |      100 |      100 |                |
   SignatureValidator.sol        |      100 |      100 |      100 |      100 |                |
-  UUPSUpgradableTemplate.sol    |      100 |       25 |       50 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |    99.51 |    60.65 |     98.8 |    98.11 |                |
+All files                       |    99.52 |    61.11 |     98.8 |    98.13 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 
