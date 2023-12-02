@@ -33,8 +33,6 @@ fi
 cp README.md contracts/README.md
 cd contracts
 
-echo "Publishing contracts version $version"
-exit 0
 if [[ $version == *"-alpha"* ]]; then
   echo "Publishing alpha version $version"
   npm publish --tag alpha
