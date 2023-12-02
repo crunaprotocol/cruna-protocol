@@ -13,6 +13,13 @@ if ! git diff-index --quiet HEAD --; then
     exit 1
 fi
 
+if [ -d "./bin" ]; then
+  echo "Publishing started..."
+else
+  echo "You must run this script from the root of the repository."
+  exit 1
+fi
+
 script_dir=$(dirname "$0")
 version=$($script_dir/get-package-version.js)
 
