@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-# must be run from the root
+
+root_dir=$(dirname $(realpath $(dirname "$0")))
+# if not run from the root, we cd into the root
+cd $root_dir
 
 SKIP_CRYPTOENV=true
 
@@ -9,5 +12,9 @@ if [[ "$SKIP_COMPILE" == "" ]]; then
 fi
 
 node scripts/exportABIs.js
-cp export/ABIs.json ../cruna-dashboard/src/config/.
-cp export/deployed.json ../cruna-dashboard/src/config/.
+
+if [ -d "../cruna-dashboard" ]; then
+  cp export/ABIs.json ../cruna-dashboard/src/config/.
+  cp export/deployed.json ../cruna-dashboard/src/config/.
+fi
+

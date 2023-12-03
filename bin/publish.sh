@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+root_dir=$(dirname $(realpath $(dirname "$0")))
+# if not run from the root, we cd into the root
+cd $root_dir
+
 # Check if the current branch is 'main'
 current_branch=$(git rev-parse --abbrev-ref HEAD)
 if [ "$current_branch" != "main" ]; then
@@ -7,23 +11,15 @@ if [ "$current_branch" != "main" ]; then
     exit 1
 fi
 
- Check for uncommitted changes
+# Check for uncommitted changes
 if ! git diff-index --quiet HEAD --; then
     echo "Error: There are uncommitted changes."
     exit 1
 fi
 
-if [ -d "./bin" ]; then
-  echo "Task started..."
-else
-  echo "Error: You must run this script from the root of the repository."
-  exit 1
-fi
-
-bin_dir=$(dirname "$0")
 # we call the script explicitly via node because if not, if the file is
 # missing, the version will just be empty and no error is returned
-version=$(node $bin_dir/../scripts/get-package-version.js)
+version=$(node scripts/get-package-version.js)
 
 if [[ $version == "" ]]; then
   echo "Error: Could not get the package version."
