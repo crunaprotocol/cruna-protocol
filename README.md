@@ -164,7 +164,7 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   IPlugin.sol                   |      100 |      100 |      100 |      100 |                |
  contracts/plugins/inheritance/ |      100 |    63.16 |      100 |    95.74 |                |
   IInheritancePlugin.sol        |      100 |      100 |      100 |      100 |                |
-  InheritancePlugin.sol         |      100 |    63.16 |      100 |    95.74 |        120,146 |
+  InheritancePlugin.sol         |      100 |    63.16 |      100 |    95.74 |        122,148 |
   InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
  contracts/protected/           |      100 |    57.14 |      100 |     97.5 |                |
   ProtectedNFT.sol              |      100 |    57.14 |      100 |     97.5 |             78 |

@@ -40,9 +40,11 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
   // this must be execute immediately after the deployment
   function init(address guardian_) external virtual {
     _nameHash = keccak256("InheritancePlugin");
-    if (msg.sender != tokenAddress()) revert Forbidden();
+    // Notice that the manager pretends to be an NFT
+    // so tokenAddress() returns the manager address
+    if (_msgSender() != tokenAddress()) revert Forbidden();
     guardian = FlexiGuardian(guardian_);
-    manager = Manager(msg.sender);
+    manager = Manager(_msgSender());
   }
 
   function pluginRoles() external pure virtual returns (bytes32[] memory) {

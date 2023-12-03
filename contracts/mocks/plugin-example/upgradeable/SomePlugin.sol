@@ -3,9 +3,9 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {Manager} from "../../manager/Manager.sol";
-import {FlexiGuardian, ManagerBase} from "../../manager/ManagerBase.sol";
-import {IPlugin} from "../../plugins/IPlugin.sol";
+import {Manager} from "../../../manager/Manager.sol";
+import {FlexiGuardian, ManagerBase} from "../../../manager/ManagerBase.sol";
+import {IPlugin} from "../../../plugins/IPlugin.sol";
 
 contract SomePlugin is IPlugin, ManagerBase {
   error Forbidden();
@@ -18,9 +18,9 @@ contract SomePlugin is IPlugin, ManagerBase {
   function init(address guardian_) external virtual {
     // replace with the name of your plugin
     _nameHash = keccak256("SomePlugin");
-    if (msg.sender != tokenAddress()) revert Forbidden();
+    if (_msgSender() != tokenAddress()) revert Forbidden();
     guardian = FlexiGuardian(guardian_);
-    manager = Manager(msg.sender);
+    manager = Manager(_msgSender());
   }
 
   function pluginRoles() external pure virtual returns (bytes32[] memory) {

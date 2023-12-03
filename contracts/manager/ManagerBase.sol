@@ -48,12 +48,12 @@ contract ManagerBase is Context, Versioned {
     return IERC721(tokenContract_).ownerOf(tokenId_);
   }
 
-  function tokenAddress() public view returns (address) {
+  function tokenAddress() public view virtual returns (address) {
     (, address tokenContract_, ) = token();
     return tokenContract_;
   }
 
-  function tokenId() public view returns (uint256) {
+  function tokenId() public view virtual returns (uint256) {
     (, , uint256 tokenId_) = token();
     return tokenId_;
   }
