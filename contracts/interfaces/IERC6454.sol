@@ -5,7 +5,7 @@
 /// @dev Note: the ERC-165 identifier for this interface is 0x91a6262f.
 /// @authors Bruno Škvorc (@Swader), Francesco Sullo (@sullof), Steven Pineda (@steven2308), Stevan Bogosavljevic (@stevyhacker), Jan Turk (@ThunderDeliverer)
 
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 interface IERC6454 {
   // @notice Used to check whether the given token is transferable or not.

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL3
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import {ProtectedNFT, Strings} from "./protected/ProtectedNFT.sol";
 
