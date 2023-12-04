@@ -8,7 +8,6 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
 
-import {ProtectedNFT} from "../protected/ProtectedNFT.sol";
 import {Actor} from "./Actor.sol";
 import {IManager} from "./IManager.sol";
 import {IPlugin} from "../plugins/IPlugin.sol";
@@ -18,6 +17,11 @@ import {FlexiGuardian, ManagerBase} from "./ManagerBase.sol";
 
 interface IProxy {
   function isProxy() external pure returns (bool);
+}
+
+interface IVault {
+  function managedTransfer(uint256 tokenId, address to) external;
+  function emitLockedEvent(uint256 tokenId, bool locked_) external;
 }
 
 contract Manager is IManager, Actor, ManagerBase {
@@ -47,7 +51,7 @@ contract Manager is IManager, Actor, ManagerBase {
 
   IERC6551Registry public registry;
   SignatureValidator public signatureValidator;
-  ProtectedNFT public vault;
+  IVault public vault;
 
   mapping(bytes32 => IPlugin) public plugins;
   mapping(bytes32 => bytes32) public pluginByRole;
@@ -62,7 +66,7 @@ contract Manager is IManager, Actor, ManagerBase {
     if (msg.sender != tokenAddress()) revert Forbidden();
     guardian = FlexiGuardian(guardian_);
     signatureValidator = SignatureValidator(signatureValidator_);
-    vault = ProtectedNFT(msg.sender);
+    vault = IVault(msg.sender);
     registry = IERC6551Registry(registry_);
   }
 

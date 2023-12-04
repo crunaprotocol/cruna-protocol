@@ -48,12 +48,12 @@ contract ManagerBase is Context, Versioned {
     return IERC721(tokenContract_).ownerOf(tokenId_);
   }
 
-  function tokenAddress() public view returns (address) {
+  function tokenAddress() public view virtual returns (address) {
     (, address tokenContract_, ) = token();
     return tokenContract_;
   }
 
-  function tokenId() public view returns (uint256) {
+  function tokenId() public view virtual returns (uint256) {
     (, , uint256 tokenId_) = token();
     return tokenId_;
   }
@@ -70,4 +70,10 @@ contract ManagerBase is Context, Versioned {
   function getImplementation() external view returns (address) {
     return StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value;
   }
+
+  // @dev This empty reserved space is put in place to allow future versions to add new
+  // variables without shifting down storage in the inheritance chain.
+  // See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+
+  uint256[50] private __gap;
 }

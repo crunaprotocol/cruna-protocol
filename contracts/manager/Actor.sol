@@ -76,6 +76,7 @@ contract Actor {
   }
 
   function _resetActors() internal {
+    // this should never go our of gas because roles are limited
     for (uint256 i = 1; i <= lastRoleIndex; i++) {
       delete _actors[roleNames[i]];
     }
