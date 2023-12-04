@@ -108,10 +108,10 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 
 ## Development
 
-Cruna is in alpha stage, and to use it you must specify the version you want to install. Right now, the only available version is `1.0.0-alpha.0`. Install it with
+Cruna is in alpha stage, and to use it you must specify the version you want to install. Right now, the only available version is `1.0.0-alpha.1`. Install it with
 
 ```sh
-npm install @cruna/protocol@1.0.0-alpha.0 @openzeppelin/contracts erc6551
+npm install @cruna/protocol@1.0.0-alpha.1 @openzeppelin/contracts erc6551
 ```
 or similar commands using Yarn or Pnpm, and use in your Solidity smart contracts, for example, as
 
@@ -133,7 +133,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
-**1.0.0-alpha.0**
+**1.0.0-alpha.1**
 
 - First version of the new protocol. The first one, published as @cruna/cruna-protocol, has been deprecated.
 
