@@ -7,6 +7,7 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
 import {Actor} from "./Actor.sol";
 import {IManager} from "./IManager.sol";
@@ -27,6 +28,7 @@ interface IVault {
 contract Manager is IManager, Actor, ManagerBase {
   using ECDSA for bytes32;
   using Strings for uint256;
+  using Address for address;
 
   error TimestampZero();
   error Forbidden();
@@ -41,6 +43,7 @@ contract Manager is IManager, Actor, ManagerBase {
   error PluginAlreadyPlugged();
   error RoleNotFound();
   error NotAProxy();
+  error ContractsCannotBeProtectors();
 
   bool public constant IS_MANAGER = true;
   bool public constant IS_NOT_MANAGER = false;
@@ -128,6 +131,7 @@ contract Manager is IManager, Actor, ManagerBase {
     uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
+    if (protector_.isContract()) revert ContractsCannotBeProtectors();
     _setSignedActor("PROTECTOR", protector_, PROTECTOR, status, timestamp, validFor, signature, IS_MANAGER);
     emit ProtectorUpdated(_msgSender(), protector_, status);
     if (status) {

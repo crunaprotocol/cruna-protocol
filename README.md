@@ -140,7 +140,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  22 passing (8s)
+  22 passing (6s)
 
 --------------------------------|----------|----------|----------|----------|----------------|
 File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -154,11 +154,11 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   IERC6454.sol                  |      100 |      100 |      100 |      100 |                |
   IERC6982.sol                  |      100 |      100 |      100 |      100 |                |
   IProtected.sol                |      100 |      100 |      100 |      100 |                |
- contracts/manager/             |    98.95 |    67.11 |      100 |    99.12 |                |
+ contracts/manager/             |    98.96 |    66.67 |      100 |    99.13 |                |
   Actor.sol                     |      100 |    66.67 |      100 |      100 |                |
   FlexiGuardian.sol             |      100 |       50 |      100 |    83.33 |             19 |
   IManager.sol                  |      100 |      100 |      100 |      100 |                |
-  Manager.sol                   |      100 |       66 |      100 |      100 |                |
+  Manager.sol                   |      100 |    65.38 |      100 |      100 |                |
   ManagerBase.sol               |    93.33 |       80 |      100 |      100 |                |
  contracts/plugins/             |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                   |      100 |      100 |      100 |      100 |                |
@@ -173,7 +173,7 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   SignatureValidator.sol        |      100 |      100 |      100 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |    99.52 |    61.11 |     98.8 |    98.13 |                |
+All files                       |    99.52 |    61.01 |     98.8 |    98.13 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 

@@ -152,6 +152,11 @@
       },
       {
         "inputs": [],
+        "name": "ContractsCannotBeProtectors",
+        "type": "error"
+      },
+      {
+        "inputs": [],
         "name": "Forbidden",
         "type": "error"
       },
