@@ -25,6 +25,11 @@ async function main() {
   abi("USDCoin", "contracts/mocks/fake-tokens");
   abi("TetherUSD", "contracts/mocks/fake-tokens");
 
+  abi("ERC20", "@openzeppelin/contracts/token/ERC20");
+  abi("ERC721", "@openzeppelin/contracts/token/ERC721");
+  abi("ERC1155", "@openzeppelin/contracts/token/ERC1155");
+  abi("ERC721Enumerable", "@openzeppelin/contracts/token/ERC721/extensions");
+
   await fs.writeFile(path.resolve(__dirname, "../export/ABIs.json"), JSON.stringify(ABIs, null, 2));
 }
 
