@@ -102,6 +102,7 @@ contract VaultFactory is IVaultFactory, Initializable, OwnableUpgradeable, UUPSU
     for (uint256 i = 0; i < amount; i++) {
       vault.safeMint(_msgSender());
     }
+    // we manage only trusted stable coins, so no risk of reentrancy
     if (!ERC20(stableCoin).transferFrom(_msgSender(), address(this), payment)) revert TransferFailed();
   }
 
@@ -129,6 +130,7 @@ contract VaultFactory is IVaultFactory, Initializable, OwnableUpgradeable, UUPSU
         }
       }
     }
+    // we manage only trusted stable coins, so no risk of reentrancy
     if (!ERC20(stableCoin).transferFrom(_msgSender(), address(this), payment)) revert TransferFailed();
   }
 

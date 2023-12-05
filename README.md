@@ -140,7 +140,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  22 passing (6s)
+  22 passing (7s)
 
 --------------------------------|----------|----------|----------|----------|----------------|
 File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -149,7 +149,7 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   CrunaFlexiVault.sol           |      100 |       40 |      100 |      100 |                |
  contracts/factory/             |      100 |       58 |    91.67 |    98.21 |                |
   IVaultFactory.sol             |      100 |      100 |      100 |      100 |                |
-  VaultFactory.sol              |      100 |       58 |    91.67 |    98.21 |            118 |
+  VaultFactory.sol              |      100 |       58 |    91.67 |    98.21 |            119 |
  contracts/interfaces/          |      100 |      100 |      100 |      100 |                |
   IERC6454.sol                  |      100 |      100 |      100 |      100 |                |
   IERC6982.sol                  |      100 |      100 |      100 |      100 |                |
@@ -166,14 +166,14 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   IInheritancePlugin.sol        |      100 |      100 |      100 |      100 |                |
   InheritancePlugin.sol         |      100 |    63.16 |      100 |    95.74 |        122,148 |
   InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
- contracts/protected/           |      100 |    57.14 |      100 |     97.5 |                |
-  ProtectedNFT.sol              |      100 |    57.14 |      100 |     97.5 |             78 |
+ contracts/protected/           |      100 |       56 |      100 |    97.73 |                |
+  ProtectedNFT.sol              |      100 |       56 |      100 |    97.73 |             84 |
  contracts/utils/               |      100 |      100 |      100 |      100 |                |
   FlexiProxy.sol                |      100 |      100 |      100 |      100 |                |
   SignatureValidator.sol        |      100 |      100 |      100 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |    99.52 |    61.01 |     98.8 |    98.13 |                |
+All files                       |    99.53 |    60.62 |    98.81 |    98.16 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 

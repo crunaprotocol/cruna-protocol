@@ -1723,27 +1723,22 @@
         "inputs": [
           {
             "internalType": "address",
-            "name": "registry_",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "guardian_",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "signatureValidator_",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "managerProxy_",
+            "name": "owner",
             "type": "address"
           }
         ],
         "stateMutability": "nonpayable",
         "type": "constructor"
+      },
+      {
+        "inputs": [],
+        "name": "AlreadyInitiated",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "NotInitiated",
+        "type": "error"
       },
       {
         "inputs": [],
@@ -1937,58 +1932,6 @@
       },
       {
         "inputs": [],
-        "name": "GUARDIAN",
-        "outputs": [
-          {
-            "internalType": "contract FlexiGuardian",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "MANAGER_PROXY",
-        "outputs": [
-          {
-            "internalType": "contract Manager",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "REGISTRY",
-        "outputs": [
-          {
-            "internalType": "contract IERC6551Registry",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "VALIDATOR",
-        "outputs": [
-          {
-            "internalType": "contract SignatureValidator",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
         "name": "acceptOwnership",
         "outputs": [],
         "stateMutability": "nonpayable",
@@ -2077,10 +2020,23 @@
       },
       {
         "inputs": [],
-        "name": "factoryAddress",
+        "name": "factory",
         "outputs": [
           {
             "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "flexiProxy",
+        "outputs": [
+          {
+            "internalType": "contract Manager",
             "name": "",
             "type": "address"
           }
@@ -2105,6 +2061,47 @@
           }
         ],
         "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "guardian",
+        "outputs": [
+          {
+            "internalType": "contract FlexiGuardian",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "registry_",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "guardian_",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "signatureValidator_",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "managerProxy_",
+            "type": "address"
+          }
+        ],
+        "name": "init",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
       },
       {
@@ -2341,6 +2338,19 @@
       },
       {
         "inputs": [],
+        "name": "registry",
+        "outputs": [
+          {
+            "internalType": "contract IERC6551Registry",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
         "name": "renounceOwnership",
         "outputs": [],
         "stateMutability": "nonpayable",
@@ -2445,7 +2455,7 @@
         "inputs": [
           {
             "internalType": "address",
-            "name": "factory",
+            "name": "factory_",
             "type": "address"
           }
         ],
@@ -2555,6 +2565,19 @@
             "internalType": "bool",
             "name": "",
             "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "validator",
+        "outputs": [
+          {
+            "internalType": "contract SignatureValidator",
+            "name": "",
+            "type": "address"
           }
         ],
         "stateMutability": "view",

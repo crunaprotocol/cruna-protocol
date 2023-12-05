@@ -41,13 +41,8 @@ describe("Sentinel and Inheritance", function () {
     guardian = await deployContract("FlexiGuardian", deployer.address);
     managerProxy = await deployContract("FlexiProxy", managerImpl.address);
 
-    vault = await deployContract(
-      "CrunaFlexiVault",
-      erc6551Registry.address,
-      guardian.address,
-      signatureValidator.address,
-      managerProxy.address,
-    );
+    vault = await deployContract("CrunaFlexiVault", deployer.address);
+    await vault.init(erc6551Registry.address, guardian.address, signatureValidator.address, managerProxy.address);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
 
     await vault.setFactory(factory.address);

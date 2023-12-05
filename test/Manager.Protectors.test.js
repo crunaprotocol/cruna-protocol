@@ -39,13 +39,8 @@ describe("Manager : Protectors", function () {
     guardian = await deployContract("FlexiGuardian", deployer.address);
     proxy = await deployContract("FlexiProxy", managerImpl.address);
 
-    vault = await deployContract(
-      "CrunaFlexiVault",
-      erc6551Registry.address,
-      guardian.address,
-      signatureValidator.address,
-      proxy.address,
-    );
+    vault = await deployContract("CrunaFlexiVault", deployer.address);
+    await vault.init(erc6551Registry.address, guardian.address, signatureValidator.address, proxy.address);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
 
     await vault.setFactory(factory.address);
@@ -71,13 +66,8 @@ describe("Manager : Protectors", function () {
   };
 
   it("should support the IProtected interface", async function () {
-    const vaultMock = await deployContract(
-      "VaultMock",
-      erc6551Registry.address,
-      guardian.address,
-      signatureValidator.address,
-      proxy.address,
-    );
+    const vaultMock = await deployContract("VaultMock", deployer.address);
+    await vaultMock.init(erc6551Registry.address, guardian.address, signatureValidator.address, proxy.address);
     const interfaceId = await vaultMock.getIProtectedInterfaceId();
     expect(interfaceId).to.equal("0x0009b66d");
     expect(await vault.supportsInterface(interfaceId)).to.be.true;
