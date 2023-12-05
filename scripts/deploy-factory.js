@@ -17,7 +17,7 @@ async function main() {
 
   expect(await vault.owner()).to.equal(deployer.address);
 
-  const factory = await deployUtils.deployProxy("VaultFactory", vaultAddress);
+  const factory = await deployUtils.deployProxy("VaultFactory", vault.address);
   // const factory = await deployUtils.attach("VaultFactory");
 
   const usdc = await deployUtils.attach("USDCoin");
