@@ -6,6 +6,7 @@ function cl() {
   console.log(count++);
 }
 
+const DeployUtils = require("../scripts/lib/DeployUtils");
 const {
   amount,
   normalize,
@@ -15,6 +16,8 @@ const {
   deployContract,
   getTimestamp,
   keccak256,
+  deployAll,
+  deployContractViaNickSFactory,
 } = require("./helpers");
 
 describe("VaultFactory", function () {
@@ -24,25 +27,19 @@ describe("VaultFactory", function () {
   let usdc, usdt;
   let deployer, bob, alice, fred;
 
+  const deployUtils = new DeployUtils(ethers);
+
   before(async function () {
     [deployer, bob, alice, fred] = await ethers.getSigners();
-    signatureValidator = await deployContract("SignatureValidator", "Cruna", "1");
+
+    // we test the deploying using Nick's factory only here because if not it would create conflicts, since any contract has already been deployed and would not change its storage
+    [erc6551Registry, proxy, signatureValidator, guardian, vault] = await deployAll(deployer);
   });
 
   //here we test the contract
   beforeEach(async function () {
-    erc6551Registry = await deployContract("ERC6551Registry");
-    managerImpl = await deployContract("Manager");
-    guardian = await deployContract("FlexiGuardian", deployer.address);
-    proxy = await deployContract("FlexiProxy", managerImpl.address);
+    // process.exit();
 
-    vault = await deployContract(
-      "CrunaFlexiVault",
-      erc6551Registry.address,
-      guardian.address,
-      signatureValidator.address,
-      proxy.address,
-    );
     factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
 
     await vault.setFactory(factory.address);
@@ -51,6 +48,8 @@ describe("VaultFactory", function () {
     usdt = await deployContract("TetherUSD");
 
     await usdc.mint(bob.address, normalize("900"));
+    await usdc.mint(fred.address, normalize("900"));
+    await usdc.mint(alice.address, normalize("900"));
     await usdt.mint(alice.address, normalize("600", 6));
 
     await expect(factory.setPrice(990)).to.emit(factory, "PriceSet").withArgs(990);
@@ -111,7 +110,7 @@ describe("VaultFactory", function () {
   });
 
   it("should allow bob and alice to purchase some vaults with a promoCode", async function () {
-    const promoCode = "TheRoundTable".toLowerCase();
+    const promoCode = "TheRoundTable";
     await factory.setPromoCode(promoCode, 10);
 
     await buyVault(usdc, 2, bob);
@@ -131,7 +130,7 @@ describe("VaultFactory", function () {
   });
 
   it("should remove the effect of a promo code when its discount is set to zero", async function () {
-    const promoCode = "TheRoundTable".toLowerCase();
+    const promoCode = "TheRoundTable";
     const discount = 10;
     const zeroDiscount = 0;
     const stableCoin = usdc.address;
@@ -147,22 +146,36 @@ describe("VaultFactory", function () {
 
   it("should allow batch purchase of vaults", async function () {
     const stableCoin = usdc.address;
-    const buyers = [bob.address];
-    const amounts = [1];
+    const buyers = [bob.address, fred.address, alice.address];
+    const amounts = [1, 3, 2];
+    let nextTokenId = await vault.nextTokenId();
 
     let pricePerVault = await factory.finalPrice(stableCoin, "");
-    let totalPayment = pricePerVault.mul(amounts.length);
 
-    await usdc.mint(bob.address, totalPayment.add(normalize("1000")));
+    await usdc.connect(bob).approve(factory.address, pricePerVault.mul(6));
 
-    await usdc.connect(bob).approve(factory.address, totalPayment);
+    const bobBalanceBefore = await vault.balanceOf(bob.address);
+    const fredBalanceBefore = await vault.balanceOf(fred.address);
+    const aliceBalanceBefore = await vault.balanceOf(alice.address);
 
     await expect(factory.connect(bob).buyVaultsBatch(stableCoin, buyers, amounts, ""))
       .to.emit(vault, "Transfer")
-      .withArgs(addr0, buyers[0], (await getChainId()) * 1e6 + 1);
+      .withArgs(addr0, bob.address, nextTokenId)
+      .to.emit(vault, "Transfer")
+      .withArgs(addr0, fred.address, nextTokenId.add(1))
+      .to.emit(vault, "Transfer")
+      .withArgs(addr0, fred.address, nextTokenId.add(2))
+      .to.emit(vault, "Transfer")
+      .withArgs(addr0, fred.address, nextTokenId.add(3))
+      .to.emit(vault, "Transfer")
+      .withArgs(addr0, alice.address, nextTokenId.add(4))
+      .to.emit(vault, "Transfer")
+      .withArgs(addr0, alice.address, nextTokenId.add(5));
 
-    expect(await usdc.balanceOf(factory.address)).to.equal(totalPayment);
+    expect(await vault.balanceOf(bob.address)).to.equal(bobBalanceBefore.add(1));
+    expect(await vault.balanceOf(fred.address)).to.equal(fredBalanceBefore.add(3));
+    expect(await vault.balanceOf(alice.address)).to.equal(aliceBalanceBefore.add(2));
 
-    expect(await vault.balanceOf(bob.address)).to.equal(amounts.length);
+    expect(await usdc.balanceOf(factory.address)).to.equal(pricePerVault.mul(6));
   });
 });
