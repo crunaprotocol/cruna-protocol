@@ -64,10 +64,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   // @dev Constructor of the contract.
   // @param name_ The name of the token.
   // @param symbol_ The symbol of the token.
-  // @param registry_ The address of the registry contract.
-  // @param guardian_ The address of the Manager.sol guardian.
-  // @param signatureValidator_ The address of the signature validator.
-  // @param managerProxy_ The address of the manager proxy.
+  // @param owner The address of the owner.
   constructor(string memory name_, string memory symbol_, address owner) ERC721(name_, symbol_) {
     if (owner == address(0)) revert ZeroAddress();
     _transferOwnership(owner);
@@ -75,6 +72,11 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
     nextTokenId = block.chainid * 1e6 + 1;
   }
 
+  // @dev This function will initialize the contract.
+  // @param registry_ The address of the registry contract.
+  // @param guardian_ The address of the Manager.sol guardian.
+  // @param signatureValidator_ The address of the signature validator.
+  // @param managerProxy_ The address of the manager proxy.
   function init(address registry_, address guardian_, address signatureValidator_, address managerProxy_) external onlyOwner {
     // must be called immediately after deployment
     if (address(validator) != address(0)) revert AlreadyInitiated();

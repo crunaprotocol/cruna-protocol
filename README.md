@@ -145,8 +145,8 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 --------------------------------|----------|----------|----------|----------|----------------|
 File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
 --------------------------------|----------|----------|----------|----------|----------------|
- contracts/                     |      100 |       40 |    85.71 |      100 |                |
-  CrunaFlexiVault.sol           |      100 |       40 |    85.71 |      100 |                |
+ contracts/                     |      100 |       40 |      100 |      100 |                |
+  CrunaFlexiVault.sol           |      100 |       40 |      100 |      100 |                |
  contracts/factory/             |      100 |       58 |    91.67 |    98.21 |                |
   IVaultFactory.sol             |      100 |      100 |      100 |      100 |                |
   VaultFactory.sol              |      100 |       58 |    91.67 |    98.21 |            119 |
@@ -167,13 +167,13 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   InheritancePlugin.sol         |      100 |    63.16 |      100 |    95.74 |        122,148 |
   InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
  contracts/protected/           |      100 |       56 |      100 |    97.73 |                |
-  ProtectedNFT.sol              |      100 |       56 |      100 |    97.73 |             82 |
+  ProtectedNFT.sol              |      100 |       56 |      100 |    97.73 |             84 |
  contracts/utils/               |      100 |      100 |      100 |      100 |                |
   FlexiProxy.sol                |      100 |      100 |      100 |      100 |                |
   SignatureValidator.sol        |      100 |      100 |      100 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |    99.53 |    60.62 |    97.65 |    98.16 |                |
+All files                       |    99.53 |    60.62 |    98.81 |    98.16 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 

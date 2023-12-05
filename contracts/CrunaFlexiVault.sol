@@ -52,8 +52,4 @@ contract CrunaFlexiVault is ProtectedNFT {
   function safeMint(address to) public virtual onlyFactory {
     _mintAndInit(to);
   }
-
-  function muter() external {
-    //
-  }
 }
