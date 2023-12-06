@@ -5,24 +5,17 @@ pragma solidity ^0.8.20;
 
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
-import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
 import {Actor} from "./Actor.sol";
 import {IManager} from "./IManager.sol";
 import {IPlugin} from "../plugins/IPlugin.sol";
-import {FlexiGuardian, ManagerBase} from "./ManagerBase.sol";
+import {ManagerBase} from "./ManagerBase.sol";
 
 //import {console} from "hardhat/console.sol";
 
 interface IProxy {
   function isProxy() external pure returns (bool);
-}
-
-interface IVault {
-  function managedTransfer(uint256 tokenId, address to) external;
-  function emitLockedEvent(uint256 tokenId, bool locked_) external;
 }
 
 contract Manager is IManager, Actor, ManagerBase {
@@ -41,56 +34,44 @@ contract Manager is IManager, Actor, ManagerBase {
   error CannotBeYourself();
   error NotTheInheritancePlugin();
   error PluginAlreadyPlugged();
-  error RoleNotFound();
   error NotAProxy();
   error ContractsCannotBeProtectors();
 
   bool public constant IS_MANAGER = true;
   bool public constant IS_NOT_MANAGER = false;
 
-  bytes32 public constant PROTECTOR = keccak256(abi.encodePacked("PROTECTOR"));
-  bytes32 public constant SENTINEL = keccak256(abi.encodePacked("SENTINEL"));
-  bytes32 public constant SAFE_RECIPIENT = keccak256(abi.encodePacked("SAFE_RECIPIENT"));
-
-  IERC6551Registry public registry;
-  SignatureValidator public signatureValidator;
-  IVault public vault;
+  bytes32 public constant PROTECTOR = keccak256("PROTECTOR");
+  bytes32 public constant SAFE_RECIPIENT = keccak256("SAFE_RECIPIENT");
 
   mapping(bytes32 => IPlugin) public plugins;
   mapping(bytes32 => bytes32) public pluginByRole;
   mapping(bytes32 => bool) public usedSignatures;
+  bytes32[] public pluginRoles;
 
-  // @dev see {IManager-init}
-  // this must be execute immediately after the deployment
-  function init(address registry_, address guardian_, address signatureValidator_) external virtual override {
+  function init() external virtual override {
     _nameHash = keccak256("Manager");
-    _addRole(keccak256("PROTECTOR"));
-    _addRole(keccak256("SAFE_RECIPIENT"));
-    if (msg.sender != tokenAddress()) revert Forbidden();
-    guardian = FlexiGuardian(guardian_);
-    signatureValidator = SignatureValidator(signatureValidator_);
-    vault = IVault(msg.sender);
-    registry = IERC6551Registry(registry_);
   }
 
   function plug(string memory name, address pluginProxy) external virtual override onlyTokenOwner {
+    //    uint gl = gasleft();
     try IProxy(pluginProxy).isProxy() returns (bool) {} catch {
       revert NotAProxy();
     }
-    bytes32 salt = keccak256(abi.encodePacked(name));
-    if (address(plugins[salt]) != address(0)) revert PluginAlreadyPlugged();
-    if (!guardian.isTrustedImplementation(salt, pluginProxy)) revert InvalidImplementation();
+    bytes32 nameHash = keccak256(abi.encodePacked(name));
+    if (address(plugins[nameHash]) != address(0)) revert PluginAlreadyPlugged();
+    if (!guardian().isTrustedImplementation(nameHash, pluginProxy)) revert InvalidImplementation();
     // the manager pretends to be an NFT to use the ERC-6551 registry
-    registry.createAccount(pluginProxy, salt, block.chainid, address(this), tokenId());
-    address pluginAddress = registry.account(pluginProxy, salt, block.chainid, address(this), tokenId());
-    plugins[salt] = IPlugin(pluginAddress);
-    plugins[salt].init(address(guardian));
-    bytes32[] memory roles = plugins[salt].pluginRoles();
+    registry().createAccount(pluginProxy, nameHash, block.chainid, address(this), tokenId());
+    address pluginAddress = registry().account(pluginProxy, nameHash, block.chainid, address(this), tokenId());
+    plugins[nameHash] = IPlugin(pluginAddress);
+    plugins[nameHash].init();
+    bytes32[] memory roles = plugins[nameHash].pluginRoles();
     for (uint256 i = 0; i < roles.length; i++) {
-      _addRole(roles[i]);
-      pluginByRole[roles[i]] = salt;
+      pluginByRole[roles[i]] = nameHash;
+      pluginRoles.push(roles[i]);
     }
     emit PluginPlugged(name, pluginAddress);
+    //    console.log("Total2", gl - gasleft());
   }
 
   // simulate ERC-721 to allow plugins to be deployed via ERC-6551 Registry
@@ -132,15 +113,15 @@ contract Manager is IManager, Actor, ManagerBase {
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
     if (protector_.isContract()) revert ContractsCannotBeProtectors();
-    _setSignedActor("PROTECTOR", protector_, PROTECTOR, status, timestamp, validFor, signature, IS_MANAGER);
+    _setSignedActor("PROTECTOR", protector_, PROTECTOR, status, timestamp, validFor, signature, IS_MANAGER, _msgSender());
     emit ProtectorUpdated(_msgSender(), protector_, status);
     if (status) {
       if (countActiveProtectors() == 1) {
-        vault.emitLockedEvent(tokenId(), true);
+        vault().emitLockedEvent(tokenId(), true);
       }
     } else {
       if (countActiveProtectors() == 0) {
-        vault.emitLockedEvent(tokenId(), false);
+        vault().emitLockedEvent(tokenId(), false);
       }
     }
   }
@@ -160,7 +141,17 @@ contract Manager is IManager, Actor, ManagerBase {
     uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
-    _setSignedActor("SAFE_RECIPIENT", recipient, SAFE_RECIPIENT, status, timestamp, validFor, signature, IS_NOT_MANAGER);
+    _setSignedActor(
+      "SAFE_RECIPIENT",
+      recipient,
+      SAFE_RECIPIENT,
+      status,
+      timestamp,
+      validFor,
+      signature,
+      IS_NOT_MANAGER,
+      _msgSender()
+    );
     emit SafeRecipientUpdated(_msgSender(), recipient, status);
   }
 
@@ -197,16 +188,7 @@ contract Manager is IManager, Actor, ManagerBase {
       if (timestamp == 0) revert TimestampZero();
       if (timestamp > block.timestamp || timestamp < block.timestamp - validFor) revert TimestampInvalidOrExpired();
       if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
-      address signer = signatureValidator.recoverSigner(
-        scope,
-        owner(),
-        actor,
-        tokenId(),
-        status,
-        timestamp,
-        validFor,
-        signature
-      );
+      address signer = validator().recoverSigner(scope, owner(), actor, tokenId(), status, timestamp, validFor, signature);
       if (!isAProtector(signer)) revert WrongDataOrNotSignedByProtector();
       usedSignatures[keccak256(signature)] = true;
     }
@@ -228,11 +210,12 @@ contract Manager is IManager, Actor, ManagerBase {
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature,
-    bool actorIsProtector
+    bool actorIsProtector,
+    address sender
   ) internal virtual {
     bytes32 scope = keccak256(abi.encodePacked(roleString));
     if (actor == address(0)) revert ZeroAddress();
-    if (actor == _msgSender()) revert CannotBeYourself();
+    if (actor == sender) revert CannotBeYourself();
     _validateRequest(scope, actor, status, timestamp, validFor, signature);
     if (!status) {
       if (timestamp != 0 && actorIsProtector && !isAProtector(actor)) revert ProtectorNotFound();
@@ -251,12 +234,12 @@ contract Manager is IManager, Actor, ManagerBase {
     bool status,
     uint256 timestamp,
     uint256 validFor,
-    bytes calldata signature
+    bytes calldata signature,
+    address sender
   ) external virtual override {
     bytes32 scope = keccak256(abi.encodePacked(roleString));
-    if (roleIndex[scope] == 0) revert RoleNotFound();
     if (address(plugins[pluginByRole[scope]]) != _msgSender()) revert Forbidden();
-    _setSignedActor(roleString, actor, role_, status, timestamp, validFor, signature, false);
+    _setSignedActor(roleString, actor, role_, status, timestamp, validFor, signature, false, sender);
   }
 
   // @dev See {IProtected721-managedTransfer}.
@@ -264,8 +247,12 @@ contract Manager is IManager, Actor, ManagerBase {
   function managedTransfer(uint256 tokenId, address to) external virtual override {
     address authorized = address(plugins[keccak256("InheritancePlugin")]);
     if (authorized == address(0) || _msgSender() != authorized) revert NotTheInheritancePlugin();
-    vault.managedTransfer(tokenId, to);
-    _resetActors();
+    vault().managedTransfer(tokenId, to);
+    _cleanActors(PROTECTOR);
+    _cleanActors(SAFE_RECIPIENT);
+    for (uint256 i = 0; i < pluginRoles.length; i++) {
+      _cleanActors(pluginRoles[i]);
+    }
   }
 
   // @dev This empty reserved space is put in place to allow future versions to add new

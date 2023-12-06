@@ -100,7 +100,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
     if (timestamp > block.timestamp || timestamp < block.timestamp - validFor) revert TimestampInvalidOrExpired();
     if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
     usedSignatures[keccak256(signature)] = true;
-    address signer = managers[tokenId].signatureValidator().recoverSigner(
+    address signer = validator.recoverSigner(
       keccak256("PROTECTED_TRANSFER"),
       _msgSender(),
       to,
@@ -185,11 +185,13 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   // @dev This function will mint a new token and initialize it.
   // @param to The address of the recipient.
   function _mintAndInit(address to) internal {
+    //    uint gl = gasleft();
     if (address(registry) == address(0)) revert NotInitiated();
     registry.createAccount(address(flexiProxy), salt, block.chainid, address(this), nextTokenId);
     managers[nextTokenId] = Manager(managerOf(nextTokenId));
-    managers[nextTokenId].init(address(registry), address(guardian), address(validator));
+    managers[nextTokenId].init();
     _safeMint(to, nextTokenId++);
+    //    console.log("Total", gl - gasleft());
   }
 
   // @dev This function will return the address of the manager for tokenId.

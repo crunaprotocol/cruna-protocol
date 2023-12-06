@@ -15,7 +15,7 @@ interface IManager {
 
   event PluginPlugged(string name, address plugin);
 
-  function init(address registry_, address guardian_, address signatureValidator_) external;
+  function init() external;
 
   function plug(string memory name, address implementation) external;
 
@@ -89,7 +89,8 @@ interface IManager {
     bool status,
     uint256 timestamp,
     uint256 validFor,
-    bytes calldata signature
+    bytes calldata signature,
+    address sender
   ) external;
 
   function managedTransfer(uint256 tokenId, address to) external;

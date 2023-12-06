@@ -5,12 +5,22 @@ pragma solidity ^0.8.20;
 
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
+import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
+import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {FlexiGuardian} from "./FlexiGuardian.sol";
 import {Versioned} from "../utils/Versioned.sol";
 
 //import {console} from "hardhat/console.sol";
+
+interface IVault {
+  function managedTransfer(uint256 tokenId, address to) external;
+  function emitLockedEvent(uint256 tokenId, bool locked_) external;
+  function guardian() external view returns (FlexiGuardian);
+  function registry() external view returns (IERC6551Registry);
+  function validator() external view returns (SignatureValidator);
+}
 
 contract ManagerBase is Context, Versioned {
   error NotTheTokenOwner();
@@ -25,12 +35,27 @@ contract ManagerBase is Context, Versioned {
   bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
   bytes32 internal _nameHash;
-  FlexiGuardian public guardian;
 
   uint256 public implementationVersion;
 
   constructor() {
     implementationVersion = version();
+  }
+
+  function guardian() public view virtual returns (FlexiGuardian) {
+    return vault().guardian();
+  }
+
+  function registry() public view virtual returns (IERC6551Registry) {
+    return vault().registry();
+  }
+
+  function validator() public view virtual returns (SignatureValidator) {
+    return vault().validator();
+  }
+
+  function vault() public view virtual returns (IVault) {
+    return IVault(tokenAddress());
   }
 
   modifier onlyTokenOwner() {
@@ -60,7 +85,7 @@ contract ManagerBase is Context, Versioned {
 
   function upgrade(address implementation_) external virtual {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
-    if (!guardian.isTrustedImplementation(_nameHash, implementation_)) revert InvalidImplementation();
+    if (!guardian().isTrustedImplementation(_nameHash, implementation_)) revert InvalidImplementation();
     uint256 _version = Versioned(implementation_).version();
     if (_version <= implementationVersion) revert InvalidVersion();
     implementationVersion = _version;
