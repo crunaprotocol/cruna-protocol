@@ -147,24 +147,24 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
 --------------------------------|----------|----------|----------|----------|----------------|
  contracts/                     |      100 |       40 |      100 |      100 |                |
   CrunaFlexiVault.sol           |      100 |       40 |      100 |      100 |                |
- contracts/factory/             |      100 |       58 |    91.67 |    98.21 |                |
+ contracts/factory/             |    95.56 |    53.45 |    78.57 |    93.22 |                |
   IVaultFactory.sol             |      100 |      100 |      100 |      100 |                |
-  VaultFactory.sol              |      100 |       58 |    91.67 |    98.21 |            119 |
+  VaultFactory.sol              |    95.56 |    53.45 |    78.57 |    93.22 |   46,50,65,131 |
  contracts/interfaces/          |      100 |      100 |      100 |      100 |                |
   IERC6454.sol                  |      100 |      100 |      100 |      100 |                |
   IERC6982.sol                  |      100 |      100 |      100 |      100 |                |
   IProtected.sol                |      100 |      100 |      100 |      100 |                |
- contracts/manager/             |    98.96 |    66.67 |      100 |    99.13 |                |
-  Actor.sol                     |      100 |    66.67 |      100 |      100 |                |
+ contracts/manager/             |    98.97 |    68.06 |      100 |    99.08 |                |
+  Actor.sol                     |      100 |       70 |      100 |      100 |                |
   FlexiGuardian.sol             |      100 |       50 |      100 |    83.33 |             19 |
   IManager.sol                  |      100 |      100 |      100 |      100 |                |
-  Manager.sol                   |      100 |    65.38 |      100 |      100 |                |
-  ManagerBase.sol               |    93.33 |       80 |      100 |      100 |                |
+  Manager.sol                   |      100 |    66.67 |      100 |      100 |                |
+  ManagerBase.sol               |    94.74 |       80 |      100 |      100 |                |
  contracts/plugins/             |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                   |      100 |      100 |      100 |      100 |                |
- contracts/plugins/inheritance/ |      100 |    63.16 |      100 |    95.74 |                |
+ contracts/plugins/inheritance/ |      100 |    63.16 |      100 |    95.65 |                |
   IInheritancePlugin.sol        |      100 |      100 |      100 |      100 |                |
-  InheritancePlugin.sol         |      100 |    63.16 |      100 |    95.74 |        122,148 |
+  InheritancePlugin.sol         |      100 |    63.16 |      100 |    95.65 |        121,147 |
   InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
  contracts/protected/           |      100 |       56 |      100 |    97.73 |                |
   ProtectedNFT.sol              |      100 |       56 |      100 |    97.73 |             84 |
@@ -173,7 +173,7 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   SignatureValidator.sol        |      100 |      100 |      100 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |    99.53 |    60.62 |    98.81 |    98.16 |                |
+All files                       |     98.6 |    59.65 |    96.63 |    97.01 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 

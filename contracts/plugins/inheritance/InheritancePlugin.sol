@@ -9,7 +9,7 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Manager} from "../../manager/Manager.sol";
 import {IInheritancePlugin} from "./IInheritancePlugin.sol";
 import {IPlugin} from "../IPlugin.sol";
-import {FlexiGuardian, ManagerBase} from "../../manager/ManagerBase.sol";
+import {ManagerBase} from "../../manager/ManagerBase.sol";
 
 //import {console} from "hardhat/console.sol";
 
@@ -38,12 +38,11 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
 
   // @dev see {IInheritancePlugin.sol-init}
   // this must be execute immediately after the deployment
-  function init(address guardian_) external virtual {
+  function init() external virtual override {
     _nameHash = keccak256("InheritancePlugin");
     // Notice that the manager pretends to be an NFT
     // so tokenAddress() returns the manager address
     if (_msgSender() != tokenAddress()) revert Forbidden();
-    guardian = FlexiGuardian(guardian_);
     manager = Manager(_msgSender());
   }
 
@@ -62,7 +61,7 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
     uint256 validFor,
     bytes calldata signature
   ) public virtual override onlyTokenOwner {
-    manager.setSignedActor("SENTINEL", sentinel, SENTINEL, status, timestamp, validFor, signature);
+    manager.setSignedActor("SENTINEL", sentinel, SENTINEL, status, timestamp, validFor, signature, _msgSender());
     emit SentinelUpdated(_msgSender(), sentinel, status);
   }
 

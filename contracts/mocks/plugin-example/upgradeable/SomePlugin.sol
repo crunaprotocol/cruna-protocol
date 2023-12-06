@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 // Author: Francesco Sullo <francesco@sullo.co>
 
 import {Manager} from "../../../manager/Manager.sol";
-import {FlexiGuardian, ManagerBase} from "../../../manager/ManagerBase.sol";
+import {ManagerBase} from "../../../manager/ManagerBase.sol";
 import {IPlugin} from "../../../plugins/IPlugin.sol";
 
 contract SomePlugin is IPlugin, ManagerBase {
@@ -15,11 +15,13 @@ contract SomePlugin is IPlugin, ManagerBase {
 
   Manager public manager;
 
-  function init(address guardian_) external virtual {
-    // replace with the name of your plugin
+  constructor() {
     _nameHash = keccak256("SomePlugin");
+  }
+
+  function init() external virtual {
+    // replace with the name of your plugin
     if (_msgSender() != tokenAddress()) revert Forbidden();
-    guardian = FlexiGuardian(guardian_);
     manager = Manager(_msgSender());
   }
 
