@@ -13,9 +13,13 @@ interface IManager {
   // @dev Emitted when the level of an allowed recipient is updated
   event SafeRecipientUpdated(address indexed owner, address indexed recipient, bool status);
 
-  event PluginPlugged(string name, address plugin);
+  event PluginStatusChange(string name, address plugin, bool status);
 
   function plug(string memory name, address implementation) external;
+
+  function disablePlugin(string memory name, bool resetPlugin) external;
+
+  function reEnablePlugin(string memory name, bool resetPlugin) external;
 
   // simulate ERC-721
 

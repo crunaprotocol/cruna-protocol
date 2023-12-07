@@ -10,4 +10,7 @@ interface IPlugin {
   // function called in the dashboard to know if the plugin is asking the
   // right to make a managed transfer of the vault
   function requiresToManageTransfer() external pure returns (bool);
+
+  // Reset the plugin to the factory settings
+  function reset() external;
 }

@@ -36,6 +36,8 @@ contract Manager is IManager, Actor, ManagerBase {
   error PluginAlreadyPlugged();
   error NotAProxy();
   error ContractsCannotBeProtectors();
+  error PluginNotFound();
+  error DisabledPlugin();
 
   bytes32 public constant PROTECTOR = keccak256("PROTECTOR");
   bytes32 public constant SAFE_RECIPIENT = keccak256("SAFE_RECIPIENT");
@@ -43,8 +45,10 @@ contract Manager is IManager, Actor, ManagerBase {
   mapping(bytes32 => bool) public usedSignatures;
 
   mapping(bytes32 => IPlugin) public plugins;
-  mapping(bytes32 => bytes32) public pluginByRole;
+  mapping(bytes32 => bytes32) public pluginNamesByRole;
   bytes32[] public pluginRoles;
+
+  mapping(bytes32 => bool) public disabledPlugins;
 
   function nameHash() public virtual override returns (bytes32) {
     return keccak256("Manager");
@@ -64,10 +68,41 @@ contract Manager is IManager, Actor, ManagerBase {
     plugins[_nameHash].init();
     bytes32[] memory roles = plugins[_nameHash].pluginRoles();
     for (uint256 i = 0; i < roles.length; i++) {
-      pluginByRole[roles[i]] = _nameHash;
+      pluginNamesByRole[roles[i]] = _nameHash;
       pluginRoles.push(roles[i]);
     }
-    emit PluginPlugged(name, pluginAddress);
+    emit PluginStatusChange(name, pluginAddress, true);
+  }
+
+  // Plugin cannot be unplugged since they have been deployed via ERC-6551 Registry
+  // so, we mark them as disabled
+  function disablePlugin(string memory name, bool resetPlugin) external virtual override onlyTokenOwner {
+    bytes32 _nameHash = keccak256(abi.encodePacked(name));
+    if (address(plugins[_nameHash]) == address(0)) revert PluginNotFound();
+    disabledPlugins[_nameHash] = true;
+    if (resetPlugin) {
+      _resetPlugin(_nameHash);
+    }
+    emit PluginStatusChange(name, address(plugins[_nameHash]), false);
+  }
+
+  function reEnablePlugin(string memory name, bool resetPlugin) external virtual override onlyTokenOwner {
+    bytes32 _nameHash = keccak256(abi.encodePacked(name));
+    if (disabledPlugins[_nameHash] == false) revert PluginNotFound();
+    delete disabledPlugins[_nameHash];
+    if (resetPlugin) {
+      _resetPlugin(_nameHash);
+    }
+    emit PluginStatusChange(name, address(plugins[_nameHash]), true);
+  }
+
+  function _resetPlugin(bytes32 _nameHash) internal virtual {
+    for (uint256 k = 0; k < pluginRoles.length; k++) {
+      if (pluginNamesByRole[pluginRoles[k]] == _nameHash) {
+        _cleanActors(pluginRoles[k]);
+      }
+    }
+    plugins[_nameHash].reset();
   }
 
   // simulate ERC-721 to allow plugins to be deployed via ERC-6551 Registry
@@ -233,7 +268,8 @@ contract Manager is IManager, Actor, ManagerBase {
     address sender
   ) external virtual override {
     bytes32 scope = keccak256(abi.encodePacked(roleString));
-    if (address(plugins[pluginByRole[scope]]) != _msgSender()) revert Forbidden();
+    if (address(plugins[pluginNamesByRole[scope]]) != _msgSender()) revert Forbidden();
+    if (disabledPlugins[pluginNamesByRole[scope]]) revert DisabledPlugin();
     _setSignedActor(roleString, actor, role_, status, timestamp, validFor, signature, false, sender);
   }
 
@@ -243,7 +279,8 @@ contract Manager is IManager, Actor, ManagerBase {
     // Since only a bunch of plugins can manage transfers, ideally only one,
     // there is no risk of going out of gas
     for (uint256 i = 0; i < pluginRoles.length; i++) {
-      if (address(plugins[pluginByRole[pluginRoles[i]]]) == _msgSender()) {
+      if (address(plugins[pluginNamesByRole[pluginRoles[i]]]) == _msgSender()) {
+        if (disabledPlugins[pluginNamesByRole[pluginRoles[i]]]) revert DisabledPlugin();
         vault().managedTransfer(tokenId, to);
         _resetActors();
         return;

@@ -157,6 +157,11 @@
       },
       {
         "inputs": [],
+        "name": "DisabledPlugin",
+        "type": "error"
+      },
+      {
+        "inputs": [],
         "name": "Forbidden",
         "type": "error"
       },
@@ -193,6 +198,11 @@
       {
         "inputs": [],
         "name": "PluginAlreadyPlugged",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "PluginNotFound",
         "type": "error"
       },
       {
@@ -249,9 +259,15 @@
             "internalType": "address",
             "name": "plugin",
             "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "bool",
+            "name": "status",
+            "type": "bool"
           }
         ],
-        "name": "PluginPlugged",
+        "name": "PluginStatusChange",
         "type": "event"
       },
       {
@@ -394,6 +410,43 @@
             "internalType": "uint256",
             "name": "",
             "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "bool",
+            "name": "resetPlugin",
+            "type": "bool"
+          }
+        ],
+        "name": "disablePlugin",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "name": "disabledPlugins",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
           }
         ],
         "stateMutability": "view",
@@ -655,7 +708,7 @@
             "type": "bytes32"
           }
         ],
-        "name": "pluginByRole",
+        "name": "pluginNamesByRole",
         "outputs": [
           {
             "internalType": "bytes32",
@@ -702,6 +755,24 @@
           }
         ],
         "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "bool",
+            "name": "resetPlugin",
+            "type": "bool"
+          }
+        ],
+        "name": "reEnablePlugin",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
       },
       {
@@ -1502,6 +1573,13 @@
           }
         ],
         "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "reset",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
       },
       {

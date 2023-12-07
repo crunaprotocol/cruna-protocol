@@ -83,6 +83,10 @@ abstract contract ManagerBase is Context, Versioned {
     return tokenId_;
   }
 
+  // @dev Upgrade the implementation of the manager/plugin
+  //   Notice that the owner can upgrade active or disable plugins
+  //   so that, if a plugin is compromised, the user can disable it,
+  //   wait for a new trusted implementation and upgrade it.
   function upgrade(address implementation_) external virtual {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     if (!guardian().isTrustedImplementation(nameHash(), implementation_)) revert InvalidImplementation();

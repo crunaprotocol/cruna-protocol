@@ -73,7 +73,7 @@ describe("Sentinel and Inheritance", function () {
     expect(pluginAddress).to.equal(addr0);
     await expect(manager.connect(bob).plug("InheritancePlugin", inheritancePluginProxy.address)).to.emit(
       manager,
-      "PluginPlugged",
+      "PluginStatusChange",
     );
     pluginAddress = await manager.plugins(scope);
     expect(pluginAddress).to.not.equal(addr0);
@@ -344,6 +344,12 @@ describe("Sentinel and Inheritance", function () {
     data = await inheritancePlugin.getSentinelsAndInheritanceData();
     expect(data[1].lastProofOfLife).to.equal(lastTs);
 
+    // the user disable the plugin
+
+    await expect(manager.connect(bob).disablePlugin("InheritancePlugin", false))
+      .to.emit(manager, "PluginStatusChange")
+      .withArgs("InheritancePlugin", inheritancePlugin.address, false);
+
     await increaseBlockTimestampBy(100 * days);
 
     await expect(inheritancePlugin.connect(alice).requestTransfer(beneficiary1.address)).to.be.revertedWith(
@@ -388,9 +394,191 @@ describe("Sentinel and Inheritance", function () {
     await inheritancePlugin.connect(fred).requestTransfer(beneficiary2.address);
     await inheritancePlugin.connect(otto).requestTransfer(beneficiary2.address);
 
+    await expect(inheritancePlugin.connect(beneficiary2).inherit()).to.be.revertedWith("DisabledPlugin");
+
+    await expect(manager.connect(bob).reEnablePlugin("InheritancePlugin", false))
+      .to.emit(manager, "PluginStatusChange")
+      .withArgs("InheritancePlugin", inheritancePlugin.address, true);
+
+    //
     await expect(inheritancePlugin.connect(beneficiary2).inherit())
       .to.emit(inheritancePlugin, "InheritedBy")
       .withArgs(beneficiary2.address);
+
+    data = await inheritancePlugin.getSentinelsAndInheritanceData();
+    expect(data[0].length).to.equal(0);
+    expect(data[1].quorum).to.equal(0);
+    expect(data[1].proofOfLifeDurationInDays).to.equal(0);
+    expect(data[1].lastProofOfLife).to.equal(0);
+    expect(data[1].beneficiary).to.equal(addr0);
+    expect(data[1].requestUpdatedAt).to.equal(0);
+    expect(data[1].approvers.length).to.equal(0);
+  });
+
+  it("should disable and reset a plugin", async function () {
+    const tokenId = await buyAVault(bob);
+    const managerAddress = await vault.managerOf(tokenId);
+    const manager = await ethers.getContractAt("Manager", managerAddress);
+    const inheritancePluginAddress = await manager.plugins(keccak256("InheritancePlugin"));
+    const inheritancePlugin = await ethers.getContractAt("InheritancePlugin", inheritancePluginAddress);
+    await inheritancePlugin
+      .connect(bob)
+      .setSentinels([alice.address, fred.address, otto.address, mark.address, jerry.address], 0);
+
+    let data = await inheritancePlugin.getSentinelsAndInheritanceData();
+    expect(data[0].length).to.equal(5);
+    expect(data[0][0]).to.equal(alice.address);
+    expect(data[0][1]).to.equal(fred.address);
+    expect(data[0][2]).to.equal(otto.address);
+    expect(data[0][3]).to.equal(mark.address);
+    expect(data[0][4]).to.equal(jerry.address);
+    expect(data[1].quorum).to.equal(0);
+    expect(data[1].proofOfLifeDurationInDays).to.equal(0);
+    expect(data[1].lastProofOfLife).to.equal(0);
+    expect(data[1].beneficiary).to.equal(addr0);
+    expect(data[1].requestUpdatedAt).to.equal(0);
+    expect(data[1].approvers.length).to.equal(0);
+
+    await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, beneficiary1.address))
+      .to.emit(inheritancePlugin, "InheritanceConfigured")
+      .withArgs(bob.address, 3, 90, 30, beneficiary1.address);
+
+    let lastTs = await getTimestamp();
+
+    data = await inheritancePlugin.getSentinelsAndInheritanceData();
+    expect(data[1].quorum).to.equal(3);
+    expect(data[1].proofOfLifeDurationInDays).to.equal(90);
+    expect(data[1].lastProofOfLife).to.equal(lastTs);
+    await increaseBlockTimestampBy(89 * days);
+
+    await expect(inheritancePlugin.connect(bob).proofOfLife()).to.emit(inheritancePlugin, "ProofOfLife").withArgs(bob.address);
+
+    lastTs = await getTimestamp();
+
+    data = await inheritancePlugin.getSentinelsAndInheritanceData();
+    expect(data[1].lastProofOfLife).to.equal(lastTs);
+
+    // the user disable the plugin
+
+    await expect(manager.connect(bob).disablePlugin("InheritancePlugin", true))
+      .to.emit(manager, "PluginStatusChange")
+      .withArgs("InheritancePlugin", inheritancePlugin.address, false);
+
+    data = await inheritancePlugin.getSentinelsAndInheritanceData();
+    expect(data[0].length).to.equal(0);
+    expect(data[1].quorum).to.equal(0);
+    expect(data[1].proofOfLifeDurationInDays).to.equal(0);
+    expect(data[1].lastProofOfLife).to.equal(0);
+    expect(data[1].beneficiary).to.equal(addr0);
+    expect(data[1].requestUpdatedAt).to.equal(0);
+    expect(data[1].approvers.length).to.equal(0);
+  });
+
+  it("should reset a plugin while re-enabling it", async function () {
+    const tokenId = await buyAVault(bob);
+    const managerAddress = await vault.managerOf(tokenId);
+    const manager = await ethers.getContractAt("Manager", managerAddress);
+    const inheritancePluginAddress = await manager.plugins(keccak256("InheritancePlugin"));
+    const inheritancePlugin = await ethers.getContractAt("InheritancePlugin", inheritancePluginAddress);
+    await inheritancePlugin
+      .connect(bob)
+      .setSentinels([alice.address, fred.address, otto.address, mark.address, jerry.address], 0);
+
+    let data = await inheritancePlugin.getSentinelsAndInheritanceData();
+    expect(data[0].length).to.equal(5);
+    expect(data[0][0]).to.equal(alice.address);
+    expect(data[0][1]).to.equal(fred.address);
+    expect(data[0][2]).to.equal(otto.address);
+    expect(data[0][3]).to.equal(mark.address);
+    expect(data[0][4]).to.equal(jerry.address);
+    expect(data[1].quorum).to.equal(0);
+    expect(data[1].proofOfLifeDurationInDays).to.equal(0);
+    expect(data[1].lastProofOfLife).to.equal(0);
+    expect(data[1].beneficiary).to.equal(addr0);
+    expect(data[1].requestUpdatedAt).to.equal(0);
+    expect(data[1].approvers.length).to.equal(0);
+
+    await expect(inheritancePlugin.connect(alice).requestTransfer(beneficiary1.address)).to.be.revertedWith(
+      "InheritanceNotConfigured",
+    );
+
+    await expect(inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, beneficiary1.address)).revertedWith(
+      "QuorumCannotBeGreaterThanSentinels",
+    );
+    await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, beneficiary1.address))
+      .to.emit(inheritancePlugin, "InheritanceConfigured")
+      .withArgs(bob.address, 3, 90, 30, beneficiary1.address);
+
+    let lastTs = await getTimestamp();
+
+    data = await inheritancePlugin.getSentinelsAndInheritanceData();
+    expect(data[1].quorum).to.equal(3);
+    expect(data[1].proofOfLifeDurationInDays).to.equal(90);
+    expect(data[1].lastProofOfLife).to.equal(lastTs);
+    await increaseBlockTimestampBy(89 * days);
+
+    await expect(inheritancePlugin.connect(bob).proofOfLife()).to.emit(inheritancePlugin, "ProofOfLife").withArgs(bob.address);
+
+    lastTs = await getTimestamp();
+
+    data = await inheritancePlugin.getSentinelsAndInheritanceData();
+    expect(data[1].lastProofOfLife).to.equal(lastTs);
+
+    // the user disable the plugin
+
+    await expect(manager.connect(bob).disablePlugin("InheritancePlugin", false))
+      .to.emit(manager, "PluginStatusChange")
+      .withArgs("InheritancePlugin", inheritancePlugin.address, false);
+
+    await increaseBlockTimestampBy(100 * days);
+
+    await expect(inheritancePlugin.connect(alice).requestTransfer(beneficiary1.address)).to.be.revertedWith(
+      "WaitingForBeneficiary",
+    );
+
+    await increaseBlockTimestampBy(31 * days);
+
+    await expect(inheritancePlugin.requestTransfer(beneficiary2.address)).to.be.revertedWith("NotASentinel");
+
+    await expect(inheritancePlugin.connect(mark).requestTransfer(beneficiary2.address))
+      .to.emit(inheritancePlugin, "TransferRequested")
+      .withArgs(mark.address, beneficiary2.address);
+    lastTs = await getTimestamp();
+    data = await inheritancePlugin.getSentinelsAndInheritanceData();
+    expect(data[1].beneficiary).to.equal(beneficiary2.address);
+    expect(data[1].requestUpdatedAt).to.equal(lastTs);
+    expect(data[1].approvers.length).to.equal(1);
+
+    await expect(inheritancePlugin.connect(fred).requestTransfer(beneficiary2.address))
+      .to.emit(inheritancePlugin, "TransferRequestApproved")
+      .withArgs(fred.address);
+
+    data = await inheritancePlugin.getSentinelsAndInheritanceData();
+    expect(data[1].approvers.length).to.equal(2);
+
+    // this should cancel the process
+    await inheritancePlugin.connect(bob).proofOfLife();
+    lastTs = await getTimestamp();
+    data = await inheritancePlugin.getSentinelsAndInheritanceData();
+    expect(data[1].beneficiary).to.equal(addr0);
+    expect(data[1].requestUpdatedAt).to.equal(0);
+    expect(data[1].approvers.length).to.equal(0);
+
+    data = await inheritancePlugin.getSentinelsAndInheritanceData();
+    expect(data[1].lastProofOfLife).to.equal(lastTs);
+
+    // new attempt
+
+    await increaseBlockTimestampBy(90 * days);
+    await inheritancePlugin.connect(mark).requestTransfer(beneficiary2.address);
+    await inheritancePlugin.connect(fred).requestTransfer(beneficiary2.address);
+    await inheritancePlugin.connect(otto).requestTransfer(beneficiary2.address);
+
+    await expect(inheritancePlugin.connect(beneficiary2).inherit()).to.be.revertedWith("DisabledPlugin");
+
+    await expect(manager.connect(bob).reEnablePlugin("InheritancePlugin", true))
+      .to.emit(manager, "PluginStatusChange")
+      .withArgs("InheritancePlugin", inheritancePlugin.address, true);
 
     data = await inheritancePlugin.getSentinelsAndInheritanceData();
     expect(data[0].length).to.equal(0);

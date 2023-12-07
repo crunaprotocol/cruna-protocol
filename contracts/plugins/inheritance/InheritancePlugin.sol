@@ -204,9 +204,18 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
       // so the sentinels can propose a new beneficiary
       if (_isGracePeriodExpiredAfterStart()) revert Expired();
     }
-    delete _inheritanceConf;
+    _reset();
     emit InheritedBy(_msgSender());
     manager.managedTransfer(tokenId(), _msgSender());
+  }
+
+  function reset() external override {
+    if (_msgSender() != address(manager)) revert Forbidden();
+    _reset();
+  }
+
+  function _reset() internal {
+    delete _inheritanceConf;
   }
 
   // @dev This empty reserved space is put in place to allow future versions to add new
