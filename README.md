@@ -152,7 +152,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  28 passing (12s)
+  28 passing (10s)
 
 --------------------------------|----------|----------|----------|----------|----------------|
 File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -166,11 +166,11 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   IERC6454.sol                  |      100 |      100 |      100 |      100 |                |
   IERC6982.sol                  |      100 |      100 |      100 |      100 |                |
   IProtected.sol                |      100 |      100 |      100 |      100 |                |
- contracts/manager/             |    99.14 |    69.32 |      100 |    98.46 |                |
+ contracts/manager/             |    99.15 |    68.89 |      100 |    97.73 |                |
   Actor.sol                     |      100 |       70 |      100 |      100 |                |
   FlexiGuardian.sol             |      100 |       50 |      100 |    83.33 |             19 |
   IManager.sol                  |      100 |      100 |      100 |      100 |                |
-  Manager.sol                   |      100 |    68.75 |      100 |    98.78 |            289 |
+  Manager.sol                   |      100 |    68.18 |      100 |    97.62 |        286,294 |
   ManagerBase.sol               |    94.74 |       80 |      100 |      100 |                |
  contracts/plugins/             |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                   |      100 |      100 |      100 |      100 |                |
@@ -185,7 +185,7 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   SignatureValidator.sol        |      100 |      100 |      100 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |     99.6 |    63.91 |      100 |    98.09 |                |
+All files                       |     99.6 |    63.81 |      100 |    97.78 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 

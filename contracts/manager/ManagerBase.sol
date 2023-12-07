@@ -22,6 +22,10 @@ interface IVault {
   function validator() external view returns (SignatureValidator);
 }
 
+/**
+  @title ManagerBase
+  @dev Base contract for managers and plugins
+*/
 abstract contract ManagerBase is Context, Versioned {
   error NotTheTokenOwner();
   error InvalidImplementation();

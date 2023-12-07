@@ -1,7 +1,12 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.9;
 
-// ERC165 interfaceId 0x6b61a747
+/**
+ @title IPlugin
+ @dev Interface for plugins
+   Technically, plugins are secondary managers, pluggable in
+   the primary manage, which is Manager.sol
+*/
 interface IPlugin {
   function init() external;
 

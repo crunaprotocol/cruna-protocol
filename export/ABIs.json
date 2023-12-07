@@ -167,6 +167,11 @@
       },
       {
         "inputs": [],
+        "name": "InconsistentPolicy",
+        "type": "error"
+      },
+      {
+        "inputs": [],
         "name": "InvalidImplementation",
         "type": "error"
       },

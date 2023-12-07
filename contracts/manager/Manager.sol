@@ -38,6 +38,7 @@ contract Manager is IManager, Actor, ManagerBase {
   error ContractsCannotBeProtectors();
   error PluginNotFound();
   error DisabledPlugin();
+  error InconsistentPolicy();
 
   bytes32 public constant PROTECTOR = keccak256("PROTECTOR");
   bytes32 public constant SAFE_RECIPIENT = keccak256("SAFE_RECIPIENT");
@@ -280,6 +281,10 @@ contract Manager is IManager, Actor, ManagerBase {
     // there is no risk of going out of gas
     for (uint256 i = 0; i < pluginRoles.length; i++) {
       if (address(plugins[pluginNamesByRole[pluginRoles[i]]]) == _msgSender()) {
+        if (!plugins[pluginNamesByRole[pluginRoles[i]]].requiresToManageTransfer()) {
+          // The plugin declares it self as not requiring the ability to manage transfers, but in reality it is trying to do so
+          revert InconsistentPolicy();
+        }
         if (disabledPlugins[pluginNamesByRole[pluginRoles[i]]]) revert DisabledPlugin();
         vault().managedTransfer(tokenId, to);
         _resetActors();
