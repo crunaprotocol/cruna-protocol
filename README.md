@@ -152,16 +152,16 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  26 passing (11s)
+  28 passing (12s)
 
 --------------------------------|----------|----------|----------|----------|----------------|
 File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
 --------------------------------|----------|----------|----------|----------|----------------|
  contracts/                     |      100 |       40 |      100 |      100 |                |
   CrunaFlexiVault.sol           |      100 |       40 |      100 |      100 |                |
- contracts/factory/             |    95.56 |    53.45 |    78.57 |    93.22 |                |
+ contracts/factory/             |      100 |    60.34 |      100 |    96.61 |                |
   IVaultFactory.sol             |      100 |      100 |      100 |      100 |                |
-  VaultFactory.sol              |    95.56 |    53.45 |    78.57 |    93.22 |   46,50,65,131 |
+  VaultFactory.sol              |      100 |    60.34 |      100 |    96.61 |         66,132 |
  contracts/interfaces/          |      100 |      100 |      100 |      100 |                |
   IERC6454.sol                  |      100 |      100 |      100 |      100 |                |
   IERC6982.sol                  |      100 |      100 |      100 |      100 |                |
@@ -174,9 +174,9 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   ManagerBase.sol               |    94.74 |       80 |      100 |      100 |                |
  contracts/plugins/             |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                   |      100 |      100 |      100 |      100 |                |
- contracts/plugins/inheritance/ |    98.04 |       70 |    94.44 |    97.22 |                |
+ contracts/plugins/inheritance/ |      100 |       70 |      100 |    98.61 |                |
   IInheritancePlugin.sol        |      100 |      100 |      100 |      100 |                |
-  InheritancePlugin.sol         |    98.04 |       70 |    94.12 |    97.22 |         53,144 |
+  InheritancePlugin.sol         |      100 |       70 |      100 |    98.61 |            144 |
   InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
  contracts/protected/           |      100 |       56 |      100 |    97.67 |                |
   ProtectedNFT.sol              |      100 |       56 |      100 |    97.67 |             85 |
@@ -185,7 +185,7 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   SignatureValidator.sol        |      100 |      100 |      100 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |    98.41 |    62.41 |    96.04 |    97.13 |                |
+All files                       |     99.6 |    63.91 |      100 |    98.09 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 

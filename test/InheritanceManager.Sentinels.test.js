@@ -90,6 +90,7 @@ describe("Sentinel and Inheritance", function () {
     const manager = await ethers.getContractAt("Manager", managerAddress);
     const inheritancePluginAddress = await manager.plugins(keccak256("InheritancePlugin"));
     const inheritancePlugin = await ethers.getContractAt("InheritancePlugin", inheritancePluginAddress);
+    expect(await inheritancePlugin.requiresToManageTransfer()).to.be.true;
     await expect(inheritancePlugin.connect(bob).setSentinel(alice.address, true, 0, 0, 0))
       .to.emit(inheritancePlugin, "SentinelUpdated")
       .withArgs(bob.address, alice.address, true);

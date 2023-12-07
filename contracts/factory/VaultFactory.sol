@@ -11,6 +11,7 @@ import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/security/
 
 import {CrunaFlexiVault} from "../CrunaFlexiVault.sol";
 import {IVaultFactory} from "./IVaultFactory.sol";
+import {Versioned} from "../utils/Versioned.sol";
 
 //import {console} from "hardhat/console.sol";
 
@@ -20,7 +21,7 @@ error UnsupportedStableCoin();
 error TransferFailed();
 error InvalidArguments();
 
-contract VaultFactory is IVaultFactory, Initializable, PausableUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
+contract VaultFactory is IVaultFactory, Versioned, Initializable, PausableUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
   CrunaFlexiVault public vault;
   uint256 public price;
   mapping(address => bool) public stableCoins;
@@ -51,13 +52,13 @@ contract VaultFactory is IVaultFactory, Initializable, PausableUpgradeable, Owna
   }
 
   // @notice The price is in points, so that 1 point = 0.01 USD
-  function setPrice(uint256 price_) external override onlyOwner {
+  function setPrice(uint256 price_) external virtual override onlyOwner {
     // it is owner's responsibility to set a reasonable price
     price = price_;
     emit PriceSet(price);
   }
 
-  function setStableCoin(address stableCoin, bool active) external override onlyOwner {
+  function setStableCoin(address stableCoin, bool active) external virtual override onlyOwner {
     if (active) {
       // We check if less than 6 because TetherUSD has 6 decimals
       // It should revert if the stableCoin is not an ERC20
@@ -83,7 +84,7 @@ contract VaultFactory is IVaultFactory, Initializable, PausableUpgradeable, Owna
     }
   }
 
-  function setPromoCode(string memory promoCode, uint256 discount) external override onlyOwner {
+  function setPromoCode(string memory promoCode, uint256 discount) external virtual override onlyOwner {
     bytes32 promoCodeHash = keccak256(abi.encodePacked(promoCode));
     if (discount > 0) {
       _promoCodes[promoCodeHash] = discount;
@@ -92,11 +93,11 @@ contract VaultFactory is IVaultFactory, Initializable, PausableUpgradeable, Owna
     }
   }
 
-  function finalPrice(address stableCoin, string memory promoCode) public view override returns (uint256) {
+  function finalPrice(address stableCoin, string memory promoCode) public view virtual override returns (uint256) {
     return (getPrice(promoCode) * (10 ** ERC20(stableCoin).decimals())) / 100;
   }
 
-  function getPrice(string memory promoCode) public view override returns (uint256) {
+  function getPrice(string memory promoCode) public view virtual override returns (uint256) {
     uint256 _price = price;
     if (bytes(promoCode).length > 0) {
       bytes32 promoCodeHash = keccak256(abi.encodePacked(promoCode));
@@ -107,7 +108,7 @@ contract VaultFactory is IVaultFactory, Initializable, PausableUpgradeable, Owna
     return _price;
   }
 
-  function buyVaults(address stableCoin, uint256 amount, string memory promoCode) external override whenNotPaused {
+  function buyVaults(address stableCoin, uint256 amount, string memory promoCode) external virtual override whenNotPaused {
     uint256 payment = finalPrice(stableCoin, promoCode) * amount;
     if (payment > ERC20(stableCoin).balanceOf(_msgSender())) revert InsufficientFunds();
     proceedsBalances[stableCoin] += payment;
@@ -123,7 +124,7 @@ contract VaultFactory is IVaultFactory, Initializable, PausableUpgradeable, Owna
     address[] memory tos,
     uint256[] memory amounts,
     string memory promoCode
-  ) external override whenNotPaused {
+  ) external virtual override whenNotPaused {
     if (tos.length != amounts.length) revert InvalidArguments();
     uint256 amount = 0;
     for (uint256 i = 0; i < tos.length; i++) {
@@ -146,7 +147,7 @@ contract VaultFactory is IVaultFactory, Initializable, PausableUpgradeable, Owna
     if (!ERC20(stableCoin).transferFrom(_msgSender(), address(this), payment)) revert TransferFailed();
   }
 
-  function withdrawProceeds(address beneficiary, address stableCoin, uint256 amount) external override onlyOwner {
+  function withdrawProceeds(address beneficiary, address stableCoin, uint256 amount) external virtual override onlyOwner {
     if (amount == 0) {
       amount = proceedsBalances[stableCoin];
     }
@@ -155,7 +156,7 @@ contract VaultFactory is IVaultFactory, Initializable, PausableUpgradeable, Owna
     if (!ERC20(stableCoin).transfer(beneficiary, amount)) revert TransferFailed();
   }
 
-  function getStableCoins() external view returns (address[] memory) {
+  function getStableCoins() external view virtual returns (address[] memory) {
     return _stableCoins;
   }
 }
