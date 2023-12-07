@@ -282,7 +282,7 @@ contract Manager is IManager, Actor, ManagerBase {
     for (uint256 i = 0; i < pluginRoles.length; i++) {
       if (address(plugins[pluginNamesByRole[pluginRoles[i]]]) == _msgSender()) {
         if (!plugins[pluginNamesByRole[pluginRoles[i]]].requiresToManageTransfer()) {
-          // The plugin declares it self as not requiring the ability to manage transfers, but in reality it is trying to do so
+          // The plugin declares itself as not requiring the ability to manage transfers, but in reality it is trying to do so
           revert InconsistentPolicy();
         }
         if (disabledPlugins[pluginNamesByRole[pluginRoles[i]]]) revert DisabledPlugin();
