@@ -133,6 +133,14 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**1.0.0-alpha.2**
+
+- Improve the InheritancePlugin to allow the owner explicitly nominate a beneficiary, in addition to the sentinels
+
+**1.0.0-alpha.1**
+
+- Optimize gas usage minting a new NFT and adding a new plugin
+
 **1.0.0-alpha.1**
 
 - First version of the new protocol. The first one, published as @cruna/cruna-protocol, has been deprecated.
@@ -140,7 +148,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  24 passing (8s)
+  24 passing (12s)
 
 --------------------------------|----------|----------|----------|----------|----------------|
 File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
