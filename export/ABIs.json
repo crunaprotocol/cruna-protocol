@@ -177,12 +177,12 @@
       },
       {
         "inputs": [],
-        "name": "NotPermittedWhenProtectorsAreActive",
+        "name": "NotAuthorized",
         "type": "error"
       },
       {
         "inputs": [],
-        "name": "NotTheInheritancePlugin",
+        "name": "NotPermittedWhenProtectorsAreActive",
         "type": "error"
       },
       {
@@ -303,32 +303,6 @@
         ],
         "name": "SafeRecipientUpdated",
         "type": "event"
-      },
-      {
-        "inputs": [],
-        "name": "IS_MANAGER",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "IS_NOT_MANAGER",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
       },
       {
         "inputs": [],
@@ -542,13 +516,6 @@
         "type": "function"
       },
       {
-        "inputs": [],
-        "name": "init",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
         "inputs": [
           {
             "internalType": "address",
@@ -614,6 +581,19 @@
         ],
         "name": "managedTransfer",
         "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "nameHash",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
         "stateMutability": "nonpayable",
         "type": "function"
       },
@@ -1059,12 +1039,17 @@
     "InheritancePlugin": [
       {
         "inputs": [],
-        "name": "Forbidden",
+        "name": "BeneficiaryNotSet",
         "type": "error"
       },
       {
         "inputs": [],
-        "name": "InconsistentRecipient",
+        "name": "Expired",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "Forbidden",
         "type": "error"
       },
       {
@@ -1089,12 +1074,27 @@
       },
       {
         "inputs": [],
+        "name": "NotExpiredYet",
+        "type": "error"
+      },
+      {
+        "inputs": [],
         "name": "NotPermittedWhenProtectorsAreActive",
         "type": "error"
       },
       {
         "inputs": [],
+        "name": "NotTheBeneficiary",
+        "type": "error"
+      },
+      {
+        "inputs": [],
         "name": "NotTheTokenOwner",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "QuorumAlreadyReached",
         "type": "error"
       },
       {
@@ -1109,6 +1109,11 @@
       },
       {
         "inputs": [],
+        "name": "QuorumNotReached",
+        "type": "error"
+      },
+      {
+        "inputs": [],
         "name": "RequestAlreadyApproved",
         "type": "error"
       },
@@ -1119,7 +1124,7 @@
       },
       {
         "inputs": [],
-        "name": "Unauthorized",
+        "name": "WaitingForBeneficiary",
         "type": "error"
       },
       {
@@ -1147,6 +1152,18 @@
             "internalType": "uint256",
             "name": "proofOfLifeDurationInDays",
             "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "gracePeriod",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "beneficiary",
+            "type": "address"
           }
         ],
         "name": "InheritanceConfigured",
@@ -1251,14 +1268,24 @@
       {
         "inputs": [
           {
-            "internalType": "uint256",
+            "internalType": "uint16",
             "name": "quorum",
-            "type": "uint256"
+            "type": "uint16"
           },
           {
-            "internalType": "uint256",
+            "internalType": "uint16",
             "name": "proofOfLifeDurationInDays",
-            "type": "uint256"
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "gracePeriod",
+            "type": "uint16"
+          },
+          {
+            "internalType": "address",
+            "name": "beneficiary",
+            "type": "address"
           }
         ],
         "name": "configureInheritance",
@@ -1291,36 +1318,39 @@
           {
             "components": [
               {
-                "internalType": "uint256",
+                "internalType": "uint16",
                 "name": "quorum",
-                "type": "uint256"
+                "type": "uint16"
               },
               {
-                "internalType": "uint256",
+                "internalType": "uint16",
                 "name": "proofOfLifeDurationInDays",
-                "type": "uint256"
+                "type": "uint16"
               },
               {
-                "internalType": "uint256",
+                "internalType": "uint32",
                 "name": "lastProofOfLife",
-                "type": "uint256"
-              }
-            ],
-            "internalType": "struct IInheritancePlugin.InheritanceConf",
-            "name": "",
-            "type": "tuple"
-          },
-          {
-            "components": [
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint16",
+                "name": "gracePeriod",
+                "type": "uint16"
+              },
               {
                 "internalType": "address",
                 "name": "beneficiary",
                 "type": "address"
               },
               {
-                "internalType": "uint256",
-                "name": "startedAt",
-                "type": "uint256"
+                "internalType": "uint32",
+                "name": "requestUpdatedAt",
+                "type": "uint32"
+              },
+              {
+                "internalType": "bool",
+                "name": "waitForGracePeriod",
+                "type": "bool"
               },
               {
                 "internalType": "address[]",
@@ -1328,7 +1358,7 @@
                 "type": "address[]"
               }
             ],
-            "internalType": "struct IInheritancePlugin.InheritanceRequest",
+            "internalType": "struct IInheritancePlugin.InheritanceConf",
             "name": "",
             "type": "tuple"
           }
@@ -1391,6 +1421,19 @@
       },
       {
         "inputs": [],
+        "name": "nameHash",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
         "name": "owner",
         "outputs": [
           {
@@ -1446,6 +1489,19 @@
         "name": "requestTransfer",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "requiresToManageTransfer",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "pure",
         "type": "function"
       },
       {
@@ -1725,6 +1781,11 @@
       {
         "inputs": [],
         "name": "NotTransferable",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "OutOfRange",
         "type": "error"
       },
       {
@@ -2669,9 +2730,9 @@
             "type": "uint256"
           },
           {
-            "internalType": "bool",
-            "name": "status",
-            "type": "bool"
+            "internalType": "uint256",
+            "name": "extraValue",
+            "type": "uint256"
           },
           {
             "internalType": "uint256",

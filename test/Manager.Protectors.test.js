@@ -2,13 +2,9 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { toChecksumAddress } = require("ethereumjs-util");
 
-let count = 9000;
-function cl(...args) {
-  console.log(count++, ...args);
-}
-
 const {
   amount,
+  cl,
   normalize,
   deployContractUpgradeable,
   addr0,
@@ -118,7 +114,7 @@ describe("Manager : Protectors", function () {
       bob.address,
       alice.address,
       tokenId,
-      false,
+      0,
       ts,
       3600,
       chainId,
@@ -166,7 +162,7 @@ describe("Manager : Protectors", function () {
       bob.address,
       fred.address,
       tokenId,
-      true,
+      1,
       ts,
       3600,
       chainId,
@@ -195,7 +191,7 @@ describe("Manager : Protectors", function () {
       bob.address,
       alice.address,
       tokenId,
-      false,
+      0,
       ts,
       3600,
       chainId,
@@ -223,7 +219,7 @@ describe("Manager : Protectors", function () {
       bob.address,
       fred.address,
       tokenId,
-      false,
+      0,
       ts,
       3600,
       chainId,
