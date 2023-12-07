@@ -21,14 +21,18 @@ contract SomeSimplePlugin is IPlugin, ManagerBase {
     return true;
   }
 
-  constructor() {
-    _nameHash = keccak256("SomePlugin");
+  function requiresToManageTransfer() external pure override returns (bool) {
+    return false;
   }
 
   function init() external virtual {
     // replace with the name of your plugin
     if (_msgSender() != tokenAddress()) revert Forbidden();
     manager = Manager(_msgSender());
+  }
+
+  function nameHash() public virtual override returns (bytes32) {
+    return keccak256("SomeSimplePlugin");
   }
 
   function pluginRoles() external pure virtual returns (bytes32[] memory) {

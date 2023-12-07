@@ -6,4 +6,8 @@ interface IPlugin {
   function init() external;
 
   function pluginRoles() external view returns (bytes32[] memory);
+
+  // function called in the dashboard to know if the plugin is asking the
+  // right to make a managed transfer of the vault
+  function requiresToManageTransfer() external pure returns (bool);
 }

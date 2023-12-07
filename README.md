@@ -133,6 +133,14 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**1.0.0-alpha.2**
+
+- Improve the InheritancePlugin to allow the owner explicitly nominate a beneficiary, in addition to the sentinels
+
+**1.0.0-alpha.1**
+
+- Optimize gas usage minting a new NFT and adding a new plugin
+
 **1.0.0-alpha.1**
 
 - First version of the new protocol. The first one, published as @cruna/cruna-protocol, has been deprecated.
@@ -140,7 +148,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  22 passing (7s)
+  24 passing (12s)
 
 --------------------------------|----------|----------|----------|----------|----------------|
 File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -154,26 +162,26 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   IERC6454.sol                  |      100 |      100 |      100 |      100 |                |
   IERC6982.sol                  |      100 |      100 |      100 |      100 |                |
   IProtected.sol                |      100 |      100 |      100 |      100 |                |
- contracts/manager/             |    98.97 |    68.06 |      100 |    99.08 |                |
+ contracts/manager/             |       99 |       70 |      100 |    98.21 |                |
   Actor.sol                     |      100 |       70 |      100 |      100 |                |
   FlexiGuardian.sol             |      100 |       50 |      100 |    83.33 |             19 |
   IManager.sol                  |      100 |      100 |      100 |      100 |                |
-  Manager.sol                   |      100 |    66.67 |      100 |      100 |                |
+  Manager.sol                   |      100 |    69.57 |      100 |    98.44 |            252 |
   ManagerBase.sol               |    94.74 |       80 |      100 |      100 |                |
  contracts/plugins/             |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                   |      100 |      100 |      100 |      100 |                |
- contracts/plugins/inheritance/ |      100 |    63.16 |      100 |    95.65 |                |
+ contracts/plugins/inheritance/ |    97.92 |    70.69 |    93.75 |     97.1 |                |
   IInheritancePlugin.sol        |      100 |      100 |      100 |      100 |                |
-  InheritancePlugin.sol         |      100 |    63.16 |      100 |    95.65 |        121,147 |
+  InheritancePlugin.sol         |    97.92 |    70.69 |    93.33 |     97.1 |         53,144 |
   InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
- contracts/protected/           |      100 |       56 |      100 |    97.73 |                |
-  ProtectedNFT.sol              |      100 |       56 |      100 |    97.73 |             84 |
+ contracts/protected/           |      100 |       56 |      100 |    97.67 |                |
+  ProtectedNFT.sol              |      100 |       56 |      100 |    97.67 |             85 |
  contracts/utils/               |      100 |      100 |      100 |      100 |                |
   FlexiProxy.sol                |      100 |      100 |      100 |      100 |                |
   SignatureValidator.sol        |      100 |      100 |      100 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |     98.6 |    59.65 |    96.63 |    97.01 |                |
+All files                       |    98.28 |     62.2 |    95.83 |    96.93 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 

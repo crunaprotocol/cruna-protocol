@@ -2,12 +2,8 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { toChecksumAddress } = require("ethereumjs-util");
 
-let count = 9000;
-function cl(...args) {
-  console.log(count++, ...args);
-}
-
 const {
+  cl,
   amount,
   normalize,
   deployContractUpgradeable,

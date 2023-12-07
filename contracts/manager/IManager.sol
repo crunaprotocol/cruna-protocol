@@ -15,8 +15,6 @@ interface IManager {
 
   event PluginPlugged(string name, address plugin);
 
-  function init() external;
-
   function plug(string memory name, address implementation) external;
 
   // simulate ERC-721

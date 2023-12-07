@@ -7,6 +7,7 @@ const DeployUtils = require("../../scripts/lib/DeployUtils");
 let deployUtils;
 
 const { domainType } = require("./eip712");
+let count = 9000;
 
 const Helpers = {
   initEthers(ethers) {
@@ -44,6 +45,10 @@ const Helpers = {
     const contract = await Contract.connect(owner).deploy(...args);
     await contract.deployed();
     return contract;
+  },
+
+  cl(...args) {
+    console.log("\n >>>", count++, ...args, "\n");
   },
 
   async deployNickSFactory(deployer) {
@@ -270,7 +275,7 @@ const Helpers = {
       owner,
       actor,
       tokenId: tokenId.toString(),
-      status: extraValue,
+      extraValue,
       timestamp: timestamp.toString(),
       validFor: validFor.toString(),
     };
@@ -284,7 +289,7 @@ const Helpers = {
         { name: "owner", type: "address" },
         { name: "actor", type: "address" },
         { name: "tokenId", type: "uint256" },
-        { name: "status", type: "bool" },
+        { name: "extraValue", type: "uint256" },
         { name: "timestamp", type: "uint256" },
         { name: "validFor", type: "uint256" },
       ],

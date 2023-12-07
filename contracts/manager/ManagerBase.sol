@@ -22,7 +22,7 @@ interface IVault {
   function validator() external view returns (SignatureValidator);
 }
 
-contract ManagerBase is Context, Versioned {
+abstract contract ManagerBase is Context, Versioned {
   error NotTheTokenOwner();
   error InvalidImplementation();
   error InvalidVersion();
@@ -34,13 +34,13 @@ contract ManagerBase is Context, Versioned {
    */
   bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
-  bytes32 internal _nameHash;
-
   uint256 public implementationVersion;
 
   constructor() {
     implementationVersion = version();
   }
+
+  function nameHash() public virtual returns (bytes32);
 
   function guardian() public view virtual returns (FlexiGuardian) {
     return vault().guardian();
@@ -85,7 +85,7 @@ contract ManagerBase is Context, Versioned {
 
   function upgrade(address implementation_) external virtual {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
-    if (!guardian().isTrustedImplementation(_nameHash, implementation_)) revert InvalidImplementation();
+    if (!guardian().isTrustedImplementation(nameHash(), implementation_)) revert InvalidImplementation();
     uint256 _version = Versioned(implementation_).version();
     if (_version <= implementationVersion) revert InvalidVersion();
     implementationVersion = _version;

@@ -33,6 +33,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   error WrongDataOrNotSignedByProtector();
   error NotInitiated();
   error AlreadyInitiated();
+  error OutOfRange();
 
   FlexiGuardian public guardian;
   SignatureValidator public validator;
@@ -105,7 +106,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
       _msgSender(),
       to,
       tokenId,
-      false,
+      0,
       timestamp,
       validFor,
       signature
@@ -185,13 +186,11 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   // @dev This function will mint a new token and initialize it.
   // @param to The address of the recipient.
   function _mintAndInit(address to) internal {
-    //    uint gl = gasleft();
+    //    if (!(nextTokenId % 1e6)) revert OutOfRange();
     if (address(registry) == address(0)) revert NotInitiated();
     registry.createAccount(address(flexiProxy), salt, block.chainid, address(this), nextTokenId);
     managers[nextTokenId] = Manager(managerOf(nextTokenId));
-    managers[nextTokenId].init();
     _safeMint(to, nextTokenId++);
-    //    console.log("Total", gl - gasleft());
   }
 
   // @dev This function will return the address of the manager for tokenId.

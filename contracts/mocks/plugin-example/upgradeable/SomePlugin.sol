@@ -15,8 +15,12 @@ contract SomePlugin is IPlugin, ManagerBase {
 
   Manager public manager;
 
-  constructor() {
-    _nameHash = keccak256("SomePlugin");
+  function nameHash() public virtual override returns (bytes32) {
+    return keccak256("SomePlugin");
+  }
+
+  function requiresToManageTransfer() external pure override returns (bool) {
+    return false;
   }
 
   function init() external virtual {
