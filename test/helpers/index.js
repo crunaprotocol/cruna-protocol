@@ -35,6 +35,12 @@ const Helpers = {
     }
   },
 
+  async upgradeProxy(upgrades, address, contract) {
+    const upgraded = await upgrades.upgradeProxy(address, contract);
+    await upgraded.deployed();
+    return upgraded;
+  },
+
   async attach(chainId, contractName, contractAddress) {
     const contract = await this.ethers.getContractFactory(contractName);
     return contract.attach(contractAddress);

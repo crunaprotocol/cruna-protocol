@@ -53,4 +53,13 @@ contract SomeSimplePlugin is IPlugin, ManagerBase {
   function upgrade(address) external pure override {
     revert NotUpgradeable();
   }
+
+  function reset() external override {
+    if (_msgSender() != address(manager)) revert Forbidden();
+    _reset();
+  }
+
+  function _reset() internal {
+    // reset to initial state
+  }
 }

@@ -14,6 +14,7 @@ const {
   getTimestamp,
   keccak256,
   deployAll,
+  upgradeProxy,
   deployContractViaNickSFactory,
 } = require("./helpers");
 
@@ -88,6 +89,32 @@ describe("VaultFactory", function () {
       .to.emit(token, "Transfer")
       .withArgs(buyer.address, factory.address, price.mul(amount));
   }
+
+  it("should not allow bob and alice to purchase vaults when paused", async function () {
+    await expect(factory.pause()).to.emit(factory, "Paused");
+
+    let price = await factory.finalPrice(usdc.address, "");
+    await usdc.connect(fred).approve(factory.address, price);
+
+    await expect(factory.connect(fred).buyVaults(usdc.address, 1, "")).to.be.revertedWith("Pausable: paused");
+
+    await expect(factory.unpause()).to.emit(factory, "Unpaused");
+
+    await buyVault(usdc, 2, bob);
+    await buyVault(usdt, 2, alice);
+
+    price = await factory.finalPrice(usdc.address, "");
+    expect(price.toString()).to.equal("9900000000000000000");
+    price = await factory.finalPrice(usdt.address, "");
+    expect(price.toString()).to.equal("9900000");
+
+    await expect(factory.withdrawProceeds(fred.address, usdc.address, normalize("10")))
+      .to.emit(usdc, "Transfer")
+      .withArgs(factory.address, fred.address, normalize("10"));
+    await expect(factory.withdrawProceeds(fred.address, usdc.address, 0))
+      .to.emit(usdc, "Transfer")
+      .withArgs(factory.address, fred.address, amount("9.8"));
+  });
 
   it("should allow bob and alice to purchase some vaults", async function () {
     await buyVault(usdc, 2, bob);
@@ -174,5 +201,12 @@ describe("VaultFactory", function () {
     expect(await vault.balanceOf(alice.address)).to.equal(aliceBalanceBefore.add(2));
 
     expect(await usdc.balanceOf(factory.address)).to.equal(pricePerVault.mul(6));
+  });
+
+  it("should upgrade the factory", async function () {
+    const newFactory = await ethers.getContractFactory("VaultFactoryV2Mock");
+    expect(await factory.version()).to.equal("1");
+    await upgradeProxy(upgrades, factory.address, newFactory);
+    expect(await factory.version()).to.equal("2");
   });
 });

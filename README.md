@@ -133,6 +133,10 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**1.0.0-alpha.3**
+
+- Add function to disable and re-enable plugins
+
 **1.0.0-alpha.2**
 
 - Improve the InheritancePlugin to allow the owner explicitly nominate a beneficiary, in addition to the sentinels
@@ -148,31 +152,31 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  24 passing (12s)
+  28 passing (10s)
 
 --------------------------------|----------|----------|----------|----------|----------------|
 File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
 --------------------------------|----------|----------|----------|----------|----------------|
  contracts/                     |      100 |       40 |      100 |      100 |                |
   CrunaFlexiVault.sol           |      100 |       40 |      100 |      100 |                |
- contracts/factory/             |    95.56 |    53.45 |    78.57 |    93.22 |                |
+ contracts/factory/             |      100 |    60.34 |      100 |    96.61 |                |
   IVaultFactory.sol             |      100 |      100 |      100 |      100 |                |
-  VaultFactory.sol              |    95.56 |    53.45 |    78.57 |    93.22 |   46,50,65,131 |
+  VaultFactory.sol              |      100 |    60.34 |      100 |    96.61 |         66,132 |
  contracts/interfaces/          |      100 |      100 |      100 |      100 |                |
   IERC6454.sol                  |      100 |      100 |      100 |      100 |                |
   IERC6982.sol                  |      100 |      100 |      100 |      100 |                |
   IProtected.sol                |      100 |      100 |      100 |      100 |                |
- contracts/manager/             |       99 |       70 |      100 |    98.21 |                |
+ contracts/manager/             |    99.15 |    68.89 |      100 |    97.73 |                |
   Actor.sol                     |      100 |       70 |      100 |      100 |                |
   FlexiGuardian.sol             |      100 |       50 |      100 |    83.33 |             19 |
   IManager.sol                  |      100 |      100 |      100 |      100 |                |
-  Manager.sol                   |      100 |    69.57 |      100 |    98.44 |            252 |
+  Manager.sol                   |      100 |    68.18 |      100 |    97.62 |        286,294 |
   ManagerBase.sol               |    94.74 |       80 |      100 |      100 |                |
  contracts/plugins/             |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                   |      100 |      100 |      100 |      100 |                |
- contracts/plugins/inheritance/ |    97.92 |    70.69 |    93.75 |     97.1 |                |
+ contracts/plugins/inheritance/ |      100 |       70 |      100 |    98.61 |                |
   IInheritancePlugin.sol        |      100 |      100 |      100 |      100 |                |
-  InheritancePlugin.sol         |    97.92 |    70.69 |    93.33 |     97.1 |         53,144 |
+  InheritancePlugin.sol         |      100 |       70 |      100 |    98.61 |            144 |
   InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
  contracts/protected/           |      100 |       56 |      100 |    97.67 |                |
   ProtectedNFT.sol              |      100 |       56 |      100 |    97.67 |             85 |
@@ -181,7 +185,7 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   SignatureValidator.sol        |      100 |      100 |      100 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |    98.28 |     62.2 |    95.83 |    96.93 |                |
+All files                       |     99.6 |    63.81 |      100 |    97.78 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 
