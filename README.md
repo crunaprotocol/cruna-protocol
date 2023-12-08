@@ -102,6 +102,12 @@ We're introducing secure USB keys as an extra layer of security. These keys are 
 
 A new family of Zero Knowledge based vaults will allow a high level of privacy.
 
+## Experimental Features
+
+### ERC-1155 support
+
+In addition to ERC-721, Cruna Protocol may support ERC-1155 tokens in a near future. We are investigating the best way to do it and if there are reasonable use cases for it. For example, the plugin architecture could extend what an ERC-1155 token could do.
+
 ## In summary
 
 Cruna Vault is more than just an NFT; it's a comprehensive solution for securing and managing your digital assets, today and in the future. Join us in embracing this new era of digital asset security.
@@ -154,7 +160,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  27 passing (10s)
+  27 passing (9s)
 
 --------------------------------|----------|----------|----------|----------|----------------|
 File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
