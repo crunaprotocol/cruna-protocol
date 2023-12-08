@@ -187,14 +187,14 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   IInheritancePlugin.sol        |      100 |      100 |      100 |      100 |                |
   InheritancePlugin.sol         |      100 |    71.43 |      100 |    98.72 |            179 |
   InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
- contracts/protected/           |      100 |       56 |      100 |    97.73 |                |
-  ProtectedNFT.sol              |      100 |       56 |      100 |    97.73 |             86 |
+ contracts/protected/           |      100 |    55.77 |      100 |    95.65 |                |
+  ProtectedNFT.sol              |      100 |    55.77 |      100 |    95.65 |         87,196 |
  contracts/utils/               |      100 |      100 |      100 |      100 |                |
   FlexiProxy.sol                |      100 |      100 |      100 |      100 |                |
   SignatureValidator.sol        |      100 |      100 |      100 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |    99.61 |     63.7 |      100 |    97.78 |                |
+All files                       |    99.61 |     63.6 |      100 |    97.48 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 

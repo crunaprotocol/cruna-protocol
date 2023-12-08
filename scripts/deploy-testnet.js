@@ -27,14 +27,6 @@ async function main() {
   );
   let signatureValidator = await deployUtils.deploy("SignatureValidator", "Cruna", "1");
 
-  // registry = await deployUtils.attach("ERC6551Registry");
-  // manager = await deployUtils.attach("Manager");
-  // guardian = await deployUtils.attach("Guardian");
-  // managerProxy = await deployUtils.attach("ManagerProxy");
-  // inheritancePlugin = await deployUtils.attach("InheritancePlugin");
-  // inheritancePluginProxy = await deployUtils.attach("InheritancePluginProxy");
-  // signatureValidator = await deployUtils.attach("SignatureValidator");
-
   let vault = await deployUtils.deploy("CrunaFlexiVault", deployer.address);
   await deployUtils.Tx(
     vault.init(registry.address, guardian.address, signatureValidator.address, managerProxy.address),
@@ -45,8 +37,11 @@ async function main() {
 
   let factory = await deployUtils.deployProxy("VaultFactory", vault.address);
 
-  let usdc = await deployUtils.attach("USDCoin");
-  let usdt = await deployUtils.attach("TetherUSD");
+  let usdc = await deployUtils.deploy("USDCoin");
+  let usdt = await deployUtils.deploy("TetherUSD");
+
+  await deployUtils.Tx(usdc.mint(deployer.address, normalize("1000000")), "Minting USDC");
+  await deployUtils.Tx(usdt.mint(deployer.address, normalize("1000000", 6)), "Minting USDT");
 
   await deployUtils.Tx(factory.setPrice(3000, { gasLimit: 60000 }), "Setting price");
   await deployUtils.Tx(factory.setStableCoin(usdc.address, true), "Set USDC as stable coin");
