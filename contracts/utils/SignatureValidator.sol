@@ -55,7 +55,8 @@ contract SignatureValidator is EIP712, Versioned {
   // @dev This function validates a signature with 3 extra values
   //   It have redundant parameters to give plugins more flexibility
   //   If more parameters are needed, the plugin can encode the data in
-  //   the extra using bitwise operators
+  //   the extra using bitwise operators, since we cannot add more variable
+  //   without getting a too-deep-stack error.
   //   The function is supposed to be used by the plugin for its internal checks.
   // @param nameHash The nameHash of the plugin.
   // @param owner The owner of the token.
