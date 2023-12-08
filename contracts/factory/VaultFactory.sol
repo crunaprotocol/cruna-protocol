@@ -26,7 +26,6 @@ contract VaultFactory is IVaultFactory, Versioned, Initializable, PausableUpgrad
   CrunaFlexiVault public vault;
   uint256 public price;
   mapping(address => bool) public stableCoins;
-  mapping(address => uint256) public proceedsBalances;
   uint256 public discount;
   address[] private _stableCoins;
 
