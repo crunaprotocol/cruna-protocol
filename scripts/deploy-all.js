@@ -2,7 +2,7 @@ require("dotenv").config();
 const hre = require("hardhat");
 const ethers = hre.ethers;
 const DeployUtils = require("./lib/DeployUtils");
-const { normalize, deployContractViaNickSFactory, keccak256 } = require("../test/helpers");
+const { normalize, deployContractViaNickSFactory, keccak256, deployContract } = require("../test/helpers");
 let deployUtils;
 
 const { expect } = require("chai");
@@ -15,7 +15,7 @@ async function main() {
   let manager,
     managerAddress,
     flexiProxy,
-    flexiProxyAddress,
+    managerProxyAddress,
     guardian,
     guardianAddress,
     inheritancePlugin,
@@ -25,94 +25,89 @@ async function main() {
     signatureValidator,
     signatureValidatorAddress,
     vault,
-    vaultAddress;
+    vaultAddress,
+    erc6551Registry,
+    registry;
 
-  const erc6551RegistryAddress = "0x000000006551c19487814612e58FE06813775758";
-
-  manager = await deployUtils.attach("Manager");
+  let erc6551RegistryAddress = "0x000000006551c19487814612e58FE06813775758";
+  registry = await deployUtils.attach("ERC6551Registry", erc6551RegistryAddress);
   try {
-    await manager.version();
-    managerAddress = manager.address;
+    let salt = keccak256("ERC6551Registry");
+    let implementation = "0xdD2FD4581271e230360230F9337D5c0430Bf44C0";
+    let tokenContract = "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199";
+
+    await registry.account(implementation, salt, chainId, tokenContract, 1);
   } catch (e) {
-    managerAddress = await deployContractViaNickSFactory(deployer, "Manager");
-    await deployUtils.saveDeployed(chainId, ["Manager"], [managerAddress]);
-    console.log("Manager deployed at", managerAddress);
+    registry = await deployContract("ERC6551Registry");
+    erc6551RegistryAddress = registry.address;
   }
 
-  try {
-    guardian = await deployUtils.attach("FlexiGuardian");
-    await guardian.version();
-    guardianAddress = guardian.address;
-  } catch (e) {
-    guardianAddress = await deployContractViaNickSFactory(deployer, "FlexiGuardian", ["address"], [deployer.address]);
-    await deployUtils.saveDeployed(chainId, ["FlexiGuardian"], [guardianAddress]);
-    console.log("Guardian deployed at", guardianAddress);
-  }
+  managerAddress = await deployContractViaNickSFactory(deployer, "Manager");
+  await deployUtils.saveDeployed(chainId, ["Manager"], [managerAddress]);
+  console.log("Manager deployed at", managerAddress);
 
-  try {
-    flexiProxy = await deployUtils.attach("FlexiProxy");
-    await flexiProxy.isProxy();
-    flexiProxyAddress = flexiProxy.address;
-  } catch (e) {
-    flexiProxyAddress = await deployContractViaNickSFactory(deployer, "FlexiProxy", ["address"], [managerAddress]);
-    await deployUtils.saveDeployed(chainId, ["FlexiProxy"], [flexiProxyAddress]);
-    console.log("Proxy deployed at", flexiProxyAddress);
-  }
+  guardianAddress = await deployContractViaNickSFactory(deployer, "Guardian", ["address"], [deployer.address]);
+  await deployUtils.saveDeployed(chainId, ["Guardian"], [guardianAddress]);
+  guardian = await deployUtils.attach("Guardian", guardianAddress);
+  console.log("Guardian deployed at", guardianAddress);
 
-  try {
-    inheritancePlugin = await deployUtils.attach("InheritancePlugin");
-    await inheritancePlugin.version();
-    inheritancePluginAddress = inheritancePlugin.address;
-  } catch (e) {
-    inheritancePluginAddress = await deployContractViaNickSFactory(deployer, "InheritancePlugin");
-    await deployUtils.saveDeployed(chainId, ["InheritancePlugin"], [inheritancePluginAddress]);
-    console.log("InheritancePlugin deployed at", inheritancePluginAddress);
-  }
+  managerProxyAddress = await deployContractViaNickSFactory(deployer, "ManagerProxy", ["address"], [managerAddress]);
+  await deployUtils.saveDeployed(chainId, ["ManagerProxy"], [managerProxyAddress]);
+  console.log("Proxy deployed at", managerProxyAddress);
 
-  try {
-    inheritancePluginProxy = await deployUtils.attach("InheritancePluginProxy");
-    await inheritancePluginProxy.isProxy();
-    inheritancePluginProxyAddress = inheritancePluginProxy.address;
-  } catch (e) {
-    inheritancePluginProxyAddress = await deployContractViaNickSFactory(
-      deployer,
-      "InheritancePluginProxy",
-      ["address"],
-      [inheritancePluginAddress],
-    );
-    await deployUtils.saveDeployed(chainId, ["InheritancePluginProxy"], [inheritancePluginProxyAddress]);
-    console.log("InheritancePluginProxy deployed at", inheritancePluginProxyAddress);
+  inheritancePluginAddress = await deployContractViaNickSFactory(deployer, "InheritancePlugin");
+  await deployUtils.saveDeployed(chainId, ["InheritancePlugin"], [inheritancePluginAddress]);
+  console.log("InheritancePlugin deployed at", inheritancePluginAddress);
 
-    const scope = keccak256("InheritancePlugin");
-    await deployUtils.Tx(
-      guardian.setTrustedImplementation(scope, inheritancePluginProxy.address, true),
-      "Setting trusted implementation for InheritancePlugin",
-    );
-  }
+  inheritancePluginProxyAddress = await deployContractViaNickSFactory(
+    deployer,
+    "InheritancePluginProxy",
+    ["address"],
+    [inheritancePluginAddress],
+  );
+  await deployUtils.saveDeployed(chainId, ["InheritancePluginProxy"], [inheritancePluginProxyAddress]);
+  console.log("InheritancePluginProxy deployed at", inheritancePluginProxyAddress);
 
-  try {
-    signatureValidator = await deployUtils.attach("SignatureValidator");
-    await signatureValidator.version();
-    signatureValidatorAddress = signatureValidator.address;
-  } catch (e) {
-    signatureValidatorAddress = await deployContractViaNickSFactory(
-      deployer,
-      "SignatureValidator",
-      ["string", "string"],
-      ["Cruna", "1"],
-    );
-    await deployUtils.saveDeployed(chainId, ["SignatureValidator"], [signatureValidatorAddress]);
-    console.log("SignatureValidator deployed at", signatureValidatorAddress);
-  }
+  const nameHash = keccak256("InheritancePlugin");
+  await deployUtils.Tx(
+    guardian.setTrustedImplementation(nameHash, inheritancePluginProxyAddress, true),
+    "Setting trusted implementation for InheritancePlugin",
+  );
+
+  signatureValidatorAddress = await deployContractViaNickSFactory(
+    deployer,
+    "SignatureValidator",
+    ["string", "string"],
+    ["Cruna", "1"],
+  );
+  await deployUtils.saveDeployed(chainId, ["SignatureValidator"], [signatureValidatorAddress]);
+  console.log("SignatureValidator deployed at", signatureValidatorAddress);
 
   vaultAddress = await deployContractViaNickSFactory(deployer, "CrunaFlexiVault", ["address"], [deployer.address]);
   await deployUtils.saveDeployed(chainId, ["CrunaFlexiVault"], [vaultAddress]);
   console.log("CrunaFlexiVault deployed at", vaultAddress);
+
   vault = await deployUtils.attach("CrunaFlexiVault");
   await deployUtils.Tx(
-    vault.init(erc6551RegistryAddress, guardianAddress, signatureValidatorAddress, flexiProxyAddress),
+    vault.init(erc6551RegistryAddress, guardianAddress, signatureValidatorAddress, managerProxyAddress),
     "Init vault",
   );
+
+  expect(await vault.owner()).to.equal(deployer.address);
+
+  const factory = await deployUtils.deployProxy("VaultFactory", vault.address);
+
+  const usdc = await deployUtils.attach("USDCoin");
+  const usdt = await deployUtils.attach("TetherUSD");
+
+  await deployUtils.Tx(factory.setPrice(3000, { gasLimit: 60000 }), "Setting price");
+  await deployUtils.Tx(factory.setStableCoin(usdc.address, true), "Set USDC as stable coin");
+  await deployUtils.Tx(factory.setStableCoin(usdt.address, true), "Set USDT as stable coin");
+
+  // discount campaign selling for $9.9
+  await deployUtils.Tx(factory.setDiscount(67), "Set promo code");
+
+  await deployUtils.Tx(vault.setFactory(factory.address, { gasLimit: 100000 }), "Set the factory");
 
   console.log(`
   

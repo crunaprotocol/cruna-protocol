@@ -19,11 +19,11 @@ interface IVaultFactory {
 
   function setPrice(uint256 price) external;
 
-  function getPrice(string memory promoCode) external view returns (uint256);
+  function getPrice() external view returns (uint256);
 
-  function finalPrice(address stableCoin, string memory promoCode) external view returns (uint256);
+  function finalPrice(address stableCoin) external view returns (uint256);
 
-  function setPromoCode(string memory promoCode, uint256 discount) external;
+  function setDiscount(uint256 discount) external;
 
   // @dev Activate/deactivate a stable coin
   // @param stableCoin the payment token to use for the purchase
@@ -35,9 +35,9 @@ interface IVaultFactory {
   // @param stableCoin the payment token to use for the purchase
   // @param amount number to buy
 
-  function buyVaults(address stableCoin, uint256 amount, string memory promoCode) external;
+  function buyVaults(address stableCoin, uint256 amount) external;
 
-  function buyVaultsBatch(address stableCoin, address[] memory tos, uint256[] memory amounts, string memory promoCode) external;
+  function buyVaultsBatch(address stableCoin, address[] memory tos, uint256[] memory amounts) external;
 
   // @dev Given a payment token, transfers amount or full balance from proceeds to an address
   // @param beneficiary address of the beneficiary

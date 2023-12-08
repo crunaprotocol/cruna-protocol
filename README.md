@@ -154,29 +154,30 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  28 passing (11s)
+  27 passing (10s)
 
 --------------------------------|----------|----------|----------|----------|----------------|
 File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
 --------------------------------|----------|----------|----------|----------|----------------|
  contracts/                     |      100 |       40 |      100 |      100 |                |
   CrunaFlexiVault.sol           |      100 |       40 |      100 |      100 |                |
- contracts/factory/             |      100 |    60.34 |      100 |    96.61 |                |
+ contracts/factory/             |      100 |    55.77 |      100 |       96 |                |
   IVaultFactory.sol             |      100 |      100 |      100 |      100 |                |
-  VaultFactory.sol              |      100 |    60.34 |      100 |    96.61 |         66,132 |
+  VaultFactory.sol              |      100 |    55.77 |      100 |       96 |         67,120 |
  contracts/interfaces/          |      100 |      100 |      100 |      100 |                |
   IERC6454.sol                  |      100 |      100 |      100 |      100 |                |
   IERC6982.sol                  |      100 |      100 |      100 |      100 |                |
   IProtected.sol                |      100 |      100 |      100 |      100 |                |
- contracts/manager/             |    99.14 |    69.32 |      100 |    97.71 |                |
+ contracts/manager/             |    99.14 |    69.32 |      100 |    97.73 |                |
   Actor.sol                     |      100 |       70 |      100 |      100 |                |
-  FlexiGuardian.sol             |      100 |       50 |      100 |    83.33 |             19 |
+  Guardian.sol                  |      100 |       50 |      100 |    83.33 |             19 |
   IManager.sol                  |      100 |      100 |      100 |      100 |                |
   Manager.sol                   |      100 |    68.75 |      100 |    97.59 |        284,292 |
   ManagerBase.sol               |    94.74 |       80 |      100 |      100 |                |
+  ManagerProxy.sol              |      100 |      100 |      100 |      100 |                |
  contracts/plugins/             |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                   |      100 |      100 |      100 |      100 |                |
- contracts/plugins/inheritance/ |      100 |    71.43 |      100 |    98.73 |                |
+ contracts/plugins/inheritance/ |      100 |    71.43 |      100 |    98.75 |                |
   IInheritancePlugin.sol        |      100 |      100 |      100 |      100 |                |
   InheritancePlugin.sol         |      100 |    71.43 |      100 |    98.73 |            179 |
   InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
@@ -187,7 +188,7 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   SignatureValidator.sol        |      100 |      100 |      100 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |    99.62 |    64.49 |      100 |    97.83 |                |
+All files                       |    99.61 |     63.7 |      100 |    97.78 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 

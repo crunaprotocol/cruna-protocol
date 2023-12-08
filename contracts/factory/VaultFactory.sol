@@ -15,18 +15,19 @@ import {Versioned} from "../utils/Versioned.sol";
 
 //import {console} from "hardhat/console.sol";
 
-error ZeroAddress();
-error InsufficientFunds();
-error UnsupportedStableCoin();
-error TransferFailed();
-error InvalidArguments();
-
 contract VaultFactory is IVaultFactory, Versioned, Initializable, PausableUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
+  error ZeroAddress();
+  error InsufficientFunds();
+  error UnsupportedStableCoin();
+  error TransferFailed();
+  error InvalidArguments();
+  error InvalidDiscount();
+
   CrunaFlexiVault public vault;
   uint256 public price;
   mapping(address => bool) public stableCoins;
   mapping(address => uint256) public proceedsBalances;
-  mapping(bytes32 => uint256) private _promoCodes;
+  uint256 public discount;
   address[] private _stableCoins;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
@@ -84,34 +85,22 @@ contract VaultFactory is IVaultFactory, Versioned, Initializable, PausableUpgrad
     }
   }
 
-  function setPromoCode(string memory promoCode, uint256 discount) external virtual override onlyOwner {
-    bytes32 promoCodeHash = keccak256(abi.encodePacked(promoCode));
-    if (discount > 0) {
-      _promoCodes[promoCodeHash] = discount;
-    } else if (_promoCodes[promoCodeHash] > 0) {
-      delete _promoCodes[promoCodeHash];
-    }
+  function setDiscount(uint256 discount_) external virtual override onlyOwner {
+    if (discount > 100) revert InvalidDiscount();
+    discount = discount_;
   }
 
-  function finalPrice(address stableCoin, string memory promoCode) public view virtual override returns (uint256) {
-    return (getPrice(promoCode) * (10 ** ERC20(stableCoin).decimals())) / 100;
+  function finalPrice(address stableCoin) public view virtual override returns (uint256) {
+    return (getPrice() * (10 ** ERC20(stableCoin).decimals())) / 100;
   }
 
-  function getPrice(string memory promoCode) public view virtual override returns (uint256) {
-    uint256 _price = price;
-    if (bytes(promoCode).length > 0) {
-      bytes32 promoCodeHash = keccak256(abi.encodePacked(promoCode));
-      if (_promoCodes[promoCodeHash] > 0) {
-        _price -= (_price * _promoCodes[promoCodeHash]) / 100;
-      }
-    }
-    return _price;
+  function getPrice() public view virtual override returns (uint256) {
+    return price - (price * discount) / 100;
   }
 
-  function buyVaults(address stableCoin, uint256 amount, string memory promoCode) external virtual override whenNotPaused {
-    uint256 payment = finalPrice(stableCoin, promoCode) * amount;
+  function buyVaults(address stableCoin, uint256 amount) external virtual override whenNotPaused {
+    uint256 payment = finalPrice(stableCoin) * amount;
     if (payment > ERC20(stableCoin).balanceOf(_msgSender())) revert InsufficientFunds();
-    proceedsBalances[stableCoin] += payment;
     for (uint256 i = 0; i < amount; i++) {
       vault.safeMint(_msgSender());
     }
@@ -122,8 +111,7 @@ contract VaultFactory is IVaultFactory, Versioned, Initializable, PausableUpgrad
   function buyVaultsBatch(
     address stableCoin,
     address[] memory tos,
-    uint256[] memory amounts,
-    string memory promoCode
+    uint256[] memory amounts
   ) external virtual override whenNotPaused {
     if (tos.length != amounts.length) revert InvalidArguments();
     uint256 amount = 0;
@@ -133,9 +121,8 @@ contract VaultFactory is IVaultFactory, Versioned, Initializable, PausableUpgrad
       }
       amount += amounts[i];
     }
-    uint256 payment = finalPrice(stableCoin, promoCode) * amount;
+    uint256 payment = finalPrice(stableCoin) * amount;
     if (payment > ERC20(stableCoin).balanceOf(_msgSender())) revert InsufficientFunds();
-    proceedsBalances[stableCoin] += payment;
     for (uint256 i = 0; i < tos.length; i++) {
       if (amounts[i] != 0) {
         for (uint256 j = 0; j < amounts[i]; j++) {
@@ -148,11 +135,11 @@ contract VaultFactory is IVaultFactory, Versioned, Initializable, PausableUpgrad
   }
 
   function withdrawProceeds(address beneficiary, address stableCoin, uint256 amount) external virtual override onlyOwner {
+    uint256 balance = ERC20(stableCoin).balanceOf(address(this));
     if (amount == 0) {
-      amount = proceedsBalances[stableCoin];
+      amount = balance;
     }
-    if (amount > proceedsBalances[stableCoin]) revert InsufficientFunds();
-    proceedsBalances[stableCoin] -= amount;
+    if (amount > balance) revert InsufficientFunds();
     if (!ERC20(stableCoin).transfer(beneficiary, amount)) revert TransferFailed();
   }
 

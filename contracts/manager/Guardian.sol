@@ -7,12 +7,12 @@ import {Versioned} from "../utils/Versioned.sol";
 /**
  * @dev Manages upgrade and cross-chain execution settings for accounts
  */
-contract FlexiGuardian is Ownable2Step, Versioned {
+contract Guardian is Ownable2Step, Versioned {
   error ZeroAddress();
 
   mapping(bytes32 => mapping(address => bool)) private _isTrustedImplementation;
 
-  event TrustedImplementationUpdated(bytes32 scope, address implementation, bool trusted);
+  event TrustedImplementationUpdated(bytes32 nameHash, address implementation, bool trusted);
 
   constructor(address owner) {
     if (owner == address(0)) {
@@ -25,12 +25,12 @@ contract FlexiGuardian is Ownable2Step, Versioned {
    * @dev Sets a given implementation address as trusted, allowing accounts to upgrade to this
    * implementation
    */
-  function setTrustedImplementation(bytes32 scope, address implementation, bool trusted) external onlyOwner {
-    _isTrustedImplementation[scope][implementation] = trusted;
-    emit TrustedImplementationUpdated(scope, implementation, trusted);
+  function setTrustedImplementation(bytes32 nameHash, address implementation, bool trusted) external onlyOwner {
+    _isTrustedImplementation[nameHash][implementation] = trusted;
+    emit TrustedImplementationUpdated(nameHash, implementation, trusted);
   }
 
-  function isTrustedImplementation(bytes32 scope, address implementation) external view returns (bool) {
-    return _isTrustedImplementation[scope][implementation];
+  function isTrustedImplementation(bytes32 nameHash, address implementation) external view returns (bool) {
+    return _isTrustedImplementation[nameHash][implementation];
   }
 }

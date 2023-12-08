@@ -534,7 +534,7 @@
         "name": "guardian",
         "outputs": [
           {
-            "internalType": "contract FlexiGuardian",
+            "internalType": "contract Guardian",
             "name": "",
             "type": "address"
           }
@@ -1472,7 +1472,7 @@
         "name": "guardian",
         "outputs": [
           {
-            "internalType": "contract FlexiGuardian",
+            "internalType": "contract Guardian",
             "name": "",
             "type": "address"
           }
@@ -1864,6 +1864,19 @@
         "type": "function"
       },
       {
+        "inputs": [],
+        "name": "proxyName",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
         "stateMutability": "payable",
         "type": "receive"
       }
@@ -2223,7 +2236,7 @@
         "name": "guardian",
         "outputs": [
           {
-            "internalType": "contract FlexiGuardian",
+            "internalType": "contract Guardian",
             "name": "",
             "type": "address"
           }
@@ -2947,7 +2960,7 @@
         "type": "function"
       }
     ],
-    "FlexiGuardian": [
+    "Guardian": [
       {
         "inputs": [
           {
@@ -3008,7 +3021,7 @@
           {
             "indexed": false,
             "internalType": "bytes32",
-            "name": "scope",
+            "name": "nameHash",
             "type": "bytes32"
           },
           {
@@ -3038,7 +3051,7 @@
         "inputs": [
           {
             "internalType": "bytes32",
-            "name": "scope",
+            "name": "nameHash",
             "type": "bytes32"
           },
           {
@@ -3095,7 +3108,7 @@
         "inputs": [
           {
             "internalType": "bytes32",
-            "name": "scope",
+            "name": "nameHash",
             "type": "bytes32"
           },
           {
@@ -3155,6 +3168,11 @@
       {
         "inputs": [],
         "name": "InvalidArguments",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "InvalidDiscount",
         "type": "error"
       },
       {
@@ -3318,11 +3336,6 @@
             "internalType": "uint256",
             "name": "amount",
             "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "promoCode",
-            "type": "string"
           }
         ],
         "name": "buyVaults",
@@ -3346,11 +3359,6 @@
             "internalType": "uint256[]",
             "name": "amounts",
             "type": "uint256[]"
-          },
-          {
-            "internalType": "string",
-            "name": "promoCode",
-            "type": "string"
           }
         ],
         "name": "buyVaultsBatch",
@@ -3359,16 +3367,24 @@
         "type": "function"
       },
       {
+        "inputs": [],
+        "name": "discount",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
         "inputs": [
           {
             "internalType": "address",
             "name": "stableCoin",
             "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "promoCode",
-            "type": "string"
           }
         ],
         "name": "finalPrice",
@@ -3383,13 +3399,7 @@
         "type": "function"
       },
       {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "promoCode",
-            "type": "string"
-          }
-        ],
+        "inputs": [],
         "name": "getPrice",
         "outputs": [
           {
@@ -3516,11 +3526,11 @@
         "inputs": [
           {
             "internalType": "uint256",
-            "name": "price_",
+            "name": "discount_",
             "type": "uint256"
           }
         ],
-        "name": "setPrice",
+        "name": "setDiscount",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -3528,17 +3538,12 @@
       {
         "inputs": [
           {
-            "internalType": "string",
-            "name": "promoCode",
-            "type": "string"
-          },
-          {
             "internalType": "uint256",
-            "name": "discount",
+            "name": "price_",
             "type": "uint256"
           }
         ],
-        "name": "setPromoCode",
+        "name": "setPrice",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
