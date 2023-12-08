@@ -33,12 +33,16 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
   error WaitingForBeneficiary();
   error NotExpiredYet();
   error QuorumAlreadyReached();
+  error SignatureAlreadyUsed();
+  error TimestampInvalidOrExpired();
+  error WrongDataOrNotSignedByProtector();
 
   bytes32 public constant SENTINEL = keccak256(abi.encodePacked("SENTINEL"));
 
   Manager public manager;
 
   InheritanceConf internal _inheritanceConf;
+  mapping(bytes32 => bool) public usedSignatures;
 
   // @dev see {IInheritancePlugin.sol-init}
   // this must be execute immediately after the deployment
@@ -86,12 +90,43 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
   // @dev see {IInheritancePlugin.sol-configureInheritance}
   // allow when protectors are active
   function configureInheritance(
+    uint256 quorum,
+    uint256 proofOfLifeDurationInDays,
+    uint256 gracePeriod,
+    address beneficiary,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature
+  ) external virtual override onlyTokenOwner {
+    if (timestamp == 0) {
+      if (manager.countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
+    } else {
+      if (timestamp > block.timestamp || timestamp < block.timestamp - validFor) revert TimestampInvalidOrExpired();
+      if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
+      address signer = manager.validator().recoverPluginSigner(
+        nameHash(),
+        manager.owner(),
+        beneficiary,
+        manager.tokenId(),
+        quorum,
+        proofOfLifeDurationInDays,
+        gracePeriod,
+        timestamp,
+        validFor,
+        signature
+      );
+      if (!manager.isAProtector(signer)) revert WrongDataOrNotSignedByProtector();
+      usedSignatures[keccak256(signature)] = true;
+    }
+    _configureInheritance(uint16(quorum), uint16(proofOfLifeDurationInDays), uint16(gracePeriod), beneficiary);
+  }
+
+  function _configureInheritance(
     uint16 quorum,
     uint16 proofOfLifeDurationInDays,
     uint16 gracePeriod,
     address beneficiary
-  ) external virtual override onlyTokenOwner {
-    if (manager.countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
+  ) internal virtual {
     if (manager.actorCount(SENTINEL) > 0 && quorum == 0) revert QuorumCannotBeZero();
     if (quorum > manager.actorCount(SENTINEL)) revert QuorumCannotBeGreaterThanSentinels();
     if (quorum == 0 && beneficiary == address(0)) revert ZeroAddress();

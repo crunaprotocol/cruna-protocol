@@ -63,10 +63,13 @@ interface IInheritancePlugin {
   //   of days after which the sentinels can start the process to inherit the token if the
   //   owner does not prove to be alive
   function configureInheritance(
-    uint16 quorum,
-    uint16 proofOfLifeDurationInDays,
-    uint16 gracePeriod,
-    address beneficiary_
+    uint256 quorum,
+    uint256 proofOfLifeDurationInDays,
+    uint256 gracePeriod,
+    address beneficiary,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature
   ) external;
 
   // @dev Return all the sentinels

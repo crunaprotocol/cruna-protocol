@@ -166,17 +166,17 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   IERC6454.sol                  |      100 |      100 |      100 |      100 |                |
   IERC6982.sol                  |      100 |      100 |      100 |      100 |                |
   IProtected.sol                |      100 |      100 |      100 |      100 |                |
- contracts/manager/             |    99.15 |    68.89 |      100 |    97.73 |                |
+ contracts/manager/             |    99.14 |    69.32 |      100 |    97.71 |                |
   Actor.sol                     |      100 |       70 |      100 |      100 |                |
   FlexiGuardian.sol             |      100 |       50 |      100 |    83.33 |             19 |
   IManager.sol                  |      100 |      100 |      100 |      100 |                |
-  Manager.sol                   |      100 |    68.18 |      100 |    97.62 |        286,294 |
+  Manager.sol                   |      100 |    68.75 |      100 |    97.59 |        284,292 |
   ManagerBase.sol               |    94.74 |       80 |      100 |      100 |                |
  contracts/plugins/             |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                   |      100 |      100 |      100 |      100 |                |
- contracts/plugins/inheritance/ |      100 |       70 |      100 |    98.61 |                |
+ contracts/plugins/inheritance/ |      100 |       70 |      100 |    97.47 |                |
   IInheritancePlugin.sol        |      100 |      100 |      100 |      100 |                |
-  InheritancePlugin.sol         |      100 |       70 |      100 |    98.61 |            144 |
+  InheritancePlugin.sol         |      100 |       70 |      100 |    97.47 |        119,179 |
   InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
  contracts/protected/           |      100 |       56 |      100 |    97.67 |                |
   ProtectedNFT.sol              |      100 |       56 |      100 |    97.67 |             85 |
@@ -185,7 +185,7 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   SignatureValidator.sol        |      100 |      100 |      100 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |     99.6 |    63.81 |      100 |    97.78 |                |
+All files                       |    99.61 |    64.13 |      100 |    97.52 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 

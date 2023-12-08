@@ -23,7 +23,6 @@ contract Manager is IManager, Actor, ManagerBase {
   using Strings for uint256;
   using Address for address;
 
-  error TimestampZero();
   error Forbidden();
   error ProtectorNotFound();
   error ProtectorAlreadySetByYou();
@@ -207,10 +206,9 @@ contract Manager is IManager, Actor, ManagerBase {
     if (timestamp == 0) {
       if (countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
     } else {
-      if (timestamp == 0) revert TimestampZero();
       if (timestamp > block.timestamp || timestamp < block.timestamp - validFor) revert TimestampInvalidOrExpired();
       if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
-      address signer = validator().recoverSigner(
+      address signer = validator().recoverSetActorSigner(
         scope,
         owner(),
         actor,

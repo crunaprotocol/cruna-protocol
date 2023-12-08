@@ -29,7 +29,7 @@ describe("SignatureValidator", function () {
     validator = await deployContract("SignatureValidator", name, version);
   });
 
-  it("should recover the signer of a recoverSigner", async function () {
+  it("should recover the signer of a recoverSetActorSigner", async function () {
     const sentinelBytes = ethers.utils.toUtf8Bytes("SENTINEL");
     const scope = ethers.utils.keccak256(sentinelBytes);
 
@@ -61,7 +61,7 @@ describe("SignatureValidator", function () {
     );
 
     expect(
-      await validator.recoverSigner(
+      await validator.recoverSetActorSigner(
         message.scope,
         message.owner,
         message.actor,
