@@ -14,30 +14,39 @@ async function main() {
 
   const [deployer] = await ethers.getSigners();
 
-  const registry = await deployUtils.deploy("ERC6551Registry");
-  const manager = await deployUtils.deploy("Manager");
-  const guardian = await deployUtils.deploy("Guardian", deployer.address);
-  const managerProxy = await deployUtils.deploy("ManagerProxy", manager.address);
-  const inheritancePlugin = await deployUtils.deploy("InheritancePlugin");
-  const inheritancePluginProxy = await deployUtils.deploy("InheritancePluginProxy", inheritancePlugin.address);
-  const nameHash = keccak256("InheritancePlugin");
+  let registry = await deployUtils.deploy("ERC6551Registry");
+  let manager = await deployUtils.deploy("Manager");
+  let guardian = await deployUtils.deploy("Guardian", deployer.address);
+  let managerProxy = await deployUtils.deploy("ManagerProxy", manager.address);
+  let inheritancePlugin = await deployUtils.deploy("InheritancePlugin");
+  let inheritancePluginProxy = await deployUtils.deploy("InheritancePluginProxy", inheritancePlugin.address);
+  let nameHash = keccak256("InheritancePlugin");
   await deployUtils.Tx(
     guardian.setTrustedImplementation(nameHash, inheritancePluginProxy.address, true),
     "Setting trusted implementation for InheritancePlugin",
   );
-  const signatureValidator = await deployUtils.deploy("SignatureValidator", "Cruna", "1");
-  const vault = await deployUtils.deploy("CrunaFlexiVault", deployer.address);
+  let signatureValidator = await deployUtils.deploy("SignatureValidator", "Cruna", "1");
+
+  // registry = await deployUtils.attach("ERC6551Registry");
+  // manager = await deployUtils.attach("Manager");
+  // guardian = await deployUtils.attach("Guardian");
+  // managerProxy = await deployUtils.attach("ManagerProxy");
+  // inheritancePlugin = await deployUtils.attach("InheritancePlugin");
+  // inheritancePluginProxy = await deployUtils.attach("InheritancePluginProxy");
+  // signatureValidator = await deployUtils.attach("SignatureValidator");
+
+  let vault = await deployUtils.deploy("CrunaFlexiVault", deployer.address);
   await deployUtils.Tx(
-    vault.init(registry.address, guardian.address, signatureValidator.address, managerProxy, address),
+    vault.init(registry.address, guardian.address, signatureValidator.address, managerProxy.address),
     "Init vault",
   );
 
   expect(await vault.owner()).to.equal(deployer.address);
 
-  const factory = await deployUtils.deployProxy("VaultFactory", vault.address);
+  let factory = await deployUtils.deployProxy("VaultFactory", vault.address);
 
-  const usdc = await deployUtils.attach("USDCoin");
-  const usdt = await deployUtils.attach("TetherUSD");
+  let usdc = await deployUtils.attach("USDCoin");
+  let usdt = await deployUtils.attach("TetherUSD");
 
   await deployUtils.Tx(factory.setPrice(3000, { gasLimit: 60000 }), "Setting price");
   await deployUtils.Tx(factory.setStableCoin(usdc.address, true), "Set USDC as stable coin");
