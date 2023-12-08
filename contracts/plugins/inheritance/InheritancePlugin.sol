@@ -240,7 +240,6 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
       if (_isGracePeriodExpiredAfterStart()) revert Expired();
     }
     _reset();
-    emit InheritedBy(_msgSender());
     manager.managedTransfer(tokenId(), _msgSender());
   }
 

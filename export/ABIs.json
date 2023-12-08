@@ -1261,19 +1261,6 @@
           {
             "indexed": true,
             "internalType": "address",
-            "name": "beneficiary",
-            "type": "address"
-          }
-        ],
-        "name": "InheritedBy",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "address",
             "name": "owner",
             "type": "address"
           }
@@ -2040,6 +2027,25 @@
         "inputs": [
           {
             "indexed": true,
+            "internalType": "bytes32",
+            "name": "pluginNameHash",
+            "type": "bytes32"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          }
+        ],
+        "name": "ManagedTransfer",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
             "internalType": "address",
             "name": "previousOwner",
             "type": "address"
@@ -2346,6 +2352,11 @@
       },
       {
         "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "pluginNameHash",
+            "type": "bytes32"
+          },
           {
             "internalType": "uint256",
             "name": "tokenId",

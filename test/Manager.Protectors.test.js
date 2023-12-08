@@ -65,7 +65,7 @@ describe("Manager : Protectors", function () {
     const vaultMock = await deployContract("VaultMock", deployer.address);
     await vaultMock.init(erc6551Registry.address, guardian.address, signatureValidator.address, proxy.address);
     const interfaceId = await vaultMock.getIProtectedInterfaceId();
-    expect(interfaceId).to.equal("0x0009b66d");
+    expect(interfaceId).to.equal("0xc87d16e3");
     expect(await vault.supportsInterface(interfaceId)).to.be.true;
   });
 

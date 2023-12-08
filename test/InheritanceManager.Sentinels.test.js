@@ -203,7 +203,8 @@ describe("Sentinel and Inheritance", function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
-    const inheritancePluginAddress = await manager.plugins(keccak256("InheritancePlugin"));
+    let pluginNameHash = keccak256("InheritancePlugin");
+    const inheritancePluginAddress = await manager.plugins(pluginNameHash);
     const inheritancePlugin = await ethers.getContractAt("InheritancePlugin", inheritancePluginAddress);
     await inheritancePlugin
       .connect(bob)
@@ -318,8 +319,8 @@ describe("Sentinel and Inheritance", function () {
     );
 
     await expect(inheritancePlugin.connect(beneficiary1).inherit())
-      .to.emit(inheritancePlugin, "InheritedBy")
-      .withArgs(beneficiary1.address);
+      .to.emit(vault, "ManagedTransfer")
+      .withArgs(pluginNameHash, tokenId);
 
     data = await inheritancePlugin.getSentinelsAndInheritanceData();
     expect(data[0].length).to.equal(0);
@@ -351,9 +352,7 @@ describe("Sentinel and Inheritance", function () {
     await expect(inheritancePlugin.connect(beneficiary1).inherit()).to.be.revertedWith("StillAlive");
 
     await increaseBlockTimestampBy(10 * days);
-    await expect(inheritancePlugin.connect(beneficiary1).inherit())
-      .to.emit(inheritancePlugin, "InheritedBy")
-      .withArgs(beneficiary1.address);
+    await inheritancePlugin.connect(beneficiary1).inherit();
   });
 
   it("should set up a beneficiary and 5 sentinels and an inheritance with a quorum 3", async function () {
@@ -463,9 +462,7 @@ describe("Sentinel and Inheritance", function () {
       .withArgs("InheritancePlugin", inheritancePlugin.address, true);
 
     //
-    await expect(inheritancePlugin.connect(beneficiary2).inherit())
-      .to.emit(inheritancePlugin, "InheritedBy")
-      .withArgs(beneficiary2.address);
+    await inheritancePlugin.connect(beneficiary2).inherit();
 
     data = await inheritancePlugin.getSentinelsAndInheritanceData();
     expect(data[0].length).to.equal(0);

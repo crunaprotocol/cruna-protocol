@@ -177,12 +177,12 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   ManagerProxy.sol              |      100 |      100 |      100 |      100 |                |
  contracts/plugins/             |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                   |      100 |      100 |      100 |      100 |                |
- contracts/plugins/inheritance/ |      100 |    71.43 |      100 |    98.75 |                |
+ contracts/plugins/inheritance/ |      100 |    71.43 |      100 |    98.73 |                |
   IInheritancePlugin.sol        |      100 |      100 |      100 |      100 |                |
-  InheritancePlugin.sol         |      100 |    71.43 |      100 |    98.73 |            179 |
+  InheritancePlugin.sol         |      100 |    71.43 |      100 |    98.72 |            179 |
   InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
- contracts/protected/           |      100 |       56 |      100 |    97.67 |                |
-  ProtectedNFT.sol              |      100 |       56 |      100 |    97.67 |             84 |
+ contracts/protected/           |      100 |       56 |      100 |    97.73 |                |
+  ProtectedNFT.sol              |      100 |       56 |      100 |    97.73 |             86 |
  contracts/utils/               |      100 |      100 |      100 |      100 |                |
   FlexiProxy.sol                |      100 |      100 |      100 |      100 |                |
   SignatureValidator.sol        |      100 |      100 |      100 |      100 |                |

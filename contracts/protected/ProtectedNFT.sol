@@ -23,6 +23,8 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   using ECDSA for bytes32;
   using Strings for uint256;
 
+  event ManagedTransfer(bytes32 indexed pluginNameHash, uint256 indexed tokenId);
+
   error NotTheTokenOwner();
   error TimestampInvalidOrExpired();
   error SignatureAlreadyUsed();
@@ -117,11 +119,12 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   }
 
   // @dev See {IProtected721-managedTransfer}.
-  function managedTransfer(uint256 tokenId, address to) external onlyManager(tokenId) {
+  function managedTransfer(bytes32 pluginNameHash, uint256 tokenId, address to) external override onlyManager(tokenId) {
     _approvedTransfers[tokenId] = true;
     _approve(managerOf(tokenId), tokenId);
     safeTransferFrom(ownerOf(tokenId), to, tokenId);
     _approve(address(0), tokenId);
+    emit ManagedTransfer(pluginNameHash, tokenId);
     delete _approvedTransfers[tokenId];
   }
 
