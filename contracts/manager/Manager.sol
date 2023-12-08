@@ -284,7 +284,7 @@ contract Manager is IManager, Actor, ManagerBase {
           revert InconsistentPolicy();
         }
         if (disabledPlugins[pluginNamesByRole[pluginRoles[i]]]) revert DisabledPlugin();
-        vault().managedTransfer(tokenId, to);
+        vault().managedTransfer(pluginNamesByRole[pluginRoles[i]], tokenId, to);
         _resetActors();
         return;
       }

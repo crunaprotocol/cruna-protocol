@@ -22,9 +22,6 @@ interface IInheritancePlugin {
 
   event TransferRequestApproved(address indexed sentinel);
 
-  // @dev Emitted when a beneficiary inherits a token
-  event InheritedBy(address indexed beneficiary);
-
   // @dev Struct to store the configuration for the inheritance
   struct InheritanceConf {
     uint16 quorum;

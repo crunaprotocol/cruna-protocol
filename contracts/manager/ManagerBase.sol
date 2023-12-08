@@ -15,7 +15,7 @@ import {Versioned} from "../utils/Versioned.sol";
 //import {console} from "hardhat/console.sol";
 
 interface IVault {
-  function managedTransfer(uint256 tokenId, address to) external;
+  function managedTransfer(bytes32 pluginNameHash, uint256 tokenId, address to) external;
   function emitLockedEvent(uint256 tokenId, bool locked_) external;
   function guardian() external view returns (Guardian);
   function registry() external view returns (IERC6551Registry);
