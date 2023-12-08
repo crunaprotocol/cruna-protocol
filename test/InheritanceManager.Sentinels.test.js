@@ -8,6 +8,7 @@ const {
   deployContractUpgradeable,
   addr0,
   cl,
+  signPluginRequest,
   getChainId,
   deployContract,
   getTimestamp,
@@ -84,7 +85,7 @@ describe("Sentinel and Inheritance", function () {
     await buyAVault(bob);
   });
 
-  it("should set up sentinels", async function () {
+  it("should set up sentinels/conf w/ or w/out protectors", async function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
@@ -158,6 +159,44 @@ describe("Sentinel and Inheritance", function () {
     await expect(inheritancePlugin.connect(bob).setSentinel(fred.address, false, ts, 3600, signature))
       .to.emit(inheritancePlugin, "SentinelUpdated")
       .withArgs(bob.address, fred.address, false);
+
+    signature = await signPluginRequest(
+      "InheritancePlugin",
+      bob.address,
+      addr0,
+      tokenId,
+      3,
+      90,
+      30,
+      ts,
+      3600,
+      chainId,
+      alice.address,
+      signatureValidator,
+    );
+
+    await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, addr0, ts, 3600, signature)).revertedWith(
+      "QuorumCannotBeGreaterThanSentinels",
+    );
+
+    signature = await signPluginRequest(
+      "InheritancePlugin",
+      bob.address,
+      addr0,
+      tokenId,
+      1,
+      90,
+      30,
+      ts,
+      3600,
+      chainId,
+      alice.address,
+      signatureValidator,
+    );
+
+    await expect(inheritancePlugin.connect(bob).configureInheritance(1, 90, 30, addr0, ts, 3600, signature))
+      .to.emit(inheritancePlugin, "InheritanceConfigured")
+      .withArgs(bob.address, 1, 90, 30, addr0);
   });
 
   it("should set up 5 sentinels and an inheritance with a quorum 3", async function () {
