@@ -101,7 +101,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
     if (timestamp > block.timestamp || timestamp < block.timestamp - validFor) revert TimestampInvalidOrExpired();
     if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
     usedSignatures[keccak256(signature)] = true;
-    address signer = validator.recoverSigner(
+    address signer = validator.recoverSetActorSigner(
       keccak256("PROTECTED_TRANSFER"),
       _msgSender(),
       to,

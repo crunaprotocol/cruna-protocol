@@ -108,10 +108,10 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 
 ## Development
 
-Cruna is in alpha stage, and to use it you must specify the version you want to install. Right now, the only available version is `1.0.0-alpha.1`. Install it with
+Cruna is in alpha stage, and to use it you must specify the version you want to install. Right now, the only available version is `1.0.0-alpha.3`. Install it with
 
 ```sh
-npm install @cruna/protocol@1.0.0-alpha.1 @openzeppelin/contracts erc6551
+npm install @cruna/protocol@1.0.0-alpha.3 @openzeppelin/contracts erc6551
 ```
 or similar commands using Yarn or Pnpm, and use in your Solidity smart contracts, for example, as
 
@@ -136,6 +136,8 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 **1.0.0-alpha.3**
 
 - Add function to disable and re-enable plugins
+- Making inheritance settable when protectors are active
+- Add extra params function to SignatureValidator to be used by plugins
 
 **1.0.0-alpha.2**
 
@@ -152,7 +154,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  28 passing (10s)
+  28 passing (13s)
 
 --------------------------------|----------|----------|----------|----------|----------------|
 File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -166,17 +168,17 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   IERC6454.sol                  |      100 |      100 |      100 |      100 |                |
   IERC6982.sol                  |      100 |      100 |      100 |      100 |                |
   IProtected.sol                |      100 |      100 |      100 |      100 |                |
- contracts/manager/             |    99.15 |    68.89 |      100 |    97.73 |                |
+ contracts/manager/             |    99.14 |    69.32 |      100 |    97.71 |                |
   Actor.sol                     |      100 |       70 |      100 |      100 |                |
   FlexiGuardian.sol             |      100 |       50 |      100 |    83.33 |             19 |
   IManager.sol                  |      100 |      100 |      100 |      100 |                |
-  Manager.sol                   |      100 |    68.18 |      100 |    97.62 |        286,294 |
+  Manager.sol                   |      100 |    68.75 |      100 |    97.59 |        284,292 |
   ManagerBase.sol               |    94.74 |       80 |      100 |      100 |                |
  contracts/plugins/             |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                   |      100 |      100 |      100 |      100 |                |
- contracts/plugins/inheritance/ |      100 |       70 |      100 |    98.61 |                |
+ contracts/plugins/inheritance/ |      100 |       70 |      100 |    97.47 |                |
   IInheritancePlugin.sol        |      100 |      100 |      100 |      100 |                |
-  InheritancePlugin.sol         |      100 |       70 |      100 |    98.61 |            144 |
+  InheritancePlugin.sol         |      100 |       70 |      100 |    97.47 |        119,179 |
   InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
  contracts/protected/           |      100 |       56 |      100 |    97.67 |                |
   ProtectedNFT.sol              |      100 |       56 |      100 |    97.67 |             85 |
@@ -185,7 +187,7 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   SignatureValidator.sol        |      100 |      100 |      100 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |     99.6 |    63.81 |      100 |    97.78 |                |
+All files                       |    99.61 |    64.13 |      100 |    97.52 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 

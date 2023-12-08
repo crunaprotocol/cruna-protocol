@@ -23,7 +23,7 @@ contract SignatureValidator is EIP712, Versioned {
   // @param timestamp The timestamp of the signature.
   // @param validFor The validity of the signature.
   // @param Returns the signer of the signature.
-  function recoverSigner(
+  function recoverSetActorSigner(
     bytes32 scope,
     address owner,
     address actor,
@@ -45,6 +45,55 @@ contract SignatureValidator is EIP712, Versioned {
             actor,
             tokenId,
             extraValue,
+            timestamp,
+            validFor
+          )
+        )
+      ).recover(signature);
+  }
+
+  // @dev This function validates a signature with 3 extra values
+  //   It have redundant parameters to give plugins more flexibility
+  //   If more parameters are needed, the plugin can encode the data in
+  //   the extraValue using bitwise operators
+  //   The function is supposed to be used by the plugin for its internal checks.
+  // @param nameHash The nameHash of the plugin.
+  // @param owner The owner of the token.
+  // @param addr1 An address being authorized.
+  //   It can be address(0) if the parameter is not needed.
+  // @param tokenId The id of the token.
+  // @param extraValue The first extraValue
+  // @param extraValue2 The second extraValue
+  // @param extraValue3 The third extraValue
+  // @param timestamp The timestamp of the signature.
+  // @param validFor The validity of the signature.
+  // @param Returns the signer of the signature.
+  function recoverPluginSigner(
+    bytes32 nameHash,
+    address owner,
+    address addr,
+    uint256 tokenId,
+    uint256 extraValue,
+    uint256 extraValue2,
+    uint256 extraValue3,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature
+  ) external view returns (address) {
+    return
+      _hashTypedDataV4(
+        keccak256(
+          abi.encode(
+            keccak256(
+              "Auth(bytes32 nameHash,address owner,address addr,uint256 tokenId,uint256 extraValue,uint256 extraValue2,uint256 extraValue3,uint256 timestamp,uint256 validFor)"
+            ),
+            nameHash,
+            owner,
+            addr,
+            tokenId,
+            extraValue,
+            extraValue2,
+            extraValue3,
             timestamp,
             validFor
           )

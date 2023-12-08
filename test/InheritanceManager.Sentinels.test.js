@@ -188,10 +188,32 @@ describe("Sentinel and Inheritance", function () {
       "InheritanceNotConfigured",
     );
 
-    await expect(inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, addr0)).revertedWith(
+    await expect(inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, addr0, 11111111, 0, 0)).revertedWith(
+      "TimestampInvalidOrExpired",
+    );
+
+    await expect(
+      inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, addr0, (await getTimestamp()) - 10, 36, 0),
+    ).revertedWith("ECDSA: invalid signature length");
+
+    await expect(
+      inheritancePlugin
+        .connect(bob)
+        .configureInheritance(
+          8,
+          90,
+          30,
+          addr0,
+          (await getTimestamp()) - 10,
+          36,
+          "0x3bebc7dbc355bc64b7c6de84de84da2fe6eba6a8360654d9c76cd2a9892a570d4eeb231fcee82921f3dd7aca46cdefcaec51845dae42a1492b9df47bf43ec9821c",
+        ),
+    ).revertedWith("WrongDataOrNotSignedByProtector");
+
+    await expect(inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, addr0, 0, 0, 0)).revertedWith(
       "QuorumCannotBeGreaterThanSentinels",
     );
-    await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, addr0))
+    await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, addr0, 0, 0, 0))
       .to.emit(inheritancePlugin, "InheritanceConfigured")
       .withArgs(bob.address, 3, 90, 30, addr0);
 
@@ -277,7 +299,7 @@ describe("Sentinel and Inheritance", function () {
     const inheritancePluginAddress = await manager.plugins(keccak256("InheritancePlugin"));
     const inheritancePlugin = await ethers.getContractAt("InheritancePlugin", inheritancePluginAddress);
 
-    await expect(inheritancePlugin.connect(bob).configureInheritance(0, 90, 30, beneficiary1.address))
+    await expect(inheritancePlugin.connect(bob).configureInheritance(0, 90, 30, beneficiary1.address, 0, 0, 0))
       .to.emit(inheritancePlugin, "InheritanceConfigured")
       .withArgs(bob.address, 0, 90, 30, beneficiary1.address);
 
@@ -323,10 +345,10 @@ describe("Sentinel and Inheritance", function () {
       "InheritanceNotConfigured",
     );
 
-    await expect(inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, beneficiary1.address)).revertedWith(
+    await expect(inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, beneficiary1.address, 0, 0, 0)).revertedWith(
       "QuorumCannotBeGreaterThanSentinels",
     );
-    await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, beneficiary1.address))
+    await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, beneficiary1.address, 0, 0, 0))
       .to.emit(inheritancePlugin, "InheritanceConfigured")
       .withArgs(bob.address, 3, 90, 30, beneficiary1.address);
 
@@ -440,7 +462,7 @@ describe("Sentinel and Inheritance", function () {
     expect(data[1].requestUpdatedAt).to.equal(0);
     expect(data[1].approvers.length).to.equal(0);
 
-    await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, beneficiary1.address))
+    await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, beneficiary1.address, 0, 0, 0))
       .to.emit(inheritancePlugin, "InheritanceConfigured")
       .withArgs(bob.address, 3, 90, 30, beneficiary1.address);
 
@@ -503,10 +525,10 @@ describe("Sentinel and Inheritance", function () {
       "InheritanceNotConfigured",
     );
 
-    await expect(inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, beneficiary1.address)).revertedWith(
+    await expect(inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, beneficiary1.address, 0, 0, 0)).revertedWith(
       "QuorumCannotBeGreaterThanSentinels",
     );
-    await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, beneficiary1.address))
+    await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, beneficiary1.address, 0, 0, 0))
       .to.emit(inheritancePlugin, "InheritanceConfigured")
       .withArgs(bob.address, 3, 90, 30, beneficiary1.address);
 
