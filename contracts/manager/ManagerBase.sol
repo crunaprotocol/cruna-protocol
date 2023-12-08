@@ -9,7 +9,7 @@ import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
-import {FlexiGuardian} from "./FlexiGuardian.sol";
+import {Guardian} from "./Guardian.sol";
 import {Versioned} from "../utils/Versioned.sol";
 
 //import {console} from "hardhat/console.sol";
@@ -17,7 +17,7 @@ import {Versioned} from "../utils/Versioned.sol";
 interface IVault {
   function managedTransfer(uint256 tokenId, address to) external;
   function emitLockedEvent(uint256 tokenId, bool locked_) external;
-  function guardian() external view returns (FlexiGuardian);
+  function guardian() external view returns (Guardian);
   function registry() external view returns (IERC6551Registry);
   function validator() external view returns (SignatureValidator);
 }
@@ -46,7 +46,7 @@ abstract contract ManagerBase is Context, Versioned {
 
   function nameHash() public virtual returns (bytes32);
 
-  function guardian() public view virtual returns (FlexiGuardian) {
+  function guardian() public view virtual returns (Guardian) {
     return vault().guardian();
   }
 

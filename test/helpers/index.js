@@ -125,8 +125,8 @@ const Helpers = {
     const managerAddress = await Helpers.deployContractViaNickSFactory(deployer, "Manager");
     const manager = await ethers.getContractAt("Manager", managerAddress);
 
-    const proxyAddress = await Helpers.deployContractViaNickSFactory(deployer, "FlexiProxy", ["address"], [managerAddress]);
-    const proxy = await ethers.getContractAt("FlexiProxy", proxyAddress);
+    const proxyAddress = await Helpers.deployContractViaNickSFactory(deployer, "ManagerProxy", ["address"], [managerAddress]);
+    const proxy = await ethers.getContractAt("ManagerProxy", proxyAddress);
 
     const signatureValidatorAddress = await Helpers.deployContractViaNickSFactory(
       deployer,
@@ -137,13 +137,8 @@ const Helpers = {
 
     const signatureValidator = await ethers.getContractAt("SignatureValidator", signatureValidatorAddress);
 
-    const guardianAddress = await Helpers.deployContractViaNickSFactory(
-      deployer,
-      "FlexiGuardian",
-      ["address"],
-      [deployer.address],
-    );
-    const guardian = await deployUtils.attach("FlexiGuardian", guardianAddress);
+    const guardianAddress = await Helpers.deployContractViaNickSFactory(deployer, "Guardian", ["address"], [deployer.address]);
+    const guardian = await deployUtils.attach("Guardian", guardianAddress);
 
     const vaultAddress = await Helpers.deployContractViaNickSFactory(
       deployer,

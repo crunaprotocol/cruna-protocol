@@ -7,7 +7,7 @@ import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
-import {FlexiGuardian} from "../manager/FlexiGuardian.sol";
+import {Guardian} from "../manager/Guardian.sol";
 import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
 import {IProtected} from "../interfaces/IProtected.sol";
 import {IERC6454} from "../interfaces/IERC6454.sol";
@@ -35,7 +35,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   error AlreadyInitiated();
   error OutOfRange();
 
-  FlexiGuardian public guardian;
+  Guardian public guardian;
   SignatureValidator public validator;
   IERC6551Registry public registry;
   Manager public flexiProxy;
@@ -82,7 +82,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
     if (address(validator) != address(0)) revert AlreadyInitiated();
     if (registry_ == address(0) || guardian_ == address(0) || signatureValidator_ == address(0) || managerProxy_ == address(0))
       revert ZeroAddress();
-    guardian = FlexiGuardian(guardian_);
+    guardian = Guardian(guardian_);
     validator = SignatureValidator(signatureValidator_);
     registry = IERC6551Registry(registry_);
     flexiProxy = Manager(managerProxy_);

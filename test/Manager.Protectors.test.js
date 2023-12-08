@@ -32,8 +32,8 @@ describe("Manager : Protectors", function () {
   beforeEach(async function () {
     erc6551Registry = await deployContract("ERC6551Registry");
     managerImpl = await deployContract("Manager");
-    guardian = await deployContract("FlexiGuardian", deployer.address);
-    proxy = await deployContract("FlexiProxy", managerImpl.address);
+    guardian = await deployContract("Guardian", deployer.address);
+    proxy = await deployContract("ManagerProxy", managerImpl.address);
 
     vault = await deployContract("CrunaFlexiVault", deployer.address);
     await vault.init(erc6551Registry.address, guardian.address, signatureValidator.address, proxy.address);
@@ -54,10 +54,10 @@ describe("Manager : Protectors", function () {
   });
 
   const buyAVault = async (bob) => {
-    const price = await factory.finalPrice(usdc.address, "");
+    const price = await factory.finalPrice(usdc.address);
     await usdc.connect(bob).approve(factory.address, price);
     const nextTokenId = await vault.nextTokenId();
-    await factory.connect(bob).buyVaults(usdc.address, 1, "");
+    await factory.connect(bob).buyVaults(usdc.address, 1);
     return nextTokenId;
   };
 

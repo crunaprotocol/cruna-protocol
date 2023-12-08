@@ -35,8 +35,8 @@ describe("Sentinel and Inheritance", function () {
   beforeEach(async function () {
     erc6551Registry = await deployContract("ERC6551Registry");
     managerImpl = await deployContract("Manager");
-    guardian = await deployContract("FlexiGuardian", deployer.address);
-    managerProxy = await deployContract("FlexiProxy", managerImpl.address);
+    guardian = await deployContract("Guardian", deployer.address);
+    managerProxy = await deployContract("ManagerProxy", managerImpl.address);
 
     vault = await deployContract("CrunaFlexiVault", deployer.address);
     await vault.init(erc6551Registry.address, guardian.address, signatureValidator.address, managerProxy.address);
@@ -57,10 +57,10 @@ describe("Sentinel and Inheritance", function () {
   });
 
   const buyAVault = async (bob) => {
-    const price = await factory.finalPrice(usdc.address, "");
+    const price = await factory.finalPrice(usdc.address);
     await usdc.connect(bob).approve(factory.address, price);
     const nextTokenId = await vault.nextTokenId();
-    await factory.connect(bob).buyVaults(usdc.address, 1, "");
+    await factory.connect(bob).buyVaults(usdc.address, 1);
     const manager = await ethers.getContractAt("Manager", await vault.managerOf(nextTokenId));
     inheritancePluginImpl = await deployContract("InheritancePlugin");
     inheritancePluginProxy = await deployContract("InheritancePluginProxy", inheritancePluginImpl.address);

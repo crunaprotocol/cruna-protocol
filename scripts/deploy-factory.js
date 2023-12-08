@@ -27,9 +27,8 @@ async function main() {
   await deployUtils.Tx(factory.setStableCoin(usdc.address, true), "Set USDC as stable coin");
   await deployUtils.Tx(factory.setStableCoin(usdt.address, true), "Set USDT as stable coin");
 
-  const promoCode = "CrunaEarlyBird";
-  // promoted code selling for $9.9
-  await deployUtils.Tx(factory.setPromoCode(promoCode, 67), "Set promo code");
+  // discount campaign selling for $9.9
+  await deployUtils.Tx(factory.setDiscount(67), "Set promo code");
 
   await deployUtils.Tx(vault.setFactory(factory.address, { gasLimit: 100000 }), "Set the factory");
 

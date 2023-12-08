@@ -57,13 +57,13 @@ describe("VaultFactory", function () {
   });
 
   it("should get the precalculated address of the manager", async function () {
-    let price = await factory.finalPrice(usdc.address, "");
+    let price = await factory.finalPrice(usdc.address);
     await usdc.connect(bob).approve(factory.address, price);
     const nextTokenId = await vault.nextTokenId();
     const precalculatedAddress = await vault.managerOf(nextTokenId);
     const salt = ethers.utils.hexZeroPad(ethers.BigNumber.from("400").toHexString(), 32);
 
-    await expect(factory.connect(bob).buyVaults(usdc.address, 1, ""))
+    await expect(factory.connect(bob).buyVaults(usdc.address, 1))
       .to.emit(vault, "Transfer")
       .withArgs(addr0, bob.address, nextTokenId)
       .to.emit(erc6551Registry, "ERC6551AccountCreated")
@@ -77,11 +77,11 @@ describe("VaultFactory", function () {
       );
   });
 
-  async function buyVault(token, amount, buyer, promoCode = "") {
-    let price = await factory.finalPrice(token.address, promoCode);
+  async function buyVault(token, amount, buyer) {
+    let price = await factory.finalPrice(token.address);
     await token.connect(buyer).approve(factory.address, price.mul(amount));
 
-    await expect(factory.connect(buyer).buyVaults(token.address, amount, promoCode))
+    await expect(factory.connect(buyer).buyVaults(token.address, amount))
       .to.emit(vault, "Transfer")
       .withArgs(addr0, buyer.address, 1)
       .to.emit(vault, "Transfer")
@@ -92,20 +92,19 @@ describe("VaultFactory", function () {
 
   it("should not allow bob and alice to purchase vaults when paused", async function () {
     await expect(factory.pause()).to.emit(factory, "Paused");
-
-    let price = await factory.finalPrice(usdc.address, "");
+    let price = await factory.finalPrice(usdc.address);
     await usdc.connect(fred).approve(factory.address, price);
 
-    await expect(factory.connect(fred).buyVaults(usdc.address, 1, "")).to.be.revertedWith("Pausable: paused");
+    await expect(factory.connect(fred).buyVaults(usdc.address, 1)).to.be.revertedWith("Pausable: paused");
 
     await expect(factory.unpause()).to.emit(factory, "Unpaused");
 
     await buyVault(usdc, 2, bob);
     await buyVault(usdt, 2, alice);
 
-    price = await factory.finalPrice(usdc.address, "");
+    price = await factory.finalPrice(usdc.address);
     expect(price.toString()).to.equal("9900000000000000000");
-    price = await factory.finalPrice(usdt.address, "");
+    price = await factory.finalPrice(usdt.address);
     expect(price.toString()).to.equal("9900000");
 
     await expect(factory.withdrawProceeds(fred.address, usdc.address, normalize("10")))
@@ -120,9 +119,9 @@ describe("VaultFactory", function () {
     await buyVault(usdc, 2, bob);
     await buyVault(usdt, 2, alice);
 
-    let price = await factory.finalPrice(usdc.address, "");
+    let price = await factory.finalPrice(usdc.address);
     expect(price.toString()).to.equal("9900000000000000000");
-    price = await factory.finalPrice(usdt.address, "");
+    price = await factory.finalPrice(usdt.address);
     expect(price.toString()).to.equal("9900000");
 
     await expect(factory.withdrawProceeds(fred.address, usdc.address, normalize("10")))
@@ -133,16 +132,15 @@ describe("VaultFactory", function () {
       .withArgs(factory.address, fred.address, amount("9.8"));
   });
 
-  it("should allow bob and alice to purchase some vaults with a promoCode", async function () {
-    const promoCode = "TheRoundTable";
-    await factory.setPromoCode(promoCode, 10);
+  it("should allow bob and alice to purchase some vaults with a discount", async function () {
+    await factory.setDiscount(10);
 
     await buyVault(usdc, 2, bob);
-    await buyVault(usdt, 2, alice, promoCode);
+    await buyVault(usdt, 2, alice);
 
-    let price = await factory.finalPrice(usdc.address, "");
-    expect(price.toString()).to.equal("9900000000000000000");
-    price = await factory.finalPrice(usdt.address, promoCode);
+    let price = await factory.finalPrice(usdc.address);
+    expect(price.toString()).to.equal("8910000000000000000");
+    price = await factory.finalPrice(usdt.address);
     expect(price.toString()).to.equal("8910000");
   });
 
@@ -153,28 +151,13 @@ describe("VaultFactory", function () {
     expect(updatedStableCoins).to.not.include(usdc.address);
   });
 
-  it("should remove the effect of a promo code when its discount is set to zero", async function () {
-    const promoCode = "TheRoundTable";
-    const discount = 10;
-    const zeroDiscount = 0;
-    const stableCoin = usdc.address;
-
-    await factory.setPromoCode(promoCode, discount);
-
-    await factory.setPromoCode(promoCode, zeroDiscount);
-    let priceAfterDiscountReset = await factory.finalPrice(stableCoin, promoCode);
-
-    let regularPrice = await factory.finalPrice(stableCoin, "");
-    expect(priceAfterDiscountReset).to.equal(regularPrice);
-  });
-
   it("should allow batch purchase of vaults", async function () {
     const stableCoin = usdc.address;
     const buyers = [bob.address, fred.address, alice.address];
     const amounts = [1, 3, 2];
     let nextTokenId = await vault.nextTokenId();
 
-    let pricePerVault = await factory.finalPrice(stableCoin, "");
+    let pricePerVault = await factory.finalPrice(stableCoin);
 
     await usdc.connect(bob).approve(factory.address, pricePerVault.mul(6));
 
@@ -182,7 +165,7 @@ describe("VaultFactory", function () {
     const fredBalanceBefore = await vault.balanceOf(fred.address);
     const aliceBalanceBefore = await vault.balanceOf(alice.address);
 
-    await expect(factory.connect(bob).buyVaultsBatch(stableCoin, buyers, amounts, ""))
+    await expect(factory.connect(bob).buyVaultsBatch(stableCoin, buyers, amounts))
       .to.emit(vault, "Transfer")
       .withArgs(addr0, bob.address, nextTokenId)
       .to.emit(vault, "Transfer")
