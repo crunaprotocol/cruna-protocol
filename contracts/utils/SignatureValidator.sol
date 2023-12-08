@@ -19,7 +19,7 @@ contract SignatureValidator is EIP712, Versioned {
   // @param actor The actor being authorized.
   //   It can be address(0) if the parameter is not needed.
   // @param tokenId The id of the token.
-  // @param extraValue The extraValue
+  // @param extra The extra
   // @param timestamp The timestamp of the signature.
   // @param validFor The validity of the signature.
   // @param Returns the signer of the signature.
@@ -28,7 +28,7 @@ contract SignatureValidator is EIP712, Versioned {
     address owner,
     address actor,
     uint256 tokenId,
-    uint256 extraValue,
+    uint256 extra,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
@@ -38,13 +38,13 @@ contract SignatureValidator is EIP712, Versioned {
         keccak256(
           abi.encode(
             keccak256(
-              "Auth(bytes32 scope,address owner,address actor,uint256 tokenId,uint256 extraValue,uint256 timestamp,uint256 validFor)"
+              "Auth(bytes32 scope,address owner,address actor,uint256 tokenId,uint256 extra,uint256 timestamp,uint256 validFor)"
             ),
             scope,
             owner,
             actor,
             tokenId,
-            extraValue,
+            extra,
             timestamp,
             validFor
           )
@@ -55,16 +55,16 @@ contract SignatureValidator is EIP712, Versioned {
   // @dev This function validates a signature with 3 extra values
   //   It have redundant parameters to give plugins more flexibility
   //   If more parameters are needed, the plugin can encode the data in
-  //   the extraValue using bitwise operators
+  //   the extra using bitwise operators
   //   The function is supposed to be used by the plugin for its internal checks.
   // @param nameHash The nameHash of the plugin.
   // @param owner The owner of the token.
   // @param addr1 An address being authorized.
   //   It can be address(0) if the parameter is not needed.
   // @param tokenId The id of the token.
-  // @param extraValue The first extraValue
-  // @param extraValue2 The second extraValue
-  // @param extraValue3 The third extraValue
+  // @param extra The first extra
+  // @param extra2 The second extra
+  // @param extra3 The third extra
   // @param timestamp The timestamp of the signature.
   // @param validFor The validity of the signature.
   // @param Returns the signer of the signature.
@@ -73,9 +73,9 @@ contract SignatureValidator is EIP712, Versioned {
     address owner,
     address addr,
     uint256 tokenId,
-    uint256 extraValue,
-    uint256 extraValue2,
-    uint256 extraValue3,
+    uint256 extra,
+    uint256 extra2,
+    uint256 extra3,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
@@ -85,15 +85,15 @@ contract SignatureValidator is EIP712, Versioned {
         keccak256(
           abi.encode(
             keccak256(
-              "Auth(bytes32 nameHash,address owner,address addr,uint256 tokenId,uint256 extraValue,uint256 extraValue2,uint256 extraValue3,uint256 timestamp,uint256 validFor)"
+              "Auth(bytes32 nameHash,address owner,address addr,uint256 tokenId,uint256 extra,uint256 extra2,uint256 extra3,uint256 timestamp,uint256 validFor)"
             ),
             nameHash,
             owner,
             addr,
             tokenId,
-            extraValue,
-            extraValue2,
-            extraValue3,
+            extra,
+            extra2,
+            extra3,
             timestamp,
             validFor
           )

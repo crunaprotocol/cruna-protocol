@@ -176,9 +176,9 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   ManagerBase.sol               |    94.74 |       80 |      100 |      100 |                |
  contracts/plugins/             |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                   |      100 |      100 |      100 |      100 |                |
- contracts/plugins/inheritance/ |      100 |       70 |      100 |    97.47 |                |
+ contracts/plugins/inheritance/ |      100 |    71.43 |      100 |    98.73 |                |
   IInheritancePlugin.sol        |      100 |      100 |      100 |      100 |                |
-  InheritancePlugin.sol         |      100 |       70 |      100 |    97.47 |        119,179 |
+  InheritancePlugin.sol         |      100 |    71.43 |      100 |    98.73 |            179 |
   InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
  contracts/protected/           |      100 |       56 |      100 |    97.67 |                |
   ProtectedNFT.sol              |      100 |       56 |      100 |    97.67 |             85 |
@@ -187,7 +187,7 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   SignatureValidator.sol        |      100 |      100 |      100 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |    99.61 |    64.13 |      100 |    97.52 |                |
+All files                       |    99.61 |    64.49 |      100 |    97.83 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 

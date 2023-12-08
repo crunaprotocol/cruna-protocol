@@ -274,14 +274,14 @@ const Helpers = {
     return ethers.utils.keccak256(bytes);
   },
 
-  async signRequest(scope, owner, actor, tokenId, extraValue, timestamp, validFor, chainId, signer, validator) {
+  async signRequest(scope, owner, actor, tokenId, extra, timestamp, validFor, chainId, signer, validator) {
     scope = Helpers.keccak256(scope);
     const message = {
       scope: scope.toString(),
       owner,
       actor,
       tokenId: tokenId.toString(),
-      extraValue,
+      extra,
       timestamp: timestamp.toString(),
       validFor: validFor.toString(),
     };
@@ -295,7 +295,39 @@ const Helpers = {
         { name: "owner", type: "address" },
         { name: "actor", type: "address" },
         { name: "tokenId", type: "uint256" },
-        { name: "extraValue", type: "uint256" },
+        { name: "extra", type: "uint256" },
+        { name: "timestamp", type: "uint256" },
+        { name: "validFor", type: "uint256" },
+      ],
+      message,
+    );
+  },
+  async signPluginRequest(name, owner, addr, tokenId, extra, extra2, extra3, timestamp, validFor, chainId, signer, validator) {
+    const nameHash = Helpers.keccak256(name);
+    const message = {
+      nameHash: nameHash.toString(),
+      owner,
+      addr,
+      tokenId: tokenId.toString(),
+      extra,
+      extra2,
+      extra3,
+      timestamp: timestamp.toString(),
+      validFor: validFor.toString(),
+    };
+    return Helpers.makeSignature(
+      chainId,
+      validator.address,
+      Helpers.privateKeyByWallet[signer],
+      "Auth",
+      [
+        { name: "nameHash", type: "bytes32" },
+        { name: "owner", type: "address" },
+        { name: "addr", type: "address" },
+        { name: "tokenId", type: "uint256" },
+        { name: "extra", type: "uint256" },
+        { name: "extra2", type: "uint256" },
+        { name: "extra3", type: "uint256" },
         { name: "timestamp", type: "uint256" },
         { name: "validFor", type: "uint256" },
       ],

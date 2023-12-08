@@ -2858,17 +2858,17 @@
           },
           {
             "internalType": "uint256",
-            "name": "extraValue",
+            "name": "extra",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "extraValue2",
+            "name": "extra2",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "extraValue3",
+            "name": "extra3",
             "type": "uint256"
           },
           {
@@ -2922,7 +2922,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "extraValue",
+            "name": "extra",
             "type": "uint256"
           },
           {
