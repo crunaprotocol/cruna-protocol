@@ -42,7 +42,6 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
 
   bytes32 public salt = bytes32(uint256(400));
 
-  mapping(uint256 => Manager) public managers;
   uint256 public nextTokenId = 1;
 
   mapping(uint256 => bool) internal _approvedTransfers;
@@ -58,7 +57,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   // @dev This modifier will only allow the manager of a certain tokenId to call the function.
   // @param tokenId_ The id of the token.
   modifier onlyManager(uint256 tokenId) {
-    if (address(managers[tokenId]) != _msgSender()) revert NotTheManager();
+    if (managerOf(tokenId) != _msgSender()) revert NotTheManager();
     _;
   }
 
@@ -111,7 +110,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
       validFor,
       signature
     );
-    if (!managers[tokenId].isAProtector(signer)) revert WrongDataOrNotSignedByProtector();
+    if (!Manager(managerOf(tokenId)).isAProtector(signer)) revert WrongDataOrNotSignedByProtector();
     _approvedTransfers[tokenId] = true;
     _transfer(_msgSender(), to, tokenId);
     delete _approvedTransfers[tokenId];
@@ -120,7 +119,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   // @dev See {IProtected721-managedTransfer}.
   function managedTransfer(uint256 tokenId, address to) external onlyManager(tokenId) {
     _approvedTransfers[tokenId] = true;
-    _approve(address(managers[tokenId]), tokenId);
+    _approve(managerOf(tokenId), tokenId);
     safeTransferFrom(ownerOf(tokenId), to, tokenId);
     _approve(address(0), tokenId);
     delete _approvedTransfers[tokenId];
@@ -151,14 +150,14 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   // @param to The address of the recipient.
   // @return true if the token is transferable, false otherwise.
   function isTransferable(uint256 tokenId, address from, address to) public view override returns (bool) {
+    Manager manager = Manager(managerOf(tokenId));
     // Burnings and self transfers are not allowed
     if (to == address(0) || from == to) return false;
     // if from zero, it is minting
     else if (from == address(0)) return true;
     else {
       _requireMinted(tokenId);
-      return
-        managers[tokenId].countActiveProtectors() == 0 || _approvedTransfers[tokenId] || managers[tokenId].isSafeRecipient(to);
+      return manager.countActiveProtectors() == 0 || _approvedTransfers[tokenId] || manager.isSafeRecipient(to);
     }
   }
 
@@ -174,7 +173,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   // lock status.
   // This function MUST revert if the token does not exist.
   function locked(uint256 tokenId) external view override returns (bool) {
-    return managers[tokenId].hasProtectors();
+    return Manager(managerOf(tokenId)).hasProtectors();
   }
 
   function emitLockedEvent(uint256 tokenId, bool locked_) external onlyManager(tokenId) {
@@ -189,7 +188,6 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
     //    if (!(nextTokenId % 1e6)) revert OutOfRange();
     if (address(registry) == address(0)) revert NotInitiated();
     registry.createAccount(address(flexiProxy), salt, block.chainid, address(this), nextTokenId);
-    managers[nextTokenId] = Manager(managerOf(nextTokenId));
     _safeMint(to, nextTokenId++);
   }
 

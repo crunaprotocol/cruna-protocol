@@ -154,7 +154,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  28 passing (10s)
+  28 passing (11s)
 
 --------------------------------|----------|----------|----------|----------|----------------|
 File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -181,13 +181,13 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   InheritancePlugin.sol         |      100 |    71.43 |      100 |    98.73 |            179 |
   InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
  contracts/protected/           |      100 |       56 |      100 |    97.67 |                |
-  ProtectedNFT.sol              |      100 |       56 |      100 |    97.67 |             85 |
+  ProtectedNFT.sol              |      100 |       56 |      100 |    97.67 |             84 |
  contracts/utils/               |      100 |      100 |      100 |      100 |                |
   FlexiProxy.sol                |      100 |      100 |      100 |      100 |                |
   SignatureValidator.sol        |      100 |      100 |      100 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |    99.61 |    64.49 |      100 |    97.83 |                |
+All files                       |    99.62 |    64.49 |      100 |    97.83 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 
