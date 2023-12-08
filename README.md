@@ -69,7 +69,7 @@ Cruna Vault isn't just limited to ERC-6551 integrations; it offers a robust foun
 
 * **Customizable Security**: Tailor Cruna Vault's robust security features, like Protectors and Sentinels, to fit the unique needs of your NFT project or platform.
 * **Brand Integration**: Seamlessly integrate Cruna Vault's functionalities into your NFTs while maintaining your brand identity.
-* **Trust and Assurance**: Offer your users and collectors an added layer of security, increasing trust and value in your NFT offerings. 
+* **Trust and Assurance**: Offer your users and collectors an added layer of security, increasing trust and value in your NFT offerings.
 
 **For Collectors and Investors:**
 
@@ -102,16 +102,22 @@ We're introducing secure USB keys as an extra layer of security. These keys are 
 
 A new family of Zero Knowledge based vaults will allow a high level of privacy.
 
+## Experimental Features
+
+### ERC-1155 support
+
+In addition to ERC-721, Cruna Protocol may support ERC-1155 tokens in a near future. We are investigating the best way to do it and if there are reasonable use cases for it. For example, the plugin architecture could extend what an ERC-1155 token could do.
+
 ## In summary
 
 Cruna Vault is more than just an NFT; it's a comprehensive solution for securing and managing your digital assets, today and in the future. Join us in embracing this new era of digital asset security.
 
 ## Development
 
-Cruna is in alpha stage, and to use it you must specify the version you want to install. Right now, the only available version is `1.0.0-alpha.1`. Install it with
+Cruna is in alpha stage, and to use it you must specify the version you want to install. Right now, the only available version is `1.0.0-alpha.3`. Install it with
 
 ```sh
-npm install @cruna/protocol@1.0.0-alpha.1 @openzeppelin/contracts erc6551
+npm install @cruna/protocol@1.0.0-alpha.3 @openzeppelin/contracts erc6551
 ```
 or similar commands using Yarn or Pnpm, and use in your Solidity smart contracts, for example, as
 
@@ -133,6 +139,20 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**1.0.0-alpha.3**
+
+- Add function to disable and re-enable plugins
+- Making inheritance settable when protectors are active
+- Add extra params function to SignatureValidator to be used by plugins
+
+**1.0.0-alpha.2**
+
+- Improve the InheritancePlugin to allow the owner explicitly nominate a beneficiary, in addition to the sentinels
+
+**1.0.0-alpha.1**
+
+- Optimize gas usage minting a new NFT and adding a new plugin
+
 **1.0.0-alpha.1**
 
 - First version of the new protocol. The first one, published as @cruna/cruna-protocol, has been deprecated.
@@ -140,7 +160,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  22 passing (6s)
+  22 passing (7s)
 
 --------------------------------|----------|----------|----------|----------|----------------|
 File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
