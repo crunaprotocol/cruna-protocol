@@ -35,7 +35,8 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   error WrongDataOrNotSignedByProtector();
   error NotInitiated();
   error AlreadyInitiated();
-  error OutOfRange();
+  error SupplyCapReached();
+  error ErrorCreatingManager();
 
   Guardian public guardian;
   SignatureValidator public validator;
@@ -188,9 +189,12 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   // @dev This function will mint a new token and initialize it.
   // @param to The address of the recipient.
   function _mintAndInit(address to) internal {
-    //    if (!(nextTokenId % 1e6)) revert OutOfRange();
+    // the max supply is 999,999
+    if (nextTokenId % 1e6 == 0) revert SupplyCapReached();
     if (address(registry) == address(0)) revert NotInitiated();
-    registry.createAccount(address(flexiProxy), salt, block.chainid, address(this), nextTokenId);
+    try registry.createAccount(address(flexiProxy), salt, block.chainid, address(this), nextTokenId) {} catch {
+      revert ErrorCreatingManager();
+    }
     _safeMint(to, nextTokenId++);
   }
 

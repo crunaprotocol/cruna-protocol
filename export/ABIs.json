@@ -1887,6 +1887,11 @@
       },
       {
         "inputs": [],
+        "name": "ErrorCreatingManager",
+        "type": "error"
+      },
+      {
+        "inputs": [],
         "name": "NotInitiated",
         "type": "error"
       },
@@ -1912,12 +1917,12 @@
       },
       {
         "inputs": [],
-        "name": "OutOfRange",
+        "name": "SignatureAlreadyUsed",
         "type": "error"
       },
       {
         "inputs": [],
-        "name": "SignatureAlreadyUsed",
+        "name": "SupplyCapReached",
         "type": "error"
       },
       {
