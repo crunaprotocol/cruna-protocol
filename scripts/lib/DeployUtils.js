@@ -106,7 +106,7 @@ class DeployUtils {
   async deploy(contractName, ...args) {
     const chainId = await this.currentChainId();
     debug("Deploying", contractName, "to", this.network(chainId));
-    const contract = await ethers.getContractFactory(contractName);
+    const contract = await this.ethers.getContractFactory(contractName);
     const deployed = await contract.deploy(...args);
     debug("Tx:", deployed.deployTransaction.hash);
     await deployed.deployed();
@@ -132,7 +132,7 @@ class DeployUtils {
 
   async attach(contractName, contractAddress) {
     const chainId = await this.currentChainId();
-    const contract = await ethers.getContractFactory(contractName);
+    const contract = await this.ethers.getContractFactory(contractName);
     const address = contractAddress || this.getAddress(chainId, contractName);
     return contract.attach(address);
   }
@@ -146,7 +146,7 @@ class DeployUtils {
     }
     const chainId = await this.currentChainId();
     debug("Deploying", contractName, "to", this.network(chainId));
-    const contract = await ethers.getContractFactory(contractName);
+    const contract = await this.ethers.getContractFactory(contractName);
     const deployed = await upgrades.deployProxy(contract, [...args], options);
     debug("Tx:", deployed.deployTransaction.hash);
     await deployed.deployed();
@@ -159,7 +159,7 @@ class DeployUtils {
   async upgradeProxy(contractName, gasLimit) {
     const chainId = await this.currentChainId();
     debug("Upgrading", contractName, "to", this.network(chainId));
-    const Contract = await ethers.getContractFactory(contractName);
+    const Contract = await this.ethers.getContractFactory(contractName);
     const address = this.getAddress(chainId, contractName);
     const upgraded = await upgrades.upgradeProxy(address, Contract, gasLimit ? {gasLimit} : {});
     debug("Tx:", upgraded.deployTransaction.hash);
@@ -167,6 +167,76 @@ class DeployUtils {
     debug("Upgraded");
     debug(await this.verifyCodeInstructions(contractName, upgraded.deployTransaction.hash));
     return upgraded;
+  }
+
+  async deployContractViaNickSFactory(
+      deployer,
+      contractName,
+      constructorTypes,
+      constructorArgs,
+      salt // example >> this.keccak256("Cruna"),
+  ) {
+    const json = await artifacts.readArtifact(contractName);
+    let contractBytecode = json.bytecode;
+
+    // examples:
+    // const constructorArgs = [arg1, arg2, arg3];
+    // const constructorTypes = ["type1", "type2", "type3"];
+
+    if (constructorTypes) {
+      // ABI-encode the constructor arguments
+      const encodedArgs = this.ethers.utils.defaultAbiCoder.encode(constructorTypes, constructorArgs);
+      contractBytecode = contractBytecode + encodedArgs.substring(2); // Remove '0x' from encoded args
+    }
+
+    const data = salt + contractBytecode.substring(2);
+    const tx = {
+      to: this.nickSFactoryAddress(),
+      data,
+    };
+    const transaction = await deployer.sendTransaction(tx);
+    await transaction.wait();
+    return this.ethers.utils.getCreate2Address(
+        this.nickSFactoryAddress(),
+        salt,
+        this.ethers.utils.keccak256(contractBytecode),
+    );
+  }
+
+  nickSFactoryAddress() {
+    return `0x4e59b44847b379578588920ca78fbf26c0b4956c`;
+  }
+
+  async getAddressViaNickSFactory(
+      deployer,
+      contractName,
+      constructorTypes,
+      constructorArgs,
+      salt // example >> this.keccak256("Cruna"),
+  ) {
+    const json = await artifacts.readArtifact(contractName);
+    let contractBytecode = json.bytecode;
+
+    // examples:
+    // const constructorArgs = [arg1, arg2, arg3];
+    // const constructorTypes = ["type1", "type2", "type3"];
+
+    if (constructorTypes) {
+      // ABI-encode the constructor arguments
+      const encodedArgs = this.ethers.utils.defaultAbiCoder.encode(constructorTypes, constructorArgs);
+      contractBytecode = contractBytecode + encodedArgs.substring(2); // Remove '0x' from encoded args
+    }
+
+    return this.ethers.utils.getCreate2Address(
+        this.nickSFactoryAddress(),
+        salt,
+        this.ethers.utils.keccak256(contractBytecode),
+    );
+  }
+
+  keccak256(str) {
+    const bytes = this.ethers.utils.toUtf8Bytes(str);
+    return this.ethers.utils.keccak256(bytes);
   }
 
   network(chainId) {

@@ -12,21 +12,15 @@ async function main() {
   const chainId = await deployUtils.currentChainId();
 
   const [deployer] = await ethers.getSigners();
-  let manager,
-    managerAddress,
-    flexiProxy,
+  let managerAddress,
     managerProxyAddress,
     guardian,
     guardianAddress,
-    inheritancePlugin,
     inheritancePluginAddress,
-    inheritancePluginProxy,
     inheritancePluginProxyAddress,
-    signatureValidator,
     signatureValidatorAddress,
     vault,
     vaultAddress,
-    erc6551Registry,
     registry;
 
   let erc6551RegistryAddress = "0x000000006551c19487814612e58FE06813775758";
