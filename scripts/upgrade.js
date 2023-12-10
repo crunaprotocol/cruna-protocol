@@ -8,11 +8,12 @@ const hre = require("hardhat");
 
 const ethers = hre.ethers;
 const deployed = require("../export/deployed.json");
-const DeployUtils = require("./lib/DeployUtils");
+const path = require("path");
+const DeployUtils = require("deploy-utils");
 let deployUtils;
 
 async function main() {
-  deployUtils = new DeployUtils(ethers);
+  deployUtils = new DeployUtils(path.resolve(__dirname, ".."), console.log);
   const chainId = await deployUtils.currentChainId();
 
   const contractName = process.env.CONTRACT;

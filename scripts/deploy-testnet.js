@@ -1,14 +1,15 @@
 require("dotenv").config();
 const hre = require("hardhat");
 const ethers = hre.ethers;
-const DeployUtils = require("./lib/DeployUtils");
-const { normalize, deployContractViaNickSFactory, keccak256, deployContract } = require("../test/helpers");
+const path = require("path");
+const DeployUtils = require("deploy-utils");
+const { normalize } = require("../test/helpers");
 let deployUtils;
 
 const { expect } = require("chai");
 
 async function main() {
-  deployUtils = new DeployUtils(ethers);
+  deployUtils = new DeployUtils(path.resolve(__dirname, ".."), console.log);
 
   const chainId = await deployUtils.currentChainId();
 
@@ -20,7 +21,7 @@ async function main() {
   let managerProxy = await deployUtils.deploy("ManagerProxy", manager.address);
   let inheritancePlugin = await deployUtils.deploy("InheritancePlugin");
   let inheritancePluginProxy = await deployUtils.deploy("InheritancePluginProxy", inheritancePlugin.address);
-  let nameHash = keccak256("InheritancePlugin");
+  let nameHash = deployUtils.keccak256("InheritancePlugin");
   await deployUtils.Tx(
     guardian.setTrustedImplementation(nameHash, inheritancePluginProxy.address, true),
     "Setting trusted implementation for InheritancePlugin",
@@ -29,7 +30,7 @@ async function main() {
 
   let vault = await deployUtils.deploy("CrunaFlexiVault", deployer.address);
   await deployUtils.Tx(
-    vault.init(registry.address, guardian.address, signatureValidator.address, managerProxy.address),
+    vault.init(registry.address, guardian.address, signatureValidator.address, managerProxy.address, { gasLimit: 120000 }),
     "Init vault",
   );
 

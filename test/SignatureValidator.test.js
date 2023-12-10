@@ -1,7 +1,5 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-const DeployUtils = require("../scripts/lib/DeployUtils");
-let deployUtils;
 const helpers = require("./helpers");
 const { getTimestamp } = require("./helpers");
 const { domainType } = require("./helpers/eip712");
@@ -9,8 +7,6 @@ helpers.initEthers(ethers);
 const { privateKeyByWallet, deployContract, getChainId, makeSignature, keccak256 } = helpers;
 
 describe("SignatureValidator", function () {
-  deployUtils = new DeployUtils(ethers);
-
   let chainId;
 
   let validator;
