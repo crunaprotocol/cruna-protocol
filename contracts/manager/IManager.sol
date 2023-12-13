@@ -91,6 +91,7 @@ interface IManager {
   function getSafeRecipients() external view returns (address[] memory);
 
   function setSignedActor(
+    bytes32 pluginNameHash,
     string memory roleString,
     address actor,
     bytes32 role_,

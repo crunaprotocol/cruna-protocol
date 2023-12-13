@@ -43,8 +43,8 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard {
   error PluginNotFoundOrDisabled();
   error RoleNotAuthorizedFor(bytes32 role, bytes32 pluginNameHash);
 
-  bytes32 public constant PROTECTOR = keccak256("PROTECTOR");
-  bytes32 public constant SAFE_RECIPIENT = keccak256("SAFE_RECIPIENT");
+  bytes4 public constant PROTECTOR = bytes4(keccak256("PROTECTOR"));
+  bytes4 public constant SAFE_RECIPIENT = bytes4(keccak256("SAFE_RECIPIENT"));
 
   bytes32 public constant SALT = bytes32(uint256(69));
 
@@ -55,7 +55,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard {
   bytes32[] public registeredPluginRoles;
 
   function nameHash() public virtual override returns (bytes4) {
-    return byte4(keccak256("Manager"));
+    return bytes4(keccak256("Manager"));
   }
 
   // simulate ERC-721 to allow plugins to be deployed via ERC-6551 Registry
@@ -284,7 +284,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard {
   // This can be only called by plugins saving its own actors
   function setSignedActor(
     bytes32 pluginNameHash,
-    bytes32 role_,
+    string memory roleString,
     address actor,
     bool status,
     uint256 timestamp,
