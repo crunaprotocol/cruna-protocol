@@ -2,7 +2,6 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { toChecksumAddress } = require("ethereumjs-util");
 
-const DeployUtils = require("../scripts/lib/DeployUtils");
 const {
   cl,
   amount,
@@ -24,8 +23,6 @@ describe("VaultFactory", function () {
   let factory;
   let usdc, usdt;
   let deployer, bob, alice, fred;
-
-  const deployUtils = new DeployUtils(ethers);
 
   before(async function () {
     [deployer, bob, alice, fred] = await ethers.getSigners();

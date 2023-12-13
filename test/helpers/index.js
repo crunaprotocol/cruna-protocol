@@ -3,8 +3,6 @@ const { assert, expect } = require("chai");
 const BN = require("bn.js");
 const ethSigUtil = require("eth-sig-util");
 const { artifacts } = hre;
-const DeployUtils = require("../../scripts/lib/DeployUtils");
-let deployUtils;
 
 const { domainType } = require("./eip712");
 let count = 9000;
@@ -12,7 +10,6 @@ let count = 9000;
 const Helpers = {
   initEthers(ethers) {
     this.ethers = ethers;
-    deployUtils = new DeployUtils(this.ethers);
   },
 
   async number(bn) {
@@ -39,11 +36,6 @@ const Helpers = {
     const upgraded = await upgrades.upgradeProxy(address, contract);
     await upgraded.deployed();
     return upgraded;
-  },
-
-  async attach(chainId, contractName, contractAddress) {
-    const contract = await this.ethers.getContractFactory(contractName);
-    return contract.attach(contractAddress);
   },
 
   async deployContractBy(contractName, owner, ...args) {
@@ -138,7 +130,7 @@ const Helpers = {
     const signatureValidator = await ethers.getContractAt("SignatureValidator", signatureValidatorAddress);
 
     const guardianAddress = await Helpers.deployContractViaNickSFactory(deployer, "Guardian", ["address"], [deployer.address]);
-    const guardian = await deployUtils.attach("Guardian", guardianAddress);
+    const guardian = await ethers.getContractAt("Guardian", guardianAddress);
 
     const vaultAddress = await Helpers.deployContractViaNickSFactory(
       deployer,
@@ -146,7 +138,7 @@ const Helpers = {
       ["address"],
       [deployer.address],
     );
-    const vault = await deployUtils.attach("CrunaFlexiVault", vaultAddress);
+    const vault = await ethers.getContractAt("CrunaFlexiVault", vaultAddress);
     await vault.init(erc6551RegistryAddress, guardianAddress, signatureValidatorAddress, proxyAddress);
 
     return [erc6551Registry, proxy, signatureValidator, guardian, vault];

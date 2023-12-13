@@ -14,7 +14,6 @@ const {
   getTimestamp,
   signRequest,
   keccak256,
-  attach,
 } = require("./helpers");
 
 describe("Sentinel and Inheritance", function () {

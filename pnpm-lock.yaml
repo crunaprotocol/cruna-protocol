@@ -46,6 +46,9 @@ devDependencies:
   chai:
     specifier: ^4.3.10
     version: 4.3.10
+  deploy-utils:
+    specifier: 1.0.0-beta.0
+    version: 1.0.0-beta.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.7)(ethers@5.7.2)(typescript@5.3.2)
   dotenv:
     specifier: ^16.3.1
     version: 16.3.1
@@ -3290,6 +3293,27 @@ packages:
   /depd@2.0.0:
     resolution: {integrity: sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==}
     engines: {node: '>= 0.8'}
+    dev: true
+
+  /deploy-utils@1.0.0-beta.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.7)(ethers@5.7.2)(typescript@5.3.2):
+    resolution: {integrity: sha512-s7LviuMDZYnUM3hLY83D9Y8ZXXQ4JvCVqloo2b0qz0iLK8skazYJa6LSGRPaNuahV0XTjkeQoIGZeQxrBfx+mg==}
+    dependencies:
+      '@ethersproject/contracts': 5.7.0
+      '@openzeppelin/hardhat-upgrades': 1.28.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.7)(ethers@5.7.2)(hardhat@2.19.1)
+      ethereumjs-abi: 0.6.8
+      fs-extra: 11.2.0
+      hardhat: 2.19.1(typescript@5.3.2)
+    transitivePeerDependencies:
+      - '@nomiclabs/hardhat-ethers'
+      - '@nomiclabs/hardhat-etherscan'
+      - '@nomiclabs/harhdat-etherscan'
+      - bufferutil
+      - encoding
+      - ethers
+      - supports-color
+      - ts-node
+      - typescript
+      - utf-8-validate
     dev: true
 
   /destroy@1.2.0:
