@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@openzeppelin/contracts':
-    specifier: ^4.9.3
-    version: 4.9.3
+    specifier: ^5.0.1
+    version: 5.0.1
   erc6551:
     specifier: 0.3.1
     version: 0.3.1
@@ -48,7 +48,7 @@ devDependencies:
     version: 4.3.10
   deploy-utils:
     specifier: 1.0.0-beta.0
-    version: 1.0.0-beta.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.7)(ethers@5.7.2)(typescript@5.3.2)
+    version: 1.0.0-beta.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(typescript@5.3.2)
   dotenv:
     specifier: ^16.3.1
     version: 16.3.1
@@ -1209,8 +1209,8 @@ packages:
     resolution: {integrity: sha512-jjaHAVRMrE4UuZNfDwjlLGDxTHWIOwTJS2ldnc278a0gevfXfPr8hxKEVBGFBE96kl2G3VHDZhUimw/+G3TG2A==}
     dev: true
 
-  /@openzeppelin/contracts@4.9.3:
-    resolution: {integrity: sha512-He3LieZ1pP2TNt5JbkPA4PNT9WC3gOTOlDcFGJW4Le4QKqwmiNJCRt44APfxMxvq7OugU/cqYuPcSBzOw38DAg==}
+  /@openzeppelin/contracts@5.0.1:
+    resolution: {integrity: sha512-yQJaT5HDp9hYOOp4jTYxMsR02gdFZFXhewX5HW9Jo4fsqSVqqyIO/xTHdWDaKX5a3pv1txmf076Lziz+sO7L1w==}
     dev: false
 
   /@openzeppelin/defender-base-client@1.52.0(debug@4.3.4):
@@ -3295,11 +3295,11 @@ packages:
     engines: {node: '>= 0.8'}
     dev: true
 
-  /deploy-utils@1.0.0-beta.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.7)(ethers@5.7.2)(typescript@5.3.2):
+  /deploy-utils@1.0.0-beta.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(typescript@5.3.2):
     resolution: {integrity: sha512-s7LviuMDZYnUM3hLY83D9Y8ZXXQ4JvCVqloo2b0qz0iLK8skazYJa6LSGRPaNuahV0XTjkeQoIGZeQxrBfx+mg==}
     dependencies:
       '@ethersproject/contracts': 5.7.0
-      '@openzeppelin/hardhat-upgrades': 1.28.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.7)(ethers@5.7.2)(hardhat@2.19.1)
+      '@openzeppelin/hardhat-upgrades': 1.28.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(hardhat@2.19.1)
       ethereumjs-abi: 0.6.8
       fs-extra: 11.2.0
       hardhat: 2.19.1(typescript@5.3.2)
