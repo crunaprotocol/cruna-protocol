@@ -67,3 +67,4 @@ db
 /flattened
 tmp
 !tmp/.gitkeep
+/scripts/deploy-debug*

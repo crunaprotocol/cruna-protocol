@@ -2,8 +2,10 @@ const hre = require("hardhat");
 const { assert, expect } = require("chai");
 const BN = require("bn.js");
 const ethSigUtil = require("eth-sig-util");
+const { artifacts } = hre;
 
 const { domainType } = require("./eip712");
+let count = 9000;
 
 const Helpers = {
   initEthers(ethers) {
@@ -30,9 +32,10 @@ const Helpers = {
     }
   },
 
-  async attach(chainId, contractName, contractAddress) {
-    const contract = await this.ethers.getContractFactory(contractName);
-    return contract.attach(contractAddress);
+  async upgradeProxy(upgrades, address, contract) {
+    const upgraded = await upgrades.upgradeProxy(address, contract);
+    await upgraded.deployed();
+    return upgraded;
   },
 
   async deployContractBy(contractName, owner, ...args) {
@@ -40,6 +43,10 @@ const Helpers = {
     const contract = await Contract.connect(owner).deploy(...args);
     await contract.deployed();
     return contract;
+  },
+
+  cl(...args) {
+    console.log("\n >>>", count++, ...args, "\n");
   },
 
   async deployNickSFactory(deployer) {
@@ -63,12 +70,11 @@ const Helpers = {
   async deployContractViaNickSFactory(
     deployer,
     contractName,
-    folderName,
     constructorTypes,
     constructorArgs,
     salt = Helpers.keccak256("Cruna"),
   ) {
-    const json = require(`../../artifacts/${folderName}/${contractName}.sol/${contractName}.json`);
+    const json = await artifacts.readArtifact(contractName);
     let contractBytecode = json.bytecode;
 
     // examples:
@@ -88,6 +94,76 @@ const Helpers = {
     };
     const transaction = await deployer.sendTransaction(tx);
     await transaction.wait();
+    return this.ethers.utils.getCreate2Address(
+      Helpers.nickSFactoryAddress,
+      salt,
+      this.ethers.utils.keccak256(contractBytecode),
+    );
+  },
+
+  async deployAll(deployer) {
+    // using Nick's factory
+    await Helpers.deployNickSFactory(deployer);
+
+    const erc6551RegistryAddress = await Helpers.deployContractViaNickSFactory(
+      deployer,
+      "ERC6551Registry",
+      undefined,
+      undefined,
+      "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31",
+    );
+    const erc6551Registry = await ethers.getContractAt("ERC6551Registry", erc6551RegistryAddress);
+
+    const managerAddress = await Helpers.deployContractViaNickSFactory(deployer, "Manager");
+    const manager = await ethers.getContractAt("Manager", managerAddress);
+
+    const proxyAddress = await Helpers.deployContractViaNickSFactory(deployer, "ManagerProxy", ["address"], [managerAddress]);
+    const proxy = await ethers.getContractAt("ManagerProxy", proxyAddress);
+
+    const signatureValidatorAddress = await Helpers.deployContractViaNickSFactory(
+      deployer,
+      "SignatureValidator",
+      ["string", "string"],
+      ["Cruna", "1"],
+    );
+
+    const signatureValidator = await ethers.getContractAt("SignatureValidator", signatureValidatorAddress);
+
+    const guardianAddress = await Helpers.deployContractViaNickSFactory(deployer, "Guardian", ["address"], [deployer.address]);
+    const guardian = await ethers.getContractAt("Guardian", guardianAddress);
+
+    const vaultAddress = await Helpers.deployContractViaNickSFactory(
+      deployer,
+      "CrunaFlexiVault",
+      ["address"],
+      [deployer.address],
+    );
+    const vault = await ethers.getContractAt("CrunaFlexiVault", vaultAddress);
+    await vault.init(erc6551RegistryAddress, guardianAddress, signatureValidatorAddress, proxyAddress);
+
+    return [erc6551Registry, proxy, signatureValidator, guardian, vault];
+  },
+
+  async getAddressViaNickSFactory(
+    deployer,
+    contractName,
+    constructorTypes,
+    constructorArgs,
+    salt = Helpers.keccak256("Cruna"),
+  ) {
+    const json = await artifacts.readArtifact(contractName);
+    let contractBytecode = json.bytecode;
+
+    // examples:
+    // const constructorArgs = [arg1, arg2, arg3];
+    // const constructorTypes = ["type1", "type2", "type3"];
+
+    if (constructorTypes) {
+      // ABI-encode the constructor arguments
+      const encodedArgs = ethers.utils.defaultAbiCoder.encode(constructorTypes, constructorArgs);
+      contractBytecode = contractBytecode + encodedArgs.substring(2); // Remove '0x' from encoded args
+    }
+
     return this.ethers.utils.getCreate2Address(
       Helpers.nickSFactoryAddress,
       salt,
@@ -185,14 +261,14 @@ const Helpers = {
     return ethers.utils.keccak256(bytes);
   },
 
-  async signRequest(scope, owner, actor, tokenId, extraValue, timestamp, validFor, chainId, signer, validator) {
+  async signRequest(scope, owner, actor, tokenId, extra, timestamp, validFor, chainId, signer, validator) {
     scope = Helpers.keccak256(scope);
     const message = {
       scope: scope.toString(),
       owner,
       actor,
       tokenId: tokenId.toString(),
-      status: extraValue,
+      extra,
       timestamp: timestamp.toString(),
       validFor: validFor.toString(),
     };
@@ -206,7 +282,39 @@ const Helpers = {
         { name: "owner", type: "address" },
         { name: "actor", type: "address" },
         { name: "tokenId", type: "uint256" },
-        { name: "status", type: "bool" },
+        { name: "extra", type: "uint256" },
+        { name: "timestamp", type: "uint256" },
+        { name: "validFor", type: "uint256" },
+      ],
+      message,
+    );
+  },
+  async signPluginRequest(name, owner, addr, tokenId, extra, extra2, extra3, timestamp, validFor, chainId, signer, validator) {
+    const nameHash = Helpers.keccak256(name);
+    const message = {
+      nameHash: nameHash.toString(),
+      owner,
+      addr,
+      tokenId: tokenId.toString(),
+      extra,
+      extra2,
+      extra3,
+      timestamp: timestamp.toString(),
+      validFor: validFor.toString(),
+    };
+    return Helpers.makeSignature(
+      chainId,
+      validator.address,
+      Helpers.privateKeyByWallet[signer],
+      "Auth",
+      [
+        { name: "nameHash", type: "bytes32" },
+        { name: "owner", type: "address" },
+        { name: "addr", type: "address" },
+        { name: "tokenId", type: "uint256" },
+        { name: "extra", type: "uint256" },
+        { name: "extra2", type: "uint256" },
+        { name: "extra3", type: "uint256" },
         { name: "timestamp", type: "uint256" },
         { name: "validFor", type: "uint256" },
       ],

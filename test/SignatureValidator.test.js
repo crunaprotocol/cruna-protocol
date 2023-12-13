@@ -1,7 +1,5 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-const DeployUtils = require("../scripts/lib/DeployUtils");
-let deployUtils;
 const helpers = require("./helpers");
 const { getTimestamp } = require("./helpers");
 const { domainType } = require("./helpers/eip712");
@@ -9,8 +7,6 @@ helpers.initEthers(ethers);
 const { privateKeyByWallet, deployContract, getChainId, makeSignature, keccak256 } = helpers;
 
 describe("SignatureValidator", function () {
-  deployUtils = new DeployUtils(ethers);
-
   let chainId;
 
   let validator;
@@ -29,7 +25,7 @@ describe("SignatureValidator", function () {
     validator = await deployContract("SignatureValidator", name, version);
   });
 
-  it("should recover the signer of a recoverSigner", async function () {
+  it("should recover the signer of a recoverSetActorSigner", async function () {
     const sentinelBytes = ethers.utils.toUtf8Bytes("SENTINEL");
     const scope = ethers.utils.keccak256(sentinelBytes);
 
@@ -38,7 +34,7 @@ describe("SignatureValidator", function () {
       owner: tokenOwner.address,
       actor: protector.address,
       tokenId: 1,
-      status: true,
+      extra: 1,
       timestamp: 1700453731,
       validFor: 3600,
     };
@@ -53,7 +49,7 @@ describe("SignatureValidator", function () {
         { name: "owner", type: "address" },
         { name: "actor", type: "address" },
         { name: "tokenId", type: "uint256" },
-        { name: "status", type: "bool" },
+        { name: "extra", type: "uint256" },
         { name: "timestamp", type: "uint256" },
         { name: "validFor", type: "uint256" },
       ],
@@ -61,12 +57,12 @@ describe("SignatureValidator", function () {
     );
 
     expect(
-      await validator.recoverSigner(
+      await validator.recoverSetActorSigner(
         message.scope,
         message.owner,
         message.actor,
         message.tokenId,
-        message.status,
+        message.extra,
         message.timestamp,
         message.validFor,
         signature,

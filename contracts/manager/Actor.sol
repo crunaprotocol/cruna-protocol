@@ -11,20 +11,8 @@ contract Actor {
   error ActorNotFound(bytes32);
   error ActorAlreadyAdded();
   error TooManyActors();
-  error RoleAlreadyAdded();
 
   uint256 public constant MAX_ACTORS = 16;
-
-  uint256 public lastRoleIndex;
-  mapping(bytes32 => uint256) public roleIndex;
-  mapping(uint256 => bytes32) public roleNames;
-
-  function _addRole(bytes32 role) internal {
-    if (roleIndex[role] != 0) revert RoleAlreadyAdded();
-    lastRoleIndex++;
-    roleIndex[role] = lastRoleIndex;
-    roleNames[lastRoleIndex] = role;
-  }
 
   mapping(bytes32 => address[]) private _actors;
 
@@ -75,11 +63,8 @@ contract Actor {
     _actors[role_].push(actor_);
   }
 
-  function _resetActors() internal {
-    // this should never go our of gas because roles are limited
-    for (uint256 i = 1; i <= lastRoleIndex; i++) {
-      delete _actors[roleNames[i]];
-    }
+  function _cleanActors(bytes32 role) internal {
+    delete _actors[role];
   }
 
   // @dev This empty reserved space is put in place to allow future versions to add new

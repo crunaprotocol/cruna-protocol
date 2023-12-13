@@ -16,6 +16,6 @@
 
   if [ -d "../cruna-dashboard" ]; then
     cp export/ABIs.json ../cruna-dashboard/src/config/.
-    cp export/deployed.json ../cruna-dashboard/src/config/.
+    cp export/deployedProduction.json ../cruna-dashboard/src/config/.
   fi
 )

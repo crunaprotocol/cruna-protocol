@@ -19,5 +19,3 @@ if [[ \"\$HUSKY\" != \"0\" ]]; then
 fi
 "
 fi
-
-node ./scripts/conditional-symlink.js

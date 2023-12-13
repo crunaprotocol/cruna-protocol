@@ -5,14 +5,12 @@ pragma solidity ^0.8.20;
 
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
-import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
 import {Actor} from "./Actor.sol";
 import {IManager} from "./IManager.sol";
 import {IPlugin} from "../plugins/IPlugin.sol";
-import {FlexiGuardian, ManagerBase} from "./ManagerBase.sol";
+import {ManagerBase} from "./ManagerBase.sol";
 
 //import {console} from "hardhat/console.sol";
 
@@ -20,17 +18,11 @@ interface IProxy {
   function isProxy() external pure returns (bool);
 }
 
-interface IVault {
-  function managedTransfer(uint256 tokenId, address to) external;
-  function emitLockedEvent(uint256 tokenId, bool locked_) external;
-}
-
 contract Manager is IManager, Actor, ManagerBase {
   using ECDSA for bytes32;
   using Strings for uint256;
   using Address for address;
 
-  error TimestampZero();
   error Forbidden();
   error ProtectorNotFound();
   error ProtectorAlreadySetByYou();
@@ -39,58 +31,78 @@ contract Manager is IManager, Actor, ManagerBase {
   error WrongDataOrNotSignedByProtector();
   error SignatureAlreadyUsed();
   error CannotBeYourself();
-  error NotTheInheritancePlugin();
+  error NotAuthorized();
   error PluginAlreadyPlugged();
-  error RoleNotFound();
   error NotAProxy();
   error ContractsCannotBeProtectors();
+  error PluginNotFound();
+  error DisabledPlugin();
+  error InconsistentPolicy();
 
-  bool public constant IS_MANAGER = true;
-  bool public constant IS_NOT_MANAGER = false;
+  bytes32 public constant PROTECTOR = keccak256("PROTECTOR");
+  bytes32 public constant SAFE_RECIPIENT = keccak256("SAFE_RECIPIENT");
 
-  bytes32 public constant PROTECTOR = keccak256(abi.encodePacked("PROTECTOR"));
-  bytes32 public constant SENTINEL = keccak256(abi.encodePacked("SENTINEL"));
-  bytes32 public constant SAFE_RECIPIENT = keccak256(abi.encodePacked("SAFE_RECIPIENT"));
-
-  IERC6551Registry public registry;
-  SignatureValidator public signatureValidator;
-  IVault public vault;
-
-  mapping(bytes32 => IPlugin) public plugins;
-  mapping(bytes32 => bytes32) public pluginByRole;
   mapping(bytes32 => bool) public usedSignatures;
 
-  // @dev see {IManager-init}
-  // this must be execute immediately after the deployment
-  function init(address registry_, address guardian_, address signatureValidator_) external virtual override {
-    _nameHash = keccak256("Manager");
-    _addRole(keccak256("PROTECTOR"));
-    _addRole(keccak256("SAFE_RECIPIENT"));
-    if (msg.sender != tokenAddress()) revert Forbidden();
-    guardian = FlexiGuardian(guardian_);
-    signatureValidator = SignatureValidator(signatureValidator_);
-    vault = IVault(msg.sender);
-    registry = IERC6551Registry(registry_);
+  mapping(bytes32 => IPlugin) public plugins;
+  mapping(bytes32 => bytes32) public pluginNamesByRole;
+  bytes32[] public pluginRoles;
+
+  mapping(bytes32 => bool) public disabledPlugins;
+
+  function nameHash() public virtual override returns (bytes32) {
+    return keccak256("Manager");
   }
 
   function plug(string memory name, address pluginProxy) external virtual override onlyTokenOwner {
     try IProxy(pluginProxy).isProxy() returns (bool) {} catch {
       revert NotAProxy();
     }
-    bytes32 salt = keccak256(abi.encodePacked(name));
-    if (address(plugins[salt]) != address(0)) revert PluginAlreadyPlugged();
-    if (!guardian.isTrustedImplementation(salt, pluginProxy)) revert InvalidImplementation();
+    bytes32 _nameHash = keccak256(abi.encodePacked(name));
+    if (address(plugins[_nameHash]) != address(0)) revert PluginAlreadyPlugged();
+    if (!guardian().isTrustedImplementation(_nameHash, pluginProxy)) revert InvalidImplementation();
     // the manager pretends to be an NFT to use the ERC-6551 registry
-    registry.createAccount(pluginProxy, salt, block.chainid, address(this), tokenId());
-    address pluginAddress = registry.account(pluginProxy, salt, block.chainid, address(this), tokenId());
-    plugins[salt] = IPlugin(pluginAddress);
-    plugins[salt].init(address(guardian));
-    bytes32[] memory roles = plugins[salt].pluginRoles();
+    registry().createAccount(pluginProxy, _nameHash, block.chainid, address(this), tokenId());
+    address pluginAddress = registry().account(pluginProxy, _nameHash, block.chainid, address(this), tokenId());
+    plugins[_nameHash] = IPlugin(pluginAddress);
+    plugins[_nameHash].init();
+    bytes32[] memory roles = plugins[_nameHash].pluginRoles();
     for (uint256 i = 0; i < roles.length; i++) {
-      _addRole(roles[i]);
-      pluginByRole[roles[i]] = salt;
+      pluginNamesByRole[roles[i]] = _nameHash;
+      pluginRoles.push(roles[i]);
     }
-    emit PluginPlugged(name, pluginAddress);
+    emit PluginStatusChange(name, pluginAddress, true);
+  }
+
+  // Plugin cannot be unplugged since they have been deployed via ERC-6551 Registry
+  // so, we mark them as disabled
+  function disablePlugin(string memory name, bool resetPlugin) external virtual override onlyTokenOwner {
+    bytes32 _nameHash = keccak256(abi.encodePacked(name));
+    if (address(plugins[_nameHash]) == address(0)) revert PluginNotFound();
+    disabledPlugins[_nameHash] = true;
+    if (resetPlugin) {
+      _resetPlugin(_nameHash);
+    }
+    emit PluginStatusChange(name, address(plugins[_nameHash]), false);
+  }
+
+  function reEnablePlugin(string memory name, bool resetPlugin) external virtual override onlyTokenOwner {
+    bytes32 _nameHash = keccak256(abi.encodePacked(name));
+    if (disabledPlugins[_nameHash] == false) revert PluginNotFound();
+    delete disabledPlugins[_nameHash];
+    if (resetPlugin) {
+      _resetPlugin(_nameHash);
+    }
+    emit PluginStatusChange(name, address(plugins[_nameHash]), true);
+  }
+
+  function _resetPlugin(bytes32 _nameHash) internal virtual {
+    for (uint256 k = 0; k < pluginRoles.length; k++) {
+      if (pluginNamesByRole[pluginRoles[k]] == _nameHash) {
+        _cleanActors(pluginRoles[k]);
+      }
+    }
+    plugins[_nameHash].reset();
   }
 
   // simulate ERC-721 to allow plugins to be deployed via ERC-6551 Registry
@@ -132,15 +144,15 @@ contract Manager is IManager, Actor, ManagerBase {
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
     if (protector_.isContract()) revert ContractsCannotBeProtectors();
-    _setSignedActor("PROTECTOR", protector_, PROTECTOR, status, timestamp, validFor, signature, IS_MANAGER);
+    _setSignedActor("PROTECTOR", protector_, PROTECTOR, status, timestamp, validFor, signature, true, _msgSender());
     emit ProtectorUpdated(_msgSender(), protector_, status);
     if (status) {
       if (countActiveProtectors() == 1) {
-        vault.emitLockedEvent(tokenId(), true);
+        vault().emitLockedEvent(tokenId(), true);
       }
     } else {
       if (countActiveProtectors() == 0) {
-        vault.emitLockedEvent(tokenId(), false);
+        vault().emitLockedEvent(tokenId(), false);
       }
     }
   }
@@ -160,7 +172,7 @@ contract Manager is IManager, Actor, ManagerBase {
     uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
-    _setSignedActor("SAFE_RECIPIENT", recipient, SAFE_RECIPIENT, status, timestamp, validFor, signature, IS_NOT_MANAGER);
+    _setSignedActor("SAFE_RECIPIENT", recipient, SAFE_RECIPIENT, status, timestamp, validFor, signature, false, _msgSender());
     emit SafeRecipientUpdated(_msgSender(), recipient, status);
   }
 
@@ -194,15 +206,14 @@ contract Manager is IManager, Actor, ManagerBase {
     if (timestamp == 0) {
       if (countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
     } else {
-      if (timestamp == 0) revert TimestampZero();
       if (timestamp > block.timestamp || timestamp < block.timestamp - validFor) revert TimestampInvalidOrExpired();
       if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
-      address signer = signatureValidator.recoverSigner(
+      address signer = validator().recoverSetActorSigner(
         scope,
         owner(),
         actor,
         tokenId(),
-        status,
+        status ? 1 : 0,
         timestamp,
         validFor,
         signature
@@ -228,11 +239,12 @@ contract Manager is IManager, Actor, ManagerBase {
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature,
-    bool actorIsProtector
+    bool actorIsProtector,
+    address sender
   ) internal virtual {
     bytes32 scope = keccak256(abi.encodePacked(roleString));
     if (actor == address(0)) revert ZeroAddress();
-    if (actor == _msgSender()) revert CannotBeYourself();
+    if (actor == sender) revert CannotBeYourself();
     _validateRequest(scope, actor, status, timestamp, validFor, signature);
     if (!status) {
       if (timestamp != 0 && actorIsProtector && !isAProtector(actor)) revert ProtectorNotFound();
@@ -251,21 +263,41 @@ contract Manager is IManager, Actor, ManagerBase {
     bool status,
     uint256 timestamp,
     uint256 validFor,
-    bytes calldata signature
+    bytes calldata signature,
+    address sender
   ) external virtual override {
     bytes32 scope = keccak256(abi.encodePacked(roleString));
-    if (roleIndex[scope] == 0) revert RoleNotFound();
-    if (address(plugins[pluginByRole[scope]]) != _msgSender()) revert Forbidden();
-    _setSignedActor(roleString, actor, role_, status, timestamp, validFor, signature, false);
+    if (address(plugins[pluginNamesByRole[scope]]) != _msgSender()) revert Forbidden();
+    if (disabledPlugins[pluginNamesByRole[scope]]) revert DisabledPlugin();
+    _setSignedActor(roleString, actor, role_, status, timestamp, validFor, signature, false, sender);
   }
 
   // @dev See {IProtected721-managedTransfer}.
   // This is a special function that can be called only by the InheritancePlugin
   function managedTransfer(uint256 tokenId, address to) external virtual override {
-    address authorized = address(plugins[keccak256("InheritancePlugin")]);
-    if (authorized == address(0) || _msgSender() != authorized) revert NotTheInheritancePlugin();
-    vault.managedTransfer(tokenId, to);
-    _resetActors();
+    // Since only a bunch of plugins can manage transfers, ideally only one,
+    // there is no risk of going out of gas
+    for (uint256 i = 0; i < pluginRoles.length; i++) {
+      if (address(plugins[pluginNamesByRole[pluginRoles[i]]]) == _msgSender()) {
+        if (!plugins[pluginNamesByRole[pluginRoles[i]]].requiresToManageTransfer()) {
+          // The plugin declares itself as not requiring the ability to manage transfers, but in reality it is trying to do so
+          revert InconsistentPolicy();
+        }
+        if (disabledPlugins[pluginNamesByRole[pluginRoles[i]]]) revert DisabledPlugin();
+        vault().managedTransfer(pluginNamesByRole[pluginRoles[i]], tokenId, to);
+        _resetActors();
+        return;
+      }
+    }
+    revert NotAuthorized();
+  }
+
+  function _resetActors() internal virtual {
+    _cleanActors(PROTECTOR);
+    _cleanActors(SAFE_RECIPIENT);
+    for (uint256 k = 0; k < pluginRoles.length; k++) {
+      _cleanActors(pluginRoles[k]);
+    }
   }
 
   // @dev This empty reserved space is put in place to allow future versions to add new

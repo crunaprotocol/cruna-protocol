@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 // Author: Francesco Sullo <francesco@sullo.co>
 
 import {Manager} from "../../../manager/Manager.sol";
-import {FlexiGuardian, ManagerBase} from "../../../manager/ManagerBase.sol";
+import {ManagerBase} from "../../../manager/ManagerBase.sol";
 import {IPlugin} from "../../../plugins/IPlugin.sol";
 
 contract SomePlugin is IPlugin, ManagerBase {
@@ -15,11 +15,17 @@ contract SomePlugin is IPlugin, ManagerBase {
 
   Manager public manager;
 
-  function init(address guardian_) external virtual {
+  function nameHash() public virtual override returns (bytes32) {
+    return keccak256("SomePlugin");
+  }
+
+  function requiresToManageTransfer() external pure override returns (bool) {
+    return false;
+  }
+
+  function init() external virtual {
     // replace with the name of your plugin
-    _nameHash = keccak256("SomePlugin");
     if (_msgSender() != tokenAddress()) revert Forbidden();
-    guardian = FlexiGuardian(guardian_);
     manager = Manager(_msgSender());
   }
 
@@ -32,6 +38,15 @@ contract SomePlugin is IPlugin, ManagerBase {
 
   function doSomething() external {
     // some logic
+  }
+
+  function reset() external override {
+    if (_msgSender() != address(manager)) revert Forbidden();
+    _reset();
+  }
+
+  function _reset() internal {
+    // reset to initial state
   }
 
   // @dev This empty reserved space is put in place to allow future versions to add new

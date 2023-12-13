@@ -2,12 +2,8 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { toChecksumAddress } = require("ethereumjs-util");
 
-let count = 9000;
-function cl(...args) {
-  console.log(count++, ...args);
-}
-
 const {
+  cl,
   amount,
   normalize,
   deployContractUpgradeable,
@@ -36,16 +32,11 @@ describe("Testing contract deployments", function () {
   beforeEach(async function () {
     erc6551Registry = await deployContract("ERC6551Registry");
     managerImpl = await deployContract("Manager");
-    guardian = await deployContract("FlexiGuardian", deployer.address);
-    proxy = await deployContract("FlexiProxy", managerImpl.address);
+    guardian = await deployContract("Guardian", deployer.address);
+    proxy = await deployContract("ManagerProxy", managerImpl.address);
 
-    vault = await deployContract(
-      "CrunaFlexiVault",
-      erc6551Registry.address,
-      guardian.address,
-      signatureValidator.address,
-      proxy.address,
-    );
+    vault = await deployContract("CrunaFlexiVault", deployer.address);
+    await vault.init(erc6551Registry.address, guardian.address, signatureValidator.address, proxy.address);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
 
     await vault.setFactory(factory.address);
@@ -67,12 +58,12 @@ describe("Testing contract deployments", function () {
   });
 
   it("should get the token parameters from the manager", async function () {
-    let price = await factory.finalPrice(usdc.address, "");
+    let price = await factory.finalPrice(usdc.address);
     await usdc.connect(bob).approve(factory.address, price);
     const nextTokenId = await vault.nextTokenId();
     const managerAddress = await vault.managerOf(nextTokenId);
     expect(await ethers.provider.getCode(managerAddress)).equal("0x");
-    await factory.connect(bob).buyVaults(usdc.address, 1, "");
+    await factory.connect(bob).buyVaults(usdc.address, 1);
     expect(await ethers.provider.getCode(managerAddress)).not.equal("0x");
     const manager = await ethers.getContractAt("Manager", managerAddress);
     expect(await manager.tokenId()).to.equal(nextTokenId);

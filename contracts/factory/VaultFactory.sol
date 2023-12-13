@@ -7,25 +7,26 @@ pragma solidity ^0.8.20;
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Initializable, UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 
 import {CrunaFlexiVault} from "../CrunaFlexiVault.sol";
-
 import {IVaultFactory} from "./IVaultFactory.sol";
+import {Versioned} from "../utils/Versioned.sol";
 
 //import {console} from "hardhat/console.sol";
 
-error ZeroAddress();
-error InsufficientFunds();
-error UnsupportedStableCoin();
-error TransferFailed();
-error InvalidArguments();
+contract VaultFactory is IVaultFactory, Versioned, Initializable, PausableUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
+  error ZeroAddress();
+  error InsufficientFunds();
+  error UnsupportedStableCoin();
+  error TransferFailed();
+  error InvalidArguments();
+  error InvalidDiscount();
 
-contract VaultFactory is IVaultFactory, Initializable, OwnableUpgradeable, UUPSUpgradeable {
   CrunaFlexiVault public vault;
   uint256 public price;
   mapping(address => bool) public stableCoins;
-  mapping(address => uint256) public proceedsBalances;
-  mapping(bytes32 => uint256) private _promoCodes;
+  uint256 public discount;
   address[] private _stableCoins;
 
   /// @custom:oz-upgrades-unsafe-allow constructor
@@ -42,17 +43,28 @@ contract VaultFactory is IVaultFactory, Initializable, OwnableUpgradeable, UUPSU
   // solhint-disable-next-line no-empty-blocks
   function _authorizeUpgrade(address newImplementation) internal virtual override onlyOwner {}
 
+  function pause() external onlyOwner {
+    _pause();
+  }
+
+  function unpause() external onlyOwner {
+    _unpause();
+  }
+
   // @notice The price is in points, so that 1 point = 0.01 USD
-  function setPrice(uint256 price_) external override onlyOwner {
+  function setPrice(uint256 price_) external virtual override onlyOwner {
     // it is owner's responsibility to set a reasonable price
     price = price_;
     emit PriceSet(price);
   }
 
-  function setStableCoin(address stableCoin, bool active) external override onlyOwner {
+  function setStableCoin(address stableCoin, bool active) external virtual override onlyOwner {
     if (active) {
-      // this should revert if the stableCoin is not an ERC20
-      if (ERC20(stableCoin).decimals() < 6) revert UnsupportedStableCoin();
+      // We check if less than 6 because TetherUSD has 6 decimals
+      // It should revert if the stableCoin is not an ERC20
+      if (ERC20(stableCoin).decimals() < 6) {
+        revert UnsupportedStableCoin();
+      }
       if (!stableCoins[stableCoin]) {
         stableCoins[stableCoin] = true;
         _stableCoins.push(stableCoin);
@@ -60,6 +72,7 @@ contract VaultFactory is IVaultFactory, Initializable, OwnableUpgradeable, UUPSU
       }
     } else if (stableCoins[stableCoin]) {
       delete stableCoins[stableCoin];
+      // no risk of going out of cash because the factory will support just a couple of stable coins
       for (uint256 i = 0; i < _stableCoins.length; i++) {
         if (_stableCoins[i] == stableCoin) {
           _stableCoins[i] = _stableCoins[_stableCoins.length - 1];
@@ -71,46 +84,34 @@ contract VaultFactory is IVaultFactory, Initializable, OwnableUpgradeable, UUPSU
     }
   }
 
-  function setPromoCode(string memory promoCode, uint256 discount) external override onlyOwner {
-    bytes32 promoCodeHash = keccak256(abi.encodePacked(promoCode));
-    if (discount > 0) {
-      _promoCodes[promoCodeHash] = discount;
-    } else if (_promoCodes[promoCodeHash] > 0) {
-      delete _promoCodes[promoCodeHash];
-    }
+  function setDiscount(uint256 discount_) external virtual override onlyOwner {
+    if (discount > 100) revert InvalidDiscount();
+    discount = discount_;
   }
 
-  function finalPrice(address stableCoin, string memory promoCode) public view override returns (uint256) {
-    return (getPrice(promoCode) * (10 ** ERC20(stableCoin).decimals())) / 100;
+  function finalPrice(address stableCoin) public view virtual override returns (uint256) {
+    return (getPrice() * (10 ** ERC20(stableCoin).decimals())) / 100;
   }
 
-  function getPrice(string memory promoCode) public view override returns (uint256) {
-    uint256 _price = price;
-    if (bytes(promoCode).length > 0) {
-      bytes32 promoCodeHash = keccak256(abi.encodePacked(promoCode));
-      if (_promoCodes[promoCodeHash] > 0) {
-        _price -= (_price * _promoCodes[promoCodeHash]) / 100;
-      }
-    }
-    return _price;
+  function getPrice() public view virtual override returns (uint256) {
+    return price - (price * discount) / 100;
   }
 
-  function buyVaults(address stableCoin, uint256 amount, string memory promoCode) external override {
-    uint256 payment = finalPrice(stableCoin, promoCode) * amount;
+  function buyVaults(address stableCoin, uint256 amount) external virtual override whenNotPaused {
+    uint256 payment = finalPrice(stableCoin) * amount;
     if (payment > ERC20(stableCoin).balanceOf(_msgSender())) revert InsufficientFunds();
-    proceedsBalances[stableCoin] += payment;
     for (uint256 i = 0; i < amount; i++) {
       vault.safeMint(_msgSender());
     }
+    // we manage only trusted stable coins, so no risk of reentrancy
     if (!ERC20(stableCoin).transferFrom(_msgSender(), address(this), payment)) revert TransferFailed();
   }
 
   function buyVaultsBatch(
     address stableCoin,
     address[] memory tos,
-    uint256[] memory amounts,
-    string memory promoCode
-  ) external override {
+    uint256[] memory amounts
+  ) external virtual override whenNotPaused {
     if (tos.length != amounts.length) revert InvalidArguments();
     uint256 amount = 0;
     for (uint256 i = 0; i < tos.length; i++) {
@@ -119,9 +120,8 @@ contract VaultFactory is IVaultFactory, Initializable, OwnableUpgradeable, UUPSU
       }
       amount += amounts[i];
     }
-    uint256 payment = finalPrice(stableCoin, promoCode) * amount;
+    uint256 payment = finalPrice(stableCoin) * amount;
     if (payment > ERC20(stableCoin).balanceOf(_msgSender())) revert InsufficientFunds();
-    proceedsBalances[stableCoin] += payment;
     for (uint256 i = 0; i < tos.length; i++) {
       if (amounts[i] != 0) {
         for (uint256 j = 0; j < amounts[i]; j++) {
@@ -129,19 +129,20 @@ contract VaultFactory is IVaultFactory, Initializable, OwnableUpgradeable, UUPSU
         }
       }
     }
+    // we manage only trusted stable coins, so no risk of reentrancy
     if (!ERC20(stableCoin).transferFrom(_msgSender(), address(this), payment)) revert TransferFailed();
   }
 
-  function withdrawProceeds(address beneficiary, address stableCoin, uint256 amount) external override onlyOwner {
+  function withdrawProceeds(address beneficiary, address stableCoin, uint256 amount) external virtual override onlyOwner {
+    uint256 balance = ERC20(stableCoin).balanceOf(address(this));
     if (amount == 0) {
-      amount = proceedsBalances[stableCoin];
+      amount = balance;
     }
-    if (amount > proceedsBalances[stableCoin]) revert InsufficientFunds();
-    proceedsBalances[stableCoin] -= amount;
+    if (amount > balance) revert InsufficientFunds();
     if (!ERC20(stableCoin).transfer(beneficiary, amount)) revert TransferFailed();
   }
 
-  function getStableCoins() external view returns (address[] memory) {
+  function getStableCoins() external view virtual returns (address[] memory) {
     return _stableCoins;
   }
 }

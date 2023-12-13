@@ -157,7 +157,17 @@
       },
       {
         "inputs": [],
+        "name": "DisabledPlugin",
+        "type": "error"
+      },
+      {
+        "inputs": [],
         "name": "Forbidden",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "InconsistentPolicy",
         "type": "error"
       },
       {
@@ -177,12 +187,12 @@
       },
       {
         "inputs": [],
-        "name": "NotPermittedWhenProtectorsAreActive",
+        "name": "NotAuthorized",
         "type": "error"
       },
       {
         "inputs": [],
-        "name": "NotTheInheritancePlugin",
+        "name": "NotPermittedWhenProtectorsAreActive",
         "type": "error"
       },
       {
@@ -197,6 +207,11 @@
       },
       {
         "inputs": [],
+        "name": "PluginNotFound",
+        "type": "error"
+      },
+      {
+        "inputs": [],
         "name": "ProtectorAlreadySetByYou",
         "type": "error"
       },
@@ -207,27 +222,12 @@
       },
       {
         "inputs": [],
-        "name": "RoleAlreadyAdded",
-        "type": "error"
-      },
-      {
-        "inputs": [],
-        "name": "RoleNotFound",
-        "type": "error"
-      },
-      {
-        "inputs": [],
         "name": "SignatureAlreadyUsed",
         "type": "error"
       },
       {
         "inputs": [],
         "name": "TimestampInvalidOrExpired",
-        "type": "error"
-      },
-      {
-        "inputs": [],
-        "name": "TimestampZero",
         "type": "error"
       },
       {
@@ -259,9 +259,15 @@
             "internalType": "address",
             "name": "plugin",
             "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "bool",
+            "name": "status",
+            "type": "bool"
           }
         ],
-        "name": "PluginPlugged",
+        "name": "PluginStatusChange",
         "type": "event"
       },
       {
@@ -316,32 +322,6 @@
       },
       {
         "inputs": [],
-        "name": "IS_MANAGER",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "IS_NOT_MANAGER",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
         "name": "MAX_ACTORS",
         "outputs": [
           {
@@ -369,19 +349,6 @@
       {
         "inputs": [],
         "name": "SAFE_RECIPIENT",
-        "outputs": [
-          {
-            "internalType": "bytes32",
-            "name": "",
-            "type": "bytes32"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "SENTINEL",
         "outputs": [
           {
             "internalType": "bytes32",
@@ -443,6 +410,43 @@
             "internalType": "uint256",
             "name": "",
             "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "bool",
+            "name": "resetPlugin",
+            "type": "bool"
+          }
+        ],
+        "name": "disablePlugin",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "name": "disabledPlugins",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
           }
         ],
         "stateMutability": "view",
@@ -530,7 +534,7 @@
         "name": "guardian",
         "outputs": [
           {
-            "internalType": "contract FlexiGuardian",
+            "internalType": "contract Guardian",
             "name": "",
             "type": "address"
           }
@@ -562,29 +566,6 @@
           }
         ],
         "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "registry_",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "guardian_",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "signatureValidator_",
-            "type": "address"
-          }
-        ],
-        "name": "init",
-        "outputs": [],
-        "stateMutability": "nonpayable",
         "type": "function"
       },
       {
@@ -627,19 +608,6 @@
       },
       {
         "inputs": [],
-        "name": "lastRoleIndex",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
         "name": "listProtectors",
         "outputs": [
           {
@@ -666,6 +634,19 @@
         ],
         "name": "managedTransfer",
         "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "nameHash",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
         "stateMutability": "nonpayable",
         "type": "function"
       },
@@ -727,7 +708,26 @@
             "type": "bytes32"
           }
         ],
-        "name": "pluginByRole",
+        "name": "pluginNamesByRole",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "pluginRoles",
         "outputs": [
           {
             "internalType": "bytes32",
@@ -758,6 +758,24 @@
         "type": "function"
       },
       {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "bool",
+            "name": "resetPlugin",
+            "type": "bool"
+          }
+        ],
+        "name": "reEnablePlugin",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
         "inputs": [],
         "name": "registry",
         "outputs": [
@@ -765,44 +783,6 @@
             "internalType": "contract IERC6551Registry",
             "name": "",
             "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "bytes32",
-            "name": "",
-            "type": "bytes32"
-          }
-        ],
-        "name": "roleIndex",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "name": "roleNames",
-        "outputs": [
-          {
-            "internalType": "bytes32",
-            "name": "",
-            "type": "bytes32"
           }
         ],
         "stateMutability": "view",
@@ -910,24 +890,16 @@
             "internalType": "bytes",
             "name": "signature",
             "type": "bytes"
+          },
+          {
+            "internalType": "address",
+            "name": "sender",
+            "type": "address"
           }
         ],
         "name": "setSignedActor",
         "outputs": [],
         "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "signatureValidator",
-        "outputs": [
-          {
-            "internalType": "contract SignatureValidator",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
         "type": "function"
       },
       {
@@ -1006,6 +978,19 @@
             "internalType": "bool",
             "name": "",
             "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "validator",
+        "outputs": [
+          {
+            "internalType": "contract SignatureValidator",
+            "name": "",
+            "type": "address"
           }
         ],
         "stateMutability": "view",
@@ -1125,12 +1110,17 @@
     "InheritancePlugin": [
       {
         "inputs": [],
-        "name": "Forbidden",
+        "name": "BeneficiaryNotSet",
         "type": "error"
       },
       {
         "inputs": [],
-        "name": "InconsistentRecipient",
+        "name": "Expired",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "Forbidden",
         "type": "error"
       },
       {
@@ -1155,12 +1145,27 @@
       },
       {
         "inputs": [],
+        "name": "NotExpiredYet",
+        "type": "error"
+      },
+      {
+        "inputs": [],
         "name": "NotPermittedWhenProtectorsAreActive",
         "type": "error"
       },
       {
         "inputs": [],
+        "name": "NotTheBeneficiary",
+        "type": "error"
+      },
+      {
+        "inputs": [],
         "name": "NotTheTokenOwner",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "QuorumAlreadyReached",
         "type": "error"
       },
       {
@@ -1175,7 +1180,17 @@
       },
       {
         "inputs": [],
+        "name": "QuorumNotReached",
+        "type": "error"
+      },
+      {
+        "inputs": [],
         "name": "RequestAlreadyApproved",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "SignatureAlreadyUsed",
         "type": "error"
       },
       {
@@ -1185,7 +1200,17 @@
       },
       {
         "inputs": [],
-        "name": "Unauthorized",
+        "name": "TimestampInvalidOrExpired",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "WaitingForBeneficiary",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "WrongDataOrNotSignedByProtector",
         "type": "error"
       },
       {
@@ -1213,22 +1238,21 @@
             "internalType": "uint256",
             "name": "proofOfLifeDurationInDays",
             "type": "uint256"
-          }
-        ],
-        "name": "InheritanceConfigured",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
+          },
           {
-            "indexed": true,
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "gracePeriod",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
             "internalType": "address",
             "name": "beneficiary",
             "type": "address"
           }
         ],
-        "name": "InheritedBy",
+        "name": "InheritanceConfigured",
         "type": "event"
       },
       {
@@ -1325,6 +1349,31 @@
             "internalType": "uint256",
             "name": "proofOfLifeDurationInDays",
             "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "gracePeriod",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "beneficiary",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "validFor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "signature",
+            "type": "bytes"
           }
         ],
         "name": "configureInheritance",
@@ -1357,36 +1406,39 @@
           {
             "components": [
               {
-                "internalType": "uint256",
+                "internalType": "uint16",
                 "name": "quorum",
-                "type": "uint256"
+                "type": "uint16"
               },
               {
-                "internalType": "uint256",
+                "internalType": "uint16",
                 "name": "proofOfLifeDurationInDays",
-                "type": "uint256"
+                "type": "uint16"
               },
               {
-                "internalType": "uint256",
+                "internalType": "uint32",
                 "name": "lastProofOfLife",
-                "type": "uint256"
-              }
-            ],
-            "internalType": "struct IInheritancePlugin.InheritanceConf",
-            "name": "",
-            "type": "tuple"
-          },
-          {
-            "components": [
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint16",
+                "name": "gracePeriod",
+                "type": "uint16"
+              },
               {
                 "internalType": "address",
                 "name": "beneficiary",
                 "type": "address"
               },
               {
-                "internalType": "uint256",
-                "name": "startedAt",
-                "type": "uint256"
+                "internalType": "uint32",
+                "name": "requestUpdatedAt",
+                "type": "uint32"
+              },
+              {
+                "internalType": "bool",
+                "name": "waitForGracePeriod",
+                "type": "bool"
               },
               {
                 "internalType": "address[]",
@@ -1394,7 +1446,7 @@
                 "type": "address[]"
               }
             ],
-            "internalType": "struct IInheritancePlugin.InheritanceRequest",
+            "internalType": "struct IInheritancePlugin.InheritanceConf",
             "name": "",
             "type": "tuple"
           }
@@ -1407,7 +1459,7 @@
         "name": "guardian",
         "outputs": [
           {
-            "internalType": "contract FlexiGuardian",
+            "internalType": "contract Guardian",
             "name": "",
             "type": "address"
           }
@@ -1436,13 +1488,7 @@
         "type": "function"
       },
       {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "guardian_",
-            "type": "address"
-          }
-        ],
+        "inputs": [],
         "name": "init",
         "outputs": [],
         "stateMutability": "nonpayable",
@@ -1459,6 +1505,19 @@
           }
         ],
         "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "nameHash",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "stateMutability": "nonpayable",
         "type": "function"
       },
       {
@@ -1495,6 +1554,19 @@
         "type": "function"
       },
       {
+        "inputs": [],
+        "name": "registry",
+        "outputs": [
+          {
+            "internalType": "contract IERC6551Registry",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
         "inputs": [
           {
             "internalType": "address",
@@ -1503,6 +1575,26 @@
           }
         ],
         "name": "requestTransfer",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "requiresToManageTransfer",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "reset",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -1621,6 +1713,51 @@
         "type": "function"
       },
       {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "name": "usedSignatures",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "validator",
+        "outputs": [
+          {
+            "internalType": "contract SignatureValidator",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "vault",
+        "outputs": [
+          {
+            "internalType": "contract IVault",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
         "inputs": [],
         "name": "version",
         "outputs": [
@@ -1714,6 +1851,19 @@
         "type": "function"
       },
       {
+        "inputs": [],
+        "name": "proxyName",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
         "stateMutability": "payable",
         "type": "receive"
       }
@@ -1723,27 +1873,27 @@
         "inputs": [
           {
             "internalType": "address",
-            "name": "registry_",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "guardian_",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "signatureValidator_",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "managerProxy_",
+            "name": "owner",
             "type": "address"
           }
         ],
         "stateMutability": "nonpayable",
         "type": "constructor"
+      },
+      {
+        "inputs": [],
+        "name": "AlreadyInitiated",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "ErrorCreatingManager",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "NotInitiated",
+        "type": "error"
       },
       {
         "inputs": [],
@@ -1768,6 +1918,11 @@
       {
         "inputs": [],
         "name": "SignatureAlreadyUsed",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "SupplyCapReached",
         "type": "error"
       },
       {
@@ -1877,6 +2032,25 @@
         "inputs": [
           {
             "indexed": true,
+            "internalType": "bytes32",
+            "name": "pluginNameHash",
+            "type": "bytes32"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          }
+        ],
+        "name": "ManagedTransfer",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
             "internalType": "address",
             "name": "previousOwner",
             "type": "address"
@@ -1934,58 +2108,6 @@
         ],
         "name": "Transfer",
         "type": "event"
-      },
-      {
-        "inputs": [],
-        "name": "GUARDIAN",
-        "outputs": [
-          {
-            "internalType": "contract FlexiGuardian",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "MANAGER_PROXY",
-        "outputs": [
-          {
-            "internalType": "contract Manager",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "REGISTRY",
-        "outputs": [
-          {
-            "internalType": "contract IERC6551Registry",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "VALIDATOR",
-        "outputs": [
-          {
-            "internalType": "contract SignatureValidator",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
       },
       {
         "inputs": [],
@@ -2077,10 +2199,23 @@
       },
       {
         "inputs": [],
-        "name": "factoryAddress",
+        "name": "factory",
         "outputs": [
           {
             "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "flexiProxy",
+        "outputs": [
+          {
+            "internalType": "contract Manager",
             "name": "",
             "type": "address"
           }
@@ -2105,6 +2240,47 @@
           }
         ],
         "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "guardian",
+        "outputs": [
+          {
+            "internalType": "contract Guardian",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "registry_",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "guardian_",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "signatureValidator_",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "managerProxy_",
+            "type": "address"
+          }
+        ],
+        "name": "init",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
       },
       {
@@ -2182,6 +2358,11 @@
       {
         "inputs": [
           {
+            "internalType": "bytes32",
+            "name": "pluginNameHash",
+            "type": "bytes32"
+          },
+          {
             "internalType": "uint256",
             "name": "tokenId",
             "type": "uint256"
@@ -2209,25 +2390,6 @@
         "outputs": [
           {
             "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "name": "managers",
-        "outputs": [
-          {
-            "internalType": "contract Manager",
             "name": "",
             "type": "address"
           }
@@ -2341,6 +2503,19 @@
       },
       {
         "inputs": [],
+        "name": "registry",
+        "outputs": [
+          {
+            "internalType": "contract IERC6551Registry",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
         "name": "renounceOwnership",
         "outputs": [],
         "stateMutability": "nonpayable",
@@ -2445,7 +2620,7 @@
         "inputs": [
           {
             "internalType": "address",
-            "name": "factory",
+            "name": "factory_",
             "type": "address"
           }
         ],
@@ -2562,6 +2737,19 @@
       },
       {
         "inputs": [],
+        "name": "validator",
+        "outputs": [
+          {
+            "internalType": "contract SignatureValidator",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
         "name": "version",
         "outputs": [
           {
@@ -2660,6 +2848,70 @@
         "inputs": [
           {
             "internalType": "bytes32",
+            "name": "nameHash",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "addr",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "extra",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "extra2",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "extra3",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "validFor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "signature",
+            "type": "bytes"
+          }
+        ],
+        "name": "recoverPluginSigner",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
             "name": "scope",
             "type": "bytes32"
           },
@@ -2679,9 +2931,9 @@
             "type": "uint256"
           },
           {
-            "internalType": "bool",
-            "name": "status",
-            "type": "bool"
+            "internalType": "uint256",
+            "name": "extra",
+            "type": "uint256"
           },
           {
             "internalType": "uint256",
@@ -2699,7 +2951,7 @@
             "type": "bytes"
           }
         ],
-        "name": "recoverSigner",
+        "name": "recoverSetActorSigner",
         "outputs": [
           {
             "internalType": "address",
@@ -2724,7 +2976,7 @@
         "type": "function"
       }
     ],
-    "FlexiGuardian": [
+    "Guardian": [
       {
         "inputs": [
           {
@@ -2785,7 +3037,7 @@
           {
             "indexed": false,
             "internalType": "bytes32",
-            "name": "scope",
+            "name": "nameHash",
             "type": "bytes32"
           },
           {
@@ -2815,7 +3067,7 @@
         "inputs": [
           {
             "internalType": "bytes32",
-            "name": "scope",
+            "name": "nameHash",
             "type": "bytes32"
           },
           {
@@ -2872,7 +3124,7 @@
         "inputs": [
           {
             "internalType": "bytes32",
-            "name": "scope",
+            "name": "nameHash",
             "type": "bytes32"
           },
           {
@@ -2932,6 +3184,11 @@
       {
         "inputs": [],
         "name": "InvalidArguments",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "InvalidDiscount",
         "type": "error"
       },
       {
@@ -3018,6 +3275,19 @@
         "inputs": [
           {
             "indexed": false,
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          }
+        ],
+        "name": "Paused",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
             "internalType": "uint256",
             "name": "price",
             "type": "uint256"
@@ -3049,6 +3319,19 @@
         "anonymous": false,
         "inputs": [
           {
+            "indexed": false,
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          }
+        ],
+        "name": "Unpaused",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
             "indexed": true,
             "internalType": "address",
             "name": "implementation",
@@ -3069,11 +3352,6 @@
             "internalType": "uint256",
             "name": "amount",
             "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "promoCode",
-            "type": "string"
           }
         ],
         "name": "buyVaults",
@@ -3097,11 +3375,6 @@
             "internalType": "uint256[]",
             "name": "amounts",
             "type": "uint256[]"
-          },
-          {
-            "internalType": "string",
-            "name": "promoCode",
-            "type": "string"
           }
         ],
         "name": "buyVaultsBatch",
@@ -3110,16 +3383,24 @@
         "type": "function"
       },
       {
+        "inputs": [],
+        "name": "discount",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
         "inputs": [
           {
             "internalType": "address",
             "name": "stableCoin",
             "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "promoCode",
-            "type": "string"
           }
         ],
         "name": "finalPrice",
@@ -3134,13 +3415,7 @@
         "type": "function"
       },
       {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "promoCode",
-            "type": "string"
-          }
-        ],
+        "inputs": [],
         "name": "getPrice",
         "outputs": [
           {
@@ -3193,26 +3468,27 @@
       },
       {
         "inputs": [],
-        "name": "price",
+        "name": "pause",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "paused",
         "outputs": [
           {
-            "internalType": "uint256",
+            "internalType": "bool",
             "name": "",
-            "type": "uint256"
+            "type": "bool"
           }
         ],
         "stateMutability": "view",
         "type": "function"
       },
       {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "name": "proceedsBalances",
+        "inputs": [],
+        "name": "price",
         "outputs": [
           {
             "internalType": "uint256",
@@ -3247,11 +3523,11 @@
         "inputs": [
           {
             "internalType": "uint256",
-            "name": "price_",
+            "name": "discount_",
             "type": "uint256"
           }
         ],
-        "name": "setPrice",
+        "name": "setDiscount",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -3259,17 +3535,12 @@
       {
         "inputs": [
           {
-            "internalType": "string",
-            "name": "promoCode",
-            "type": "string"
-          },
-          {
             "internalType": "uint256",
-            "name": "discount",
+            "name": "price_",
             "type": "uint256"
           }
         ],
-        "name": "setPromoCode",
+        "name": "setPrice",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -3325,6 +3596,13 @@
         "type": "function"
       },
       {
+        "inputs": [],
+        "name": "unpause",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
         "inputs": [
           {
             "internalType": "address",
@@ -3366,6 +3644,19 @@
           }
         ],
         "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "version",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "pure",
         "type": "function"
       },
       {

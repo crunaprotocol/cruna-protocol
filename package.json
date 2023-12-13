@@ -1,6 +1,6 @@
 {
   "name": "@cruna/protocol",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.3",
   "description": "The Cruna protocol",
   "publishConfig": {
     "access": "public"
@@ -40,21 +40,22 @@
     "erc6551": "0.3.1"
   },
   "devDependencies": {
-    "@openzeppelin/contracts-upgradeable": "^4.9.3",
-    "ethereumjs-abi": "^0.6.8",
     "@ethersproject/contracts": "^5.7.0",
     "@nomiclabs/hardhat-ethers": "^2.2.3",
     "@nomiclabs/hardhat-etherscan": "^3.1.7",
     "@nomiclabs/hardhat-waffle": "^2.0.6",
+    "@openzeppelin/contracts-upgradeable": "^4.9.3",
     "@openzeppelin/hardhat-upgrades": "^1.28.0",
     "@openzeppelin/test-helpers": "^0.5.16",
     "@secrez/cryptoenv": "^0.2.4",
     "bn.js": "^5.2.1",
     "case": "^1.6.3",
     "chai": "^4.3.10",
+    "deploy-utils": "1.0.0-beta.0",
     "dotenv": "^16.3.1",
     "eth-sig-util": "^3.0.1",
     "ethereum-waffle": "^4.0.10",
+    "ethereumjs-abi": "^0.6.8",
     "ethereumjs-util": "^7.1.5",
     "ethers": "^5.7.2",
     "fs-extra": "^11.1.1",
