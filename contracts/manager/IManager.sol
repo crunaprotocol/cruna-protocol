@@ -5,6 +5,7 @@ pragma solidity ^0.8.20;
 
 // erc165 interfaceId 0x8dca4bea
 interface IManager {
+
   // @dev Emitted when a protector is set for an tokensOwner
   //   The token owner is useful for historic reason since the NFT can be later transferred to another address.
   //   If that happens, all the protector will be removed, and the new tokenOwner will have to set them again.
