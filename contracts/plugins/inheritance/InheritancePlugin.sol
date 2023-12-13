@@ -57,8 +57,8 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
     return true;
   }
 
-  function nameHash() public virtual override returns (bytes32) {
-    return keccak256("InheritancePlugin");
+  function nameHash() public virtual override returns (bytes4) {
+    return bytes4(keccak256("InheritancePlugin"));
   }
 
   function pluginRoles() external pure virtual returns (bytes32[] memory) {
@@ -76,6 +76,7 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
     uint256 validFor,
     bytes calldata signature
   ) public virtual override onlyTokenOwner {
+    // TODO definitely remove the repeated name/hash
     manager.setSignedActor("SENTINEL", sentinel, SENTINEL, status, timestamp, validFor, signature, _msgSender());
     emit SentinelUpdated(_msgSender(), sentinel, status);
   }
@@ -116,6 +117,7 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
         signature
       );
       if (!manager.isAProtector(signer)) revert WrongDataOrNotSignedByProtector();
+      // TODO Should we save the signature in the manager?
       usedSignatures[keccak256(signature)] = true;
     }
     _configureInheritance(uint16(quorum), uint16(proofOfLifeDurationInDays), uint16(gracePeriod), beneficiary);
@@ -240,7 +242,7 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
       if (_isGracePeriodExpiredAfterStart()) revert Expired();
     }
     _reset();
-    manager.managedTransfer(tokenId(), _msgSender());
+    manager.managedTransfer(nameHash(), tokenId(), _msgSender());
   }
 
   function reset() external override {
@@ -250,6 +252,10 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
 
   function _reset() internal {
     delete _inheritanceConf;
+  }
+
+  function isPluginRole(bytes32 role) external view override returns (bool) {
+    return role == SENTINEL;
   }
 
   // @dev This empty reserved space is put in place to allow future versions to add new

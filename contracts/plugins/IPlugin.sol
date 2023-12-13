@@ -18,4 +18,6 @@ interface IPlugin {
 
   // Reset the plugin to the factory settings
   function reset() external;
+
+  function isPluginRole(bytes32 role) external view returns (bool);
 }

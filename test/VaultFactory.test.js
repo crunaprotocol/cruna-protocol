@@ -58,7 +58,7 @@ describe("VaultFactory", function () {
     await usdc.connect(bob).approve(factory.address, price);
     const nextTokenId = await vault.nextTokenId();
     const precalculatedAddress = await vault.managerOf(nextTokenId);
-    const salt = ethers.utils.hexZeroPad(ethers.BigNumber.from("400").toHexString(), 32);
+    const salt = ethers.utils.hexZeroPad(ethers.BigNumber.from("69").toHexString(), 32);
 
     await expect(factory.connect(bob).buyVaults(usdc.address, 1))
       .to.emit(vault, "Transfer")

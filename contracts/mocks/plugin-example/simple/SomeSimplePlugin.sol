@@ -31,8 +31,8 @@ contract SomeSimplePlugin is IPlugin, ManagerBase {
     manager = Manager(_msgSender());
   }
 
-  function nameHash() public virtual override returns (bytes32) {
-    return keccak256("SomeSimplePlugin");
+  function nameHash() public virtual override returns (bytes4) {
+    return bytes4(keccak256("SomeSimplePlugin"));
   }
 
   function pluginRoles() external pure virtual returns (bytes32[] memory) {
@@ -57,5 +57,9 @@ contract SomeSimplePlugin is IPlugin, ManagerBase {
 
   function _reset() internal {
     // reset to initial state
+  }
+
+  function isPluginRole(bytes32 role) external view override returns (bool) {
+    return role == SOME_ROLE;
   }
 }

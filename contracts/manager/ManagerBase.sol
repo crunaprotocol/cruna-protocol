@@ -44,7 +44,7 @@ abstract contract ManagerBase is Context, Versioned {
     implementationVersion = version();
   }
 
-  function nameHash() public virtual returns (bytes32);
+  function nameHash() public virtual returns (bytes4);
 
   function guardian() public view virtual returns (Guardian) {
     return vault().guardian();

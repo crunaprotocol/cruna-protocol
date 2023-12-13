@@ -63,7 +63,7 @@ contract Actor {
     _actors[role_].push(actor_);
   }
 
-  function _cleanActors(bytes32 role) internal {
+  function _deleteActors(bytes32 role) internal {
     delete _actors[role];
   }
 

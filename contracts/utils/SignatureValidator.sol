@@ -71,6 +71,7 @@ contract SignatureValidator is EIP712, Versioned {
   // @param Returns the signer of the signature.
   function recoverPluginSigner(
     bytes32 nameHash,
+    // TODO add scope
     address owner,
     address addr,
     uint256 tokenId,

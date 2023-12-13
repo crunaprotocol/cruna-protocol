@@ -43,7 +43,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   IERC6551Registry public registry;
   Manager public flexiProxy;
 
-  bytes32 public salt = bytes32(uint256(400));
+  bytes32 public constant SALT = bytes32(uint256(69));
 
   uint256 public nextTokenId = 1;
 
@@ -125,8 +125,8 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
     _approve(managerOf(tokenId), tokenId);
     safeTransferFrom(ownerOf(tokenId), to, tokenId);
     _approve(address(0), tokenId);
-    emit ManagedTransfer(pluginNameHash, tokenId);
     delete _approvedTransfers[tokenId];
+    emit ManagedTransfer(pluginNameHash, tokenId);
   }
 
   // @dev See {ERC721-_beforeTokenTransfer}.
@@ -192,7 +192,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
     // the max supply is 999,999
     if (nextTokenId % 1e6 == 0) revert SupplyCapReached();
     if (address(registry) == address(0)) revert NotInitiated();
-    try registry.createAccount(address(flexiProxy), salt, block.chainid, address(this), nextTokenId) {} catch {
+    try registry.createAccount(address(flexiProxy), SALT, block.chainid, address(this), nextTokenId) {} catch {
       revert ErrorCreatingManager();
     }
     _safeMint(to, nextTokenId++);
@@ -201,6 +201,6 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   // @dev This function will return the address of the manager for tokenId.
   // @param tokenId The id of the token.
   function managerOf(uint256 tokenId) public view returns (address) {
-    return registry.account(address(flexiProxy), salt, block.chainid, address(this), tokenId);
+    return registry.account(address(flexiProxy), SALT, block.chainid, address(this), tokenId);
   }
 }
