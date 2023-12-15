@@ -139,6 +139,13 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**1.0.0-alpha.4**
+
+- Optimize costs during signature validation
+- Increase security giving more control to the Manager
+- Moving sentinels storage to the plugin, instead of the manager, to avoid reentrancy risks
+
+
 **1.0.0-alpha.3**
 
 - Add function to disable and re-enable plugins
