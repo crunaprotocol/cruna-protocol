@@ -29,13 +29,6 @@ contract SomePlugin is IPlugin, ManagerBase {
     manager = Manager(_msgSender());
   }
 
-  function pluginRoles() external pure virtual returns (bytes4[] memory) {
-    bytes4[] memory roles = new bytes4[](1);
-    // return your roles, if any
-    roles[0] = SOME_OTHER_ROLE;
-    return roles;
-  }
-
   function doSomething() external {
     // some logic
   }
@@ -47,10 +40,6 @@ contract SomePlugin is IPlugin, ManagerBase {
 
   function _reset() internal {
     // reset to initial state
-  }
-
-  function isPluginSRole(bytes4 role) external pure override returns (bool) {
-    return role == SOME_OTHER_ROLE;
   }
 
   // @dev This empty reserved space is put in place to allow future versions to add new

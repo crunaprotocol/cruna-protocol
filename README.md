@@ -122,16 +122,16 @@ npm install @cruna/protocol@1.0.0-alpha.3 @openzeppelin/contracts erc6551
 or similar commands using Yarn or Pnpm, and use in your Solidity smart contracts, for example, as
 
 ```
-import {ProtectedNFT} from "@cruna/protocol/contracts/protected/ProtectedNFT.sol";
+import {ManagedNFT} from "@cruna/protocol/contracts/protected/ManagedNFT.sol";
 
-contract MySuperToken is ProtectedNFT {
+contract MySuperToken is ManagedNFT {
    
     constructor(
     address registry_,
     address guardian_,
     address signatureValidator_,
     address managerProxy_
-  ) ProtectedNFT("My Super Token", "MST", registry_, guardian_, signatureValidator_, managerProxy_) {}
+  ) ManagedNFT("My Super Token", "MST", registry_, guardian_, signatureValidator_, managerProxy_) {}
 }
 ```
 
@@ -180,28 +180,28 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
  contracts/interfaces/          |      100 |      100 |      100 |      100 |                |
   IERC6454.sol                  |      100 |      100 |      100 |      100 |                |
   IERC6982.sol                  |      100 |      100 |      100 |      100 |                |
-  IProtected.sol                |      100 |      100 |      100 |      100 |                |
- contracts/manager/             |    96.69 |    69.15 |       94 |    96.32 |                |
+  IManagedERC721.sol            |      100 |      100 |      100 |      100 |                |
+ contracts/manager/             |     98.4 |    70.59 |      100 |    98.61 |                |
   Actor.sol                     |      100 |       70 |      100 |      100 |                |
   Guardian.sol                  |      100 |       50 |      100 |    83.33 |             21 |
   IManager.sol                  |      100 |      100 |      100 |      100 |                |
-  Manager.sol                   |    97.47 |    68.57 |       92 |    96.51 |    236,240,287 |
-  ManagerBase.sol               |       90 |       80 |    92.31 |    95.65 |             89 |
+  Manager.sol                   |    98.81 |    70.51 |      100 |    98.95 |            128 |
+  ManagerBase.sol               |    94.74 |       80 |      100 |      100 |                |
   ManagerProxy.sol              |      100 |      100 |      100 |      100 |                |
  contracts/plugins/             |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                   |      100 |      100 |      100 |      100 |                |
- contracts/plugins/inheritance/ |    98.48 |    72.37 |    95.24 |    96.67 |                |
+ contracts/plugins/inheritance/ |      100 |    72.37 |      100 |    97.67 |                |
   IInheritancePlugin.sol        |      100 |      100 |      100 |      100 |                |
-  InheritancePlugin.sol         |    98.48 |    72.37 |       95 |    96.63 |     86,182,260 |
+  InheritancePlugin.sol         |      100 |    72.37 |      100 |    97.65 |         80,176 |
   InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
- contracts/protected/           |    93.33 |    55.26 |    85.71 |    88.89 |                |
-  ProtectedNFT.sol              |    93.33 |    55.26 |    85.71 |    88.89 |   51,52,87,164 |
+ contracts/protected/           |      100 |     52.5 |      100 |    96.97 |                |
+  ManagedERC721.sol             |      100 |     52.5 |      100 |    96.97 |            158 |
  contracts/utils/               |      100 |       75 |      100 |      100 |                |
   FlexiProxy.sol                |      100 |      100 |      100 |      100 |                |
   SignatureValidator.sol        |      100 |       75 |      100 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |    97.39 |     64.6 |    94.59 |    95.69 |                |
+All files                       |    99.25 |    64.79 |      100 |    97.85 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 

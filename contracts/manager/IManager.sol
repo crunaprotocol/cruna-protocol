@@ -15,12 +15,22 @@ interface IManager {
 
   event PluginStatusChange(string name, address plugin, bool status);
 
+  event LockFailed(uint256 tokenId, bool status);
+
+  event AllPluginsDisabled();
+
   struct Plugin {
     address proxyAddress;
-    bool active;
+    bool canManageTransfer;
   }
 
-  function plug(string memory name, address implementation) external;
+  struct DisabledPlugin {
+    address proxyAddress;
+    bool canManageTransfer;
+    string name;
+  }
+
+  function plug(string memory name, address implementation, bool canManageTransfer) external;
 
   function disablePlugin(string memory name, bool resetPlugin) external;
 

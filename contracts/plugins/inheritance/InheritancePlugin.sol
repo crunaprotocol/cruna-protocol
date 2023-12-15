@@ -59,12 +59,6 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, S
     return bytes4(keccak256("InheritancePlugin"));
   }
 
-  function pluginRoles() external pure virtual returns (bytes4[] memory) {
-    bytes4[] memory roles = new bytes4[](1);
-    roles[0] = SENTINEL;
-    return roles;
-  }
-
   // sentinels and beneficiaries
   // @dev see {IInheritancePlugin.sol-setSentinel}
   function setSentinel(
@@ -254,10 +248,6 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, S
   function _reset() internal {
     _deleteActors(SENTINEL);
     delete _inheritanceConf;
-  }
-
-  function isPluginSRole(bytes4 role) external pure override returns (bool) {
-    return role == SENTINEL;
   }
 
   // @dev Validates the request.

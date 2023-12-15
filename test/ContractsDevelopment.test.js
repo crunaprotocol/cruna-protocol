@@ -55,6 +55,9 @@ describe("Testing contract deployments", function () {
 
   it("should deploy everything as expected", async function () {
     // test the beforeEach
+    // to cover it
+    const flexiProxy = await deployContract("FlexiProxy", managerImpl.address);
+    expect(await flexiProxy.isProxy()).to.be.true;
   });
 
   it("should get the token parameters from the manager", async function () {

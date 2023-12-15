@@ -85,10 +85,6 @@ abstract contract ManagerBase is Context, Versioned {
     return (bytes32(a) >> 192) | (bytes32(b) >> 224);
   }
 
-  function combineBytes4AndString(bytes4 a, string memory b) public pure returns (bytes32) {
-    return (bytes32(a) >> 192) | (bytes32(bytes4(keccak256(abi.encodePacked(b)))) >> 224);
-  }
-
   // @dev Upgrade the implementation of the manager/plugin
   //   Notice that the owner can upgrade active or disable plugins
   //   so that, if a plugin is compromised, the user can disable it,

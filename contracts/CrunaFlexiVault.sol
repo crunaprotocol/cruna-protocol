@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: GPL3
 pragma solidity ^0.8.20;
 
-import {ProtectedNFT, Strings} from "./protected/ProtectedNFT.sol";
+import {ManagedERC721, Strings} from "./protected/ManagedERC721.sol";
 
 //import "hardhat/console.sol";
 
 // @dev This contract is a simple example of a protected NFT.
-contract CrunaFlexiVault is ProtectedNFT {
+contract CrunaFlexiVault is ManagedERC721 {
   using Strings for uint256;
 
   error NotTheFactory();
@@ -25,7 +25,7 @@ contract CrunaFlexiVault is ProtectedNFT {
   //   using Nick's factory, so we may in theory hardcode them in the code. However,
   //   if so, we will not be able to test the contract.
   // @param owner The address of the owner.
-  constructor(address owner) ProtectedNFT("Cruna Flexi Vault V1", "CRUNA1", owner) {}
+  constructor(address owner) ManagedERC721("Cruna Flexi Vault V1", "CRUNA1", owner) {}
 
   // @dev Set factory to 0x0 to disable a factory.
   // @notice This is the only function that can be called by the owner.
