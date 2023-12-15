@@ -186,27 +186,27 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   IERC6454.sol                  |      100 |      100 |      100 |      100 |                |
   IERC6982.sol                  |      100 |      100 |      100 |      100 |                |
   IManagedERC721.sol            |      100 |      100 |      100 |      100 |                |
- contracts/manager/             |     98.4 |    70.59 |      100 |    98.61 |                |
+ contracts/manager/             |    98.39 |    70.59 |    97.96 |     97.9 |                |
   Actor.sol                     |      100 |       70 |      100 |      100 |                |
   Guardian.sol                  |      100 |       50 |      100 |    83.33 |             21 |
   IManager.sol                  |      100 |      100 |      100 |      100 |                |
-  Manager.sol                   |    98.81 |    70.51 |      100 |    98.95 |            128 |
+  Manager.sol                   |     98.8 |    70.51 |      100 |    98.94 |            127 |
   ManagerBase.sol               |    94.74 |       80 |      100 |      100 |                |
-  ManagerProxy.sol              |      100 |      100 |      100 |      100 |                |
+  ManagerProxy.sol              |      100 |      100 |        0 |        0 |             10 |
  contracts/plugins/             |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                   |      100 |      100 |      100 |      100 |                |
- contracts/plugins/inheritance/ |      100 |    72.37 |      100 |    97.67 |                |
+ contracts/plugins/inheritance/ |      100 |    72.37 |    94.74 |    96.51 |                |
   IInheritancePlugin.sol        |      100 |      100 |      100 |      100 |                |
   InheritancePlugin.sol         |      100 |    72.37 |      100 |    97.65 |         80,176 |
-  InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
+  InheritancePluginProxy.sol    |      100 |      100 |        0 |        0 |             10 |
  contracts/protected/           |      100 |     52.5 |      100 |    96.97 |                |
   ManagedERC721.sol             |      100 |     52.5 |      100 |    96.97 |            158 |
- contracts/utils/               |      100 |       75 |      100 |      100 |                |
-  FlexiProxy.sol                |      100 |      100 |      100 |      100 |                |
+ contracts/utils/               |    83.33 |       75 |      100 |    83.33 |                |
+  FlexiProxy.sol                |        0 |      100 |      100 |        0 |             13 |
   SignatureValidator.sol        |      100 |       75 |      100 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |    99.25 |    64.79 |      100 |    97.85 |                |
+All files                       |    98.87 |    64.79 |    98.11 |    96.92 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 

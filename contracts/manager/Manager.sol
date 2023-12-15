@@ -121,7 +121,6 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     bytes memory data = abi.encodeWithSignature("emitLockedEvent(uint256,bool)", tokenId(), locked_);
     address vaultAddress = address(vault());
     // solhint-disable-next-line avoid-low-level-calls
-    (, bytes memory returnData) = vaultAddress.call(data);
     (bool success, ) = vaultAddress.call(data);
     if (!success) {
       // this way we can ask the user to execute an explicit lock
