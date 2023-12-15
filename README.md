@@ -174,27 +174,27 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   IERC6454.sol                  |      100 |      100 |      100 |      100 |                |
   IERC6982.sol                  |      100 |      100 |      100 |      100 |                |
   IProtected.sol                |      100 |      100 |      100 |      100 |                |
- contracts/manager/             |    99.14 |    69.32 |      100 |    97.73 |                |
+ contracts/manager/             |    99.14 |    69.32 |    97.78 |    96.97 |                |
   Actor.sol                     |      100 |       70 |      100 |      100 |                |
   Guardian.sol                  |      100 |       50 |      100 |    83.33 |             19 |
   IManager.sol                  |      100 |      100 |      100 |      100 |                |
   Manager.sol                   |      100 |    68.75 |      100 |    97.59 |        284,292 |
   ManagerBase.sol               |    94.74 |       80 |      100 |      100 |                |
-  ManagerProxy.sol              |      100 |      100 |      100 |      100 |                |
+  ManagerProxy.sol              |      100 |      100 |        0 |        0 |             10 |
  contracts/plugins/             |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                   |      100 |      100 |      100 |      100 |                |
- contracts/plugins/inheritance/ |      100 |    71.43 |      100 |    98.73 |                |
+ contracts/plugins/inheritance/ |      100 |    71.43 |    94.74 |    97.47 |                |
   IInheritancePlugin.sol        |      100 |      100 |      100 |      100 |                |
   InheritancePlugin.sol         |      100 |    71.43 |      100 |    98.72 |            179 |
-  InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
+  InheritancePluginProxy.sol    |      100 |      100 |        0 |        0 |             10 |
  contracts/protected/           |      100 |    55.77 |      100 |    95.65 |                |
   ProtectedNFT.sol              |      100 |    55.77 |      100 |    95.65 |         87,196 |
- contracts/utils/               |      100 |      100 |      100 |      100 |                |
-  FlexiProxy.sol                |      100 |      100 |      100 |      100 |                |
+ contracts/utils/               |       75 |      100 |    66.67 |       75 |                |
+  FlexiProxy.sol                |        0 |      100 |        0 |        0 |             13 |
   SignatureValidator.sol        |      100 |      100 |      100 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |    99.61 |     63.6 |      100 |    97.48 |                |
+All files                       |    99.22 |     63.6 |    96.15 |    96.54 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 
