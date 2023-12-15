@@ -9,7 +9,21 @@ contract ManagerV2Mock is Manager {
   }
 
   // new function in V2
-  function isMock() external pure returns (bool) {
-    return true;
+  function bytes4ToHexString(bytes4 _bytes) public pure returns (string memory) {
+    bytes memory byteArray = new bytes(8);
+    for (uint256 i = 0; i < 4; i++) {
+      uint8 currentByte = uint8(_bytes[i]);
+      byteArray[2 * i] = _nibbleToHexChar(currentByte / 16);
+      byteArray[2 * i + 1] = _nibbleToHexChar(currentByte % 16);
+    }
+    return string(abi.encodePacked("0x", string(byteArray)));
+  }
+
+  function _nibbleToHexChar(uint8 _nibble) internal pure returns (bytes1) {
+    if (_nibble < 10) {
+      return bytes1(uint8(bytes1("0")) + _nibble);
+    } else {
+      return bytes1(uint8(bytes1("a")) + _nibble - 10);
+    }
   }
 }

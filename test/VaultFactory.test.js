@@ -19,16 +19,15 @@ const {
 
 describe("VaultFactory", function () {
   let erc6551Registry, proxy, managerImpl, guardian;
-  let signatureValidator, vault;
+  let vault;
   let factory;
   let usdc, usdt;
   let deployer, bob, alice, fred;
 
   before(async function () {
     [deployer, bob, alice, fred] = await ethers.getSigners();
-
     // we test the deploying using Nick's factory only here because if not it would create conflicts, since any contract has already been deployed and would not change its storage
-    [erc6551Registry, proxy, signatureValidator, guardian, vault] = await deployAll(deployer);
+    [erc6551Registry, proxy, guardian, vault] = await deployAll(deployer);
   });
 
   //here we test the contract

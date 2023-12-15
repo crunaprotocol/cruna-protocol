@@ -135,17 +135,6 @@
         "type": "error"
       },
       {
-        "inputs": [
-          {
-            "internalType": "bytes32",
-            "name": "",
-            "type": "bytes32"
-          }
-        ],
-        "name": "ActorNotFound",
-        "type": "error"
-      },
-      {
         "inputs": [],
         "name": "CannotBeYourself",
         "type": "error"
@@ -153,16 +142,6 @@
       {
         "inputs": [],
         "name": "ContractsCannotBeProtectors",
-        "type": "error"
-      },
-      {
-        "inputs": [],
-        "name": "DisabledPlugin",
-        "type": "error"
-      },
-      {
-        "inputs": [],
-        "name": "Forbidden",
         "type": "error"
       },
       {
@@ -177,6 +156,11 @@
       },
       {
         "inputs": [],
+        "name": "InvalidShortString",
+        "type": "error"
+      },
+      {
+        "inputs": [],
         "name": "InvalidVersion",
         "type": "error"
       },
@@ -187,12 +171,12 @@
       },
       {
         "inputs": [],
-        "name": "NotAuthorized",
+        "name": "NotPermittedWhenProtectorsAreActive",
         "type": "error"
       },
       {
         "inputs": [],
-        "name": "NotPermittedWhenProtectorsAreActive",
+        "name": "NotTheAuthorizedPlugin",
         "type": "error"
       },
       {
@@ -212,6 +196,11 @@
       },
       {
         "inputs": [],
+        "name": "PluginNotFoundOrDisabled",
+        "type": "error"
+      },
+      {
+        "inputs": [],
         "name": "ProtectorAlreadySetByYou",
         "type": "error"
       },
@@ -221,8 +210,35 @@
         "type": "error"
       },
       {
+        "inputs": [
+          {
+            "internalType": "bytes4",
+            "name": "role",
+            "type": "bytes4"
+          },
+          {
+            "internalType": "bytes4",
+            "name": "pluginNameHash",
+            "type": "bytes4"
+          }
+        ],
+        "name": "RoleNotAuthorizedFor",
+        "type": "error"
+      },
+      {
         "inputs": [],
         "name": "SignatureAlreadyUsed",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "str",
+            "type": "string"
+          }
+        ],
+        "name": "StringTooLong",
         "type": "error"
       },
       {
@@ -244,6 +260,12 @@
         "inputs": [],
         "name": "ZeroAddress",
         "type": "error"
+      },
+      {
+        "anonymous": false,
+        "inputs": [],
+        "name": "EIP712DomainChanged",
+        "type": "event"
       },
       {
         "anonymous": false,
@@ -338,9 +360,9 @@
         "name": "PROTECTOR",
         "outputs": [
           {
-            "internalType": "bytes32",
+            "internalType": "bytes4",
             "name": "",
-            "type": "bytes32"
+            "type": "bytes4"
           }
         ],
         "stateMutability": "view",
@@ -349,6 +371,19 @@
       {
         "inputs": [],
         "name": "SAFE_RECIPIENT",
+        "outputs": [
+          {
+            "internalType": "bytes4",
+            "name": "",
+            "type": "bytes4"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "SALT",
         "outputs": [
           {
             "internalType": "bytes32",
@@ -362,9 +397,9 @@
       {
         "inputs": [
           {
-            "internalType": "bytes32",
+            "internalType": "bytes4",
             "name": "role",
-            "type": "bytes32"
+            "type": "bytes4"
           }
         ],
         "name": "actorCount",
@@ -386,9 +421,9 @@
             "type": "address"
           },
           {
-            "internalType": "bytes32",
+            "internalType": "bytes4",
             "name": "role",
-            "type": "bytes32"
+            "type": "bytes4"
           }
         ],
         "name": "actorIndex",
@@ -400,6 +435,54 @@
           }
         ],
         "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes4",
+            "name": "a",
+            "type": "bytes4"
+          },
+          {
+            "internalType": "bytes4",
+            "name": "b",
+            "type": "bytes4"
+          }
+        ],
+        "name": "combineBytes4",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes4",
+            "name": "a",
+            "type": "bytes4"
+          },
+          {
+            "internalType": "string",
+            "name": "b",
+            "type": "string"
+          }
+        ],
+        "name": "combineBytes4AndString",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "stateMutability": "pure",
         "type": "function"
       },
       {
@@ -434,19 +517,43 @@
         "type": "function"
       },
       {
-        "inputs": [
-          {
-            "internalType": "bytes32",
-            "name": "",
-            "type": "bytes32"
-          }
-        ],
-        "name": "disabledPlugins",
+        "inputs": [],
+        "name": "eip712Domain",
         "outputs": [
           {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
+            "internalType": "bytes1",
+            "name": "fields",
+            "type": "bytes1"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "version",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "chainId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "verifyingContract",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "salt",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "extensions",
+            "type": "uint256[]"
           }
         ],
         "stateMutability": "view",
@@ -474,9 +581,9 @@
       {
         "inputs": [
           {
-            "internalType": "bytes32",
+            "internalType": "bytes4",
             "name": "role",
-            "type": "bytes32"
+            "type": "bytes4"
           }
         ],
         "name": "getActors",
@@ -590,6 +697,30 @@
       {
         "inputs": [
           {
+            "internalType": "bytes4",
+            "name": "_nameHash",
+            "type": "bytes4"
+          },
+          {
+            "internalType": "bytes4",
+            "name": "role",
+            "type": "bytes4"
+          }
+        ],
+        "name": "isPluginSRole",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
             "internalType": "address",
             "name": "recipient",
             "type": "address"
@@ -622,6 +753,11 @@
       {
         "inputs": [
           {
+            "internalType": "bytes4",
+            "name": "pluginNameHash",
+            "type": "bytes4"
+          },
+          {
             "internalType": "uint256",
             "name": "tokenId",
             "type": "uint256"
@@ -642,9 +778,9 @@
         "name": "nameHash",
         "outputs": [
           {
-            "internalType": "bytes32",
+            "internalType": "bytes4",
             "name": "",
-            "type": "bytes32"
+            "type": "bytes4"
           }
         ],
         "stateMutability": "nonpayable",
@@ -703,17 +839,17 @@
       {
         "inputs": [
           {
-            "internalType": "bytes32",
-            "name": "",
-            "type": "bytes32"
+            "internalType": "bytes4",
+            "name": "_nameHash",
+            "type": "bytes4"
           }
         ],
-        "name": "pluginNamesByRole",
+        "name": "plugin",
         "outputs": [
           {
-            "internalType": "bytes32",
+            "internalType": "contract IPluginExt",
             "name": "",
-            "type": "bytes32"
+            "type": "address"
           }
         ],
         "stateMutability": "view",
@@ -727,12 +863,12 @@
             "type": "uint256"
           }
         ],
-        "name": "pluginRoles",
+        "name": "pluginNames",
         "outputs": [
           {
-            "internalType": "bytes32",
+            "internalType": "string",
             "name": "",
-            "type": "bytes32"
+            "type": "string"
           }
         ],
         "stateMutability": "view",
@@ -741,20 +877,72 @@
       {
         "inputs": [
           {
-            "internalType": "bytes32",
-            "name": "",
-            "type": "bytes32"
+            "internalType": "bytes4",
+            "name": "_nameHash",
+            "type": "bytes4"
           }
         ],
-        "name": "plugins",
+        "name": "pluginRoles",
         "outputs": [
           {
-            "internalType": "contract IPlugin",
+            "internalType": "bytes4[]",
             "name": "",
-            "type": "address"
+            "type": "bytes4[]"
           }
         ],
         "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes4",
+            "name": "",
+            "type": "bytes4"
+          }
+        ],
+        "name": "pluginsByName",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "proxyAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "active",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timeValidation",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "signature",
+            "type": "bytes"
+          }
+        ],
+        "name": "protectedTransfer",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
       },
       {
@@ -773,6 +961,70 @@
         "name": "reEnablePlugin",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "scope",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "actor",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "tokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "extra",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "extra2",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "extra3",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timeValidation",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "signature",
+            "type": "bytes"
+          }
+        ],
+        "name": "recoverSigner",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
         "type": "function"
       },
       {
@@ -855,54 +1107,6 @@
         "type": "function"
       },
       {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "roleString",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "actor",
-            "type": "address"
-          },
-          {
-            "internalType": "bytes32",
-            "name": "role_",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "bool",
-            "name": "status",
-            "type": "bool"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestamp",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "validFor",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bytes",
-            "name": "signature",
-            "type": "bytes"
-          },
-          {
-            "internalType": "address",
-            "name": "sender",
-            "type": "address"
-          }
-        ],
-        "name": "setSignedActor",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
         "inputs": [],
         "name": "token",
         "outputs": [
@@ -978,19 +1182,6 @@
             "internalType": "bool",
             "name": "",
             "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "validator",
-        "outputs": [
-          {
-            "internalType": "contract SignatureValidator",
-            "name": "",
-            "type": "address"
           }
         ],
         "stateMutability": "view",
@@ -1110,6 +1301,11 @@
     "InheritancePlugin": [
       {
         "inputs": [],
+        "name": "ActorAlreadyAdded",
+        "type": "error"
+      },
+      {
+        "inputs": [],
         "name": "BeneficiaryNotSet",
         "type": "error"
       },
@@ -1131,6 +1327,11 @@
       {
         "inputs": [],
         "name": "InvalidImplementation",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "InvalidShortString",
         "type": "error"
       },
       {
@@ -1199,8 +1400,24 @@
         "type": "error"
       },
       {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "str",
+            "type": "string"
+          }
+        ],
+        "name": "StringTooLong",
+        "type": "error"
+      },
+      {
         "inputs": [],
         "name": "TimestampInvalidOrExpired",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "TooManyActors",
         "type": "error"
       },
       {
@@ -1217,6 +1434,12 @@
         "inputs": [],
         "name": "ZeroAddress",
         "type": "error"
+      },
+      {
+        "anonymous": false,
+        "inputs": [],
+        "name": "EIP712DomainChanged",
+        "type": "event"
       },
       {
         "anonymous": false,
@@ -1327,7 +1550,87 @@
       },
       {
         "inputs": [],
+        "name": "MAX_ACTORS",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
         "name": "SENTINEL",
+        "outputs": [
+          {
+            "internalType": "bytes4",
+            "name": "",
+            "type": "bytes4"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes4",
+            "name": "role",
+            "type": "bytes4"
+          }
+        ],
+        "name": "actorCount",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "actor_",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes4",
+            "name": "role",
+            "type": "bytes4"
+          }
+        ],
+        "name": "actorIndex",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes4",
+            "name": "a",
+            "type": "bytes4"
+          },
+          {
+            "internalType": "bytes4",
+            "name": "b",
+            "type": "bytes4"
+          }
+        ],
+        "name": "combineBytes4",
         "outputs": [
           {
             "internalType": "bytes32",
@@ -1335,7 +1638,31 @@
             "type": "bytes32"
           }
         ],
-        "stateMutability": "view",
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes4",
+            "name": "a",
+            "type": "bytes4"
+          },
+          {
+            "internalType": "string",
+            "name": "b",
+            "type": "string"
+          }
+        ],
+        "name": "combineBytes4AndString",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "stateMutability": "pure",
         "type": "function"
       },
       {
@@ -1362,12 +1689,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "timestamp",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "validFor",
+            "name": "timeValidation",
             "type": "uint256"
           },
           {
@@ -1379,6 +1701,68 @@
         "name": "configureInheritance",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "eip712Domain",
+        "outputs": [
+          {
+            "internalType": "bytes1",
+            "name": "fields",
+            "type": "bytes1"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "version",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "chainId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "verifyingContract",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "salt",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "extensions",
+            "type": "uint256[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes4",
+            "name": "role",
+            "type": "bytes4"
+          }
+        ],
+        "name": "getActors",
+        "outputs": [
+          {
+            "internalType": "address[]",
+            "name": "",
+            "type": "address[]"
+          }
+        ],
+        "stateMutability": "view",
         "type": "function"
       },
       {
@@ -1495,6 +1879,25 @@
         "type": "function"
       },
       {
+        "inputs": [
+          {
+            "internalType": "bytes4",
+            "name": "role",
+            "type": "bytes4"
+          }
+        ],
+        "name": "isPluginSRole",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
         "inputs": [],
         "name": "manager",
         "outputs": [
@@ -1512,9 +1915,9 @@
         "name": "nameHash",
         "outputs": [
           {
-            "internalType": "bytes32",
+            "internalType": "bytes4",
             "name": "",
-            "type": "bytes32"
+            "type": "bytes4"
           }
         ],
         "stateMutability": "nonpayable",
@@ -1538,9 +1941,9 @@
         "name": "pluginRoles",
         "outputs": [
           {
-            "internalType": "bytes32[]",
+            "internalType": "bytes4[]",
             "name": "",
-            "type": "bytes32[]"
+            "type": "bytes4[]"
           }
         ],
         "stateMutability": "pure",
@@ -1551,6 +1954,70 @@
         "name": "proofOfLife",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "scope",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "actor",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "tokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "extra",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "extra2",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "extra3",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timeValidation",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "signature",
+            "type": "bytes"
+          }
+        ],
+        "name": "recoverSigner",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
         "type": "function"
       },
       {
@@ -1733,19 +2200,6 @@
       },
       {
         "inputs": [],
-        "name": "validator",
-        "outputs": [
-          {
-            "internalType": "contract SignatureValidator",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
         "name": "vault",
         "outputs": [
           {
@@ -1917,27 +2371,7 @@
       },
       {
         "inputs": [],
-        "name": "SignatureAlreadyUsed",
-        "type": "error"
-      },
-      {
-        "inputs": [],
         "name": "SupplyCapReached",
-        "type": "error"
-      },
-      {
-        "inputs": [],
-        "name": "TimestampInvalidOrExpired",
-        "type": "error"
-      },
-      {
-        "inputs": [],
-        "name": "TimestampZero",
-        "type": "error"
-      },
-      {
-        "inputs": [],
-        "name": "WrongDataOrNotSignedByProtector",
         "type": "error"
       },
       {
@@ -2032,9 +2466,9 @@
         "inputs": [
           {
             "indexed": true,
-            "internalType": "bytes32",
+            "internalType": "bytes4",
             "name": "pluginNameHash",
-            "type": "bytes32"
+            "type": "bytes4"
           },
           {
             "indexed": true,
@@ -2111,6 +2545,32 @@
       },
       {
         "inputs": [],
+        "name": "NAME_HASH",
+        "outputs": [
+          {
+            "internalType": "bytes4",
+            "name": "",
+            "type": "bytes4"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "SALT",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
         "name": "acceptOwnership",
         "outputs": [],
         "stateMutability": "nonpayable",
@@ -2151,6 +2611,30 @@
           }
         ],
         "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes4",
+            "name": "a",
+            "type": "bytes4"
+          },
+          {
+            "internalType": "string",
+            "name": "b",
+            "type": "string"
+          }
+        ],
+        "name": "combineBytes4AndString",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "stateMutability": "pure",
         "type": "function"
       },
       {
@@ -2211,19 +2695,6 @@
         "type": "function"
       },
       {
-        "inputs": [],
-        "name": "flexiProxy",
-        "outputs": [
-          {
-            "internalType": "contract Manager",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
         "inputs": [
           {
             "internalType": "uint256",
@@ -2265,11 +2736,6 @@
           {
             "internalType": "address",
             "name": "guardian_",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "signatureValidator_",
             "type": "address"
           },
           {
@@ -2358,9 +2824,9 @@
       {
         "inputs": [
           {
-            "internalType": "bytes32",
+            "internalType": "bytes4",
             "name": "pluginNameHash",
-            "type": "bytes32"
+            "type": "bytes4"
           },
           {
             "internalType": "uint256",
@@ -2390,6 +2856,19 @@
         "outputs": [
           {
             "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "managerProxy",
+        "outputs": [
+          {
+            "internalType": "contract Manager",
             "name": "",
             "type": "address"
           }
@@ -2466,39 +2945,6 @@
           }
         ],
         "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "to",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestamp",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "validFor",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bytes",
-            "name": "signature",
-            "type": "bytes"
-          }
-        ],
-        "name": "protectedTransfer",
-        "outputs": [],
-        "stateMutability": "nonpayable",
         "type": "function"
       },
       {
@@ -2583,19 +3029,6 @@
         "name": "safeTransferFrom",
         "outputs": [],
         "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "salt",
-        "outputs": [
-          {
-            "internalType": "bytes32",
-            "name": "",
-            "type": "bytes32"
-          }
-        ],
-        "stateMutability": "view",
         "type": "function"
       },
       {
@@ -2737,19 +3170,6 @@
       },
       {
         "inputs": [],
-        "name": "validator",
-        "outputs": [
-          {
-            "internalType": "contract SignatureValidator",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
         "name": "version",
         "outputs": [
           {
@@ -2764,18 +3184,7 @@
     ],
     "SignatureValidator": [
       {
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "version",
-            "type": "string"
-          }
-        ],
+        "inputs": [],
         "stateMutability": "nonpayable",
         "type": "constructor"
       },
@@ -2793,6 +3202,11 @@
           }
         ],
         "name": "StringTooLong",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "TimestampInvalidOrExpired",
         "type": "error"
       },
       {
@@ -2848,7 +3262,7 @@
         "inputs": [
           {
             "internalType": "bytes32",
-            "name": "nameHash",
+            "name": "scope",
             "type": "bytes32"
           },
           {
@@ -2858,7 +3272,12 @@
           },
           {
             "internalType": "address",
-            "name": "addr",
+            "name": "actor",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "tokenAddress",
             "type": "address"
           },
           {
@@ -2883,12 +3302,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "timestamp",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "validFor",
+            "name": "timeValidation",
             "type": "uint256"
           },
           {
@@ -2897,7 +3311,7 @@
             "type": "bytes"
           }
         ],
-        "name": "recoverPluginSigner",
+        "name": "recoverSigner",
         "outputs": [
           {
             "internalType": "address",
@@ -2906,73 +3320,6 @@
           }
         ],
         "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "bytes32",
-            "name": "scope",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "actor",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "extra",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "timestamp",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "validFor",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bytes",
-            "name": "signature",
-            "type": "bytes"
-          }
-        ],
-        "name": "recoverSetActorSigner",
-        "outputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "version",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "pure",
         "type": "function"
       }
     ],
@@ -3036,9 +3383,9 @@
         "inputs": [
           {
             "indexed": false,
-            "internalType": "bytes32",
+            "internalType": "bytes4",
             "name": "nameHash",
-            "type": "bytes32"
+            "type": "bytes4"
           },
           {
             "indexed": false,
@@ -3066,9 +3413,9 @@
       {
         "inputs": [
           {
-            "internalType": "bytes32",
+            "internalType": "bytes4",
             "name": "nameHash",
-            "type": "bytes32"
+            "type": "bytes4"
           },
           {
             "internalType": "address",
@@ -3123,9 +3470,9 @@
       {
         "inputs": [
           {
-            "internalType": "bytes32",
+            "internalType": "bytes4",
             "name": "nameHash",
-            "type": "bytes32"
+            "type": "bytes4"
           },
           {
             "internalType": "address",

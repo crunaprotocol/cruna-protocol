@@ -64,8 +64,7 @@ interface IInheritancePlugin {
     uint256 proofOfLifeDurationInDays,
     uint256 gracePeriod,
     address beneficiary,
-    uint256 timestamp,
-    uint256 validFor,
+    uint256 timeValidation,
     bytes calldata signature
   ) external;
 

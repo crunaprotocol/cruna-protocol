@@ -13,11 +13,13 @@ const {
   getTimestamp,
   signRequest,
   keccak256,
+  bytes4,
+  combineBytes4ToBytes32,
 } = require("./helpers");
 
 describe("Manager : Protectors", function () {
   let erc6551Registry, proxy, managerImpl, guardian;
-  let signatureValidator, vault;
+  let vault;
   let factory;
   let usdc, usdt;
   let deployer, bob, alice, fred, mark, otto;
@@ -25,7 +27,7 @@ describe("Manager : Protectors", function () {
 
   before(async function () {
     [deployer, bob, alice, fred, mark, otto] = await ethers.getSigners();
-    signatureValidator = await deployContract("SignatureValidator", "Cruna", "1");
+
     chainId = await getChainId();
   });
 
@@ -36,7 +38,7 @@ describe("Manager : Protectors", function () {
     proxy = await deployContract("ManagerProxy", managerImpl.address);
 
     vault = await deployContract("CrunaFlexiVault", deployer.address);
-    await vault.init(erc6551Registry.address, guardian.address, signatureValidator.address, proxy.address);
+    await vault.init(erc6551Registry.address, guardian.address, proxy.address);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
 
     await vault.setFactory(factory.address);
@@ -63,9 +65,9 @@ describe("Manager : Protectors", function () {
 
   it("should support the IProtected interface", async function () {
     const vaultMock = await deployContract("VaultMock", deployer.address);
-    await vaultMock.init(erc6551Registry.address, guardian.address, signatureValidator.address, proxy.address);
+    await vaultMock.init(erc6551Registry.address, guardian.address, proxy.address);
     const interfaceId = await vaultMock.getIProtectedInterfaceId();
-    expect(interfaceId).to.equal("0xc87d16e3");
+    expect(interfaceId).to.equal("0xe19a64da");
     expect(await vault.supportsInterface(interfaceId)).to.be.true;
   });
 
@@ -84,11 +86,21 @@ describe("Manager : Protectors", function () {
   it("should verify vault base parameters", async function () {
     expect(await vault.defaultLocked()).to.be.false;
     const tokenId = await buyAVault(bob);
-    expect(await vault.tokenURI(tokenId)).to.equal("https://meta.cruna.cc/flexy-vault/v1/31337000001");
+    expect(await vault.tokenURI(tokenId)).to.equal("https://meta.cruna.cc/flexy-vault/v1/3133701000001");
     expect(await vault.contractURI()).to.equal("https://meta.cruna.cc/flexy-vault/v1/info");
     expect(await vault.locked(tokenId)).to.be.false;
     expect(await vault.isTransferable(tokenId, bob.address, addr0)).to.be.false;
     expect(await vault.isTransferable(tokenId, bob.address, bob.address)).to.be.false;
+  });
+
+  it("should verify that scope is correctly formed", async function () {
+    const tokenId = await buyAVault(bob);
+    const managerAddress = await vault.managerOf(tokenId);
+    const manager = await ethers.getContractAt("Manager", managerAddress);
+    const nameHash = bytes4(keccak256("Manager"));
+    const role = bytes4(keccak256("PROTECTOR"));
+    const scope = combineBytes4ToBytes32(nameHash, role).toString();
+    expect(await manager.combineBytes4(nameHash, role)).equal(scope);
   });
 
   it("should add the first protector and remove it", async function () {
@@ -109,18 +121,24 @@ describe("Manager : Protectors", function () {
       "NotPermittedWhenProtectorsAreActive",
     );
 
-    let signature = await signRequest(
-      "PROTECTOR",
-      bob.address,
-      alice.address,
-      tokenId,
-      0,
-      ts,
-      3600,
-      chainId,
-      alice.address,
-      signatureValidator,
-    );
+    let signature = (
+      await signRequest(
+        "Manager",
+        "PROTECTOR",
+        bob.address,
+        alice.address,
+        vault.address,
+        tokenId,
+        0,
+        0,
+        0,
+        ts,
+        3600,
+        chainId,
+        alice.address,
+        manager,
+      )
+    )[0];
 
     await expect(manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature)).to.be.revertedWith(
       "WrongDataOrNotSignedByProtector",
@@ -157,18 +175,29 @@ describe("Manager : Protectors", function () {
     let allProtectors = await manager.getProtectors();
     expect(allProtectors[0]).equal(alice.address);
 
-    let signature = await signRequest(
-      "PROTECTOR",
-      bob.address,
-      fred.address,
-      tokenId,
-      1,
-      ts,
-      3600,
-      chainId,
-      alice.address,
-      signatureValidator,
+    let signature = (
+      await signRequest(
+        "Manager",
+        "PROTECTOR",
+        bob.address,
+        fred.address,
+        vault.address,
+        tokenId,
+        1,
+        0,
+        0,
+        ts,
+        3600,
+        chainId,
+        alice.address,
+        manager,
+      )
+    )[0];
+
+    await expect(manager.connect(bob).setProtector(vault.address, true, ts, 3600, signature)).revertedWith(
+      "ContractsCannotBeProtectors",
     );
+
     await expect(manager.connect(bob).setProtector(fred.address, true, ts, 3600, signature))
       .to.emit(manager, "ProtectorUpdated")
       .withArgs(bob.address, fred.address, true);
@@ -186,18 +215,24 @@ describe("Manager : Protectors", function () {
     expect(await manager.hasProtectors()).to.equal(true);
 
     // let Fred remove Alice as protector
-    signature = await signRequest(
-      "PROTECTOR",
-      bob.address,
-      alice.address,
-      tokenId,
-      0,
-      ts,
-      3600,
-      chainId,
-      fred.address,
-      signatureValidator,
-    );
+    signature = (
+      await signRequest(
+        "Manager",
+        "PROTECTOR",
+        bob.address,
+        alice.address,
+        vault.address,
+        tokenId,
+        0,
+        0,
+        0,
+        ts,
+        3600,
+        chainId,
+        fred.address,
+        manager,
+      )
+    )[0];
     await expect(manager.connect(bob).setProtector(alice.address, false, ts, 3600, signature))
       .to.emit(manager, "ProtectorUpdated")
       .withArgs(bob.address, alice.address, false);
@@ -214,19 +249,25 @@ describe("Manager : Protectors", function () {
     await expect(
       vault.connect(bob)["safeTransferFrom(address,address,uint256)"](bob.address, fred.address, tokenId),
     ).to.be.revertedWith("NotTransferable");
-    let signature = await signRequest(
-      "PROTECTED_TRANSFER",
-      bob.address,
-      fred.address,
-      tokenId,
-      0,
-      ts,
-      3600,
-      chainId,
-      alice.address,
-      signatureValidator,
-    );
-    await expect(vault.connect(bob).protectedTransfer(tokenId, fred.address, ts, 3600, signature))
+    let signature = (
+      await signRequest(
+        "Manager",
+        "protectedTransfer",
+        bob.address,
+        fred.address,
+        vault.address,
+        tokenId,
+        0,
+        0,
+        0,
+        ts,
+        3600,
+        chainId,
+        alice.address,
+        manager,
+      )
+    )[0];
+    await expect(manager.connect(bob).protectedTransfer(tokenId, fred.address, ts * 1e6 + 3600, signature))
       .to.emit(vault, "Transfer")
       .withArgs(bob.address, fred.address, tokenId);
   });
@@ -244,9 +285,7 @@ describe("Manager : Protectors", function () {
     await expect(manager.upgrade(managerV2Impl.address)).to.be.revertedWith("NotTheTokenOwner");
 
     await expect(manager.connect(bob).upgrade(managerV2Impl.address)).to.be.revertedWith("InvalidImplementation");
-
-    await guardian.setTrustedImplementation(keccak256("Manager"), managerV2Impl.address, true);
-
+    await guardian.setTrustedImplementation(bytes4(keccak256("Manager")), managerV2Impl.address, true);
     expect(await manager.getImplementation()).to.equal(addr0);
 
     await manager.connect(bob).upgrade(managerV2Impl.address);
@@ -256,6 +295,7 @@ describe("Manager : Protectors", function () {
     expect(await manager.hasProtectors()).to.equal(true);
 
     const managerV2 = await ethers.getContractAt("ManagerV2Mock", managerAddress);
-    expect(await managerV2.isMock()).to.be.true;
+    const b4 = "0xaabbccdd";
+    expect(await managerV2.bytes4ToHexString(b4)).equal(b4);
   });
 });

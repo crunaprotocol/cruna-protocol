@@ -13,7 +13,6 @@ import {IProtected} from "../interfaces/IProtected.sol";
 import {IERC6454} from "../interfaces/IERC6454.sol";
 import {IERC6982} from "../interfaces/IERC6982.sol";
 import {Manager} from "../manager/Manager.sol";
-import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {Versioned} from "../utils/Versioned.sol";
 
 //import {console} from "hardhat/console.sol";
@@ -23,32 +22,28 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   using ECDSA for bytes32;
   using Strings for uint256;
 
-  event ManagedTransfer(bytes32 indexed pluginNameHash, uint256 indexed tokenId);
+  event ManagedTransfer(bytes4 indexed pluginNameHash, uint256 indexed tokenId);
 
   error NotTheTokenOwner();
-  error TimestampInvalidOrExpired();
-  error SignatureAlreadyUsed();
   error NotTransferable();
   error NotTheManager();
-  error TimestampZero();
   error ZeroAddress();
-  error WrongDataOrNotSignedByProtector();
   error NotInitiated();
   error AlreadyInitiated();
   error SupplyCapReached();
   error ErrorCreatingManager();
 
+  mapping(bytes32 => bool) public usedSignatures;
   Guardian public guardian;
-  SignatureValidator public validator;
   IERC6551Registry public registry;
-  Manager public flexiProxy;
+  Manager public managerProxy;
 
   bytes32 public constant SALT = bytes32(uint256(69));
+  bytes4 public constant NAME_HASH = bytes4(keccak256("ProtectedNFT"));
 
   uint256 public nextTokenId = 1;
 
   mapping(uint256 => bool) internal _approvedTransfers;
-  mapping(bytes32 => bool) public usedSignatures;
 
   // @dev This modifier will only allow the owner of a certain tokenId to call the function.
   // @param tokenId_ The id of the token.
@@ -72,55 +67,28 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
     if (owner == address(0)) revert ZeroAddress();
     _transferOwnership(owner);
     emit DefaultLocked(false);
-    nextTokenId = block.chainid * 1e6 + 1;
+    nextTokenId = block.chainid * 1e8 + version() * 1e6 + 1;
   }
 
   // @dev This function will initialize the contract.
   // @param registry_ The address of the registry contract.
   // @param guardian_ The address of the Manager.sol guardian.
-  // @param signatureValidator_ The address of the signature validator.
   // @param managerProxy_ The address of the manager proxy.
-  function init(address registry_, address guardian_, address signatureValidator_, address managerProxy_) external onlyOwner {
+  function init(address registry_, address guardian_, address managerProxy_) external onlyOwner {
     // must be called immediately after deployment
-    if (address(validator) != address(0)) revert AlreadyInitiated();
-    if (registry_ == address(0) || guardian_ == address(0) || signatureValidator_ == address(0) || managerProxy_ == address(0))
-      revert ZeroAddress();
+    if (address(registry) != address(0)) revert AlreadyInitiated();
+    if (registry_ == address(0) || guardian_ == address(0) || managerProxy_ == address(0)) revert ZeroAddress();
     guardian = Guardian(guardian_);
-    validator = SignatureValidator(signatureValidator_);
     registry = IERC6551Registry(registry_);
-    flexiProxy = Manager(managerProxy_);
+    managerProxy = Manager(managerProxy_);
   }
 
-  // @dev See {IProtected721-protectedTransfer}.
-  function protectedTransfer(
-    uint256 tokenId,
-    address to,
-    uint256 timestamp,
-    uint256 validFor,
-    bytes calldata signature
-  ) external override onlyTokenOwner(tokenId) {
-    if (timestamp == 0) revert TimestampZero();
-    if (timestamp > block.timestamp || timestamp < block.timestamp - validFor) revert TimestampInvalidOrExpired();
-    if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
-    usedSignatures[keccak256(signature)] = true;
-    address signer = validator.recoverSetActorSigner(
-      keccak256("PROTECTED_TRANSFER"),
-      _msgSender(),
-      to,
-      tokenId,
-      0,
-      timestamp,
-      validFor,
-      signature
-    );
-    if (!Manager(managerOf(tokenId)).isAProtector(signer)) revert WrongDataOrNotSignedByProtector();
-    _approvedTransfers[tokenId] = true;
-    _transfer(_msgSender(), to, tokenId);
-    delete _approvedTransfers[tokenId];
+  function combineBytes4AndString(bytes4 a, string memory b) public pure returns (bytes32) {
+    return (bytes32(a) >> 192) | (bytes32(bytes4(keccak256(abi.encodePacked(b)))) >> 224);
   }
 
   // @dev See {IProtected721-managedTransfer}.
-  function managedTransfer(bytes32 pluginNameHash, uint256 tokenId, address to) external override onlyManager(tokenId) {
+  function managedTransfer(bytes4 pluginNameHash, uint256 tokenId, address to) external override onlyManager(tokenId) {
     _approvedTransfers[tokenId] = true;
     _approve(managerOf(tokenId), tokenId);
     safeTransferFrom(ownerOf(tokenId), to, tokenId);
@@ -192,7 +160,7 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
     // the max supply is 999,999
     if (nextTokenId % 1e6 == 0) revert SupplyCapReached();
     if (address(registry) == address(0)) revert NotInitiated();
-    try registry.createAccount(address(flexiProxy), SALT, block.chainid, address(this), nextTokenId) {} catch {
+    try registry.createAccount(address(managerProxy), SALT, block.chainid, address(this), nextTokenId) {} catch {
       revert ErrorCreatingManager();
     }
     _safeMint(to, nextTokenId++);
@@ -201,6 +169,6 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   // @dev This function will return the address of the manager for tokenId.
   // @param tokenId The id of the token.
   function managerOf(uint256 tokenId) public view returns (address) {
-    return registry.account(address(flexiProxy), SALT, block.chainid, address(this), tokenId);
+    return registry.account(address(managerProxy), SALT, block.chainid, address(this), tokenId);
   }
 }

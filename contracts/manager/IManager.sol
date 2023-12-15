@@ -5,7 +5,6 @@ pragma solidity ^0.8.20;
 
 // erc165 interfaceId 0x8dca4bea
 interface IManager {
-
   // @dev Emitted when a protector is set for an tokensOwner
   //   The token owner is useful for historic reason since the NFT can be later transferred to another address.
   //   If that happens, all the protector will be removed, and the new tokenOwner will have to set them again.
@@ -90,17 +89,13 @@ interface IManager {
   // @dev Return all the safe recipients
   function getSafeRecipients() external view returns (address[] memory);
 
-  function setSignedActor(
-    bytes32 pluginNameHash,
-    string memory roleString,
-    address actor,
-    bytes32 role_,
-    bool status,
-    uint256 timestamp,
-    uint256 validFor,
-    bytes calldata signature,
-    address sender
-  ) external;
+  // @dev Allow to transfer a token when at least 1 protector has been set.
+  //   This is necessary because when a protector is set, the token is not
+  //   transferable anymore.
+  // @param tokenId The id of the token.
+  // @param to The address of the recipient.
+  // @param timeValidation The timestamp of the signature combined with the validity of the signature.
+  function protectedTransfer(uint256 tokenId, address to, uint256 timeValidation, bytes calldata signature) external;
 
-  function managedTransfer(bytes32 pluginNameHash, uint256 tokenId, address to) external;
+  function managedTransfer(bytes4 pluginNameHash, uint256 tokenId, address to) external;
 }

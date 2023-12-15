@@ -24,6 +24,7 @@ function analyzeContracts(dir) {
       const unusedErrors = findUnusedCustomErrors(content);
       if (unusedErrors.length > 0) {
         console.log(`\nUnused custom errors in:\n  ${fullPath}\n${unusedErrors.join("\n")}`);
+        process.exit(1);
       }
     }
   });

@@ -11,7 +11,7 @@ contract SomePlugin is IPlugin, ManagerBase {
   error Forbidden();
 
   // Replace with the roles required by the plugin, if any, or delete it
-  bytes32 public constant SOME_OTHER_ROLE = keccak256("SOME_ROLE");
+  bytes4 public constant SOME_OTHER_ROLE = bytes4(keccak256("SOME_ROLE"));
 
   Manager public manager;
 
@@ -29,8 +29,8 @@ contract SomePlugin is IPlugin, ManagerBase {
     manager = Manager(_msgSender());
   }
 
-  function pluginRoles() external pure virtual returns (bytes32[] memory) {
-    bytes32[] memory roles = new bytes32[](1);
+  function pluginRoles() external pure virtual returns (bytes4[] memory) {
+    bytes4[] memory roles = new bytes4[](1);
     // return your roles, if any
     roles[0] = SOME_OTHER_ROLE;
     return roles;
@@ -49,7 +49,7 @@ contract SomePlugin is IPlugin, ManagerBase {
     // reset to initial state
   }
 
-  function isPluginRole(bytes32 role) external view override returns (bool) {
+  function isPluginSRole(bytes4 role) external pure override returns (bool) {
     return role == SOME_OTHER_ROLE;
   }
 

@@ -50,7 +50,7 @@ const Helpers = {
   },
 
   async deployNickSFactory(deployer) {
-    if ((await this.ethers.provider.getCode(Helpers.nickSFactoryAddress)) === `0x`) {
+    if ((await this.ethers.provider.getCode(thiz.nickSFactoryAddress)) === `0x`) {
       // Fund account of signer of transaction that deploys Arachnid's factory.
       const addressOfSignerToDeployArachnidsFactory = `0x3fab184622dc19b6109349b94811493bf2a45362`;
       let txResponse = await deployer.sendTransaction({
@@ -72,7 +72,7 @@ const Helpers = {
     contractName,
     constructorTypes,
     constructorArgs,
-    salt = Helpers.keccak256("Cruna"),
+    salt = thiz.keccak256("Cruna"),
   ) {
     const json = await artifacts.readArtifact(contractName);
     let contractBytecode = json.bytecode;
@@ -89,18 +89,50 @@ const Helpers = {
 
     const data = salt + contractBytecode.substring(2);
     const tx = {
-      to: Helpers.nickSFactoryAddress,
+      to: thiz.nickSFactoryAddress,
       data,
     };
     const transaction = await deployer.sendTransaction(tx);
     await transaction.wait();
-    return this.ethers.utils.getCreate2Address(
-      Helpers.nickSFactoryAddress,
-      salt,
-      this.ethers.utils.keccak256(contractBytecode),
-    );
+    return this.ethers.utils.getCreate2Address(thiz.nickSFactoryAddress, salt, this.ethers.utils.keccak256(contractBytecode));
   },
 
+  bytes4(bytes32value) {
+    return this.ethers.utils.hexDataSlice(bytes32value, 0, 4);
+  },
+
+  combineBytes4ToBytes32(bytes4value1, bytes4value2) {
+    // Convert bytes4 values to BigNumber
+    let bigNumberValue1 = ethers.BigNumber.from(bytes4value1);
+    let bigNumberValue2 = ethers.BigNumber.from(bytes4value2);
+
+    // Shift the first value 4 bytes to the left (32 bits)
+    let shiftedValue1 = bigNumberValue1.shl(32);
+
+    // Combine the two values
+    let combinedValue = shiftedValue1.or(bigNumberValue2);
+
+    // Convert the combined BigNumber to bytes32
+    return this.ethers.utils.hexZeroPad(combinedValue.toHexString(), 32);
+  },
+
+  combineBytes4ToBytes32LeftAligned(bytes4value1, bytes4value2) {
+    // Convert bytes4 values to BigNumber
+    let bigNumberValue1 = ethers.BigNumber.from(bytes4value1);
+    let bigNumberValue2 = ethers.BigNumber.from(bytes4value2);
+
+    // Shift the first value 28 bytes (224 bits) to the left
+    let shiftedValue1 = bigNumberValue1.shl(224);
+
+    // Shift the second value 24 bytes (192 bits) to the left
+    let shiftedValue2 = bigNumberValue2.shl(192);
+
+    // Combine the two shifted values
+    let combinedValue = shiftedValue1.or(shiftedValue2);
+
+    // Convert the combined BigNumber to bytes32
+    return ethers.utils.hexZeroPad(combinedValue.toHexString(), 32);
+  },
   async deployAll(deployer) {
     // using Nick's factory
     await Helpers.deployNickSFactory(deployer);
@@ -120,15 +152,6 @@ const Helpers = {
     const proxyAddress = await Helpers.deployContractViaNickSFactory(deployer, "ManagerProxy", ["address"], [managerAddress]);
     const proxy = await ethers.getContractAt("ManagerProxy", proxyAddress);
 
-    const signatureValidatorAddress = await Helpers.deployContractViaNickSFactory(
-      deployer,
-      "SignatureValidator",
-      ["string", "string"],
-      ["Cruna", "1"],
-    );
-
-    const signatureValidator = await ethers.getContractAt("SignatureValidator", signatureValidatorAddress);
-
     const guardianAddress = await Helpers.deployContractViaNickSFactory(deployer, "Guardian", ["address"], [deployer.address]);
     const guardian = await ethers.getContractAt("Guardian", guardianAddress);
 
@@ -139,18 +162,12 @@ const Helpers = {
       [deployer.address],
     );
     const vault = await ethers.getContractAt("CrunaFlexiVault", vaultAddress);
-    await vault.init(erc6551RegistryAddress, guardianAddress, signatureValidatorAddress, proxyAddress);
+    await vault.init(erc6551RegistryAddress, guardianAddress, proxyAddress);
 
-    return [erc6551Registry, proxy, signatureValidator, guardian, vault];
+    return [erc6551Registry, proxy, guardian, vault];
   },
 
-  async getAddressViaNickSFactory(
-    deployer,
-    contractName,
-    constructorTypes,
-    constructorArgs,
-    salt = Helpers.keccak256("Cruna"),
-  ) {
+  async getAddressViaNickSFactory(deployer, contractName, constructorTypes, constructorArgs, salt = thiz.keccak256("Cruna")) {
     const json = await artifacts.readArtifact(contractName);
     let contractBytecode = json.bytecode;
 
@@ -164,11 +181,7 @@ const Helpers = {
       contractBytecode = contractBytecode + encodedArgs.substring(2); // Remove '0x' from encoded args
     }
 
-    return this.ethers.utils.getCreate2Address(
-      Helpers.nickSFactoryAddress,
-      salt,
-      this.ethers.utils.keccak256(contractBytecode),
-    );
+    return this.ethers.utils.getCreate2Address(thiz.nickSFactoryAddress, salt, this.ethers.utils.keccak256(contractBytecode));
   },
 
   async deployContract(contractName, ...args) {
@@ -261,65 +274,67 @@ const Helpers = {
     return ethers.utils.keccak256(bytes);
   },
 
-  async signRequest(scope, owner, actor, tokenId, extra, timestamp, validFor, chainId, signer, validator) {
-    scope = Helpers.keccak256(scope);
+  combineTimestampAndValidFor(timestamp, validFor) {
+    return this.ethers.BigNumber.from(timestamp.toString()).mul(1e6).add(validFor);
+  },
+
+  async signRequest(
+    name,
+    roleString,
+    owner,
+    actor,
+    tokenAddress,
+    tokenId,
+    extra,
+    extra2,
+    extra3,
+    timestamp,
+    validFor,
+    chainId,
+    signer,
+    validatorContract,
+  ) {
+    const nameHash = thiz.bytes4(thiz.keccak256(name));
+    const role = roleString ? thiz.bytes4(thiz.keccak256(roleString)) : "0x00000000";
+    const scope = thiz.combineBytes4ToBytes32(nameHash, role).toString();
+    timestamp = thiz.ethers.BigNumber.from(timestamp.toString()).toNumber();
+    const timeValidation = thiz.combineTimestampAndValidFor(timestamp, validFor).toString();
+
+    // console.log(name, roleString, owner, actor, tokenAddress, tokenId, extra, extra2, extra3, timestamp, validFor, chainId, signer, validatorContract.address);
+
     const message = {
-      scope: scope.toString(),
+      scope,
       owner,
       actor,
+      tokenAddress,
       tokenId: tokenId.toString(),
-      extra,
-      timestamp: timestamp.toString(),
-      validFor: validFor.toString(),
+      extra: extra.toString(),
+      extra2: extra2.toString(),
+      extra3: extra3.toString(),
+      timeValidation,
     };
-    return Helpers.makeSignature(
-      chainId,
-      validator.address,
-      Helpers.privateKeyByWallet[signer],
-      "Auth",
-      [
-        { name: "scope", type: "bytes32" },
-        { name: "owner", type: "address" },
-        { name: "actor", type: "address" },
-        { name: "tokenId", type: "uint256" },
-        { name: "extra", type: "uint256" },
-        { name: "timestamp", type: "uint256" },
-        { name: "validFor", type: "uint256" },
-      ],
+
+    return [
+      await thiz.makeSignature(
+        chainId.toString(),
+        validatorContract.address,
+        thiz.privateKeyByWallet[signer],
+        "Auth",
+        [
+          { name: "scope", type: "bytes32" },
+          { name: "owner", type: "address" },
+          { name: "actor", type: "address" },
+          { name: "tokenAddress", type: "address" },
+          { name: "tokenId", type: "uint256" },
+          { name: "extra", type: "uint256" },
+          { name: "extra2", type: "uint256" },
+          { name: "extra3", type: "uint256" },
+          { name: "timeValidation", type: "uint256" },
+        ],
+        message,
+      ),
       message,
-    );
-  },
-  async signPluginRequest(name, owner, addr, tokenId, extra, extra2, extra3, timestamp, validFor, chainId, signer, validator) {
-    const nameHash = Helpers.keccak256(name);
-    const message = {
-      nameHash: nameHash.toString(),
-      owner,
-      addr,
-      tokenId: tokenId.toString(),
-      extra,
-      extra2,
-      extra3,
-      timestamp: timestamp.toString(),
-      validFor: validFor.toString(),
-    };
-    return Helpers.makeSignature(
-      chainId,
-      validator.address,
-      Helpers.privateKeyByWallet[signer],
-      "Auth",
-      [
-        { name: "nameHash", type: "bytes32" },
-        { name: "owner", type: "address" },
-        { name: "addr", type: "address" },
-        { name: "tokenId", type: "uint256" },
-        { name: "extra", type: "uint256" },
-        { name: "extra2", type: "uint256" },
-        { name: "extra3", type: "uint256" },
-        { name: "timestamp", type: "uint256" },
-        { name: "validFor", type: "uint256" },
-      ],
-      message,
-    );
+    ];
   },
 };
 
@@ -348,5 +363,7 @@ Helpers.privateKeyByWallet = {
   "0xdD2FD4581271e230360230F9337D5c0430Bf44C0": "0xde9be858da4a475276426320d5e9262ecfc3ba460bfac56360bfa6c4c28b4ee0",
   "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199": "0xdf57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e",
 };
+
+const thiz = Helpers;
 
 module.exports = Helpers;

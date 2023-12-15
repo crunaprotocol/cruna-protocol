@@ -3,26 +3,11 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-// erc165 interfaceId 0xc87d16e3
+// erc165 interfaceId 0xe19a64da
 interface IProtected {
-  // @dev Allow to transfer a token when at least 1 protector has been set.
-  //   This is necessary because when a protector is set, the token is not
-  //   transferable anymore.
-  // @param tokenId The id of the token.
-  // @param to The address of the recipient.
-  // @param timestamp The timestamp of the signature.
-  // @param validFor The validity of the signature.
-  function protectedTransfer(
-    uint256 tokenId,
-    address to,
-    uint256 timestamp,
-    uint256 validFor,
-    bytes calldata signature
-  ) external;
-
   // @dev Allow a plugin to transfer the token
   // @param pluginNameHash The hash of the plugin name.
   // @param tokenId The id of the token.
   // @param to The address of the recipient.
-  function managedTransfer(bytes32 pluginNameHash, uint256 tokenId, address to) external;
+  function managedTransfer(bytes4 pluginNameHash, uint256 tokenId, address to) external;
 }

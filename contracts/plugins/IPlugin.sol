@@ -10,7 +10,7 @@ pragma solidity ^0.8.9;
 interface IPlugin {
   function init() external;
 
-  function pluginRoles() external view returns (bytes32[] memory);
+  function pluginRoles() external view returns (bytes4[] memory);
 
   // function called in the dashboard to know if the plugin is asking the
   // right to make a managed transfer of the vault
@@ -19,5 +19,5 @@ interface IPlugin {
   // Reset the plugin to the factory settings
   function reset() external;
 
-  function isPluginRole(bytes32 role) external view returns (bool);
+  function isPluginSRole(bytes4 role) external view returns (bool);
 }

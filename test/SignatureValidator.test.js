@@ -1,72 +1,126 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const helpers = require("./helpers");
-const { getTimestamp } = require("./helpers");
 const { domainType } = require("./helpers/eip712");
 helpers.initEthers(ethers);
-const { privateKeyByWallet, deployContract, getChainId, makeSignature, keccak256 } = helpers;
+const {
+  privateKeyByWallet,
+  deployContract,
+  getChainId,
+  makeSignature,
+  keccak256,
+  bytes4,
+  combineBytes4ToBytes32,
+  combineTimestampAndValidFor,
+  getTimestamp,
+  signRequest,
+} = helpers;
 
 describe("SignatureValidator", function () {
   let chainId;
 
   let validator;
-  let mailTo;
-  let wallet;
-  let protector;
-  const name = "Cruna";
-  const version = "1";
+  let deployer, bob, alice, fred, mark, vault;
 
   before(async function () {
-    [mailTo, wallet, tokenOwner, protector] = await ethers.getSigners();
+    [deployer, bob, alice, fred, mark, vault] = await ethers.getSigners();
     chainId = await getChainId();
   });
 
   beforeEach(async function () {
-    validator = await deployContract("SignatureValidator", name, version);
+    validator = await deployContract("SignatureValidator");
   });
 
-  it("should recover the signer of a recoverSetActorSigner", async function () {
-    const sentinelBytes = ethers.utils.toUtf8Bytes("SENTINEL");
-    const scope = ethers.utils.keccak256(sentinelBytes);
+  it("should recover the signer of a recoverSigner", async function () {
+    const nameHash = bytes4(keccak256("Manager"));
+    const role = bytes4(keccak256("PROTECTOR"));
+    const scope = combineBytes4ToBytes32(nameHash, role);
+
+    const timestamp = (await getTimestamp()).toString();
+    const validFor = 3600;
+    const timeValidation = combineTimestampAndValidFor(timestamp, validFor);
 
     const message = {
       scope: scope.toString(),
-      owner: tokenOwner.address,
-      actor: protector.address,
+      owner: alice.address,
+      actor: fred.address,
+      tokenAddress: vault.address,
       tokenId: 1,
       extra: 1,
-      timestamp: 1700453731,
-      validFor: 3600,
+      extra2: 0,
+      extra3: 0,
+      timeValidation: timeValidation.toString(),
     };
 
     const signature = await makeSignature(
       chainId,
       validator.address,
-      privateKeyByWallet[protector.address],
+      privateKeyByWallet[fred.address],
       "Auth",
       [
         { name: "scope", type: "bytes32" },
         { name: "owner", type: "address" },
         { name: "actor", type: "address" },
+        { name: "tokenAddress", type: "address" },
         { name: "tokenId", type: "uint256" },
         { name: "extra", type: "uint256" },
-        { name: "timestamp", type: "uint256" },
-        { name: "validFor", type: "uint256" },
+        { name: "extra2", type: "uint256" },
+        { name: "extra3", type: "uint256" },
+        { name: "timeValidation", type: "uint256" },
       ],
       message,
     );
 
     expect(
-      await validator.recoverSetActorSigner(
+      await validator.recoverSigner(
         message.scope,
         message.owner,
         message.actor,
+        message.tokenAddress,
         message.tokenId,
         message.extra,
-        message.timestamp,
-        message.validFor,
+        message.extra2,
+        message.extra3,
+        message.timeValidation,
         signature,
       ),
-    ).equal(protector.address);
+    ).equal(fred.address);
+  });
+
+  it("should recover using signRequest helper", async function () {
+    const timestamp = (await getTimestamp()).toString();
+    const validFor = 3600;
+
+    const [signature, message] = await signRequest(
+      "Manager",
+      "PROTECTOR",
+      alice.address,
+      fred.address,
+      vault.address,
+      1,
+      1,
+      0,
+      0,
+      timestamp,
+      validFor,
+      chainId,
+      bob.address,
+      validator,
+    );
+
+    expect(
+      await validator.recoverSigner(
+        message.scope,
+        message.owner,
+        message.actor,
+        message.tokenAddress,
+        message.tokenId,
+        message.extra,
+        message.extra2,
+        message.extra3,
+        message.timeValidation,
+        signature,
+      ),
+    ).equal(bob.address);
   });
 });

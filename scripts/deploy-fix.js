@@ -22,10 +22,7 @@ async function main() {
 
   let vault = await deployUtils.deploy("CrunaFlexiVault", deployer.address);
   // let vault = await deployUtils.attach("CrunaFlexiVault", deployer.address);
-  await deployUtils.Tx(
-    vault.init(registry.address, guardian.address, signatureValidator.address, managerProxy.address),
-    "Init vault",
-  );
+  await deployUtils.Tx(vault.init(registry.address, guardian.address, managerProxy.address), "Init vault");
 
   let factory = await deployUtils.attach("VaultFactory");
 

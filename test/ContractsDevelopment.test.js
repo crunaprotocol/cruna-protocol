@@ -17,7 +17,7 @@ const {
 
 describe("Testing contract deployments", function () {
   let erc6551Registry, proxy, managerImpl, guardian;
-  let signatureValidator, vault;
+  let vault;
   let factory;
   let usdc, usdt;
   let deployer, bob, alice, fred, mark, otto;
@@ -25,7 +25,7 @@ describe("Testing contract deployments", function () {
 
   before(async function () {
     [deployer, bob, alice, fred, mark, otto] = await ethers.getSigners();
-    signatureValidator = await deployContract("SignatureValidator", "Cruna", "1");
+
     chainId = await getChainId();
   });
 
@@ -36,7 +36,7 @@ describe("Testing contract deployments", function () {
     proxy = await deployContract("ManagerProxy", managerImpl.address);
 
     vault = await deployContract("CrunaFlexiVault", deployer.address);
-    await vault.init(erc6551Registry.address, guardian.address, signatureValidator.address, proxy.address);
+    await vault.init(erc6551Registry.address, guardian.address, proxy.address);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
 
     await vault.setFactory(factory.address);

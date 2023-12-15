@@ -10,14 +10,15 @@ import {Manager} from "../../manager/Manager.sol";
 import {IInheritancePlugin} from "./IInheritancePlugin.sol";
 import {IPlugin} from "../IPlugin.sol";
 import {ManagerBase} from "../../manager/ManagerBase.sol";
+import {Actor} from "../../manager/Actor.sol";
+import {SignatureValidator} from "../../utils/SignatureValidator.sol";
 
 //import {console} from "hardhat/console.sol";
 
-contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
+contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, SignatureValidator {
   using ECDSA for bytes32;
   using Strings for uint256;
 
-  error ZeroAddress();
   error Forbidden();
   error NotPermittedWhenProtectorsAreActive();
   error QuorumCannotBeZero();
@@ -33,16 +34,13 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
   error WaitingForBeneficiary();
   error NotExpiredYet();
   error QuorumAlreadyReached();
-  error SignatureAlreadyUsed();
-  error TimestampInvalidOrExpired();
   error WrongDataOrNotSignedByProtector();
+  error SignatureAlreadyUsed();
 
-  bytes32 public constant SENTINEL = keccak256(abi.encodePacked("SENTINEL"));
-
-  Manager public manager;
-
-  InheritanceConf internal _inheritanceConf;
   mapping(bytes32 => bool) public usedSignatures;
+  bytes4 public constant SENTINEL = bytes4(keccak256(abi.encodePacked("SENTINEL")));
+  Manager public manager;
+  InheritanceConf internal _inheritanceConf;
 
   // @dev see {IInheritancePlugin.sol-init}
   // this must be execute immediately after the deployment
@@ -61,9 +59,9 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
     return bytes4(keccak256("InheritancePlugin"));
   }
 
-  function pluginRoles() external pure virtual returns (bytes32[] memory) {
-    bytes32[] memory roles = new bytes32[](1);
-    roles[0] = keccak256("SENTINEL");
+  function pluginRoles() external pure virtual returns (bytes4[] memory) {
+    bytes4[] memory roles = new bytes4[](1);
+    roles[0] = SENTINEL;
     return roles;
   }
 
@@ -76,8 +74,20 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
     uint256 validFor,
     bytes calldata signature
   ) public virtual override onlyTokenOwner {
-    // TODO definitely remove the repeated name/hash
-    manager.setSignedActor("SENTINEL", sentinel, SENTINEL, status, timestamp, validFor, signature, _msgSender());
+    if (timestamp == 0) {
+      if (manager.countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
+    } else {
+      _validateAndCheckSignature(nameHash(), SENTINEL, sentinel, status ? 1 : 0, 0, 0, timestamp * 1e6 + validFor, signature);
+    }
+    if (!status) {
+      _removeActor(sentinel, SENTINEL);
+      uint256 shares = actorCount(SENTINEL);
+      if (_inheritanceConf.quorum > shares) {
+        _inheritanceConf.quorum = uint16(shares);
+      }
+    } else {
+      _addActor(sentinel, SENTINEL);
+    }
     emit SentinelUpdated(_msgSender(), sentinel, status);
   }
 
@@ -95,30 +105,23 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
     uint256 proofOfLifeDurationInDays,
     uint256 gracePeriod,
     address beneficiary,
-    uint256 timestamp,
-    uint256 validFor,
+    uint256 timeValidation,
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
-    if (timestamp == 0) {
+    if (timeValidation < 1e6) {
       if (manager.countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
     } else {
-      if (timestamp > block.timestamp || timestamp < block.timestamp - validFor) revert TimestampInvalidOrExpired();
       if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
-      address signer = manager.validator().recoverPluginSigner(
+      _validateAndCheckSignature(
         nameHash(),
-        manager.owner(),
+        bytes4(keccak256("configureInheritance")),
         beneficiary,
-        manager.tokenId(),
         quorum,
         proofOfLifeDurationInDays,
         gracePeriod,
-        timestamp,
-        validFor,
+        timeValidation,
         signature
       );
-      if (!manager.isAProtector(signer)) revert WrongDataOrNotSignedByProtector();
-      // TODO Should we save the signature in the manager?
-      usedSignatures[keccak256(signature)] = true;
     }
     _configureInheritance(uint16(quorum), uint16(proofOfLifeDurationInDays), uint16(gracePeriod), beneficiary);
   }
@@ -129,8 +132,8 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
     uint16 gracePeriod,
     address beneficiary
   ) internal virtual {
-    if (manager.actorCount(SENTINEL) > 0 && quorum == 0) revert QuorumCannotBeZero();
-    if (quorum > manager.actorCount(SENTINEL)) revert QuorumCannotBeGreaterThanSentinels();
+    if (actorCount(SENTINEL) > 0 && quorum == 0) revert QuorumCannotBeZero();
+    if (quorum > actorCount(SENTINEL)) revert QuorumCannotBeGreaterThanSentinels();
     if (quorum == 0 && beneficiary == address(0)) revert ZeroAddress();
     _inheritanceConf.quorum = quorum;
     _inheritanceConf.proofOfLifeDurationInDays = proofOfLifeDurationInDays;
@@ -146,11 +149,9 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
     emit InheritanceConfigured(_msgSender(), quorum, proofOfLifeDurationInDays, gracePeriod, beneficiary);
   }
 
-  // TODO configureInheritance for when protectors are active
-
   // @dev see {IInheritancePlugin.sol-getSentinelsAndInheritanceData}
   function getSentinelsAndInheritanceData() external view virtual override returns (address[] memory, InheritanceConf memory) {
-    return (manager.getActors(SENTINEL), _inheritanceConf);
+    return (getActors(SENTINEL), _inheritanceConf);
   }
 
   // @dev see {IInheritancePlugin.sol-proofOfLife}
@@ -201,7 +202,7 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
   }
 
   function _isASentinel() internal view virtual returns (bool) {
-    return manager.actorIndex(_msgSender(), SENTINEL) != manager.MAX_ACTORS();
+    return actorIndex(_msgSender(), SENTINEL) != MAX_ACTORS;
   }
 
   function _checkIfStillAlive() internal view virtual {
@@ -233,7 +234,7 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
     if (_inheritanceConf.beneficiary == address(0)) revert BeneficiaryNotSet();
     if (_inheritanceConf.beneficiary != _msgSender()) revert NotTheBeneficiary();
     if (_inheritanceConf.waitForGracePeriod) {
-      if (manager.actorCount(SENTINEL) > 0 && _isGracePeriodExpiredForBeneficiary()) revert Expired();
+      if (actorCount(SENTINEL) > 0 && _isGracePeriodExpiredForBeneficiary()) revert Expired();
     } else {
       if (_inheritanceConf.approvers.length < _inheritanceConf.quorum) revert QuorumNotReached();
       // The sentinels nominated a beneficiary
@@ -251,11 +252,49 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase {
   }
 
   function _reset() internal {
+    _deleteActors(SENTINEL);
     delete _inheritanceConf;
   }
 
-  function isPluginRole(bytes32 role) external view override returns (bool) {
+  function isPluginSRole(bytes4 role) external pure override returns (bool) {
     return role == SENTINEL;
+  }
+
+  // @dev Validates the request.
+  // @param scope The scope of the request.
+  // @param actor The actor of the request.
+  // @param extra The first extra param
+  // @param extra2 The second extra param
+  // @param extra3 The third extra param
+  // @param timestamp The timestamp of the request.
+  // @param validFor The validity of the request.
+  // @param signature The signature of the request.
+  function _validateAndCheckSignature(
+    bytes4 _nameHash,
+    bytes4 _funcHash,
+    address target,
+    uint256 extra,
+    uint256 extra2,
+    uint256 extra3,
+    uint256 timeValidation,
+    bytes calldata signature
+  ) internal virtual {
+    if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
+    usedSignatures[keccak256(signature)] = true;
+
+    address signer = recoverSigner(
+      combineBytes4(_nameHash, _funcHash),
+      owner(),
+      target,
+      manager.tokenAddress(),
+      manager.tokenId(),
+      extra,
+      extra2,
+      extra3,
+      timeValidation,
+      signature
+    );
+    if (!manager.isAProtector(signer)) revert WrongDataOrNotSignedByProtector();
   }
 
   // @dev This empty reserved space is put in place to allow future versions to add new
