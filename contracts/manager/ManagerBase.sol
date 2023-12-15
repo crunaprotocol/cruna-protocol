@@ -8,18 +8,16 @@ import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
-import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {Guardian} from "./Guardian.sol";
 import {Versioned} from "../utils/Versioned.sol";
 
 //import {console} from "hardhat/console.sol";
 
 interface IVault {
-  function managedTransfer(bytes32 pluginNameHash, uint256 tokenId, address to) external;
+  function managedTransfer(bytes4 pluginNameHash, uint256 tokenId, address to) external;
   function emitLockedEvent(uint256 tokenId, bool locked_) external;
   function guardian() external view returns (Guardian);
   function registry() external view returns (IERC6551Registry);
-  function validator() external view returns (SignatureValidator);
 }
 
 /**
@@ -44,7 +42,7 @@ abstract contract ManagerBase is Context, Versioned {
     implementationVersion = version();
   }
 
-  function nameHash() public virtual returns (bytes32);
+  function nameHash() public virtual returns (bytes4);
 
   function guardian() public view virtual returns (Guardian) {
     return vault().guardian();
@@ -52,10 +50,6 @@ abstract contract ManagerBase is Context, Versioned {
 
   function registry() public view virtual returns (IERC6551Registry) {
     return vault().registry();
-  }
-
-  function validator() public view virtual returns (SignatureValidator) {
-    return vault().validator();
   }
 
   function vault() public view virtual returns (IVault) {
@@ -85,6 +79,14 @@ abstract contract ManagerBase is Context, Versioned {
   function tokenId() public view virtual returns (uint256) {
     (, , uint256 tokenId_) = token();
     return tokenId_;
+  }
+
+  function combineBytes4(bytes4 a, bytes4 b) public pure returns (bytes32) {
+    return (bytes32(a) >> 192) | (bytes32(b) >> 224);
+  }
+
+  function combineBytes4AndString(bytes4 a, string memory b) public pure returns (bytes32) {
+    return (bytes32(a) >> 192) | (bytes32(bytes4(keccak256(abi.encodePacked(b)))) >> 224);
   }
 
   // @dev Upgrade the implementation of the manager/plugin

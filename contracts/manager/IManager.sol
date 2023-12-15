@@ -15,6 +15,11 @@ interface IManager {
 
   event PluginStatusChange(string name, address plugin, bool status);
 
+  struct Plugin {
+    address proxyAddress;
+    bool active;
+  }
+
   function plug(string memory name, address implementation) external;
 
   function disablePlugin(string memory name, bool resetPlugin) external;
@@ -84,16 +89,13 @@ interface IManager {
   // @dev Return all the safe recipients
   function getSafeRecipients() external view returns (address[] memory);
 
-  function setSignedActor(
-    string memory roleString,
-    address actor,
-    bytes32 role_,
-    bool status,
-    uint256 timestamp,
-    uint256 validFor,
-    bytes calldata signature,
-    address sender
-  ) external;
+  // @dev Allow to transfer a token when at least 1 protector has been set.
+  //   This is necessary because when a protector is set, the token is not
+  //   transferable anymore.
+  // @param tokenId The id of the token.
+  // @param to The address of the recipient.
+  // @param timeValidation The timestamp of the signature combined with the validity of the signature.
+  function protectedTransfer(uint256 tokenId, address to, uint256 timeValidation, bytes calldata signature) external;
 
-  function managedTransfer(uint256 tokenId, address to) external;
+  function managedTransfer(bytes4 pluginNameHash, uint256 tokenId, address to) external;
 }

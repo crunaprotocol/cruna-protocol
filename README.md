@@ -69,7 +69,7 @@ Cruna Vault isn't just limited to ERC-6551 integrations; it offers a robust foun
 
 * **Customizable Security**: Tailor Cruna Vault's robust security features, like Protectors and Sentinels, to fit the unique needs of your NFT project or platform.
 * **Brand Integration**: Seamlessly integrate Cruna Vault's functionalities into your NFTs while maintaining your brand identity.
-* **Trust and Assurance**: Offer your users and collectors an added layer of security, increasing trust and value in your NFT offerings. 
+* **Trust and Assurance**: Offer your users and collectors an added layer of security, increasing trust and value in your NFT offerings.
 
 **For Collectors and Investors:**
 
@@ -160,7 +160,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  27 passing
+  30 passing
 
 --------------------------------|----------|----------|----------|----------|----------------|
 File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -174,27 +174,27 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   IERC6454.sol                  |      100 |      100 |      100 |      100 |                |
   IERC6982.sol                  |      100 |      100 |      100 |      100 |                |
   IProtected.sol                |      100 |      100 |      100 |      100 |                |
- contracts/manager/             |    99.14 |    69.32 |      100 |    97.73 |                |
+ contracts/manager/             |    96.69 |    69.15 |       94 |    96.32 |                |
   Actor.sol                     |      100 |       70 |      100 |      100 |                |
-  Guardian.sol                  |      100 |       50 |      100 |    83.33 |             19 |
+  Guardian.sol                  |      100 |       50 |      100 |    83.33 |             21 |
   IManager.sol                  |      100 |      100 |      100 |      100 |                |
-  Manager.sol                   |      100 |    68.75 |      100 |    97.59 |        284,292 |
-  ManagerBase.sol               |    94.74 |       80 |      100 |      100 |                |
+  Manager.sol                   |    97.47 |    68.57 |       92 |    96.51 |    236,240,287 |
+  ManagerBase.sol               |       90 |       80 |    92.31 |    95.65 |             89 |
   ManagerProxy.sol              |      100 |      100 |      100 |      100 |                |
  contracts/plugins/             |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                   |      100 |      100 |      100 |      100 |                |
- contracts/plugins/inheritance/ |      100 |    71.43 |      100 |    98.73 |                |
+ contracts/plugins/inheritance/ |    98.48 |    72.37 |    95.24 |    96.67 |                |
   IInheritancePlugin.sol        |      100 |      100 |      100 |      100 |                |
-  InheritancePlugin.sol         |      100 |    71.43 |      100 |    98.72 |            179 |
+  InheritancePlugin.sol         |    98.48 |    72.37 |       95 |    96.63 |     86,182,260 |
   InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
- contracts/protected/           |      100 |    55.77 |      100 |    95.65 |                |
-  ProtectedNFT.sol              |      100 |    55.77 |      100 |    95.65 |         87,196 |
- contracts/utils/               |      100 |      100 |      100 |      100 |                |
+ contracts/protected/           |    93.33 |    55.26 |    85.71 |    88.89 |                |
+  ProtectedNFT.sol              |    93.33 |    55.26 |    85.71 |    88.89 |   51,52,87,164 |
+ contracts/utils/               |      100 |       75 |      100 |      100 |                |
   FlexiProxy.sol                |      100 |      100 |      100 |      100 |                |
-  SignatureValidator.sol        |      100 |      100 |      100 |      100 |                |
+  SignatureValidator.sol        |      100 |       75 |      100 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |    99.61 |     63.6 |      100 |    97.48 |                |
+All files                       |    97.39 |     64.6 |    94.59 |    95.69 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 

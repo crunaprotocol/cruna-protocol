@@ -30,7 +30,7 @@ async function main() {
 
   let vault = await deployUtils.deploy("CrunaFlexiVault", deployer.address);
   await deployUtils.Tx(
-    vault.init(registry.address, guardian.address, signatureValidator.address, managerProxy.address, { gasLimit: 120000 }),
+    vault.init(registry.address, guardian.address, managerProxy.address, { gasLimit: 120000 }),
     "Init vault",
   );
 

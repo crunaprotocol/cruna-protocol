@@ -11,12 +11,12 @@ contract SomePlugin is IPlugin, ManagerBase {
   error Forbidden();
 
   // Replace with the roles required by the plugin, if any, or delete it
-  bytes32 public constant SOME_ROLE = keccak256("SOME_ROLE");
+  bytes4 public constant SOME_OTHER_ROLE = bytes4(keccak256("SOME_ROLE"));
 
   Manager public manager;
 
-  function nameHash() public virtual override returns (bytes32) {
-    return keccak256("SomePlugin");
+  function nameHash() public virtual override returns (bytes4) {
+    return bytes4(keccak256("SomePlugin"));
   }
 
   function requiresToManageTransfer() external pure override returns (bool) {
@@ -29,10 +29,10 @@ contract SomePlugin is IPlugin, ManagerBase {
     manager = Manager(_msgSender());
   }
 
-  function pluginRoles() external pure virtual returns (bytes32[] memory) {
-    bytes32[] memory roles = new bytes32[](1);
+  function pluginRoles() external pure virtual returns (bytes4[] memory) {
+    bytes4[] memory roles = new bytes4[](1);
     // return your roles, if any
-    roles[0] = SOME_ROLE;
+    roles[0] = SOME_OTHER_ROLE;
     return roles;
   }
 
@@ -47,6 +47,10 @@ contract SomePlugin is IPlugin, ManagerBase {
 
   function _reset() internal {
     // reset to initial state
+  }
+
+  function isPluginSRole(bytes4 role) external pure override returns (bool) {
+    return role == SOME_OTHER_ROLE;
   }
 
   // @dev This empty reserved space is put in place to allow future versions to add new
