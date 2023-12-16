@@ -35,13 +35,6 @@ contract SomeSimplePlugin is IPlugin, ManagerBase {
     return bytes4(keccak256("SomeSimplePlugin"));
   }
 
-  function pluginRoles() external pure virtual returns (bytes4[] memory) {
-    bytes4[] memory roles = new bytes4[](1);
-    // return your roles, if any
-    roles[0] = SOME_ROLE;
-    return roles;
-  }
-
   function doSomething() external {
     // some logic
   }
@@ -57,9 +50,5 @@ contract SomeSimplePlugin is IPlugin, ManagerBase {
 
   function _reset() internal {
     // reset to initial state
-  }
-
-  function isPluginSRole(bytes4 role) external pure override returns (bool) {
-    return role == SOME_ROLE;
   }
 }

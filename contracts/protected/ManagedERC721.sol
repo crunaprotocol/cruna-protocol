@@ -9,7 +9,7 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {Guardian} from "../manager/Guardian.sol";
 import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
-import {IProtected} from "../interfaces/IProtected.sol";
+import {IManagedERC721} from "../interfaces/IManagedERC721.sol";
 import {IERC6454} from "../interfaces/IERC6454.sol";
 import {IERC6982} from "../interfaces/IERC6982.sol";
 import {Manager} from "../manager/Manager.sol";
@@ -18,13 +18,12 @@ import {Versioned} from "../utils/Versioned.sol";
 //import {console} from "hardhat/console.sol";
 
 // @dev This contract is a base for NFTs with protected transfers.
-abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC721, Ownable2Step {
+abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982, ERC721, Ownable2Step {
   using ECDSA for bytes32;
   using Strings for uint256;
 
   event ManagedTransfer(bytes4 indexed pluginNameHash, uint256 indexed tokenId);
 
-  error NotTheTokenOwner();
   error NotTransferable();
   error NotTheManager();
   error ZeroAddress();
@@ -39,18 +38,11 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
   Manager public managerProxy;
 
   bytes32 public constant SALT = bytes32(uint256(69));
-  bytes4 public constant NAME_HASH = bytes4(keccak256("ProtectedNFT"));
+  bytes4 public constant NAME_HASH = bytes4(keccak256("ManagedNFT"));
 
   uint256 public nextTokenId = 1;
 
   mapping(uint256 => bool) internal _approvedTransfers;
-
-  // @dev This modifier will only allow the owner of a certain tokenId to call the function.
-  // @param tokenId_ The id of the token.
-  modifier onlyTokenOwner(uint256 tokenId) {
-    if (ownerOf(tokenId) != _msgSender()) revert NotTheTokenOwner();
-    _;
-  }
 
   // @dev This modifier will only allow the manager of a certain tokenId to call the function.
   // @param tokenId_ The id of the token.
@@ -83,10 +75,6 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
     managerProxy = Manager(managerProxy_);
   }
 
-  function combineBytes4AndString(bytes4 a, string memory b) public pure returns (bytes32) {
-    return (bytes32(a) >> 192) | (bytes32(bytes4(keccak256(abi.encodePacked(b)))) >> 224);
-  }
-
   // @dev See {IProtected721-managedTransfer}.
   function managedTransfer(bytes4 pluginNameHash, uint256 tokenId, address to) external override onlyManager(tokenId) {
     _approvedTransfers[tokenId] = true;
@@ -111,7 +99,11 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
 
   // @dev See {ERC165-supportsInterface}.
   function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721) returns (bool) {
-    return interfaceId == type(IProtected).interfaceId || super.supportsInterface(interfaceId);
+    return
+      interfaceId == type(IManagedERC721).interfaceId ||
+      interfaceId == type(IERC6454).interfaceId ||
+      interfaceId == type(IERC6982).interfaceId ||
+      super.supportsInterface(interfaceId);
   }
 
   // ERC6454
@@ -148,6 +140,8 @@ abstract contract ProtectedNFT is IProtected, Versioned, IERC6454, IERC6982, ERC
     return Manager(managerOf(tokenId)).hasProtectors();
   }
 
+  // When a protector is set and the token becomes locked, this event must be emit
+  // from the Manager
   function emitLockedEvent(uint256 tokenId, bool locked_) external onlyManager(tokenId) {
     emit Locked(tokenId, locked_);
   }

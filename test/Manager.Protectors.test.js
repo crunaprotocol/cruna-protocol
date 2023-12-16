@@ -63,7 +63,7 @@ describe("Manager : Protectors", function () {
     return nextTokenId;
   };
 
-  it("should support the IProtected interface", async function () {
+  it("should support the IManagedERC721.sol interface", async function () {
     const vaultMock = await deployContract("VaultMock", deployer.address);
     await vaultMock.init(erc6551Registry.address, guardian.address, proxy.address);
     const interfaceId = await vaultMock.getIProtectedInterfaceId();
@@ -91,6 +91,7 @@ describe("Manager : Protectors", function () {
     expect(await vault.locked(tokenId)).to.be.false;
     expect(await vault.isTransferable(tokenId, bob.address, addr0)).to.be.false;
     expect(await vault.isTransferable(tokenId, bob.address, bob.address)).to.be.false;
+    expect(await vault.isTransferable(tokenId, bob.address, fred.address)).to.be.true;
   });
 
   it("should verify that scope is correctly formed", async function () {

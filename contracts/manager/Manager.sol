@@ -35,14 +35,17 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
   error WrongDataOrNotSignedByProtector();
   error CannotBeYourself();
   error NotTheAuthorizedPlugin();
-  error PluginAlreadyPlugged();
+  error SignatureAlreadyUsed();
   error NotAProxy();
   error ContractsCannotBeProtectors();
-  error PluginNotFound();
   error InconsistentPolicy();
+  error PluginAlreadyPlugged();
+  error PluginAlreadyPluggedButDisabled();
+  error PluginNotFound();
   error PluginNotFoundOrDisabled();
-  error RoleNotAuthorizedFor(bytes4 role, bytes4 pluginNameHash);
-  error SignatureAlreadyUsed();
+  error PluginNotDisabled();
+  error PluginAlreadyDisabled();
+  error PluginNotAuthorizedToManageTransfer();
 
   mapping(bytes32 => bool) public usedSignatures;
   bytes4 public constant PROTECTOR = bytes4(keccak256("PROTECTOR"));
@@ -51,7 +54,8 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
   bytes32 public constant SALT = bytes32(uint256(69));
 
   mapping(bytes4 => Plugin) public pluginsByName;
-  string[] public pluginNames;
+  mapping(bytes4 => DisabledPlugin) public disabledPluginsByName;
+  string[] public activePlugins;
 
   function nameHash() public virtual override returns (bytes4) {
     return bytes4(keccak256("Manager"));
@@ -100,12 +104,27 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     emit ProtectorUpdated(_msgSender(), protector_, status);
     if (status) {
       if (countActiveProtectors() == 1) {
-        vault().emitLockedEvent(tokenId(), true);
+        _emitLockedEvent(true);
       }
     } else {
       if (countActiveProtectors() == 0) {
-        vault().emitLockedEvent(tokenId(), false);
+        _emitLockedEvent(false);
       }
+    }
+  }
+
+  function _emitLockedEvent(bool locked_) internal virtual {
+    // Avoid to revert if the emission of the event fails.
+    // It should never happen, but if it happens, we are
+    // notified by the LockFailed event, instead of reverting
+    // the entire transaction.
+    bytes memory data = abi.encodeWithSignature("emitLockedEvent(uint256,bool)", tokenId(), locked_);
+    address vaultAddress = address(vault());
+    // solhint-disable-next-line avoid-low-level-calls
+    (bool success, ) = vaultAddress.call(data);
+    if (!success) {
+      // this way we can ask the user to execute an explicit lock
+      emit LockFailed(tokenId(), locked_);
     }
   }
 
@@ -212,93 +231,110 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
    *
    */
 
-  function plug(string memory name, address pluginProxy) external virtual override onlyTokenOwner nonReentrant {
+  function plug(
+    string memory name,
+    address pluginProxy,
+    bool canManageTransfer
+  ) external virtual override onlyTokenOwner nonReentrant {
     try IProxy(pluginProxy).isProxy() returns (bool) {} catch {
       revert NotAProxy();
     }
-    bytes4 _nameHash = bytes4(keccak256(abi.encodePacked(name)));
+    bytes4 _nameHash = _stringToBytes4(name);
     if (pluginsByName[_nameHash].proxyAddress != address(0)) revert PluginAlreadyPlugged();
-    pluginsByName[_nameHash] = Plugin(pluginProxy, true);
-    pluginNames.push(name);
+    if (disabledPluginsByName[_nameHash].proxyAddress != address(0)) revert PluginAlreadyPluggedButDisabled();
+    pluginsByName[_nameHash] = Plugin(pluginProxy, canManageTransfer);
+    activePlugins.push(name);
     if (!guardian().isTrustedImplementation(_nameHash, pluginProxy)) revert InvalidImplementation();
     registry().createAccount(pluginProxy, SALT, block.chainid, address(this), tokenId());
     IPluginExt _plugin = plugin(_nameHash);
+    if (!canManageTransfer && _plugin.requiresToManageTransfer()) {
+      revert InconsistentPolicy();
+    }
     if (_plugin.nameHash() != _nameHash) revert InvalidImplementation();
     emit PluginStatusChange(name, address(_plugin), true);
     _plugin.init();
   }
 
+  function pluginAddress(bytes4 _nameHash) public view virtual returns (address) {
+    return registry().account(pluginsByName[_nameHash].proxyAddress, SALT, block.chainid, address(this), tokenId());
+  }
+
   function plugin(bytes4 _nameHash) public view virtual returns (IPluginExt) {
-    return IPluginExt(registry().account(pluginsByName[_nameHash].proxyAddress, SALT, block.chainid, address(this), tokenId()));
+    return IPluginExt(pluginAddress(_nameHash));
   }
 
-  function pluginRoles(bytes4 _nameHash) public view virtual returns (bytes4[] memory) {
-    return plugin(_nameHash).pluginRoles();
-  }
-
-  function isPluginSRole(bytes4 _nameHash, bytes4 role) public view virtual returns (bool) {
-    return plugin(_nameHash).isPluginSRole(role);
-  }
-
-  // Plugin cannot be unplugged since they have been deployed via ERC-6551 Registry
-  // so, we mark them as disabled
+  // Plugin cannot be deleted since they have been deployed
+  // via ERC-6551 Registry so, we remove from the list of
+  // the active plugins.
   function disablePlugin(string memory name, bool resetPlugin) external virtual override onlyTokenOwner nonReentrant {
-    bytes4 _nameHash = bytes4(keccak256(abi.encodePacked(name)));
+    bytes4 _nameHash = _stringToBytes4(name);
+    if (disabledPluginsByName[_nameHash].proxyAddress != address(0)) revert PluginAlreadyDisabled();
     if (pluginsByName[_nameHash].proxyAddress == address(0)) revert PluginNotFound();
-    pluginsByName[_nameHash].active = false;
     if (resetPlugin) {
       _resetPlugin(_nameHash);
     }
-    emit PluginStatusChange(name, address(plugin(_nameHash)), false);
+    emit PluginStatusChange(name, pluginAddress(_nameHash), false);
+    disabledPluginsByName[_nameHash] = DisabledPlugin(
+      pluginsByName[_nameHash].proxyAddress,
+      pluginsByName[_nameHash].canManageTransfer,
+      name
+    );
+    delete pluginsByName[_nameHash];
+    // Delete it to help in case there are too many plugins and
+    // the reset fails because of gas limit.
+    for (uint256 i = 0; i < activePlugins.length; i++) {
+      if (_stringToBytes4(activePlugins[i]) == _nameHash) {
+        activePlugins[i] = activePlugins[activePlugins.length - 1];
+        break;
+      }
+    }
+    activePlugins.pop();
+  }
+
+  function _stringToBytes4(string memory str) internal pure returns (bytes4) {
+    return bytes4(keccak256(abi.encodePacked(str)));
   }
 
   function reEnablePlugin(string memory name, bool resetPlugin) external virtual override onlyTokenOwner nonReentrant {
-    bytes4 _nameHash = bytes4(keccak256(abi.encodePacked(name)));
-    if (pluginsByName[_nameHash].proxyAddress == address(0) || pluginsByName[_nameHash].active) revert PluginNotFound();
-    pluginsByName[_nameHash].active = true;
+    bytes4 _nameHash = _stringToBytes4(name);
+    if (disabledPluginsByName[_nameHash].proxyAddress == address(0)) revert PluginNotDisabled();
+    pluginsByName[_nameHash] = Plugin(
+      disabledPluginsByName[_nameHash].proxyAddress,
+      disabledPluginsByName[_nameHash].canManageTransfer
+    );
+    activePlugins.push(disabledPluginsByName[_nameHash].name);
+    delete disabledPluginsByName[_nameHash];
     if (resetPlugin) {
       _resetPlugin(_nameHash);
     }
-    emit PluginStatusChange(name, address(plugin(_nameHash)), true);
+    emit PluginStatusChange(name, pluginAddress(_nameHash), true);
   }
 
   function _resetPlugin(bytes4 _nameHash) internal virtual {
     IPluginExt _plugin = plugin(_nameHash);
-    bytes4[] memory roles = _plugin.pluginRoles();
-    for (uint256 i = 0; i < roles.length; i++) {
-      _deleteActors(roles[i]);
-    }
     _plugin.reset();
-  }
-
-  function _authorizedPlugin(bytes4 pluginNameHash) internal view virtual returns (IPluginExt) {
-    if (!pluginsByName[pluginNameHash].active) revert PluginNotFoundOrDisabled();
-    IPluginExt _plugin = plugin(pluginNameHash);
-    if (address(_plugin) != _msgSender()) revert NotTheAuthorizedPlugin();
-    return _plugin;
   }
 
   // @dev See {IProtected721-managedTransfer}.
   // This is a special function that can be called only by the InheritancePlugin
   function managedTransfer(bytes4 pluginNameHash, uint256 tokenId, address to) external virtual override nonReentrant {
-    IPluginExt _plugin = _authorizedPlugin(pluginNameHash);
-    if (!_plugin.requiresToManageTransfer()) {
-      // The plugin declares itself as not requiring the ability to manage transfers, but in reality it is trying to do so
-      revert InconsistentPolicy();
-    }
+    if (pluginsByName[pluginNameHash].proxyAddress == address(0)) revert PluginNotFoundOrDisabled();
+    if (!pluginsByName[pluginNameHash].canManageTransfer) revert PluginNotAuthorizedToManageTransfer();
+    if (pluginAddress(pluginNameHash) != _msgSender()) revert NotTheAuthorizedPlugin();
     _resetActorsAndDisablePlugins();
+    // In theory, the vault may revert, blocking the entire process
+    // We allow it, assuming that the vault implementation has the
+    // right to set up more advanced rules, before allowing the transfer,
+    // despite the plugin has the ability to do so.
     vault().managedTransfer(pluginNameHash, tokenId, to);
   }
 
   function _resetActorsAndDisablePlugins() internal virtual {
     _deleteActors(PROTECTOR);
     _deleteActors(SAFE_RECIPIENT);
-    for (uint256 i = 0; i < pluginNames.length; i++) {
-      bytes4 _nameHash = bytes4(keccak256(abi.encodePacked(pluginNames[i])));
-      if (pluginsByName[_nameHash].active) {
-        delete pluginsByName[_nameHash].active;
-        emit PluginStatusChange(pluginNames[i], address(plugin(_nameHash)), false);
-      }
+    if (activePlugins.length > 0) {
+      delete activePlugins;
+      emit AllPluginsDisabled();
     }
   }
 
@@ -308,7 +344,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     uint256 timeValidation,
     bytes calldata signature
   ) external onlyTokenOwner {
-    _validateAndCheckSignature(nameHash(), bytes4(keccak256("protectedTransfer")), to, false, timeValidation, signature);
+    _validateAndCheckSignature(nameHash(), _stringToBytes4("protectedTransfer"), to, false, timeValidation, signature);
     _resetActorsAndDisablePlugins();
     vault().managedTransfer(nameHash(), tokenId, to);
   }
