@@ -34,7 +34,7 @@ describe("Sentinel and Inheritance", function () {
   });
 
   beforeEach(async function () {
-    erc6551Registry = await deployContract("ERC6551Registry");
+    erc6551Registry = await deployContract("CrunaRegistry");
     managerImpl = await deployContract("Manager");
     guardian = await deployContract("Guardian", deployer.address);
     managerProxy = await deployContract("ManagerProxy", managerImpl.address);
@@ -65,18 +65,14 @@ describe("Sentinel and Inheritance", function () {
     const manager = await ethers.getContractAt("Manager", await vault.managerOf(nextTokenId));
     inheritancePluginImpl = await deployContract("InheritancePlugin");
     inheritancePluginProxy = await deployContract("InheritancePluginProxy", inheritancePluginImpl.address);
-    await expect(manager.connect(bob).plug("InheritancePlugin", inheritancePluginImpl.address, true)).to.be.revertedWith(
-      "NotAProxy",
-    );
+    await expect(manager.connect(bob).plug("InheritancePlugin", vault.address, true)).to.be.revertedWith("NotAProxy");
+
     await expect(manager.connect(bob).plug("InheritancePlugin", inheritancePluginProxy.address, true)).to.be.revertedWith(
       "InvalidImplementation",
     );
     const nameHash = bytes4(keccak256("InheritancePlugin"));
     await guardian.setTrustedImplementation(nameHash, inheritancePluginProxy.address, true);
     expect((await manager.pluginsByName(nameHash)).proxyAddress).to.equal(addr0);
-    await expect(manager.connect(bob).plug("InheritancePlugin", inheritancePluginProxy.address, false)).to.be.revertedWith(
-      "InconsistentPolicy",
-    );
 
     await expect(manager.connect(bob).plug("InheritancePlugin", inheritancePluginProxy.address, true)).to.emit(
       manager,

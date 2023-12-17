@@ -15,7 +15,7 @@ async function main() {
 
   const [deployer] = await ethers.getSigners();
 
-  let registry = await deployUtils.attach("ERC6551Registry");
+  let registry = await deployUtils.attach("CrunaRegistry");
   let guardian = await deployUtils.attach("Guardian");
   let managerProxy = await deployUtils.attach("ManagerProxy");
   let signatureValidator = await deployUtils.attach("SignatureValidator");

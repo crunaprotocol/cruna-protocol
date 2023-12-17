@@ -28,7 +28,7 @@ describe("SignatureValidator", function () {
   });
 
   beforeEach(async function () {
-    validator = await deployContract("SignatureValidator");
+    validator = await deployContract("ValidatorMock");
   });
 
   it("should recover the signer of a recoverSigner", async function () {

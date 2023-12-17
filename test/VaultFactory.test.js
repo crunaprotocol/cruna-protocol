@@ -14,6 +14,7 @@ const {
   keccak256,
   deployAll,
   upgradeProxy,
+  bytes4,
   deployContractViaNickSFactory,
 } = require("./helpers");
 
@@ -62,7 +63,7 @@ describe("VaultFactory", function () {
     await expect(factory.connect(bob).buyVaults(usdc.address, 1))
       .to.emit(vault, "Transfer")
       .withArgs(addr0, bob.address, nextTokenId)
-      .to.emit(erc6551Registry, "ERC6551AccountCreated")
+      .to.emit(erc6551Registry, "BondContractCreated")
       .withArgs(
         precalculatedAddress,
         toChecksumAddress(proxy.address),

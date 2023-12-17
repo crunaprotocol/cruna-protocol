@@ -30,7 +30,7 @@ describe("Testing contract deployments", function () {
   });
 
   beforeEach(async function () {
-    erc6551Registry = await deployContract("ERC6551Registry");
+    erc6551Registry = await deployContract("CrunaRegistry");
     managerImpl = await deployContract("Manager");
     guardian = await deployContract("Guardian", deployer.address);
     proxy = await deployContract("ManagerProxy", managerImpl.address);
