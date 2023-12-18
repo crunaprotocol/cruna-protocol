@@ -139,6 +139,11 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**1.0.0-alpha.6**
+
+- Decouples the minting of a vault from its activation
+- Add `activate` to later activate the vault, creating a manager for the tokenId
+
 **1.0.0-alpha.5**
 
 - Fixes the risk that there are too many plugins and it becomes impossible to disable them all
