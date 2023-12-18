@@ -146,7 +146,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 **1.0.0-alpha.5**
 
-- Fixes the risk that there are too many plugins and it becomes impossible to disable them all
+- Fixes the risk that there are too many plugins, and it becomes impossible to disable them all
 - Renames ProtectedNFT to ManagedERC721
 
 **1.0.0-alpha.4**
