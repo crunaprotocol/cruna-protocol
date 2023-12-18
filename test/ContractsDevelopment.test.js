@@ -16,7 +16,7 @@ const {
 } = require("./helpers");
 
 describe("Testing contract deployments", function () {
-  let erc6551Registry, proxy, managerImpl, guardian;
+  let crunaRegistry, proxy, managerImpl, guardian;
   let vault;
   let factory;
   let usdc, usdt;
@@ -30,13 +30,13 @@ describe("Testing contract deployments", function () {
   });
 
   beforeEach(async function () {
-    erc6551Registry = await deployContract("CrunaRegistry");
+    crunaRegistry = await deployContract("CrunaRegistry");
     managerImpl = await deployContract("Manager");
     guardian = await deployContract("Guardian", deployer.address);
     proxy = await deployContract("ManagerProxy", managerImpl.address);
 
     vault = await deployContract("CrunaFlexiVault", deployer.address);
-    await vault.init(erc6551Registry.address, guardian.address, proxy.address);
+    await vault.init(crunaRegistry.address, guardian.address, proxy.address);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
 
     await vault.setFactory(factory.address);
@@ -66,7 +66,7 @@ describe("Testing contract deployments", function () {
     const nextTokenId = await vault.nextTokenId();
     const managerAddress = await vault.managerOf(nextTokenId);
     expect(await ethers.provider.getCode(managerAddress)).equal("0x");
-    await factory.connect(bob).buyVaults(usdc.address, 1);
+    await factory.connect(bob).buyVaults(usdc.address, 1, true);
     expect(await ethers.provider.getCode(managerAddress)).not.equal("0x");
     const manager = await ethers.getContractAt("Manager", managerAddress);
     expect(await manager.tokenId()).to.equal(nextTokenId);

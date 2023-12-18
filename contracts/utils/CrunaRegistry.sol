@@ -13,7 +13,7 @@ interface ICrunaRegistry {
   /**
    * @dev The registry MUST emit the ERC6551AccountCreated event upon successful account creation.
    */
-  event BondContractCreated(
+  event BoundContractCreated(
     address contractAddress,
     address indexed implementation,
     bytes32 salt,
@@ -25,7 +25,7 @@ interface ICrunaRegistry {
   /**
    * @dev The registry MUST revert with AccountCreationFailed error if the create2 operation fails.
    */
-  error BondContractCreationFailed();
+  error BoundContractCreationFailed();
 
   /**
    * @dev Creates a token bound account for a non-fungible token.
@@ -36,7 +36,7 @@ interface ICrunaRegistry {
    *
    * @return account The address of the token bound account
    */
-  function createBondContract(
+  function createBoundContract(
     address implementation,
     bytes32 salt,
     uint256 chainId,
@@ -59,7 +59,7 @@ interface ICrunaRegistry {
 }
 
 contract CrunaRegistry is ICrunaRegistry {
-  function createBondContract(
+  function createBoundContract(
     address implementation,
     bytes32 salt,
     uint256 chainId,
@@ -108,18 +108,18 @@ contract CrunaRegistry is ICrunaRegistry {
 
         // Revert if the deployment fails
         if iszero(deployed) {
-          mstore(0x00, 0xbe697d1a) // `BondContractCreationFailed()`
+          mstore(0x00, 0xbe697d1a) // `BoundContractCreationFailed()`
           revert(0x1c, 0x04)
         }
 
         // Store account address in memory before salt and chainId
         mstore(0x6c, deployed)
 
-        // Emit the BondContractCreated event
+        // Emit the BoundContractCreated event
         log4(
           0x6c,
           0x60,
-          0xff00099476635104b75fe596675c8480d3c7355eff23f5538c88a52844ad18f9,
+          0x1f0e50ba751c22f20c414b4c1d531bced4cc983fe16d3a8ed9a167c0cdd674d3,
           implementation,
           tokenContract,
           tokenId

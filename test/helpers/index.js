@@ -137,14 +137,14 @@ const Helpers = {
     // using Nick's factory
     await Helpers.deployNickSFactory(deployer);
 
-    const erc6551RegistryAddress = await Helpers.deployContractViaNickSFactory(
+    const crunaRegistryAddress = await Helpers.deployContractViaNickSFactory(
       deployer,
       "CrunaRegistry",
       undefined,
       undefined,
       "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31",
     );
-    const erc6551Registry = await ethers.getContractAt("CrunaRegistry", erc6551RegistryAddress);
+    const crunaRegistry = await ethers.getContractAt("CrunaRegistry", crunaRegistryAddress);
 
     const managerAddress = await Helpers.deployContractViaNickSFactory(deployer, "Manager");
     const manager = await ethers.getContractAt("Manager", managerAddress);
@@ -162,9 +162,9 @@ const Helpers = {
       [deployer.address],
     );
     const vault = await ethers.getContractAt("CrunaFlexiVault", vaultAddress);
-    await vault.init(erc6551RegistryAddress, guardianAddress, proxyAddress);
+    await vault.init(crunaRegistryAddress, guardianAddress, proxyAddress);
 
-    return [erc6551Registry, proxy, guardian, vault];
+    return [crunaRegistry, proxy, guardian, vault];
   },
 
   async getAddressViaNickSFactory(deployer, contractName, constructorTypes, constructorArgs, salt = thiz.keccak256("Cruna")) {

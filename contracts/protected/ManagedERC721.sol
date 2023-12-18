@@ -7,6 +7,7 @@ import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {Guardian} from "../manager/Guardian.sol";
 import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
 import {IManagedERC721} from "../interfaces/IManagedERC721.sol";
@@ -21,16 +22,18 @@ import {Versioned} from "../utils/Versioned.sol";
 abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982, ERC721, Ownable2Step {
   using ECDSA for bytes32;
   using Strings for uint256;
+  using Address for address;
 
   event ManagedTransfer(bytes4 indexed pluginNameHash, uint256 indexed tokenId);
 
   error NotTransferable();
   error NotTheManager();
   error ZeroAddress();
-  error NotInitiated();
+  error RegistryNotFound();
   error AlreadyInitiated();
   error SupplyCapReached();
   error ErrorCreatingManager();
+  error NotTheTokenOwner();
 
   mapping(bytes32 => bool) public usedSignatures;
   Guardian public guardian;
@@ -150,19 +153,39 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
 
   // @dev This function will mint a new token and initialize it.
   // @param to The address of the recipient.
-  function _mintAndInit(address to) internal {
-    // the max supply is 999,999
-    if (nextTokenId % 1e6 == 0) revert SupplyCapReached();
-    if (address(registry) == address(0)) revert NotInitiated();
-    try registry.createBondContract(address(managerProxy), SALT, block.chainid, address(this), nextTokenId) {} catch {
+  function _mintAndActivate(address to, bool alsoInit, uint256 amount) internal {
+    if (alsoInit && address(registry) == address(0)) revert RegistryNotFound();
+    uint256 tokenId = nextTokenId;
+    for (uint256 i = 0; i < amount; i++) {
+      // the max supply is 999,999
+      if (tokenId % 1e6 == 0) revert SupplyCapReached();
+      if (alsoInit) {
+        try registry.createBoundContract(address(managerProxy), SALT, block.chainid, address(this), tokenId) {} catch {
+          revert ErrorCreatingManager();
+        }
+      }
+      _safeMint(to, tokenId++);
+    }
+    nextTokenId += amount;
+  }
+
+  function activate(uint256 tokenId) external {
+    if (_msgSender() != ownerOf(tokenId)) revert NotTheTokenOwner();
+    if (address(registry) == address(0)) revert RegistryNotFound();
+    try registry.createBoundContract(address(managerProxy), SALT, block.chainid, address(this), tokenId) {} catch {
       revert ErrorCreatingManager();
     }
-    _safeMint(to, nextTokenId++);
   }
 
   // @dev This function will return the address of the manager for tokenId.
   // @param tokenId The id of the token.
   function managerOf(uint256 tokenId) public view returns (address) {
     return registry.bondContract(address(managerProxy), SALT, block.chainid, address(this), tokenId);
+  }
+
+  function isActive(uint256 tokenId) public view returns (bool) {
+    _requireMinted(tokenId);
+    address proxy = managerOf(tokenId);
+    return proxy.isContract();
   }
 }

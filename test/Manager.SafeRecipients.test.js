@@ -16,7 +16,7 @@ const {
 } = require("./helpers");
 
 describe("Manager : Safe Recipients", function () {
-  let erc6551Registry, proxy, managerImpl, guardian;
+  let crunaRegistry, proxy, managerImpl, guardian;
   let vault;
   let factory;
   let usdc, usdt;
@@ -30,13 +30,13 @@ describe("Manager : Safe Recipients", function () {
   });
 
   beforeEach(async function () {
-    erc6551Registry = await deployContract("CrunaRegistry");
+    crunaRegistry = await deployContract("CrunaRegistry");
     managerImpl = await deployContract("Manager");
     guardian = await deployContract("Guardian", deployer.address);
     proxy = await deployContract("ManagerProxy", managerImpl.address);
 
     vault = await deployContract("CrunaFlexiVault", deployer.address);
-    await vault.init(erc6551Registry.address, guardian.address, proxy.address);
+    await vault.init(crunaRegistry.address, guardian.address, proxy.address);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
 
     await vault.setFactory(factory.address);
@@ -57,7 +57,7 @@ describe("Manager : Safe Recipients", function () {
     const price = await factory.finalPrice(usdc.address);
     await usdc.connect(bob).approve(factory.address, price);
     const nextTokenId = await vault.nextTokenId();
-    await factory.connect(bob).buyVaults(usdc.address, 1);
+    await factory.connect(bob).buyVaults(usdc.address, 1, true);
     return nextTokenId;
   };
 
