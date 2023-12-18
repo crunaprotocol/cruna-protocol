@@ -7,7 +7,7 @@ settings:
 dependencies:
   '@openzeppelin/contracts':
     specifier: ^4.9.3
-    version: 4.9.3
+    version: 4.9.5
   erc6551:
     specifier: 0.3.1
     version: 0.3.1
@@ -1209,8 +1209,8 @@ packages:
     resolution: {integrity: sha512-jjaHAVRMrE4UuZNfDwjlLGDxTHWIOwTJS2ldnc278a0gevfXfPr8hxKEVBGFBE96kl2G3VHDZhUimw/+G3TG2A==}
     dev: true
 
-  /@openzeppelin/contracts@4.9.3:
-    resolution: {integrity: sha512-He3LieZ1pP2TNt5JbkPA4PNT9WC3gOTOlDcFGJW4Le4QKqwmiNJCRt44APfxMxvq7OugU/cqYuPcSBzOw38DAg==}
+  /@openzeppelin/contracts@4.9.5:
+    resolution: {integrity: sha512-ZK+W5mVhRppff9BE6YdR8CC52C8zAvsVAiWhEtQ5+oNxFE6h1WdeWo+FJSF8KKvtxxVYZ7MTP/5KoVpAU3aSWg==}
     dev: false
 
   /@openzeppelin/defender-base-client@1.52.0(debug@4.3.4):
