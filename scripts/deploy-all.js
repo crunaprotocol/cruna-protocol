@@ -26,52 +26,26 @@ async function main() {
 
   await deployUtils.deployNickSFactory(deployer);
 
-  let crunaRegistryAddress = "0x000000006551c19487814612e58FE06813775758";
-  registry = await deployUtils.attach("CrunaRegistry", crunaRegistryAddress);
-  try {
-    let salt = deployUtils.keccak256("CrunaRegistry");
-    let implementation = "0xdD2FD4581271e230360230F9337D5c0430Bf44C0";
-    let tokenContract = "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199";
+  let crunaRegistryAddress = "0x92ed439eC9c5a9c6554b0733F35e05d4FEdEE547";
 
-    await registry.bondContract(implementation, salt, chainId, tokenContract, 1);
-  } catch (e) {
-    registry = await deployUtils.deploy("CrunaRegistry");
-    crunaRegistryAddress = registry.address;
+  let salt = deployUtils.keccak256("Cruna");
+  if (!(await deployUtils.isDeployedViaNickSFactory(deployer, "CrunaRegistry", undefined, undefined, salt))) {
+    console.error("Registry not deployed on this chain");
+    process.exit(1);
   }
 
-  async function deployIfNotDeployed(
-    deployer,
-    contractName,
-    constructorTypes,
-    constructorArgs,
-    salt = deployUtils.keccak256("Cruna"),
-  ) {
-    let address = await deployUtils.getAddressViaNickSFactory(deployer, contractName, constructorTypes, constructorArgs, salt);
-    let contract = await deployUtils.attach(contractName, address);
-    try {
-      await contract.version();
-      console.log("Already deployed", contractName);
-    } catch (e) {
-      // console.log(e)
-      // not deployed yet
-      address = await deployUtils.deployViaNickSFactory(deployer, contractName, constructorTypes, constructorArgs, salt);
-    }
-
-    return address;
-  }
-
-  managerAddress = await deployIfNotDeployed(deployer, "Manager");
+  managerAddress = await deployViaNickSFactory(deployer, "Manager");
   const manager = await deployUtils.attach("Manager", managerAddress);
   expect(await manager.owner()).to.equal(deployer.address);
 
-  guardianAddress = await deployIfNotDeployed(deployer, "Guardian", ["address"], [deployer.address]);
+  guardianAddress = await deployViaNickSFactory(deployer, "Guardian", ["address"], [deployer.address]);
   guardian = await deployUtils.attach("Guardian", guardianAddress);
 
-  managerProxyAddress = await deployIfNotDeployed(deployer, "ManagerProxy", ["address"], [managerAddress]);
+  managerProxyAddress = await deployViaNickSFactory(deployer, "ManagerProxy", ["address"], [managerAddress]);
 
-  inheritancePluginAddress = await deployIfNotDeployed(deployer, "InheritancePlugin");
+  inheritancePluginAddress = await deployViaNickSFactory(deployer, "InheritancePlugin");
 
-  inheritancePluginProxyAddress = await deployIfNotDeployed(
+  inheritancePluginProxyAddress = await deployViaNickSFactory(
     deployer,
     "InheritancePluginProxy",
     ["address"],
@@ -84,9 +58,9 @@ async function main() {
     "Setting trusted implementation for InheritancePlugin",
   );
 
-  signatureValidatorAddress = await deployIfNotDeployed(deployer, "SignatureValidator", ["string", "string"], ["Cruna", "1"]);
+  signatureValidatorAddress = await deployViaNickSFactory(deployer, "SignatureValidator", ["string", "string"], ["Cruna", "1"]);
 
-  await deployIfNotDeployed(deployer, "CrunaFlexiVault", ["address"], [deployer.address]);
+  await deployViaNickSFactory(deployer, "CrunaFlexiVault", ["address"], [deployer.address]);
 
   vault = await deployUtils.attach("CrunaFlexiVault");
   await deployUtils.Tx(

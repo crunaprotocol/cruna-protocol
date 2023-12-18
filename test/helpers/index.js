@@ -1,4 +1,5 @@
 const hre = require("hardhat");
+const ethers = hre.ethers;
 const { assert, expect } = require("chai");
 const BN = require("bn.js");
 const ethSigUtil = require("eth-sig-util");
@@ -8,10 +9,6 @@ const { domainType } = require("./eip712");
 let count = 9000;
 
 const Helpers = {
-  initEthers(ethers) {
-    this.ethers = ethers;
-  },
-
   async number(bn) {
     return (await bn).toNumber();
   },
@@ -39,7 +36,7 @@ const Helpers = {
   },
 
   async deployContractBy(contractName, owner, ...args) {
-    const Contract = await this.ethers.getContractFactory(contractName);
+    const Contract = await ethers.getContractFactory(contractName);
     const contract = await Contract.connect(owner).deploy(...args);
     await contract.deployed();
     return contract;
@@ -50,19 +47,19 @@ const Helpers = {
   },
 
   async deployNickSFactory(deployer) {
-    if ((await this.ethers.provider.getCode(thiz.nickSFactoryAddress)) === `0x`) {
+    if ((await ethers.provider.getCode(thiz.nickSFactoryAddress)) === `0x`) {
       // Fund account of signer of transaction that deploys Arachnid's factory.
       const addressOfSignerToDeployArachnidsFactory = `0x3fab184622dc19b6109349b94811493bf2a45362`;
       let txResponse = await deployer.sendTransaction({
         to: addressOfSignerToDeployArachnidsFactory,
-        value: this.ethers.utils.parseUnits(`0.1`, `ether`),
+        value: ethers.utils.parseUnits(`0.1`, `ether`),
         gasLimit: 100000,
       });
       await txResponse.wait();
 
       const serializedTx = `0xf8a58085174876e800830186a08080b853604580600e600039806000f350fe7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe03601600081602082378035828234f58015156039578182fd5b8082525050506014600cf31ba02222222222222222222222222222222222222222222222222222222222222222a02222222222222222222222222222222222222222222222222222222222222222`;
 
-      txResponse = await this.ethers.provider.sendTransaction(serializedTx);
+      txResponse = await ethers.provider.sendTransaction(serializedTx);
       return txResponse.wait();
     }
   },
@@ -94,11 +91,11 @@ const Helpers = {
     };
     const transaction = await deployer.sendTransaction(tx);
     await transaction.wait();
-    return this.ethers.utils.getCreate2Address(thiz.nickSFactoryAddress, salt, this.ethers.utils.keccak256(contractBytecode));
+    return ethers.utils.getCreate2Address(thiz.nickSFactoryAddress, salt, ethers.utils.keccak256(contractBytecode));
   },
 
   bytes4(bytes32value) {
-    return this.ethers.utils.hexDataSlice(bytes32value, 0, 4);
+    return ethers.utils.hexDataSlice(bytes32value, 0, 4);
   },
 
   combineBytes4ToBytes32(bytes4value1, bytes4value2) {
@@ -113,7 +110,7 @@ const Helpers = {
     let combinedValue = shiftedValue1.or(bigNumberValue2);
 
     // Convert the combined BigNumber to bytes32
-    return this.ethers.utils.hexZeroPad(combinedValue.toHexString(), 32);
+    return ethers.utils.hexZeroPad(combinedValue.toHexString(), 32);
   },
 
   combineBytes4ToBytes32LeftAligned(bytes4value1, bytes4value2) {
@@ -133,17 +130,38 @@ const Helpers = {
     // Convert the combined BigNumber to bytes32
     return ethers.utils.hexZeroPad(combinedValue.toHexString(), 32);
   },
+
+  async isDeployedViaNickSFactory(
+    deployer,
+    contractName,
+    constructorTypes,
+    constructorArgs,
+    salt, // example >> this.keccak256("Cruna"),
+  ) {
+    const address = thiz.getAddressViaNickSFactory(deployer, contractName, constructorTypes, constructorArgs, salt);
+
+    // check if the contract has been deployed
+    const code = await ethers.provider.getCode(address);
+    return code !== "0x";
+  },
+
   async deployAll(deployer) {
     // using Nick's factory
     await Helpers.deployNickSFactory(deployer);
-
-    const crunaRegistryAddress = await Helpers.deployContractViaNickSFactory(
+    const params = [
       deployer,
       "CrunaRegistry",
       undefined,
       undefined,
       "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31",
-    );
+    ];
+
+    expect(await Helpers.isDeployedViaNickSFactory(...params)).to.be.false;
+
+    const crunaRegistryAddress = await Helpers.deployContractViaNickSFactory(...params);
+
+    expect(await Helpers.isDeployedViaNickSFactory(...params)).to.be.true;
+
     const crunaRegistry = await ethers.getContractAt("CrunaRegistry", crunaRegistryAddress);
 
     const managerAddress = await Helpers.deployContractViaNickSFactory(deployer, "Manager");
@@ -181,11 +199,11 @@ const Helpers = {
       contractBytecode = contractBytecode + encodedArgs.substring(2); // Remove '0x' from encoded args
     }
 
-    return this.ethers.utils.getCreate2Address(thiz.nickSFactoryAddress, salt, this.ethers.utils.keccak256(contractBytecode));
+    return ethers.utils.getCreate2Address(thiz.nickSFactoryAddress, salt, ethers.utils.keccak256(contractBytecode));
   },
 
   async deployContract(contractName, ...args) {
-    const Contract = await this.ethers.getContractFactory(contractName);
+    const Contract = await ethers.getContractFactory(contractName);
     const contract = await Contract.deploy(...args);
     // removed in Ethers V6
     await contract.deployed();
@@ -193,7 +211,7 @@ const Helpers = {
   },
 
   async deployContractUpgradeable(contractName, args = [], options) {
-    const Contract = await this.ethers.getContractFactory(contractName);
+    const Contract = await ethers.getContractFactory(contractName);
     const contract = await upgrades.deployProxy(Contract, args, options);
     await contract.deployed();
     return contract;
@@ -217,24 +235,24 @@ const Helpers = {
     // hardhat account #4, starting from #0
     privateKey = "0x47e179ec197488593b187f80a00eb0da91f1b9d0b13f8733639f19c30a34926a",
   ) {
-    const signingKey = new this.ethers.utils.SigningKey(privateKey);
+    const signingKey = new ethers.utils.SigningKey(privateKey);
     const signedDigest = signingKey.signDigest(hash);
-    return this.ethers.utils.joinSignature(signedDigest);
+    return ethers.utils.joinSignature(signedDigest);
   },
 
   async getTimestamp() {
-    return (await this.ethers.provider.getBlock()).timestamp;
+    return (await ethers.provider.getBlock()).timestamp;
   },
 
   addr0: "0x" + "0".repeat(40),
 
   async increaseBlockTimestampBy(offset) {
-    await this.ethers.provider.send("evm_increaseTime", [offset]);
-    await this.ethers.provider.send("evm_mine");
+    await ethers.provider.send("evm_increaseTime", [offset]);
+    await ethers.provider.send("evm_mine");
   },
 
   amount(str) {
-    return this.ethers.utils.parseEther(str);
+    return ethers.utils.parseEther(str);
   },
 
   normalize(amount, decimals = 18) {
@@ -275,7 +293,7 @@ const Helpers = {
   },
 
   combineTimestampAndValidFor(timestamp, validFor) {
-    return this.ethers.BigNumber.from(timestamp.toString()).mul(1e6).add(validFor);
+    return ethers.BigNumber.from(timestamp.toString()).mul(1e6).add(validFor);
   },
 
   async signRequest(
@@ -297,7 +315,7 @@ const Helpers = {
     const nameHash = thiz.bytes4(thiz.keccak256(name));
     const role = roleString ? thiz.bytes4(thiz.keccak256(roleString)) : "0x00000000";
     const scope = thiz.combineBytes4ToBytes32(nameHash, role).toString();
-    timestamp = thiz.ethers.BigNumber.from(timestamp.toString()).toNumber();
+    timestamp = ethers.BigNumber.from(timestamp.toString()).toNumber();
     const timeValidation = thiz.combineTimestampAndValidFor(timestamp, validFor).toString();
 
     // console.log(name, roleString, owner, actor, tokenAddress, tokenId, extra, extra2, extra3, timestamp, validFor, chainId, signer, validatorContract.address);
