@@ -8,7 +8,7 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {Guardian} from "../manager/Guardian.sol";
-import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
+import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
 import {IManagedERC721} from "../interfaces/IManagedERC721.sol";
 import {IERC6454} from "../interfaces/IERC6454.sol";
 import {IERC6982} from "../interfaces/IERC6982.sol";
@@ -34,7 +34,7 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
 
   mapping(bytes32 => bool) public usedSignatures;
   Guardian public guardian;
-  IERC6551Registry public registry;
+  ICrunaRegistry public registry;
   Manager public managerProxy;
 
   bytes32 public constant SALT = bytes32(uint256(69));
@@ -71,7 +71,7 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
     if (address(registry) != address(0)) revert AlreadyInitiated();
     if (registry_ == address(0) || guardian_ == address(0) || managerProxy_ == address(0)) revert ZeroAddress();
     guardian = Guardian(guardian_);
-    registry = IERC6551Registry(registry_);
+    registry = ICrunaRegistry(registry_);
     managerProxy = Manager(managerProxy_);
   }
 
@@ -154,7 +154,7 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
     // the max supply is 999,999
     if (nextTokenId % 1e6 == 0) revert SupplyCapReached();
     if (address(registry) == address(0)) revert NotInitiated();
-    try registry.createAccount(address(managerProxy), SALT, block.chainid, address(this), nextTokenId) {} catch {
+    try registry.createBondContract(address(managerProxy), SALT, block.chainid, address(this), nextTokenId) {} catch {
       revert ErrorCreatingManager();
     }
     _safeMint(to, nextTokenId++);
@@ -163,6 +163,6 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
   // @dev This function will return the address of the manager for tokenId.
   // @param tokenId The id of the token.
   function managerOf(uint256 tokenId) public view returns (address) {
-    return registry.account(address(managerProxy), SALT, block.chainid, address(this), tokenId);
+    return registry.bondContract(address(managerProxy), SALT, block.chainid, address(this), tokenId);
   }
 }

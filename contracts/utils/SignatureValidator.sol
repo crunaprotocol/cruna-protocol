@@ -8,7 +8,7 @@ import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 
 // @dev This contract is used to validate signatures.
 //   It is based on EIP712 and supports typed messages V4.
-contract SignatureValidator is EIP712 {
+abstract contract SignatureValidator is EIP712 {
   using ECDSA for bytes32;
 
   error TimestampInvalidOrExpired();

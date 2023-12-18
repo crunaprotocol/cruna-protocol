@@ -5,9 +5,11 @@ pragma solidity ^0.8.20;
 
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
-import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
+
+import {IBondContract} from "../interfaces/IBondContract.sol";
+import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
 import {Guardian} from "./Guardian.sol";
 import {Versioned} from "../utils/Versioned.sol";
 
@@ -17,14 +19,14 @@ interface IVault {
   function managedTransfer(bytes4 pluginNameHash, uint256 tokenId, address to) external;
   function emitLockedEvent(uint256 tokenId, bool locked_) external;
   function guardian() external view returns (Guardian);
-  function registry() external view returns (IERC6551Registry);
+  function registry() external view returns (ICrunaRegistry);
 }
 
 /**
   @title ManagerBase
   @dev Base contract for managers and plugins
 */
-abstract contract ManagerBase is Context, Versioned {
+abstract contract ManagerBase is Context, IBondContract, Versioned {
   error NotTheTokenOwner();
   error InvalidImplementation();
   error InvalidVersion();
@@ -48,7 +50,7 @@ abstract contract ManagerBase is Context, Versioned {
     return vault().guardian();
   }
 
-  function registry() public view virtual returns (IERC6551Registry) {
+  function registry() public view virtual returns (ICrunaRegistry) {
     return vault().registry();
   }
 
@@ -61,7 +63,7 @@ abstract contract ManagerBase is Context, Versioned {
     _;
   }
 
-  function token() public view virtual returns (uint256, address, uint256) {
+  function token() public view virtual override returns (uint256, address, uint256) {
     return ERC6551AccountLib.token();
   }
 

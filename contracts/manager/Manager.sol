@@ -38,7 +38,6 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
   error SignatureAlreadyUsed();
   error NotAProxy();
   error ContractsCannotBeProtectors();
-  error InconsistentPolicy();
   error PluginAlreadyPlugged();
   error PluginAlreadyPluggedButDisabled();
   error PluginNotFound();
@@ -46,6 +45,8 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
   error PluginNotDisabled();
   error PluginAlreadyDisabled();
   error PluginNotAuthorizedToManageTransfer();
+  error PluginAlreadyAuthorized();
+  error PluginAlreadyUnauthorized();
 
   mapping(bytes32 => bool) public usedSignatures;
   bytes4 public constant PROTECTOR = bytes4(keccak256("PROTECTOR"));
@@ -245,18 +246,24 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     pluginsByName[_nameHash] = Plugin(pluginProxy, canManageTransfer);
     activePlugins.push(name);
     if (!guardian().isTrustedImplementation(_nameHash, pluginProxy)) revert InvalidImplementation();
-    registry().createAccount(pluginProxy, SALT, block.chainid, address(this), tokenId());
-    IPluginExt _plugin = plugin(_nameHash);
-    if (!canManageTransfer && _plugin.requiresToManageTransfer()) {
-      revert InconsistentPolicy();
-    }
+    address _pluginAddress = registry().createBondContract(pluginProxy, SALT, block.chainid, address(this), tokenId());
+    IPluginExt _plugin = IPluginExt(_pluginAddress);
     if (_plugin.nameHash() != _nameHash) revert InvalidImplementation();
     emit PluginStatusChange(name, address(_plugin), true);
     _plugin.init();
   }
 
+  function authorizePluginToTransfer(string memory name, bool authorized) external virtual onlyTokenOwner {
+    bytes4 _nameHash = _stringToBytes4(name);
+    if (pluginsByName[_nameHash].proxyAddress == address(0)) revert PluginNotFound();
+    if (authorized) {
+      if (pluginsByName[_nameHash].canManageTransfer) revert PluginAlreadyAuthorized();
+    } else if (!pluginsByName[_nameHash].canManageTransfer) revert PluginAlreadyUnauthorized();
+    pluginsByName[_nameHash].canManageTransfer = authorized;
+  }
+
   function pluginAddress(bytes4 _nameHash) public view virtual returns (address) {
-    return registry().account(pluginsByName[_nameHash].proxyAddress, SALT, block.chainid, address(this), tokenId());
+    return registry().bondContract(pluginsByName[_nameHash].proxyAddress, SALT, block.chainid, address(this), tokenId());
   }
 
   function plugin(bytes4 _nameHash) public view virtual returns (IPluginExt) {

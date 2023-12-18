@@ -27,15 +27,15 @@ async function main() {
   await deployUtils.deployNickSFactory(deployer);
 
   let erc6551RegistryAddress = "0x000000006551c19487814612e58FE06813775758";
-  registry = await deployUtils.attach("ERC6551Registry", erc6551RegistryAddress);
+  registry = await deployUtils.attach("CrunaRegistry", erc6551RegistryAddress);
   try {
-    let salt = deployUtils.keccak256("ERC6551Registry");
+    let salt = deployUtils.keccak256("CrunaRegistry");
     let implementation = "0xdD2FD4581271e230360230F9337D5c0430Bf44C0";
     let tokenContract = "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199";
 
-    await registry.account(implementation, salt, chainId, tokenContract, 1);
+    await registry.bondContract(implementation, salt, chainId, tokenContract, 1);
   } catch (e) {
-    registry = await deployUtils.deploy("ERC6551Registry");
+    registry = await deployUtils.deploy("CrunaRegistry");
     erc6551RegistryAddress = registry.address;
   }
 

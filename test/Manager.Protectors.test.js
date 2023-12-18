@@ -15,6 +15,7 @@ const {
   keccak256,
   bytes4,
   combineBytes4ToBytes32,
+  getInterfaceId,
 } = require("./helpers");
 
 describe("Manager : Protectors", function () {
@@ -32,7 +33,7 @@ describe("Manager : Protectors", function () {
   });
 
   beforeEach(async function () {
-    erc6551Registry = await deployContract("ERC6551Registry");
+    erc6551Registry = await deployContract("CrunaRegistry");
     managerImpl = await deployContract("Manager");
     guardian = await deployContract("Guardian", deployer.address);
     proxy = await deployContract("ManagerProxy", managerImpl.address);
@@ -66,9 +67,10 @@ describe("Manager : Protectors", function () {
   it("should support the IManagedERC721.sol interface", async function () {
     const vaultMock = await deployContract("VaultMock", deployer.address);
     await vaultMock.init(erc6551Registry.address, guardian.address, proxy.address);
-    const interfaceId = await vaultMock.getIProtectedInterfaceId();
+    let interfaceId = await vaultMock.getIProtectedInterfaceId();
     expect(interfaceId).to.equal("0xe19a64da");
     expect(await vault.supportsInterface(interfaceId)).to.be.true;
+    expect(await getInterfaceId("IManagedERC721")).to.equal("0xe19a64da");
   });
 
   it("should verify ManagerBase parameters", async function () {
@@ -86,8 +88,8 @@ describe("Manager : Protectors", function () {
   it("should verify vault base parameters", async function () {
     expect(await vault.defaultLocked()).to.be.false;
     const tokenId = await buyAVault(bob);
-    expect(await vault.tokenURI(tokenId)).to.equal("https://meta.cruna.cc/flexy-vault/v1/3133701000001");
-    expect(await vault.contractURI()).to.equal("https://meta.cruna.cc/flexy-vault/v1/info");
+    expect(await vault.tokenURI(tokenId)).to.equal("https://meta.cruna.cc/flexi-vault/v1/3133701000001");
+    expect(await vault.contractURI()).to.equal("https://meta.cruna.cc/flexi-vault/v1/info");
     expect(await vault.locked(tokenId)).to.be.false;
     expect(await vault.isTransferable(tokenId, bob.address, addr0)).to.be.false;
     expect(await vault.isTransferable(tokenId, bob.address, bob.address)).to.be.false;

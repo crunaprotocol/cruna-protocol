@@ -139,12 +139,12 @@ const Helpers = {
 
     const erc6551RegistryAddress = await Helpers.deployContractViaNickSFactory(
       deployer,
-      "ERC6551Registry",
+      "CrunaRegistry",
       undefined,
       undefined,
       "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31",
     );
-    const erc6551Registry = await ethers.getContractAt("ERC6551Registry", erc6551RegistryAddress);
+    const erc6551Registry = await ethers.getContractAt("CrunaRegistry", erc6551RegistryAddress);
 
     const managerAddress = await Helpers.deployContractViaNickSFactory(deployer, "Manager");
     const manager = await ethers.getContractAt("Manager", managerAddress);
@@ -335,6 +335,18 @@ const Helpers = {
       ),
       message,
     ];
+  },
+
+  async getInterfaceId(interfaceName) {
+    const artifact = await hre.artifacts.readArtifact(interfaceName);
+    const abi = artifact.abi;
+    const functions = abi.filter((item) => item.type === "function");
+    let interfaceId = ethers.constants.Zero;
+    functions.forEach((func) => {
+      const selector = ethers.utils.id(func.name + "(" + func.inputs.map((input) => input.type).join(",") + ")").slice(0, 10);
+      interfaceId = interfaceId.xor(selector);
+    });
+    return interfaceId.toHexString();
   },
 };
 

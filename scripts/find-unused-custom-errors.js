@@ -13,9 +13,14 @@ function findUnusedCustomErrors(contractContent) {
   return errors.filter((error) => !RegExp("revert " + error + "\\(", "g").test(contractContent));
 }
 
+const skipFiles = ["CrunaRegistry.sol"];
+
 function analyzeContracts(dir) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   entries.forEach((entry) => {
+    if (skipFiles.includes(entry.name)) {
+      return;
+    }
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       analyzeContracts(fullPath);
