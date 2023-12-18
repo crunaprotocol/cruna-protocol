@@ -246,7 +246,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     pluginsByName[_nameHash] = Plugin(pluginProxy, canManageTransfer);
     activePlugins.push(name);
     if (!guardian().isTrustedImplementation(_nameHash, pluginProxy)) revert InvalidImplementation();
-    address _pluginAddress = registry().createBondContract(pluginProxy, SALT, block.chainid, address(this), tokenId());
+    address _pluginAddress = registry().createBoundContract(pluginProxy, SALT, block.chainid, address(this), tokenId());
     IPluginExt _plugin = IPluginExt(_pluginAddress);
     if (_plugin.nameHash() != _nameHash) revert InvalidImplementation();
     emit PluginStatusChange(name, address(_plugin), true);

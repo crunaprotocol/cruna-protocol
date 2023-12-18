@@ -26,8 +26,8 @@ async function main() {
 
   await deployUtils.deployNickSFactory(deployer);
 
-  let erc6551RegistryAddress = "0x000000006551c19487814612e58FE06813775758";
-  registry = await deployUtils.attach("CrunaRegistry", erc6551RegistryAddress);
+  let crunaRegistryAddress = "0x000000006551c19487814612e58FE06813775758";
+  registry = await deployUtils.attach("CrunaRegistry", crunaRegistryAddress);
   try {
     let salt = deployUtils.keccak256("CrunaRegistry");
     let implementation = "0xdD2FD4581271e230360230F9337D5c0430Bf44C0";
@@ -36,7 +36,7 @@ async function main() {
     await registry.bondContract(implementation, salt, chainId, tokenContract, 1);
   } catch (e) {
     registry = await deployUtils.deploy("CrunaRegistry");
-    erc6551RegistryAddress = registry.address;
+    crunaRegistryAddress = registry.address;
   }
 
   async function deployIfNotDeployed(
@@ -90,7 +90,7 @@ async function main() {
 
   vault = await deployUtils.attach("CrunaFlexiVault");
   await deployUtils.Tx(
-    vault.init(erc6551RegistryAddress, guardianAddress, signatureValidatorAddress, managerProxyAddress, { gasLimit: 120000 }),
+    vault.init(crunaRegistryAddress, guardianAddress, signatureValidatorAddress, managerProxyAddress, { gasLimit: 120000 }),
     "Init vault",
   );
 

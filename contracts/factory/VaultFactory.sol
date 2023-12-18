@@ -8,6 +8,7 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Initializable, UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
 import {CrunaFlexiVault} from "../CrunaFlexiVault.sol";
 import {IVaultFactory} from "./IVaultFactory.sol";
@@ -15,7 +16,15 @@ import {Versioned} from "../utils/Versioned.sol";
 
 //import {console} from "hardhat/console.sol";
 
-contract VaultFactory is IVaultFactory, Versioned, Initializable, PausableUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
+contract VaultFactory is
+  IVaultFactory,
+  Versioned,
+  Initializable,
+  PausableUpgradeable,
+  OwnableUpgradeable,
+  ReentrancyGuardUpgradeable,
+  UUPSUpgradeable
+{
   error ZeroAddress();
   error InsufficientFunds();
   error UnsupportedStableCoin();
@@ -97,12 +106,10 @@ contract VaultFactory is IVaultFactory, Versioned, Initializable, PausableUpgrad
     return price - (price * discount) / 100;
   }
 
-  function buyVaults(address stableCoin, uint256 amount) external virtual override whenNotPaused {
+  function buyVaults(address stableCoin, uint256 amount, bool alsoInit) external virtual override whenNotPaused nonReentrant {
     uint256 payment = finalPrice(stableCoin) * amount;
     if (payment > ERC20(stableCoin).balanceOf(_msgSender())) revert InsufficientFunds();
-    for (uint256 i = 0; i < amount; i++) {
-      vault.safeMint(_msgSender());
-    }
+    vault.safeMint(_msgSender(), alsoInit, amount);
     // we manage only trusted stable coins, so no risk of reentrancy
     if (!ERC20(stableCoin).transferFrom(_msgSender(), address(this), payment)) revert TransferFailed();
   }
@@ -110,8 +117,9 @@ contract VaultFactory is IVaultFactory, Versioned, Initializable, PausableUpgrad
   function buyVaultsBatch(
     address stableCoin,
     address[] memory tos,
-    uint256[] memory amounts
-  ) external virtual override whenNotPaused {
+    uint256[] memory amounts,
+    bool alsoInit
+  ) external virtual override whenNotPaused nonReentrant {
     if (tos.length != amounts.length) revert InvalidArguments();
     uint256 amount = 0;
     for (uint256 i = 0; i < tos.length; i++) {
@@ -123,10 +131,8 @@ contract VaultFactory is IVaultFactory, Versioned, Initializable, PausableUpgrad
     uint256 payment = finalPrice(stableCoin) * amount;
     if (payment > ERC20(stableCoin).balanceOf(_msgSender())) revert InsufficientFunds();
     for (uint256 i = 0; i < tos.length; i++) {
-      if (amounts[i] != 0) {
-        for (uint256 j = 0; j < amounts[i]; j++) {
-          vault.safeMint(tos[i]);
-        }
+      if (amounts[i] > 0) {
+        vault.safeMint(tos[i], alsoInit, amounts[i]);
       }
     }
     // we manage only trusted stable coins, so no risk of reentrancy

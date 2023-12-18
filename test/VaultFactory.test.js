@@ -19,7 +19,7 @@ const {
 } = require("./helpers");
 
 describe("VaultFactory", function () {
-  let erc6551Registry, proxy, managerImpl, guardian;
+  let crunaRegistry, proxy, managerImpl, guardian;
   let vault;
   let factory;
   let usdc, usdt;
@@ -28,7 +28,7 @@ describe("VaultFactory", function () {
   before(async function () {
     [deployer, bob, alice, fred] = await ethers.getSigners();
     // we test the deploying using Nick's factory only here because if not it would create conflicts, since any contract has already been deployed and would not change its storage
-    [erc6551Registry, proxy, guardian, vault] = await deployAll(deployer);
+    [crunaRegistry, proxy, guardian, vault] = await deployAll(deployer);
   });
 
   //here we test the contract
@@ -60,10 +60,10 @@ describe("VaultFactory", function () {
     const precalculatedAddress = await vault.managerOf(nextTokenId);
     const salt = ethers.utils.hexZeroPad(ethers.BigNumber.from("69").toHexString(), 32);
 
-    await expect(factory.connect(bob).buyVaults(usdc.address, 1))
+    await expect(factory.connect(bob).buyVaults(usdc.address, 1, true))
       .to.emit(vault, "Transfer")
       .withArgs(addr0, bob.address, nextTokenId)
-      .to.emit(erc6551Registry, "BondContractCreated")
+      .to.emit(crunaRegistry, "BoundContractCreated")
       .withArgs(
         precalculatedAddress,
         toChecksumAddress(proxy.address),
@@ -74,15 +74,16 @@ describe("VaultFactory", function () {
       );
   });
 
-  async function buyVault(token, amount, buyer) {
+  async function buyVault(token, amount, buyer, alsoInit = true) {
     let price = await factory.finalPrice(token.address);
     await token.connect(buyer).approve(factory.address, price.mul(amount));
+    let nextTokenId = await vault.nextTokenId();
 
-    await expect(factory.connect(buyer).buyVaults(token.address, amount))
+    await expect(factory.connect(buyer).buyVaults(token.address, amount, alsoInit))
       .to.emit(vault, "Transfer")
-      .withArgs(addr0, buyer.address, 1)
+      .withArgs(addr0, buyer.address, nextTokenId)
       .to.emit(vault, "Transfer")
-      .withArgs(addr0, buyer.address, 2)
+      .withArgs(addr0, buyer.address, nextTokenId.add(1))
       .to.emit(token, "Transfer")
       .withArgs(buyer.address, factory.address, price.mul(amount));
   }
@@ -92,7 +93,7 @@ describe("VaultFactory", function () {
     let price = await factory.finalPrice(usdc.address);
     await usdc.connect(fred).approve(factory.address, price);
 
-    await expect(factory.connect(fred).buyVaults(usdc.address, 1)).to.be.revertedWith("Pausable: paused");
+    await expect(factory.connect(fred).buyVaults(usdc.address, 1, true)).to.be.revertedWith("Pausable: paused");
 
     await expect(factory.unpause()).to.emit(factory, "Unpaused");
 
@@ -129,6 +130,30 @@ describe("VaultFactory", function () {
       .withArgs(factory.address, fred.address, amount("9.8"));
   });
 
+  it("should allow bob to purchase some vaults without activating them", async function () {
+    let nextTokenId = await vault.nextTokenId();
+    await buyVault(usdc, 2, bob, false);
+
+    expect(await vault.isActive(nextTokenId)).to.be.false;
+
+    const precalculatedAddress = await vault.managerOf(nextTokenId);
+    const salt = ethers.utils.hexZeroPad(ethers.BigNumber.from("69").toHexString(), 32);
+
+    // console.log(keccak256("BoundContractCreated(address,address,bytes32,uint256,address,uint256)"))
+
+    await expect(vault.connect(bob).activate(nextTokenId))
+      .to.emit(crunaRegistry, "BoundContractCreated")
+      .withArgs(
+        precalculatedAddress,
+        toChecksumAddress(proxy.address),
+        salt,
+        (await getChainId()).toString(),
+        toChecksumAddress(vault.address),
+        nextTokenId,
+      );
+    expect(await vault.isActive(nextTokenId)).to.be.true;
+  });
+
   it("should allow bob and alice to purchase some vaults with a discount", async function () {
     await factory.setDiscount(10);
 
@@ -154,6 +179,8 @@ describe("VaultFactory", function () {
     const amounts = [1, 3, 2];
     let nextTokenId = await vault.nextTokenId();
 
+    console.log(nextTokenId);
+
     let pricePerVault = await factory.finalPrice(stableCoin);
 
     await usdc.connect(bob).approve(factory.address, pricePerVault.mul(6));
@@ -162,7 +189,7 @@ describe("VaultFactory", function () {
     const fredBalanceBefore = await vault.balanceOf(fred.address);
     const aliceBalanceBefore = await vault.balanceOf(alice.address);
 
-    await expect(factory.connect(bob).buyVaultsBatch(stableCoin, buyers, amounts))
+    await expect(factory.connect(bob).buyVaultsBatch(stableCoin, buyers, amounts, true))
       .to.emit(vault, "Transfer")
       .withArgs(addr0, bob.address, nextTokenId)
       .to.emit(vault, "Transfer")

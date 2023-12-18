@@ -19,7 +19,7 @@ const {
 } = require("./helpers");
 
 describe("Manager : Protectors", function () {
-  let erc6551Registry, proxy, managerImpl, guardian;
+  let crunaRegistry, proxy, managerImpl, guardian;
   let vault;
   let factory;
   let usdc, usdt;
@@ -33,13 +33,13 @@ describe("Manager : Protectors", function () {
   });
 
   beforeEach(async function () {
-    erc6551Registry = await deployContract("CrunaRegistry");
+    crunaRegistry = await deployContract("CrunaRegistry");
     managerImpl = await deployContract("Manager");
     guardian = await deployContract("Guardian", deployer.address);
     proxy = await deployContract("ManagerProxy", managerImpl.address);
 
     vault = await deployContract("CrunaFlexiVault", deployer.address);
-    await vault.init(erc6551Registry.address, guardian.address, proxy.address);
+    await vault.init(crunaRegistry.address, guardian.address, proxy.address);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
 
     await vault.setFactory(factory.address);
@@ -60,13 +60,28 @@ describe("Manager : Protectors", function () {
     const price = await factory.finalPrice(usdc.address);
     await usdc.connect(bob).approve(factory.address, price);
     const nextTokenId = await vault.nextTokenId();
-    await factory.connect(bob).buyVaults(usdc.address, 1);
+    const precalculatedAddress = await vault.managerOf(nextTokenId);
+    const salt = ethers.utils.hexZeroPad(ethers.BigNumber.from("69").toHexString(), 32);
+
+    // console.log(keccak256("BoundContractCreated(address,address,bytes32,uint256,address,uint256)"))
+
+    await expect(factory.connect(bob).buyVaults(usdc.address, 1, true))
+      .to.emit(crunaRegistry, "BoundContractCreated")
+      .withArgs(
+        precalculatedAddress,
+        toChecksumAddress(proxy.address),
+        salt,
+        (await getChainId()).toString(),
+        toChecksumAddress(vault.address),
+        nextTokenId,
+      );
+
     return nextTokenId;
   };
 
   it("should support the IManagedERC721.sol interface", async function () {
     const vaultMock = await deployContract("VaultMock", deployer.address);
-    await vaultMock.init(erc6551Registry.address, guardian.address, proxy.address);
+    await vaultMock.init(crunaRegistry.address, guardian.address, proxy.address);
     let interfaceId = await vaultMock.getIProtectedInterfaceId();
     expect(interfaceId).to.equal("0xe19a64da");
     expect(await vault.supportsInterface(interfaceId)).to.be.true;

@@ -8,7 +8,7 @@ import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
-import {IBondContract} from "../interfaces/IBondContract.sol";
+import {IBoundContract} from "../interfaces/IBoundContract.sol";
 import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
 import {Guardian} from "./Guardian.sol";
 import {Versioned} from "../utils/Versioned.sol";
@@ -26,7 +26,7 @@ interface IVault {
   @title ManagerBase
   @dev Base contract for managers and plugins
 */
-abstract contract ManagerBase is Context, IBondContract, Versioned {
+abstract contract ManagerBase is Context, IBoundContract, Versioned {
   error NotTheTokenOwner();
   error InvalidImplementation();
   error InvalidVersion();
