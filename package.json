@@ -53,7 +53,7 @@
     "bn.js": "^5.2.1",
     "case": "^1.6.3",
     "chai": "^4.3.10",
-    "deploy-utils": "1.0.0-beta.0",
+    "deploy-utils": "1.0.0-beta.5",
     "dotenv": "^16.3.1",
     "eth-sig-util": "^3.0.1",
     "ethereum-waffle": "^4.0.10",
