@@ -2,13 +2,13 @@ require("dotenv").config();
 const hre = require("hardhat");
 const ethers = hre.ethers;
 const path = require("path");
-const DeployUtils = require("deploy-utils");
+const EthDeployUtils = require("eth-deploy-utils");
 let deployUtils;
 
 const { expect } = require("chai");
 
 async function main() {
-  deployUtils = new DeployUtils(path.resolve(__dirname, ".."), console.log);
+  deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
 
   const chainId = await deployUtils.currentChainId();
 
@@ -36,7 +36,6 @@ async function main() {
 
   managerAddress = await deployViaNickSFactory(deployer, "Manager");
   const manager = await deployUtils.attach("Manager", managerAddress);
-  expect(await manager.owner()).to.equal(deployer.address);
 
   guardianAddress = await deployViaNickSFactory(deployer, "Guardian", ["address"], [deployer.address]);
   guardian = await deployUtils.attach("Guardian", guardianAddress);

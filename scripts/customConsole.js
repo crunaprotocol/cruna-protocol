@@ -1,10 +1,10 @@
 const repl = require("repl");
 const path = require("path");
 const hre = require("hardhat");
-const DeployUtils = require("deploy-utils");
+const EthDeployUtils = require("eth-deploy-utils");
 
 async function main() {
-  const deployUtils = new DeployUtils(path.resolve(__dirname, ".."), console.log);
+  const deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
   const vault = await deployUtils.attach("CrunaFlexiVault");
   const factory = await deployUtils.attach("VaultFactory");
   const usdc = await deployUtils.attach("USDCoin");

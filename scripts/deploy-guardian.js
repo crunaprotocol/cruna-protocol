@@ -20,12 +20,13 @@ async function main() {
   }
 
   let salt = deployUtils.keccak256("Cruna");
+  // if (!(await deployUtils.isContractDeployedViaNickSFactory(deployer, "CrunaRegistry", salt))) {
+  //   console.error("Registry not deployed on this chain");
+  //   process.exit(1);
+  // }
 
-  // deploy the manager
-  const manager = await deployUtils.deployContractViaNickSFactory(deployer, "Manager", salt);
-
-  // deploy the manager's proxy
-  await deployUtils.deployContractViaNickSFactory(deployer, "ManagerProxy", ["address"], [manager.address], salt);
+  // deploy the guardian
+  await deployUtils.deployContractViaNickSFactory(deployer, "Guardian", ["address"], [deployer.address], salt);
 }
 
 main()

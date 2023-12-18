@@ -2,13 +2,13 @@ require("dotenv").config();
 const hre = require("hardhat");
 const ethers = hre.ethers;
 const path = require("path");
-const DeployUtils = require("deploy-utils");
+const EthDeployUtils = require("eth-deploy-utils");
 let deployUtils;
 
 const { expect } = require("chai");
 
 async function main() {
-  deployUtils = new DeployUtils(path.resolve(__dirname, ".."), console.log);
+  deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
 
   const chainId = await deployUtils.currentChainId();
   const [deployer] = await ethers.getSigners();
@@ -20,9 +20,7 @@ async function main() {
   }
 
   let salt = deployUtils.keccak256("Cruna");
-  await deployUtils.deployViaNickSFactory(deployer, "CrunaRegistry", undefined, undefined, salt);
-
-  console.log(`Done.`);
+  await deployUtils.deployContractViaNickSFactory(deployer, "CrunaRegistry", undefined, undefined, salt);
 }
 
 main()

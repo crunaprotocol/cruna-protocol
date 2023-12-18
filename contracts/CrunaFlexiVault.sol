@@ -49,7 +49,7 @@ contract CrunaFlexiVault is ManagedERC721 {
 
   // @dev This function will mint a new token
   // @param to The address of the recipient
-  function safeMint(address to, bool alsoInit, uint256 amount) public virtual onlyFactory {
+  function safeMintAndActivate(address to, bool alsoInit, uint256 amount) public virtual onlyFactory {
     _mintAndActivate(to, alsoInit, amount);
   }
 }
