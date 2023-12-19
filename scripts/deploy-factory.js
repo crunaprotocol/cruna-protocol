@@ -2,14 +2,14 @@ require("dotenv").config();
 const hre = require("hardhat");
 const ethers = hre.ethers;
 const path = require("path");
-const DeployUtils = require("deploy-utils");
+const EthDeployUtils = require("eth-deploy-utils");
 const { normalize, deployContractViaNickSFactory, keccak256 } = require("../test/helpers");
 let deployUtils;
 
 const { expect } = require("chai");
 
 async function main() {
-  deployUtils = new DeployUtils(path.resolve(__dirname, ".."), console.log);
+  deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
   const chainId = await deployUtils.currentChainId();
 
   const [deployer] = await ethers.getSigners();
@@ -29,14 +29,9 @@ async function main() {
   await deployUtils.Tx(factory.setStableCoin(usdt.address, true), "Set USDT as stable coin");
 
   // discount campaign selling for $9.9
-  await deployUtils.Tx(factory.setDiscount(67), "Set promo code");
+  await deployUtils.Tx(factory.setDiscount(67), "Set discount");
 
   await deployUtils.Tx(vault.setFactory(factory.address, { gasLimit: 100000 }), "Set the factory");
-
-  console.log(`
-  
-All deployed. Look at export/deployed.json for the deployed addresses.
-`);
 }
 
 main()

@@ -2,14 +2,14 @@ require("dotenv").config();
 const hre = require("hardhat");
 const ethers = hre.ethers;
 const path = require("path");
-const DeployUtils = require("deploy-utils");
+const EthDeployUtils = require("eth-deploy-utils");
 const { normalize, deployContractViaNickSFactory, keccak256, deployContract } = require("../test/helpers");
 let deployUtils;
 
 const { expect } = require("chai");
 
 async function main() {
-  deployUtils = new DeployUtils(path.resolve(__dirname, ".."), console.log);
+  deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
 
   const chainId = await deployUtils.currentChainId();
 

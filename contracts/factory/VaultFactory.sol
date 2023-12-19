@@ -109,7 +109,7 @@ contract VaultFactory is
   function buyVaults(address stableCoin, uint256 amount, bool alsoInit) external virtual override whenNotPaused nonReentrant {
     uint256 payment = finalPrice(stableCoin) * amount;
     if (payment > ERC20(stableCoin).balanceOf(_msgSender())) revert InsufficientFunds();
-    vault.safeMint(_msgSender(), alsoInit, amount);
+    vault.safeMintAndActivate(_msgSender(), alsoInit, amount);
     // we manage only trusted stable coins, so no risk of reentrancy
     if (!ERC20(stableCoin).transferFrom(_msgSender(), address(this), payment)) revert TransferFailed();
   }
@@ -132,7 +132,7 @@ contract VaultFactory is
     if (payment > ERC20(stableCoin).balanceOf(_msgSender())) revert InsufficientFunds();
     for (uint256 i = 0; i < tos.length; i++) {
       if (amounts[i] > 0) {
-        vault.safeMint(tos[i], alsoInit, amounts[i]);
+        vault.safeMintAndActivate(tos[i], alsoInit, amounts[i]);
       }
     }
     // we manage only trusted stable coins, so no risk of reentrancy
