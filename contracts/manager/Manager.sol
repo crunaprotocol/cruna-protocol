@@ -171,9 +171,10 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     address target,
     bool status,
     uint256 timeValidation,
-    bytes calldata signature
+    bytes calldata signature,
+    bool settingProtector
   ) internal virtual {
-    if (timeValidation < 1e6) {
+    if (!settingProtector && timeValidation < 1e6) {
       if (countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
     } else {
       bytes32 scope = combineBytes4(_nameHash, _funcHash);
@@ -191,7 +192,9 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
         timeValidation,
         signature
       );
-      if (!isAProtector(signer)) revert WrongDataOrNotSignedByProtector();
+      if (settingProtector && countActiveProtectors() == 0) {
+        if (signer != target) revert WrongDataOrNotSignedByProtector();
+      } else if (!isAProtector(signer)) revert WrongDataOrNotSignedByProtector();
     }
   }
 
@@ -216,7 +219,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
   ) internal virtual {
     if (actor == address(0)) revert ZeroAddress();
     if (actor == sender) revert CannotBeYourself();
-    _validateAndCheckSignature(_nameHash, role_, actor, status, timestamp * 1e6 + validFor, signature);
+    _validateAndCheckSignature(_nameHash, role_, actor, status, timestamp * 1e6 + validFor, signature, actorIsProtector);
     if (!status) {
       if (timestamp != 0 && actorIsProtector && !isAProtector(actor)) revert ProtectorNotFound();
       _removeActor(actor, role_);
@@ -351,7 +354,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     uint256 timeValidation,
     bytes calldata signature
   ) external onlyTokenOwner {
-    _validateAndCheckSignature(nameHash(), _stringToBytes4("protectedTransfer"), to, false, timeValidation, signature);
+    _validateAndCheckSignature(nameHash(), _stringToBytes4("protectedTransfer"), to, false, timeValidation, signature, false);
     _resetActorsAndDisablePlugins();
     vault().managedTransfer(nameHash(), tokenId, to);
   }
