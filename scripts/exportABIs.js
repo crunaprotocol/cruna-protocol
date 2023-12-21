@@ -11,7 +11,7 @@ async function main() {
     let json = require(source);
     ABIs.contracts[rename || name] = json.abi;
   }
-  abi("CrunaRegistry", "erc6551");
+  abi("CrunaRegistry", "contracts/utils");
   abi("Manager", "contracts/manager");
   abi("FlexiProxy", "contracts/utils");
   abi("InheritancePlugin", "contracts/plugins/inheritance");

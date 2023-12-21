@@ -6,10 +6,10 @@ settings:
 
 dependencies:
   '@openzeppelin/contracts':
-    specifier: ^4.9.3
+    specifier: ^4.9.5
     version: 4.9.5
   erc6551:
-    specifier: 0.3.1
+    specifier: ^0.3.1
     version: 0.3.1
 
 devDependencies:
@@ -26,8 +26,8 @@ devDependencies:
     specifier: ^2.0.6
     version: 2.0.6(@nomiclabs/hardhat-ethers@2.2.3)(@types/sinon-chai@3.2.12)(ethereum-waffle@4.0.10)(ethers@5.7.2)(hardhat@2.19.1)
   '@openzeppelin/contracts-upgradeable':
-    specifier: ^4.9.3
-    version: 4.9.3
+    specifier: ^4.9.5
+    version: 4.9.5
   '@openzeppelin/hardhat-upgrades':
     specifier: ^1.28.0
     version: 1.28.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(hardhat@2.19.1)
@@ -46,12 +46,12 @@ devDependencies:
   chai:
     specifier: ^4.3.10
     version: 4.3.10
-  deploy-utils:
-    specifier: 1.0.0-beta.0
-    version: 1.0.0-beta.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(typescript@5.3.3)
   dotenv:
     specifier: ^16.3.1
     version: 16.3.1
+  eth-deploy-utils:
+    specifier: 1.0.0-beta.3
+    version: 1.0.0-beta.3(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(typescript@5.3.3)
   eth-sig-util:
     specifier: ^3.0.1
     version: 3.0.1
@@ -86,7 +86,7 @@ devDependencies:
     specifier: ^1.0.6
     version: 1.0.6
   prettier:
-    specifier: ^3.1.0
+    specifier: ^3.1.1
     version: 3.1.1
   prettier-plugin-solidity:
     specifier: ^1.2.0
@@ -107,7 +107,7 @@ devDependencies:
     specifier: ^0.8.5
     version: 0.8.5(hardhat@2.19.1)
   typescript:
-    specifier: ^5.3.2
+    specifier: ^5.3.3
     version: 5.3.3
 
 packages:
@@ -1205,8 +1205,8 @@ packages:
       fs-extra: 8.1.0
     dev: true
 
-  /@openzeppelin/contracts-upgradeable@4.9.3:
-    resolution: {integrity: sha512-jjaHAVRMrE4UuZNfDwjlLGDxTHWIOwTJS2ldnc278a0gevfXfPr8hxKEVBGFBE96kl2G3VHDZhUimw/+G3TG2A==}
+  /@openzeppelin/contracts-upgradeable@4.9.5:
+    resolution: {integrity: sha512-f7L1//4sLlflAN7fVzJLoRedrf5Na3Oal5PZfIq55NFcVZ90EpV1q5xOvL4lFvg3MNICSDr2hH0JUBxwlxcoPg==}
     dev: true
 
   /@openzeppelin/contracts@4.9.5:
@@ -3295,27 +3295,6 @@ packages:
     engines: {node: '>= 0.8'}
     dev: true
 
-  /deploy-utils@1.0.0-beta.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(typescript@5.3.3):
-    resolution: {integrity: sha512-s7LviuMDZYnUM3hLY83D9Y8ZXXQ4JvCVqloo2b0qz0iLK8skazYJa6LSGRPaNuahV0XTjkeQoIGZeQxrBfx+mg==}
-    dependencies:
-      '@ethersproject/contracts': 5.7.0
-      '@openzeppelin/hardhat-upgrades': 1.28.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(hardhat@2.19.1)
-      ethereumjs-abi: 0.6.8
-      fs-extra: 11.2.0
-      hardhat: 2.19.1(typescript@5.3.3)
-    transitivePeerDependencies:
-      - '@nomiclabs/hardhat-ethers'
-      - '@nomiclabs/hardhat-etherscan'
-      - '@nomiclabs/harhdat-etherscan'
-      - bufferutil
-      - encoding
-      - ethers
-      - supports-color
-      - ts-node
-      - typescript
-      - utf-8-validate
-    dev: true
-
   /destroy@1.2.0:
     resolution: {integrity: sha512-2sJGJTaXIIaR1w4iJSNoN0hnMY7Gpc/n8D4qSCJw8QqFWXf7cuAgnEHxBpweaVcPevC2l3KpjYCx3NypQQgaJg==}
     engines: {node: '>= 0.8', npm: 1.2.8000 || >= 1.4.16}
@@ -3647,6 +3626,27 @@ packages:
   /etag@1.8.1:
     resolution: {integrity: sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==}
     engines: {node: '>= 0.6'}
+    dev: true
+
+  /eth-deploy-utils@1.0.0-beta.3(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(typescript@5.3.3):
+    resolution: {integrity: sha512-b/ECwtdzLgNNJy0a4q9WfBGpw3XfYZssvl74V/cXllotZgLFA9poWNbEzHzo29hXtCLPjqT2eiEcmSZuE8DklA==}
+    dependencies:
+      '@ethersproject/contracts': 5.7.0
+      '@openzeppelin/hardhat-upgrades': 1.28.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(hardhat@2.19.1)
+      ethereumjs-abi: 0.6.8
+      fs-extra: 11.2.0
+      hardhat: 2.19.1(typescript@5.3.3)
+    transitivePeerDependencies:
+      - '@nomiclabs/hardhat-ethers'
+      - '@nomiclabs/hardhat-etherscan'
+      - '@nomiclabs/harhdat-etherscan'
+      - bufferutil
+      - encoding
+      - ethers
+      - supports-color
+      - ts-node
+      - typescript
+      - utf-8-validate
     dev: true
 
   /eth-ens-namehash@2.0.8:

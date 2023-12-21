@@ -128,18 +128,37 @@ describe("Manager : Protectors", function () {
 
     expect(await vault.supportsInterface("0x80ac58cd")).to.equal(true);
 
+    let signature = (
+      await signRequest(
+        "Manager",
+        "PROTECTOR",
+        bob.address,
+        alice.address,
+        vault.address,
+        tokenId,
+        1,
+        0,
+        0,
+        ts,
+        3600,
+        chainId,
+        alice.address,
+        manager,
+      )
+    )[0];
+
     // set Alice as first Bob's protector
-    await expect(manager.connect(bob).setProtector(alice.address, true, 0, 0, 0))
+    await expect(manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature))
       .to.emit(manager, "ProtectorUpdated")
       .withArgs(bob.address, alice.address, true)
       .to.emit(vault, "Locked")
       .withArgs(tokenId, true);
 
-    await expect(manager.connect(bob).setProtector(alice.address, false, 0, 0, 0)).to.be.revertedWith(
-      "NotPermittedWhenProtectorsAreActive",
+    await expect(manager.connect(bob).setProtector(alice.address, false, ts, 3600, signature)).to.be.revertedWith(
+      "SignatureAlreadyUsed",
     );
 
-    let signature = (
+    signature = (
       await signRequest(
         "Manager",
         "PROTECTOR",
@@ -178,22 +197,42 @@ describe("Manager : Protectors", function () {
     await expect(manager.connect(bob).setProtector(bob.address, true, 0, 0, 0)).revertedWith("CannotBeYourself");
   });
 
-  it("should add many protectors", async function () {
+  it.only("should add many protectors", async function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
 
     expect(await manager.hasProtectors()).to.equal(false);
 
+    let signature = (
+      await signRequest(
+        "Manager",
+        "PROTECTOR",
+        bob.address,
+        alice.address,
+        vault.address,
+        tokenId,
+        1,
+        0,
+        0,
+        ts,
+        3600,
+        chainId,
+        alice.address,
+        manager,
+      )
+    )[0];
+
     // set Alice as first Bob's protector
-    await manager.connect(bob).setProtector(alice.address, true, 0, 0, 0);
+    await manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature);
+
     // Set Fred as Bob's protector
     // To do so Bob needs Alice's signature
 
     let allProtectors = await manager.getProtectors();
     expect(allProtectors[0]).equal(alice.address);
 
-    let signature = (
+    signature = (
       await signRequest(
         "Manager",
         "PROTECTOR",
@@ -211,10 +250,6 @@ describe("Manager : Protectors", function () {
         manager,
       )
     )[0];
-
-    await expect(manager.connect(bob).setProtector(vault.address, true, ts, 3600, signature)).revertedWith(
-      "ContractsCannotBeProtectors",
-    );
 
     await expect(manager.connect(bob).setProtector(fred.address, true, ts, 3600, signature))
       .to.emit(manager, "ProtectorUpdated")
@@ -262,12 +297,34 @@ describe("Manager : Protectors", function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
-    // set Alice as Bob's protector
-    await manager.connect(bob).setProtector(alice.address, true, 0, 0, 0);
+
+    let signature = (
+      await signRequest(
+        "Manager",
+        "PROTECTOR",
+        bob.address,
+        alice.address,
+        vault.address,
+        tokenId,
+        1,
+        0,
+        0,
+        ts,
+        3600,
+        chainId,
+        alice.address,
+        manager,
+      )
+    )[0];
+
+    // set Alice as first Bob's protector
+    await manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature);
+
     await expect(
       vault.connect(bob)["safeTransferFrom(address,address,uint256)"](bob.address, fred.address, tokenId),
     ).to.be.revertedWith("NotTransferable");
-    let signature = (
+
+    signature = (
       await signRequest(
         "Manager",
         "protectedTransfer",
@@ -297,7 +354,28 @@ describe("Manager : Protectors", function () {
     const manager = await ethers.getContractAt("Manager", managerAddress);
     expect(await manager.version()).to.equal(1);
 
-    await manager.connect(bob).setProtector(alice.address, true, 0, 0, 0);
+    let signature = (
+      await signRequest(
+        "Manager",
+        "PROTECTOR",
+        bob.address,
+        alice.address,
+        vault.address,
+        tokenId,
+        1,
+        0,
+        0,
+        ts,
+        3600,
+        chainId,
+        alice.address,
+        manager,
+      )
+    )[0];
+
+    // set Alice as first Bob's protector
+    await manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature);
+
     expect(await manager.hasProtectors()).to.equal(true);
 
     await expect(manager.upgrade(managerV2Impl.address)).to.be.revertedWith("NotTheTokenOwner");

@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const helpers = require("./helpers");
 const { domainType } = require("./helpers/eip712");
-helpers.initEthers(ethers);
+
 const {
   privateKeyByWallet,
   deployContract,

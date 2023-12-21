@@ -179,7 +179,7 @@ describe("VaultFactory", function () {
     const amounts = [1, 3, 2];
     let nextTokenId = await vault.nextTokenId();
 
-    console.log(nextTokenId);
+    // console.log(nextTokenId);
 
     let pricePerVault = await factory.finalPrice(stableCoin);
 
