@@ -5,7 +5,6 @@ pragma solidity ^0.8.20;
 
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import {Actor} from "./Actor.sol";
@@ -27,7 +26,6 @@ interface IPluginExt is IPlugin {
 contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureValidator {
   using ECDSA for bytes32;
   using Strings for uint256;
-  using Address for address;
 
   error ProtectorNotFound();
   error ProtectorAlreadySetByYou();
@@ -37,7 +35,6 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
   error NotTheAuthorizedPlugin();
   error SignatureAlreadyUsed();
   error NotAProxy();
-  error ContractsCannotBeProtectors();
   error PluginAlreadyPlugged();
   error PluginAlreadyPluggedButDisabled();
   error PluginNotFound();
@@ -100,7 +97,6 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
-    if (status && protector_.isContract()) revert ContractsCannotBeProtectors();
     _setSignedActor(nameHash(), PROTECTOR, protector_, status, timestamp, validFor, signature, true, _msgSender());
     emit ProtectorUpdated(_msgSender(), protector_, status);
     if (status) {
