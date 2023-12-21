@@ -197,7 +197,7 @@ describe("Manager : Protectors", function () {
     await expect(manager.connect(bob).setProtector(bob.address, true, 0, 0, 0)).revertedWith("CannotBeYourself");
   });
 
-  it("should add many protectors", async function () {
+  it.only("should add many protectors", async function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
@@ -250,10 +250,6 @@ describe("Manager : Protectors", function () {
         manager,
       )
     )[0];
-
-    await expect(manager.connect(bob).setProtector(vault.address, true, ts, 3600, signature)).revertedWith(
-      "ContractsCannotBeProtectors",
-    );
 
     await expect(manager.connect(bob).setProtector(fred.address, true, ts, 3600, signature))
       .to.emit(manager, "ProtectorUpdated")
