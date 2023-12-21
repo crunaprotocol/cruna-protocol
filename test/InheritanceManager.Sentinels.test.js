@@ -130,11 +130,30 @@ describe("Sentinel and Inheritance", function () {
       .to.emit(inheritancePlugin, "SentinelUpdated")
       .withArgs(bob.address, alice.address, false);
 
-    // set Alice as a protector
-    await manager.connect(bob).setProtector(alice.address, true, 0, 0, 0);
+    let signature = (
+      await signRequest(
+        "Manager",
+        "PROTECTOR",
+        bob.address,
+        alice.address,
+        vault.address,
+        tokenId,
+        1,
+        0,
+        0,
+        ts,
+        3600,
+        chainId,
+        alice.address,
+        manager,
+      )
+    )[0];
+
+    // set Alice as first Bob's protector
+    await manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature);
 
     // Add mark
-    let signature = (
+    signature = (
       await signRequest(
         "InheritancePlugin",
         "SENTINEL",

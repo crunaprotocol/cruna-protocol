@@ -79,11 +79,31 @@ describe("Manager : Safe Recipients", function () {
     await expect(manager.connect(bob).setSafeRecipient(alice.address, false, 0, 0, 0))
       .to.emit(manager, "SafeRecipientUpdated")
       .withArgs(bob.address, alice.address, false);
-    // set Alice as a protector
-    await manager.connect(bob).setProtector(alice.address, true, 0, 0, 0);
+
+    let signature = (
+      await signRequest(
+        "Manager",
+        "PROTECTOR",
+        bob.address,
+        alice.address,
+        vault.address,
+        tokenId,
+        1,
+        0,
+        0,
+        ts,
+        3600,
+        chainId,
+        alice.address,
+        manager,
+      )
+    )[0];
+
+    // set Alice as first Bob's protector
+    await manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature);
 
     // Set Mark as a safe recipient
-    let signature = (
+    signature = (
       await signRequest(
         "Manager",
         "SAFE_RECIPIENT",

@@ -18,6 +18,7 @@ async function main() {
   const local = repl.start("> ");
 
   // Making variables available in the REPL context
+  local.context.du = deployUtils;
   local.context.vault = vault;
   local.context.factory = factory;
   local.context.usdc = usdc;
