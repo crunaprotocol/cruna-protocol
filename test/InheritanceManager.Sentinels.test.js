@@ -74,10 +74,17 @@ describe("Sentinel and Inheritance", function () {
     await guardian.setTrustedImplementation(nameHash, inheritancePluginProxy.address, true);
     expect((await manager.pluginsByName(nameHash)).proxyAddress).to.equal(addr0);
 
+    expect((await manager.pluginsByName(nameHash)).proxyAddress).equal(addr0);
+
+    await expect(manager.activePlugins(0)).revertedWith("");
+
     await expect(manager.connect(bob).plug("InheritancePlugin", inheritancePluginProxy.address, true)).to.emit(
       manager,
       "PluginStatusChange",
     );
+    expect((await manager.pluginsByName(nameHash)).proxyAddress).not.equal(addr0);
+    expect(await manager.activePlugins(0)).equal("InheritancePlugin");
+
     const pluginAddress = await manager.plugin(nameHash);
     expect(pluginAddress).to.not.equal(addr0);
     return nextTokenId;

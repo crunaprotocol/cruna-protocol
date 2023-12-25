@@ -197,7 +197,7 @@ describe("Manager : Protectors", function () {
     await expect(manager.connect(bob).setProtector(bob.address, true, 0, 0, 0)).revertedWith("CannotBeYourself");
   });
 
-  it.only("should add many protectors", async function () {
+  it("should add many protectors", async function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);

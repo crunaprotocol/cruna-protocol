@@ -269,6 +269,10 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     return IPluginExt(pluginAddress(_nameHash));
   }
 
+  function countActivePlugins() external view virtual returns (uint256) {
+    return activePlugins.length;
+  }
+
   // Plugin cannot be deleted since they have been deployed
   // via ERC-6551 Registry so, we remove from the list of
   // the active plugins.
