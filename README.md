@@ -208,15 +208,15 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   IInheritancePlugin.sol        |      100 |      100 |      100 |      100 |                |
   InheritancePlugin.sol         |      100 |    72.37 |      100 |    97.65 |         80,176 |
   InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
- contracts/protected/           |      100 |    54.35 |      100 |    95.45 |                |
-  ManagedERC721.sol             |      100 |    54.35 |      100 |    95.45 |        164,176 |
+ contracts/protected/           |      100 |    52.08 |    93.33 |    93.33 |                |
+  ManagedERC721.sol             |      100 |    52.08 |    93.33 |    93.33 |     71,170,182 |
  contracts/utils/               |      100 |       75 |      100 |      100 |                |
   CrunaRegistry.sol             |      100 |      100 |      100 |      100 |                |
   FlexiProxy.sol                |      100 |      100 |      100 |      100 |                |
   SignatureValidator.sol        |      100 |       75 |      100 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |    97.13 |     62.5 |    98.21 |    95.88 |                |
+All files                       |    97.13 |    62.09 |    97.35 |     95.6 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 
