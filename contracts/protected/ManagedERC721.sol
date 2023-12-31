@@ -4,6 +4,7 @@ pragma solidity ^0.8.20;
 // Author: Francesco Sullo <francesco@sullo.co>
 //
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
@@ -19,7 +20,7 @@ import {Versioned} from "../utils/Versioned.sol";
 //import {console} from "hardhat/console.sol";
 
 // @dev This contract is a base for NFTs with protected transfers.
-abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982, ERC721, Ownable2Step {
+abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982, ERC721, ERC721Enumerable, Ownable2Step {
   using ECDSA for bytes32;
   using Strings for uint256;
   using Address for address;
@@ -46,6 +47,7 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
   uint256 public nextTokenId = 1;
 
   mapping(uint256 => bool) internal _approvedTransfers;
+  uint256 public maxSupply;
 
   // @dev This modifier will only allow the manager of a certain tokenId to call the function.
   // @param tokenId_ The id of the token.
@@ -62,7 +64,11 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
     if (owner == address(0)) revert ZeroAddress();
     _transferOwnership(owner);
     emit DefaultLocked(false);
-    nextTokenId = block.chainid * 1e8 + version() * 1e6 + 1;
+    nextTokenId = 1;
+  }
+
+  function setMaxSupply(uint256 maxSupply_) external onlyOwner {
+    maxSupply = maxSupply_;
   }
 
   // @dev This function will initialize the contract.
@@ -94,14 +100,14 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
     address to,
     uint256 tokenId,
     uint256 batchSize
-  ) internal virtual override(ERC721) {
+  ) internal virtual override(ERC721, ERC721Enumerable) {
     if (isTransferable(tokenId, from, to)) {
       super._beforeTokenTransfer(from, to, tokenId, batchSize);
     } else revert NotTransferable();
   }
 
   // @dev See {ERC165-supportsInterface}.
-  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721) returns (bool) {
+  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, ERC721Enumerable) returns (bool) {
     return
       interfaceId == type(IManagedERC721).interfaceId ||
       interfaceId == type(IERC6454).interfaceId ||

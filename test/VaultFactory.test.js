@@ -155,15 +155,15 @@ describe("VaultFactory", function () {
   });
 
   it("should allow bob and alice to purchase some vaults with a discount", async function () {
-    await factory.setDiscount(10);
+    await factory.setDiscount(100);
 
     await buyVault(usdc, 2, bob);
     await buyVault(usdt, 2, alice);
 
     let price = await factory.finalPrice(usdc.address);
-    expect(price.toString()).to.equal("8910000000000000000");
+    expect(price.toString()).to.equal("8900000000000000000");
     price = await factory.finalPrice(usdt.address);
-    expect(price.toString()).to.equal("8910000");
+    expect(price.toString()).to.equal("8900000");
   });
 
   it("should remove a stableCoin when active is false", async function () {

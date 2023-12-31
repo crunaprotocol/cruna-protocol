@@ -29,7 +29,7 @@ async function main() {
   await deployUtils.Tx(factory.setStableCoin(usdt.address, true), "Set USDT as stable coin");
 
   // discount campaign selling for $9.9
-  await deployUtils.Tx(factory.setDiscount(67), "Set discount");
+  await deployUtils.Tx(factory.setDiscount(2010), "Set discount");
 
   await deployUtils.Tx(vault.setFactory(factory.address, { gasLimit: 100000 }), "Set the factory");
 }
