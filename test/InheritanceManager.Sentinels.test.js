@@ -68,13 +68,13 @@ describe("Sentinel and Inheritance", function () {
     await expect(manager.connect(bob).plug("InheritancePlugin", vault.address, true)).to.be.revertedWith("NotAProxy");
 
     await expect(manager.connect(bob).plug("InheritancePlugin", inheritancePluginProxy.address, true)).to.be.revertedWith(
-      "InvalidImplementation",
+      "UntrustedImplementation",
     );
-    const nameHash = bytes4(keccak256("InheritancePlugin"));
-    await guardian.setTrustedImplementation(nameHash, inheritancePluginProxy.address, true);
-    expect((await manager.pluginsByName(nameHash)).proxyAddress).to.equal(addr0);
+    const nameId = bytes4(keccak256("InheritancePlugin"));
+    await guardian.setTrustedImplementation(nameId, inheritancePluginProxy.address, true, 1);
+    expect((await manager.pluginsById(nameId)).proxyAddress).to.equal(addr0);
 
-    expect((await manager.pluginsByName(nameHash)).proxyAddress).equal(addr0);
+    expect((await manager.pluginsById(nameId)).proxyAddress).equal(addr0);
 
     await expect(manager.allPlugins(0)).revertedWith("");
 
@@ -82,16 +82,16 @@ describe("Sentinel and Inheritance", function () {
       manager,
       "PluginStatusChange",
     );
-    expect((await manager.pluginsByName(nameHash)).proxyAddress).not.equal(addr0);
+    expect((await manager.pluginsById(nameId)).proxyAddress).not.equal(addr0);
     expect((await manager.allPlugins(0)).name).equal("InheritancePlugin");
     expect((await manager.allPlugins(0)).active).to.be.true;
     const count = await manager.countPlugins();
     expect(count[0]).equal(1);
     expect(count[1]).equal(0);
-    expect((await manager.getActivePlugins())[0]).equal("InheritancePlugin");
-    expect((await manager.getDisabledPlugins()).length).equal(0);
+    expect((await manager.listPlugins(true))[0]).equal("InheritancePlugin");
+    expect((await manager.listPlugins(false)).length).equal(0);
 
-    const pluginAddress = await manager.plugin(nameHash);
+    const pluginAddress = await manager.plugin(nameId);
     expect(pluginAddress).to.not.equal(addr0);
     return nextTokenId;
   };
@@ -104,8 +104,8 @@ describe("Sentinel and Inheritance", function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
-    const nameHash = bytes4(keccak256("InheritancePlugin"));
-    const inheritancePluginAddress = await manager.plugin(nameHash);
+    const nameId = bytes4(keccak256("InheritancePlugin"));
+    const inheritancePluginAddress = await manager.plugin(nameId);
 
     const inheritancePlugin = await ethers.getContractAt("InheritancePlugin", inheritancePluginAddress);
     expect(await inheritancePlugin.requiresToManageTransfer()).to.be.true;
@@ -128,8 +128,8 @@ describe("Sentinel and Inheritance", function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
-    const nameHash = bytes4(keccak256("InheritancePlugin"));
-    const inheritancePluginAddress = await manager.plugin(nameHash);
+    const nameId = bytes4(keccak256("InheritancePlugin"));
+    const inheritancePluginAddress = await manager.plugin(nameId);
 
     const inheritancePlugin = await ethers.getContractAt("InheritancePlugin", inheritancePluginAddress);
     expect(await inheritancePlugin.requiresToManageTransfer()).to.be.true;
@@ -407,8 +407,8 @@ describe("Sentinel and Inheritance", function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
-    const nameHash = bytes4(keccak256("InheritancePlugin"));
-    const inheritancePluginAddress = await manager.plugin(nameHash);
+    const nameId = bytes4(keccak256("InheritancePlugin"));
+    const inheritancePluginAddress = await manager.plugin(nameId);
 
     const inheritancePlugin = await ethers.getContractAt("InheritancePlugin", inheritancePluginAddress);
 
@@ -432,8 +432,8 @@ describe("Sentinel and Inheritance", function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
-    const nameHash = bytes4(keccak256("InheritancePlugin"));
-    const inheritancePluginAddress = await manager.plugin(nameHash);
+    const nameId = bytes4(keccak256("InheritancePlugin"));
+    const inheritancePluginAddress = await manager.plugin(nameId);
 
     const inheritancePlugin = await ethers.getContractAt("InheritancePlugin", inheritancePluginAddress);
     await inheritancePlugin
@@ -553,8 +553,8 @@ describe("Sentinel and Inheritance", function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
-    const nameHash = bytes4(keccak256("InheritancePlugin"));
-    const inheritancePluginAddress = await manager.plugin(nameHash);
+    const nameId = bytes4(keccak256("InheritancePlugin"));
+    const inheritancePluginAddress = await manager.plugin(nameId);
 
     const inheritancePlugin = await ethers.getContractAt("InheritancePlugin", inheritancePluginAddress);
     await inheritancePlugin
@@ -614,8 +614,8 @@ describe("Sentinel and Inheritance", function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
-    const nameHash = bytes4(keccak256("InheritancePlugin"));
-    const inheritancePluginAddress = await manager.plugin(nameHash);
+    const nameId = bytes4(keccak256("InheritancePlugin"));
+    const inheritancePluginAddress = await manager.plugin(nameId);
 
     const inheritancePlugin = await ethers.getContractAt("InheritancePlugin", inheritancePluginAddress);
     await inheritancePlugin
@@ -732,11 +732,11 @@ describe("Sentinel and Inheritance", function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
-    const nameHash = bytes4(keccak256("InheritancePlugin"));
-    const inheritancePluginAddress = await manager.plugin(nameHash);
+    const nameId = bytes4(keccak256("InheritancePlugin"));
+    const inheritancePluginAddress = await manager.plugin(nameId);
 
     const inheritancePlugin = await ethers.getContractAt("InheritancePlugin", inheritancePluginAddress);
-    expect(await inheritancePlugin.version()).to.equal(1);
+    expect(await inheritancePlugin.version()).to.equal(1e6);
 
     await inheritancePlugin.connect(bob).setSentinels([alice.address, fred.address], 0);
 
@@ -749,12 +749,20 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(inheritancePlugin.upgrade(inheritancePluginV3Impl.address)).to.be.revertedWith("NotTheTokenOwner");
     await expect(inheritancePlugin.connect(bob).upgrade(inheritancePluginV3Impl.address)).to.be.revertedWith(
-      "InvalidImplementation",
+      "UntrustedImplementation",
     );
 
-    await guardian.setTrustedImplementation(NAME_HASH, inheritancePluginV2Impl.address, true);
+    expect(bytes4(keccak256("InheritancePlugin"))).to.equal("0xd85175e9");
+    expect(bytes4(keccak256("Manager"))).to.equal("0x6d439300");
 
-    await guardian.setTrustedImplementation(NAME_HASH, inheritancePluginV3Impl.address, true);
+    const iVaultAddress = await inheritancePlugin.vault();
+    const iVault = await ethers.getContractAt("CrunaFlexiVault", iVaultAddress);
+
+    expect(toChecksumAddress(iVault.address)).equal(toChecksumAddress(vault.address));
+
+    await guardian.setTrustedImplementation(NAME_HASH, inheritancePluginV2Impl.address, true, 1);
+
+    await guardian.setTrustedImplementation(NAME_HASH, inheritancePluginV3Impl.address, true, 1);
 
     expect(await inheritancePlugin.getImplementation()).to.equal(addr0);
 
@@ -764,7 +772,7 @@ describe("Sentinel and Inheritance", function () {
     const newInheritancePlugin = await ethers.getContractAt("InheritancePluginV3Mock", inheritancePluginAddress);
 
     expect(await newInheritancePlugin.isMock()).to.be.true;
-    expect(await newInheritancePlugin.version()).to.equal(3);
+    expect(await newInheritancePlugin.version()).to.equal(3e6);
     expect(await newInheritancePlugin.SOME_OTHER_VARIABLE()).to.be.true;
     expect(await newInheritancePlugin.SOME_VARIABLE()).to.equal(3);
 
@@ -772,5 +780,30 @@ describe("Sentinel and Inheritance", function () {
     expect(data[0].length).to.equal(2);
 
     await expect(inheritancePlugin.connect(bob).upgrade(inheritancePluginV2Impl.address)).to.be.revertedWith("InvalidVersion");
+  });
+
+  it("should not upgrade if the plugin requires updated manager", async function () {
+    const tokenId = await buyAVault(bob);
+    const managerAddress = await vault.managerOf(tokenId);
+    const manager = await ethers.getContractAt("Manager", managerAddress);
+    const nameId = bytes4(keccak256("InheritancePlugin"));
+    const inheritancePluginAddress = await manager.plugin(nameId);
+
+    const inheritancePlugin = await ethers.getContractAt("InheritancePlugin", inheritancePluginAddress);
+    expect(await inheritancePlugin.version()).to.equal(1e6);
+
+    await inheritancePlugin.connect(bob).setSentinels([alice.address, fred.address], 0);
+
+    let data = await inheritancePlugin.getSentinelsAndInheritanceData();
+    expect(data[0].length).to.equal(2);
+
+    const inheritancePluginV2Impl = await deployContract("InheritancePluginV2Mock");
+
+    const inheritancePluginV3Impl = await deployContract("InheritancePluginV3Mock");
+
+    await guardian.setTrustedImplementation(NAME_HASH, inheritancePluginV2Impl.address, true, 2e6);
+    await expect(inheritancePlugin.connect(bob).upgrade(inheritancePluginV2Impl.address))
+      .revertedWith("PluginRequiresUpdatedManager")
+      .withArgs(2e6);
   });
 });

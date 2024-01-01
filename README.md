@@ -185,7 +185,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  37 passing
+  38 passing
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -198,19 +198,19 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   IERC6454.sol               |      100 |      100 |      100 |      100 |                |
   IERC6982.sol               |      100 |      100 |      100 |      100 |                |
   IManagedERC721.sol         |      100 |      100 |      100 |      100 |                |
- manager/                    |    96.17 |    61.76 |    98.53 |    95.28 |                |
+ manager/                    |    92.42 |    61.54 |    95.71 |    91.59 |                |
   Actor.sol                  |      100 |       70 |      100 |      100 |                |
-  Guardian.sol               |      100 |       50 |      100 |    83.33 |             21 |
+  Guardian.sol               |      100 |       50 |      100 |       70 |       22,33,38 |
   IManager.sol               |      100 |      100 |      100 |      100 |                |
   ManagedERC721.sol          |      100 |       58 |      100 |    95.65 |        170,182 |
-  Manager.sol                |    94.23 |    61.46 |    96.55 |    94.02 |... 259,261,298 |
-  ManagerBase.sol            |    94.74 |       80 |      100 |      100 |                |
+  Manager.sol                |    87.39 |       60 |       90 |    88.43 |... 300,301,302 |
+  ManagerBase.sol            |       96 |    85.71 |      100 |      100 |                |
   ManagerProxy.sol           |      100 |      100 |      100 |      100 |                |
  plugins/                    |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                |      100 |      100 |      100 |      100 |                |
- plugins/inheritance/        |      100 |    72.37 |      100 |    97.67 |                |
+ plugins/inheritance/        |      100 |    72.37 |      100 |     97.7 |                |
   IInheritancePlugin.sol     |      100 |      100 |      100 |      100 |                |
-  InheritancePlugin.sol      |      100 |    72.37 |      100 |    97.65 |         80,176 |
+  InheritancePlugin.sol      |      100 |    72.37 |      100 |    97.67 |         84,180 |
   InheritancePluginProxy.sol |      100 |      100 |      100 |      100 |                |
  utils/                      |      100 |       75 |      100 |      100 |                |
   CrunaRegistry.sol          |      100 |      100 |      100 |      100 |                |
@@ -218,7 +218,7 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   SignatureValidator.sol     |      100 |       75 |      100 |      100 |                |
   Versioned.sol              |      100 |      100 |      100 |      100 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
-All files                    |    97.59 |     63.4 |    99.08 |    96.05 |                |
+All files                    |     95.1 |    63.21 |    97.32 |    93.77 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
 ```
 

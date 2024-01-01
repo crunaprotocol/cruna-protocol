@@ -24,7 +24,7 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
   using Strings for uint256;
   using Address for address;
 
-  event ManagedTransfer(bytes4 indexed pluginNameHash, uint256 indexed tokenId);
+  event ManagedTransfer(bytes4 indexed pluginNameId, uint256 indexed tokenId);
 
   error NotTransferable();
   error NotTheManager();
@@ -38,7 +38,7 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
   mapping(bytes32 => bool) public usedSignatures;
   Guardian public guardian;
   ICrunaRegistry public registry;
-  Manager public managerProxy;
+  address public managerProxy;
 
   bytes32 public constant SALT = bytes32(uint256(69));
   bytes4 public constant NAME_HASH = bytes4(keccak256("ManagedNFT"));
@@ -82,17 +82,17 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
     if (registry_ == address(0) || guardian_ == address(0) || managerProxy_ == address(0)) revert ZeroAddress();
     guardian = Guardian(guardian_);
     registry = ICrunaRegistry(registry_);
-    managerProxy = Manager(managerProxy_);
+    managerProxy = managerProxy_;
   }
 
   // @dev See {IProtected721-managedTransfer}.
-  function managedTransfer(bytes4 pluginNameHash, uint256 tokenId, address to) external override onlyManager(tokenId) {
+  function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external override onlyManager(tokenId) {
     _approvedTransfers[tokenId] = true;
     _approve(managerOf(tokenId), tokenId);
     safeTransferFrom(ownerOf(tokenId), to, tokenId);
     _approve(address(0), tokenId);
     delete _approvedTransfers[tokenId];
-    emit ManagedTransfer(pluginNameHash, tokenId);
+    emit ManagedTransfer(pluginNameId, tokenId);
   }
 
   // @dev See {ERC721-_beforeTokenTransfer}.
@@ -166,7 +166,7 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
     for (uint256 i = 0; i < amount; i++) {
       if (maxTokenId > 0 && tokenId > maxTokenId) revert MaxSupplyReached();
       if (alsoInit) {
-        try registry.createBoundContract(address(managerProxy), SALT, block.chainid, address(this), tokenId) {} catch {
+        try registry.createBoundContract(managerProxy, SALT, block.chainid, address(this), tokenId) {} catch {
           revert ErrorCreatingManager();
         }
       }
@@ -178,7 +178,7 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
   function activate(uint256 tokenId) external {
     if (_msgSender() != ownerOf(tokenId)) revert NotTheTokenOwner();
     if (address(registry) == address(0)) revert RegistryNotFound();
-    try registry.createBoundContract(address(managerProxy), SALT, block.chainid, address(this), tokenId) {} catch {
+    try registry.createBoundContract(managerProxy, SALT, block.chainid, address(this), tokenId) {} catch {
       revert ErrorCreatingManager();
     }
   }
@@ -186,7 +186,7 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
   // @dev This function will return the address of the manager for tokenId.
   // @param tokenId The id of the token.
   function managerOf(uint256 tokenId) public view returns (address) {
-    return registry.boundContract(address(managerProxy), SALT, block.chainid, address(this), tokenId);
+    return registry.boundContract(managerProxy, SALT, block.chainid, address(this), tokenId);
   }
 
   function isActive(uint256 tokenId) public view returns (bool) {

@@ -302,9 +302,9 @@ const Helpers = {
     signer,
     validatorContract,
   ) {
-    const nameHash = thiz.bytes4(thiz.keccak256(name));
+    const nameId = thiz.bytes4(thiz.keccak256(name));
     const role = roleString ? thiz.bytes4(thiz.keccak256(roleString)) : "0x00000000";
-    const scope = thiz.combineBytes4ToBytes32(nameHash, role).toString();
+    const scope = thiz.combineBytes4ToBytes32(nameId, role).toString();
     timestamp = ethers.BigNumber.from(timestamp.toString()).toNumber();
     const timeValidation = thiz.combineTimestampAndValidFor(timestamp, validFor).toString();
 

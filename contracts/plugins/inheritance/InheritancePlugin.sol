@@ -9,7 +9,7 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Manager} from "../../manager/Manager.sol";
 import {IInheritancePlugin} from "./IInheritancePlugin.sol";
 import {IPlugin} from "../IPlugin.sol";
-import {ManagerBase} from "../../manager/ManagerBase.sol";
+import {IVault, ManagerBase} from "../../manager/ManagerBase.sol";
 import {Actor} from "../../manager/Actor.sol";
 import {SignatureValidator} from "../../utils/SignatureValidator.sol";
 
@@ -55,8 +55,12 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, S
     return true;
   }
 
-  function nameHash() public virtual override returns (bytes4) {
+  function nameId() public virtual override returns (bytes4) {
     return bytes4(keccak256("InheritancePlugin"));
+  }
+
+  function vault() public view virtual override returns (IVault) {
+    return IVault(manager.tokenAddress());
   }
 
   // sentinels and beneficiaries
@@ -71,7 +75,7 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, S
     if (timestamp == 0) {
       if (manager.countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
     } else {
-      _validateAndCheckSignature(nameHash(), SENTINEL, sentinel, status ? 1 : 0, 0, 0, timestamp * 1e6 + validFor, signature);
+      _validateAndCheckSignature(nameId(), SENTINEL, sentinel, status ? 1 : 0, 0, 0, timestamp * 1e6 + validFor, signature);
     }
     if (!status) {
       _removeActor(sentinel, SENTINEL);
@@ -107,7 +111,7 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, S
     } else {
       if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
       _validateAndCheckSignature(
-        nameHash(),
+        nameId(),
         bytes4(keccak256("configureInheritance")),
         beneficiary,
         quorum,
@@ -237,7 +241,7 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, S
       if (_isGracePeriodExpiredAfterStart()) revert Expired();
     }
     _reset();
-    manager.managedTransfer(nameHash(), tokenId(), _msgSender());
+    manager.managedTransfer(nameId(), tokenId(), _msgSender());
   }
 
   function reset() external override {
@@ -260,7 +264,7 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, S
   // @param validFor The validity of the request.
   // @param signature The signature of the request.
   function _validateAndCheckSignature(
-    bytes4 _nameHash,
+    bytes4 _nameId,
     bytes4 _funcHash,
     address target,
     uint256 extra,
@@ -273,7 +277,7 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, S
     usedSignatures[keccak256(signature)] = true;
 
     address signer = recoverSigner(
-      combineBytes4(_nameHash, _funcHash),
+      combineBytes4(_nameId, _funcHash),
       owner(),
       target,
       manager.tokenAddress(),

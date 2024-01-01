@@ -6,6 +6,7 @@ contract Versioned {
   // @dev This function will return the version of the contract.
   // @return The version of the contract as a string.
   function version() public pure virtual returns (uint256) {
-    return 1;
+    // semver 1.2.3 => 1002003 = 1e6 + 2e3 + 3
+    return 1e6;
   }
 }

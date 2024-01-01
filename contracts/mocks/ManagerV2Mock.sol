@@ -5,7 +5,7 @@ import {Manager} from "../manager/Manager.sol";
 
 contract ManagerV2Mock is Manager {
   function version() public pure virtual override returns (uint256) {
-    return 2;
+    return 2e6;
   }
 
   // new function in V2

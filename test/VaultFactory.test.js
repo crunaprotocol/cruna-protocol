@@ -231,9 +231,9 @@ describe("VaultFactory", function () {
 
     it("should upgrade the factory", async function () {
       const newFactory = await ethers.getContractFactory("VaultFactoryV2Mock");
-      expect(await factory.version()).to.equal("1");
+      expect(await factory.version()).to.equal(1e6);
       await upgradeProxy(upgrades, factory.address, newFactory);
-      expect(await factory.version()).to.equal("2");
+      expect(await factory.version()).to.equal(2e6);
     });
   });
   async function expectedUsedGas(account, amount) {

@@ -15,7 +15,7 @@ contract SomePlugin is IPlugin, ManagerBase {
 
   Manager public manager;
 
-  function nameHash() public virtual override returns (bytes4) {
+  function nameId() public virtual override returns (bytes4) {
     return bytes4(keccak256("SomePlugin"));
   }
 
