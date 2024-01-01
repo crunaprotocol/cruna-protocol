@@ -165,7 +165,6 @@ const Helpers = {
     const crunaRegistry = await ethers.getContractAt("CrunaRegistry", crunaRegistryAddress);
 
     const managerAddress = await Helpers.deployContractViaNickSFactory(deployer, "Manager");
-    const manager = await ethers.getContractAt("Manager", managerAddress);
 
     const proxyAddress = await Helpers.deployContractViaNickSFactory(deployer, "ManagerProxy", ["address"], [managerAddress]);
     const proxy = await ethers.getContractAt("ManagerProxy", proxyAddress);
@@ -173,16 +172,7 @@ const Helpers = {
     const guardianAddress = await Helpers.deployContractViaNickSFactory(deployer, "Guardian", ["address"], [deployer.address]);
     const guardian = await ethers.getContractAt("Guardian", guardianAddress);
 
-    const vaultAddress = await Helpers.deployContractViaNickSFactory(
-      deployer,
-      "CrunaFlexiVault",
-      ["address"],
-      [deployer.address],
-    );
-    const vault = await ethers.getContractAt("CrunaFlexiVault", vaultAddress);
-    await vault.init(crunaRegistryAddress, guardianAddress, proxyAddress);
-
-    return [crunaRegistry, proxy, guardian, vault];
+    return [crunaRegistry, proxy, guardian];
   },
 
   async getAddressViaNickSFactory(deployer, contractName, constructorTypes, constructorArgs, salt = thiz.keccak256("Cruna")) {
@@ -365,6 +355,14 @@ const Helpers = {
       interfaceId = interfaceId.xor(selector);
     });
     return interfaceId.toHexString();
+  },
+
+  async executeAndReturnGasCost(call) {
+    const tx = await call;
+    const receipt = await tx.wait(); // Wait for transaction to be mined to get the receipt
+    const gasUsed = receipt.gasUsed;
+    const txDetails = await ethers.provider.getTransaction(receipt.transactionHash);
+    return gasUsed.mul(txDetails.gasPrice);
   },
 };
 

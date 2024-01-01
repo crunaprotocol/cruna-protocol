@@ -180,7 +180,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  31 passing
+  36 passing
 
 --------------------------------|----------|----------|----------|----------|----------------|
 File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -195,11 +195,11 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   IERC6454.sol                  |      100 |      100 |      100 |      100 |                |
   IERC6982.sol                  |      100 |      100 |      100 |      100 |                |
   IManagedERC721.sol            |      100 |      100 |      100 |      100 |                |
- contracts/manager/             |    93.85 |    64.29 |    96.08 |    94.56 |                |
+ contracts/manager/             |    95.17 |    63.33 |    98.11 |    95.18 |                |
   Actor.sol                     |      100 |       70 |      100 |      100 |                |
   Guardian.sol                  |      100 |       50 |      100 |    83.33 |             21 |
   IManager.sol                  |      100 |      100 |      100 |      100 |                |
-  Manager.sol                   |    92.13 |     62.5 |    92.59 |    92.86 |... 259,261,273 |
+  Manager.sol                   |    94.23 |    61.46 |    96.55 |    94.02 |... 259,261,298 |
   ManagerBase.sol               |    94.74 |       80 |      100 |      100 |                |
   ManagerProxy.sol              |      100 |      100 |      100 |      100 |                |
  contracts/plugins/             |      100 |      100 |      100 |      100 |                |
@@ -208,15 +208,15 @@ File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Unc
   IInheritancePlugin.sol        |      100 |      100 |      100 |      100 |                |
   InheritancePlugin.sol         |      100 |    72.37 |      100 |    97.65 |         80,176 |
   InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
- contracts/protected/           |      100 |    52.08 |    93.33 |    93.33 |                |
-  ManagedERC721.sol             |      100 |    52.08 |    93.33 |    93.33 |     71,170,182 |
+ contracts/protected/           |      100 |       58 |      100 |    95.65 |                |
+  ManagedERC721.sol             |      100 |       58 |      100 |    95.65 |        170,182 |
  contracts/utils/               |      100 |       75 |      100 |      100 |                |
   CrunaRegistry.sol             |      100 |      100 |      100 |      100 |                |
   FlexiProxy.sol                |      100 |      100 |      100 |      100 |                |
   SignatureValidator.sol        |      100 |       75 |      100 |      100 |                |
   Versioned.sol                 |      100 |      100 |      100 |      100 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
-All files                       |    97.13 |    62.09 |    97.35 |     95.6 |                |
+All files                       |    97.63 |    62.66 |    99.13 |    96.12 |                |
 --------------------------------|----------|----------|----------|----------|----------------|
 ```
 

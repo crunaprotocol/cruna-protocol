@@ -39,12 +39,12 @@ contract CrunaFlexiVault is ManagedERC721 {
 
   // @dev This function will return the base URI of the contract
   function _baseURI() internal view virtual override returns (string memory) {
-    return "https://meta.cruna.cc/flexi-vault/v1/";
+    return string(abi.encodePacked("https://meta.cruna.cc/flexi-vault/v1/", block.chainid.toString(), "/"));
   }
 
   // @dev This function will return the contract URI of the contract
   function contractURI() public view virtual returns (string memory) {
-    return "https://meta.cruna.cc/flexi-vault/v1/info";
+    return string(abi.encodePacked("https://meta.cruna.cc/flexi-vault/v1/", block.chainid.toString(), "/info"));
   }
 
   // @dev This function will mint a new token

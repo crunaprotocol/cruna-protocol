@@ -103,8 +103,8 @@ describe("Manager : Protectors", function () {
   it("should verify vault base parameters", async function () {
     expect(await vault.defaultLocked()).to.be.false;
     const tokenId = await buyAVault(bob);
-    expect(await vault.tokenURI(tokenId)).to.equal("https://meta.cruna.cc/flexi-vault/v1/1");
-    expect(await vault.contractURI()).to.equal("https://meta.cruna.cc/flexi-vault/v1/info");
+    expect(await vault.tokenURI(tokenId)).to.equal("https://meta.cruna.cc/flexi-vault/v1/31337/1");
+    expect(await vault.contractURI()).to.equal("https://meta.cruna.cc/flexi-vault/v1/31337/info");
     expect(await vault.locked(tokenId)).to.be.false;
     expect(await vault.isTransferable(tokenId, bob.address, addr0)).to.be.false;
     expect(await vault.isTransferable(tokenId, bob.address, bob.address)).to.be.false;

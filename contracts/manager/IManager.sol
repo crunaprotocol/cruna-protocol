@@ -30,6 +30,11 @@ interface IManager {
     string name;
   }
 
+  struct PluginStatus {
+    string name;
+    bool active;
+  }
+
   function plug(string memory name, address implementation, bool canManageTransfer) external;
 
   function disablePlugin(string memory name, bool resetPlugin) external;

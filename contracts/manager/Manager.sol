@@ -53,7 +53,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
 
   mapping(bytes4 => Plugin) public pluginsByName;
   mapping(bytes4 => DisabledPlugin) public disabledPluginsByName;
-  string[] public activePlugins;
+  PluginStatus[] public allPlugins;
 
   function nameHash() public virtual override returns (bytes4) {
     return bytes4(keccak256("Manager"));
@@ -243,7 +243,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     if (pluginsByName[_nameHash].proxyAddress != address(0)) revert PluginAlreadyPlugged();
     if (disabledPluginsByName[_nameHash].proxyAddress != address(0)) revert PluginAlreadyPluggedButDisabled();
     pluginsByName[_nameHash] = Plugin(pluginProxy, canManageTransfer);
-    activePlugins.push(name);
+    allPlugins.push(PluginStatus(name, true));
     if (!guardian().isTrustedImplementation(_nameHash, pluginProxy)) revert InvalidImplementation();
     address _pluginAddress = registry().createBoundContract(pluginProxy, SALT, block.chainid, address(this), tokenId());
     IPluginExt _plugin = IPluginExt(_pluginAddress);
@@ -262,15 +262,43 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
   }
 
   function pluginAddress(bytes4 _nameHash) public view virtual returns (address) {
-    return registry().bondContract(pluginsByName[_nameHash].proxyAddress, SALT, block.chainid, address(this), tokenId());
+    return registry().boundContract(pluginsByName[_nameHash].proxyAddress, SALT, block.chainid, address(this), tokenId());
   }
 
   function plugin(bytes4 _nameHash) public view virtual returns (IPluginExt) {
     return IPluginExt(pluginAddress(_nameHash));
   }
 
-  function countActivePlugins() external view virtual returns (uint256) {
-    return activePlugins.length;
+  function countPlugins() public view virtual returns (uint256, uint256) {
+    uint256 active;
+    uint256 disabled;
+    for (uint256 i = 0; i < allPlugins.length; i++) {
+      if (allPlugins[i].active) active++;
+      else disabled++;
+    }
+    return (active, disabled);
+  }
+
+  function getActivePlugins() external view virtual returns (string[] memory) {
+    (uint256 count, ) = countPlugins();
+    string[] memory activePlugins = new string[](count);
+    for (uint256 i = 0; i < allPlugins.length; i++) {
+      if (allPlugins[i].active) {
+        activePlugins[i] = allPlugins[i].name;
+      }
+    }
+    return activePlugins;
+  }
+
+  function getDisabledPlugins() external view virtual returns (string[] memory) {
+    (, uint256 count) = countPlugins();
+    string[] memory disabledPlugins = new string[](count);
+    for (uint256 i = 0; i < allPlugins.length; i++) {
+      if (!allPlugins[i].active) {
+        disabledPlugins[i] = allPlugins[i].name;
+      }
+    }
+    return disabledPlugins;
   }
 
   // Plugin cannot be deleted since they have been deployed
@@ -292,13 +320,12 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     delete pluginsByName[_nameHash];
     // Delete it to help in case there are too many plugins and
     // the reset fails because of gas limit.
-    for (uint256 i = 0; i < activePlugins.length; i++) {
-      if (_stringToBytes4(activePlugins[i]) == _nameHash) {
-        activePlugins[i] = activePlugins[activePlugins.length - 1];
+    for (uint256 i = 0; i < allPlugins.length; i++) {
+      if (_stringToBytes4(allPlugins[i].name) == _nameHash) {
+        allPlugins[i].active = false;
         break;
       }
     }
-    activePlugins.pop();
   }
 
   function _stringToBytes4(string memory str) internal pure returns (bytes4) {
@@ -312,7 +339,12 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
       disabledPluginsByName[_nameHash].proxyAddress,
       disabledPluginsByName[_nameHash].canManageTransfer
     );
-    activePlugins.push(disabledPluginsByName[_nameHash].name);
+    for (uint256 i = 0; i < allPlugins.length; i++) {
+      if (_stringToBytes4(allPlugins[i].name) == _nameHash) {
+        allPlugins[i].active = true;
+        break;
+      }
+    }
     delete disabledPluginsByName[_nameHash];
     if (resetPlugin) {
       _resetPlugin(_nameHash);
@@ -342,8 +374,11 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
   function _resetActorsAndDisablePlugins() internal virtual {
     _deleteActors(PROTECTOR);
     _deleteActors(SAFE_RECIPIENT);
-    if (activePlugins.length > 0) {
-      delete activePlugins;
+    // disable all plugins
+    if (allPlugins.length > 0) {
+      for (uint256 i = 0; i < allPlugins.length; i++) {
+        allPlugins[i].active = false;
+      }
       emit AllPluginsDisabled();
     }
   }

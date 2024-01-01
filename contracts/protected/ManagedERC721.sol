@@ -4,7 +4,6 @@ pragma solidity ^0.8.20;
 // Author: Francesco Sullo <francesco@sullo.co>
 //
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import {ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
@@ -20,7 +19,7 @@ import {Versioned} from "../utils/Versioned.sol";
 //import {console} from "hardhat/console.sol";
 
 // @dev This contract is a base for NFTs with protected transfers.
-abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982, ERC721, ERC721Enumerable, Ownable2Step {
+abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982, ERC721, Ownable2Step {
   using ECDSA for bytes32;
   using Strings for uint256;
   using Address for address;
@@ -32,7 +31,7 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
   error ZeroAddress();
   error RegistryNotFound();
   error AlreadyInitiated();
-  error SupplyCapReached();
+  error MaxSupplyReached();
   error ErrorCreatingManager();
   error NotTheTokenOwner();
 
@@ -45,9 +44,9 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
   bytes4 public constant NAME_HASH = bytes4(keccak256("ManagedNFT"));
 
   uint256 public nextTokenId = 1;
+  uint256 public maxTokenId;
 
   mapping(uint256 => bool) internal _approvedTransfers;
-  uint256 public maxSupply;
 
   // @dev This modifier will only allow the manager of a certain tokenId to call the function.
   // @param tokenId_ The id of the token.
@@ -61,14 +60,16 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
   // @param symbol_ The symbol of the token.
   // @param owner The address of the owner.
   constructor(string memory name_, string memory symbol_, address owner) ERC721(name_, symbol_) {
+    // to support deployment via factories, where, if not, the owner is the factory
     if (owner == address(0)) revert ZeroAddress();
     _transferOwnership(owner);
-    emit DefaultLocked(false);
     nextTokenId = 1;
+    emit DefaultLocked(false);
   }
 
-  function setMaxSupply(uint256 maxSupply_) external onlyOwner {
-    maxSupply = maxSupply_;
+  function setMaxTokenId(uint256 maxTokenId_) external onlyOwner {
+    if (nextTokenId > 0 && maxTokenId_ < nextTokenId - 1) maxTokenId_ = nextTokenId - 1;
+    maxTokenId = maxTokenId_;
   }
 
   // @dev This function will initialize the contract.
@@ -100,14 +101,14 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
     address to,
     uint256 tokenId,
     uint256 batchSize
-  ) internal virtual override(ERC721, ERC721Enumerable) {
+  ) internal virtual override(ERC721) {
     if (isTransferable(tokenId, from, to)) {
       super._beforeTokenTransfer(from, to, tokenId, batchSize);
     } else revert NotTransferable();
   }
 
   // @dev See {ERC165-supportsInterface}.
-  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, ERC721Enumerable) returns (bool) {
+  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721) returns (bool) {
     return
       interfaceId == type(IManagedERC721).interfaceId ||
       interfaceId == type(IERC6454).interfaceId ||
@@ -163,8 +164,7 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
     if (alsoInit && address(registry) == address(0)) revert RegistryNotFound();
     uint256 tokenId = nextTokenId;
     for (uint256 i = 0; i < amount; i++) {
-      // the max supply is 999,999
-      if (tokenId % 1e6 == 0) revert SupplyCapReached();
+      if (maxTokenId > 0 && tokenId > maxTokenId) revert MaxSupplyReached();
       if (alsoInit) {
         try registry.createBoundContract(address(managerProxy), SALT, block.chainid, address(this), tokenId) {} catch {
           revert ErrorCreatingManager();
@@ -172,7 +172,7 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
       }
       _safeMint(to, tokenId++);
     }
-    nextTokenId += amount;
+    nextTokenId = tokenId;
   }
 
   function activate(uint256 tokenId) external {
@@ -186,7 +186,7 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
   // @dev This function will return the address of the manager for tokenId.
   // @param tokenId The id of the token.
   function managerOf(uint256 tokenId) public view returns (address) {
-    return registry.bondContract(address(managerProxy), SALT, block.chainid, address(this), tokenId);
+    return registry.boundContract(address(managerProxy), SALT, block.chainid, address(this), tokenId);
   }
 
   function isActive(uint256 tokenId) public view returns (bool) {

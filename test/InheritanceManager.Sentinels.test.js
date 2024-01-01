@@ -76,14 +76,20 @@ describe("Sentinel and Inheritance", function () {
 
     expect((await manager.pluginsByName(nameHash)).proxyAddress).equal(addr0);
 
-    await expect(manager.activePlugins(0)).revertedWith("");
+    await expect(manager.allPlugins(0)).revertedWith("");
 
     await expect(manager.connect(bob).plug("InheritancePlugin", inheritancePluginProxy.address, true)).to.emit(
       manager,
       "PluginStatusChange",
     );
     expect((await manager.pluginsByName(nameHash)).proxyAddress).not.equal(addr0);
-    expect(await manager.activePlugins(0)).equal("InheritancePlugin");
+    expect((await manager.allPlugins(0)).name).equal("InheritancePlugin");
+    expect((await manager.allPlugins(0)).active).to.be.true;
+    const count = await manager.countPlugins();
+    expect(count[0]).equal(1);
+    expect(count[1]).equal(0);
+    expect((await manager.getActivePlugins())[0]).equal("InheritancePlugin");
+    expect((await manager.getDisabledPlugins()).length).equal(0);
 
     const pluginAddress = await manager.plugin(nameHash);
     expect(pluginAddress).to.not.equal(addr0);
