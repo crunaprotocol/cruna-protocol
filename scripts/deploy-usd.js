@@ -10,9 +10,11 @@ const { expect } = require("chai");
 
 async function main() {
   deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
-
-  await deployUtils.deploy("TetherUSD");
-  await deployUtils.deploy("USDCoin");
+  const [deployer] = await ethers.getSigners();
+  const usdt = await deployUtils.deploy("TetherUSD");
+  await deployUtils.Tx(usdt.mint(deployer.address, normalize("1000000", 6)), "Minting USDT");
+  const usdc = await deployUtils.deploy("USDCoin");
+  await deployUtils.Tx(usdc.mint(deployer.address, normalize("1000000")), "Minting USDC");
 
   console.log(`
   

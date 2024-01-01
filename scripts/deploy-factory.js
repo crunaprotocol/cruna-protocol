@@ -3,7 +3,7 @@ const hre = require("hardhat");
 const ethers = hre.ethers;
 const path = require("path");
 const EthDeployUtils = require("eth-deploy-utils");
-const { normalize, deployContractViaNickSFactory, keccak256 } = require("../test/helpers");
+const { sleep } = require("../test/helpers");
 let deployUtils;
 
 const { expect } = require("chai");
@@ -19,6 +19,7 @@ async function main() {
   expect(await vault.owner()).to.equal(deployer.address);
 
   const factory = await deployUtils.deployProxy("VaultFactory", vault.address);
+  await sleep(2000);
   // const factory = await deployUtils.attach("VaultFactory");
 
   const usdc = await deployUtils.attach("USDCoin");

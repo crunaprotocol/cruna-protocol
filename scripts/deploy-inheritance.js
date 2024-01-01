@@ -39,7 +39,7 @@ async function main() {
 
   const guardian = await deployUtils.attach("Guardian");
   await deployUtils.Tx(
-    guardian.setTrustedImplementation(deployUtils.bytes4(deployUtils.keccak256("InheritancePlugin")), proxy.address, true),
+    guardian.setTrustedImplementation(deployUtils.bytes4(deployUtils.keccak256("InheritancePlugin")), proxy.address, true, 1),
     "Setting trusted implementation for InheritancePlugin",
   );
 }

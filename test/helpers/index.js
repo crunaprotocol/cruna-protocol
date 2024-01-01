@@ -277,6 +277,11 @@ const Helpers = {
     return types;
   },
 
+  async sleep(millis) {
+    // eslint-disable-next-line no-undef
+    return new Promise((resolve) => setTimeout(resolve, millis));
+  },
+
   keccak256(str) {
     const bytes = ethers.utils.toUtf8Bytes(str);
     return ethers.utils.keccak256(bytes);
