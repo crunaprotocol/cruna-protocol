@@ -10,29 +10,13 @@ const { expect } = require("chai");
 
 async function main() {
   deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
-  const chainId = await deployUtils.currentChainId();
-
   const [deployer] = await ethers.getSigners();
 
   const vault = await deployUtils.attach("CrunaFlexiVault");
 
   expect(await vault.owner()).to.equal(deployer.address);
 
-  const factory = await deployUtils.deployProxy("VaultFactory", vault.address);
-  await sleep(2000);
-  // const factory = await deployUtils.attach("VaultFactory");
-
-  const usdc = await deployUtils.attach("USDCoin");
-  const usdt = await deployUtils.attach("TetherUSD");
-
-  await deployUtils.Tx(factory.setPrice(3000, { gasLimit: 60000 }), "Setting price");
-  await deployUtils.Tx(factory.setStableCoin(usdc.address, true), "Set USDC as stable coin");
-  await deployUtils.Tx(factory.setStableCoin(usdt.address, true), "Set USDT as stable coin");
-
-  // discount campaign selling for $9.9
-  await deployUtils.Tx(factory.setDiscount(2010), "Set discount");
-
-  await deployUtils.Tx(vault.setFactory(factory.address, { gasLimit: 100000 }), "Set the factory");
+  await deployUtils.deployProxy("VaultFactory", vault.address);
 }
 
 main()
