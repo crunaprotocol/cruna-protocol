@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {CrunaFlexiVault} from "../CrunaFlexiVault.sol";
+import {CrunaFlexiVault} from "./CrunaFlexiVault.sol";
 import {IManagedERC721} from "../interfaces/IManagedERC721.sol";
 
 contract VaultMock is CrunaFlexiVault {

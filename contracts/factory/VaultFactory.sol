@@ -10,7 +10,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
-import {CrunaFlexiVault} from "../CrunaFlexiVault.sol";
+import {CrunaFlexiVault} from "../mocks/CrunaFlexiVault.sol";
 import {IVaultFactory} from "./IVaultFactory.sol";
 import {Versioned} from "../utils/Versioned.sol";
 

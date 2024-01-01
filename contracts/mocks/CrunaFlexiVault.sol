@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL3
 pragma solidity ^0.8.20;
 
-import {ManagedERC721, Strings} from "./protected/ManagedERC721.sol";
+import {ManagedERC721, Strings} from "../manager/ManagedERC721.sol";
 
 //import "hardhat/console.sol";
 
