@@ -139,6 +139,11 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**1.0.0-beta.0**
+- Add views to manager to be able to see which plugins are active, disabled, etc.
+- Add maxTokenId to ManagedERC721 to set a cap to the minting of tokens
+- Improved tests, adding calculations for gasLimit when buying vaults
+
 **1.0.0-alpha.7**
 - A signature is required also to set the first protector to avoid to risk of setting a protector that is unable to sign the requests
 

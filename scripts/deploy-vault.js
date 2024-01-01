@@ -21,28 +21,8 @@ async function main() {
 
   let salt = deployUtils.keccak256("Cruna");
 
-  if (!(await deployUtils.isContractDeployedViaNickSFactory(deployer, "CrunaRegistry", salt))) {
-    console.error("Registry not deployed on this chain");
-    process.exit(1);
-  }
   const registry = await deployUtils.attach("CrunaRegistry");
-
-  if (!(await deployUtils.isContractDeployedViaNickSFactory(deployer, "Guardian", ["address"], [deployer.address], salt))) {
-    console.error("Guardian not deployed on this chain");
-    process.exit(1);
-  }
   const guardian = await deployUtils.attach("Guardian");
-
-  if (!(await deployUtils.isContractDeployedViaNickSFactory(deployer, "Manager", salt))) {
-    console.error("Manager not deployed on this chain");
-    process.exit(1);
-  }
-  const manager = await deployUtils.attach("Manager");
-
-  if (!(await deployUtils.isContractDeployedViaNickSFactory(deployer, "ManagerProxy", ["address"], [manager.address], salt))) {
-    console.error("ManagerProxy not deployed on this chain");
-    process.exit(1);
-  }
   const managerProxy = await deployUtils.attach("ManagerProxy");
 
   // deploy the vault
