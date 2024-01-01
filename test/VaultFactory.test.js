@@ -385,5 +385,82 @@ describe("VaultFactory", function () {
         1,
       );
     });
+
+    async function expectedUsedGasNoActivation(account, amount) {
+      const initialBalance = (await vault.balanceOf(account.address)).toNumber() - amount;
+      // it is 1 because we execute it after the minting
+      return (initialBalance === 0 ? 60000 : 0) + 30000 * amount + (amount === 1 ? 90000 : 80000);
+    }
+
+    async function verifyGasNoActivations(gasUsed, account, amount) {
+      gasUsed = gasUsed.div(1e9).toNumber();
+      const expected = await expectedUsedGasNoActivation(account, amount);
+      expect(gasUsed < expected + 10000).to.be.true;
+    }
+
+    it("should verify gasLimit for batch buy vaults", async function () {
+      const stableCoin = usdc.address;
+      let pricePerVault = await factory.finalPrice(stableCoin);
+      await usdc.connect(mike).approve(factory.address, pricePerVault.mul(100));
+
+      // the first call must add 60000 gas, needed to set up the account
+      await verifyGasNoActivations(
+        await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 1, false)),
+        mike,
+        1,
+      );
+      // any successive call is much cheaper
+      await verifyGasNoActivations(
+        await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 1, false)),
+        mike,
+        1,
+      );
+
+      await verifyGasNoActivations(
+        await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 2, false)),
+        mike,
+        2,
+      );
+      await verifyGasNoActivations(
+        await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 3, false)),
+        mike,
+        3,
+      );
+      await verifyGasNoActivations(
+        await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 4, false)),
+        mike,
+        4,
+      );
+      await verifyGasNoActivations(
+        await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 5, false)),
+        mike,
+        5,
+      );
+      await verifyGasNoActivations(
+        await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 6, false)),
+        mike,
+        6,
+      );
+      await verifyGasNoActivations(
+        await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 7, false)),
+        mike,
+        7,
+      );
+      await verifyGasNoActivations(
+        await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 8, false)),
+        mike,
+        8,
+      );
+      await verifyGasNoActivations(
+        await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 9, false)),
+        mike,
+        9,
+      );
+      await verifyGasNoActivations(
+        await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 10, false)),
+        mike,
+        10,
+      );
+    });
   });
 });

@@ -5,6 +5,9 @@ import {ManagedERC721, Strings} from "../manager/ManagedERC721.sol";
 
 //import "hardhat/console.sol";
 
+// This is actually the real Cruna Flexi Vault contract.
+// We put it in mocks because it should not be used loading the package.
+
 // @dev This contract is a simple example of a protected NFT.
 contract CrunaFlexiVault is ManagedERC721 {
   using Strings for uint256;
