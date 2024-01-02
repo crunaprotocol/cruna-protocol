@@ -7,17 +7,16 @@ const { normalize, deployContractViaNickSFactory, keccak256, deployContract } = 
 let deployUtils;
 
 const { expect } = require("chai");
+const [, , address] = process.argv;
 
 async function main() {
   deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
   const [deployer] = await ethers.getSigners();
-  await deployUtils.deploy("TetherUSD");
-  await deployUtils.deploy("USDCoin");
+  const usdt = await deployUtils.attach("TetherUSD");
+  const usdc = await deployUtils.attach("USDCoin");
 
-  console.log(`
-  
-All deployed. Look at export/deployed.json for the deployed addresses.
-`);
+  await deployUtils.Tx(usdt.mint(process.env.TO, normalize("1000000", 6)), "Minting USDT");
+  await deployUtils.Tx(usdc.mint(process.env.TO, normalize("1000000")), "Minting USDC");
 }
 
 main()

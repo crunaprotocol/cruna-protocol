@@ -91,6 +91,10 @@ describe("Sentinel and Inheritance", function () {
     expect((await manager.listPlugins(true))[0]).equal("InheritancePlugin");
     expect((await manager.listPlugins(false)).length).equal(0);
 
+    expect(await manager.isPluginActive("InheritancePlugin")).to.be.true;
+    expect(await manager.plugged("InheritancePlugin")).to.be.true;
+    expect(await manager.plugged("InheritancePlugin2")).to.be.false;
+
     const pluginAddress = await manager.plugin(nameId);
     expect(pluginAddress).to.not.equal(addr0);
     return nextTokenId;
