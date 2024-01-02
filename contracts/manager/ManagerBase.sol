@@ -16,10 +16,16 @@ import {Versioned} from "../utils/Versioned.sol";
 //import {console} from "hardhat/console.sol";
 
 interface IVault {
-  function managedTransfer(bytes4 pluginNameHash, uint256 tokenId, address to) external;
+  function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external;
   function emitLockedEvent(uint256 tokenId, bool locked_) external;
   function guardian() external view returns (Guardian);
   function registry() external view returns (ICrunaRegistry);
+  function managerOf(uint256 tokenId) external view returns (address);
+}
+
+interface IImplementation {
+  function version() external pure returns (uint256);
+  function nameId() external returns (bytes4);
 }
 
 /**
@@ -28,8 +34,9 @@ interface IVault {
 */
 abstract contract ManagerBase is Context, IBoundContract, Versioned {
   error NotTheTokenOwner();
-  error InvalidImplementation();
+  error UntrustedImplementation();
   error InvalidVersion();
+  error PluginRequiresUpdatedManager(uint256 requiredVersion);
 
   /**
    * @dev Storage slot with the address of the current implementation.
@@ -38,13 +45,13 @@ abstract contract ManagerBase is Context, IBoundContract, Versioned {
    */
   bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
-  uint256 public implementationVersion;
+  uint256 public currentVersion;
 
   constructor() {
-    implementationVersion = version();
+    currentVersion = version();
   }
 
-  function nameHash() public virtual returns (bytes4);
+  function nameId() public virtual returns (bytes4);
 
   function guardian() public view virtual returns (Guardian) {
     return vault().guardian();
@@ -87,16 +94,26 @@ abstract contract ManagerBase is Context, IBoundContract, Versioned {
     return (bytes32(a) >> 192) | (bytes32(b) >> 224);
   }
 
+  function _stringToBytes4(string memory str) internal pure returns (bytes4) {
+    return bytes4(keccak256(abi.encodePacked(str)));
+  }
+
   // @dev Upgrade the implementation of the manager/plugin
   //   Notice that the owner can upgrade active or disable plugins
   //   so that, if a plugin is compromised, the user can disable it,
   //   wait for a new trusted implementation and upgrade it.
   function upgrade(address implementation_) external virtual {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
-    if (!guardian().isTrustedImplementation(nameHash(), implementation_)) revert InvalidImplementation();
-    uint256 _version = Versioned(implementation_).version();
-    if (_version <= implementationVersion) revert InvalidVersion();
-    implementationVersion = _version;
+    uint256 requires = guardian().trustedImplementation(nameId(), implementation_);
+    if (requires == 0) revert UntrustedImplementation();
+    IImplementation impl = IImplementation(implementation_);
+    uint256 _version = impl.version();
+    if (_version <= currentVersion) revert InvalidVersion();
+    if (impl.nameId() != _stringToBytes4("Manager")) {
+      IImplementation manager = IImplementation(vault().managerOf(tokenId()));
+      if (manager.version() < requires) revert PluginRequiresUpdatedManager(requires);
+    }
+    currentVersion = _version;
     StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
   }
 

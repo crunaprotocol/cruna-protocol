@@ -3,7 +3,7 @@ const hre = require("hardhat");
 const ethers = hre.ethers;
 const path = require("path");
 const EthDeployUtils = require("eth-deploy-utils");
-const { sleep } = require("../test/helpers");
+const { normalize, deployContractViaNickSFactory, keccak256, deployContract } = require("../test/helpers");
 let deployUtils;
 
 const { expect } = require("chai");
@@ -11,12 +11,13 @@ const { expect } = require("chai");
 async function main() {
   deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
   const [deployer] = await ethers.getSigners();
+  await deployUtils.deploy("TetherUSD");
+  await deployUtils.deploy("USDCoin");
 
-  const vault = await deployUtils.attach("CrunaFlexiVault");
-
-  expect(await vault.owner()).to.equal(deployer.address);
-
-  await deployUtils.deployProxy("VaultFactory", vault.address);
+  console.log(`
+  
+All deployed. Look at export/deployed.json for the deployed addresses.
+`);
 }
 
 main()

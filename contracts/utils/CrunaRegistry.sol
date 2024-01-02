@@ -49,7 +49,7 @@ interface ICrunaRegistry {
    *
    * @return account The address of the token bound account
    */
-  function bondContract(
+  function boundContract(
     address implementation,
     bytes32 salt,
     uint256 chainId,
@@ -135,7 +135,7 @@ contract CrunaRegistry is ICrunaRegistry {
     }
   }
 
-  function bondContract(
+  function boundContract(
     address implementation,
     bytes32 salt,
     uint256 chainId,

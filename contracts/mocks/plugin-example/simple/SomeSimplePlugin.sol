@@ -31,7 +31,7 @@ contract SomeSimplePlugin is IPlugin, ManagerBase {
     manager = Manager(_msgSender());
   }
 
-  function nameHash() public virtual override returns (bytes4) {
+  function nameId() public virtual override returns (bytes4) {
     return bytes4(keccak256("SomeSimplePlugin"));
   }
 

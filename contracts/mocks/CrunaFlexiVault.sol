@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: GPL3
 pragma solidity ^0.8.20;
 
-import {ManagedERC721, Strings} from "./protected/ManagedERC721.sol";
+import {ManagedERC721, Strings} from "../manager/ManagedERC721.sol";
 
 //import "hardhat/console.sol";
+
+// This is actually the real Cruna Flexi Vault contract.
+// We put it in mocks because it should not be used loading the package.
 
 // @dev This contract is a simple example of a protected NFT.
 contract CrunaFlexiVault is ManagedERC721 {
@@ -39,12 +42,12 @@ contract CrunaFlexiVault is ManagedERC721 {
 
   // @dev This function will return the base URI of the contract
   function _baseURI() internal view virtual override returns (string memory) {
-    return "https://meta.cruna.cc/flexi-vault/v1/";
+    return string(abi.encodePacked("https://meta.cruna.cc/flexi-vault/v1/", block.chainid.toString(), "/"));
   }
 
   // @dev This function will return the contract URI of the contract
   function contractURI() public view virtual returns (string memory) {
-    return "https://meta.cruna.cc/flexi-vault/v1/info";
+    return string(abi.encodePacked("https://meta.cruna.cc/flexi-vault/v1/", block.chainid.toString(), "/info"));
   }
 
   // @dev This function will mint a new token

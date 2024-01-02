@@ -11,10 +11,11 @@ import {Versioned} from "../utils/Versioned.sol";
  */
 contract Guardian is Ownable2Step, Versioned {
   error ZeroAddress();
+  error InvalidArguments();
 
-  mapping(bytes4 => mapping(address => bool)) private _isTrustedImplementation;
+  mapping(bytes4 => mapping(address => uint256)) private _isTrustedImplementation;
 
-  event TrustedImplementationUpdated(bytes4 nameHash, address implementation, bool trusted);
+  event TrustedImplementationUpdated(bytes4 nameId, address implementation, bool trusted, uint256 requires);
 
   constructor(address owner) {
     if (owner == address(0)) {
@@ -27,12 +28,19 @@ contract Guardian is Ownable2Step, Versioned {
    * @dev Sets a given implementation address as trusted, allowing accounts to upgrade to this
    * implementation
    */
-  function setTrustedImplementation(bytes4 nameHash, address implementation, bool trusted) external onlyOwner {
-    _isTrustedImplementation[nameHash][implementation] = trusted;
-    emit TrustedImplementationUpdated(nameHash, implementation, trusted);
+  function setTrustedImplementation(bytes4 nameId, address implementation, bool trusted, uint256 requires) external onlyOwner {
+    if (requires == 0) {
+      revert InvalidArguments();
+    }
+    if (trusted) {
+      _isTrustedImplementation[nameId][implementation] = requires;
+    } else {
+      delete _isTrustedImplementation[nameId][implementation];
+    }
+    emit TrustedImplementationUpdated(nameId, implementation, trusted, requires);
   }
 
-  function isTrustedImplementation(bytes4 nameHash, address implementation) external view returns (bool) {
-    return _isTrustedImplementation[nameHash][implementation];
+  function trustedImplementation(bytes4 nameId, address implementation) external view returns (uint256) {
+    return _isTrustedImplementation[nameId][implementation];
   }
 }

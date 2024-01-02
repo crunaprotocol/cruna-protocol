@@ -32,9 +32,9 @@ describe("SignatureValidator", function () {
   });
 
   it("should recover the signer of a recoverSigner", async function () {
-    const nameHash = bytes4(keccak256("Manager"));
+    const nameId = bytes4(keccak256("Manager"));
     const role = bytes4(keccak256("PROTECTOR"));
-    const scope = combineBytes4ToBytes32(nameHash, role);
+    const scope = combineBytes4ToBytes32(nameId, role);
 
     const timestamp = (await getTimestamp()).toString();
     const validFor = 3600;

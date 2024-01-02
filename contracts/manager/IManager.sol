@@ -22,12 +22,13 @@ interface IManager {
   struct Plugin {
     address proxyAddress;
     bool canManageTransfer;
+    bool active;
   }
 
-  struct DisabledPlugin {
-    address proxyAddress;
-    bool canManageTransfer;
+  struct PluginStatus {
     string name;
+    // redundant to optimize gas usage
+    bool active;
   }
 
   function plug(string memory name, address implementation, bool canManageTransfer) external;
@@ -107,5 +108,5 @@ interface IManager {
   // @param timeValidation The timestamp of the signature combined with the validity of the signature.
   function protectedTransfer(uint256 tokenId, address to, uint256 timeValidation, bytes calldata signature) external;
 
-  function managedTransfer(bytes4 pluginNameHash, uint256 tokenId, address to) external;
+  function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external;
 }

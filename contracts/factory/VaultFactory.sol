@@ -10,7 +10,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
-import {CrunaFlexiVault} from "../CrunaFlexiVault.sol";
+import {CrunaFlexiVault} from "../mocks/CrunaFlexiVault.sol";
 import {IVaultFactory} from "./IVaultFactory.sol";
 import {Versioned} from "../utils/Versioned.sol";
 
@@ -94,7 +94,7 @@ contract VaultFactory is
   }
 
   function setDiscount(uint256 discount_) external virtual override onlyOwner {
-    if (discount > 100) revert InvalidDiscount();
+    if (discount > price) revert InvalidDiscount();
     discount = discount_;
   }
 
@@ -103,7 +103,7 @@ contract VaultFactory is
   }
 
   function getPrice() public view virtual override returns (uint256) {
-    return price - (price * discount) / 100;
+    return price - discount;
   }
 
   function buyVaults(address stableCoin, uint256 amount, bool alsoInit) external virtual override whenNotPaused nonReentrant {

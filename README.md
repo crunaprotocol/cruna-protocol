@@ -139,6 +139,11 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**1.0.0-beta.0**
+- Add views to manager to be able to see which plugins are active, disabled, etc.
+- Add maxTokenId to ManagedERC721 to set a cap to the minting of tokens
+- Improved tests, adding calculations for gasLimit when buying vaults
+
 **1.0.0-alpha.7**
 - A signature is required also to set the first protector to avoid to risk of setting a protector that is unable to sign the requests
 
@@ -180,44 +185,41 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  31 passing
+  38 passing
 
---------------------------------|----------|----------|----------|----------|----------------|
-File                            |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
---------------------------------|----------|----------|----------|----------|----------------|
- contracts/                     |      100 |       40 |      100 |      100 |                |
-  CrunaFlexiVault.sol           |      100 |       40 |      100 |      100 |                |
- contracts/factory/             |      100 |    55.36 |      100 |    95.83 |                |
-  IVaultFactory.sol             |      100 |      100 |      100 |      100 |                |
-  VaultFactory.sol              |      100 |    55.36 |      100 |    95.83 |         75,127 |
- contracts/interfaces/          |      100 |      100 |      100 |      100 |                |
-  IBoundContract.sol            |      100 |      100 |      100 |      100 |                |
-  IERC6454.sol                  |      100 |      100 |      100 |      100 |                |
-  IERC6982.sol                  |      100 |      100 |      100 |      100 |                |
-  IManagedERC721.sol            |      100 |      100 |      100 |      100 |                |
- contracts/manager/             |    93.85 |    64.29 |    96.08 |    94.56 |                |
-  Actor.sol                     |      100 |       70 |      100 |      100 |                |
-  Guardian.sol                  |      100 |       50 |      100 |    83.33 |             21 |
-  IManager.sol                  |      100 |      100 |      100 |      100 |                |
-  Manager.sol                   |    92.13 |     62.5 |    92.59 |    92.86 |... 259,261,273 |
-  ManagerBase.sol               |    94.74 |       80 |      100 |      100 |                |
-  ManagerProxy.sol              |      100 |      100 |      100 |      100 |                |
- contracts/plugins/             |      100 |      100 |      100 |      100 |                |
-  IPlugin.sol                   |      100 |      100 |      100 |      100 |                |
- contracts/plugins/inheritance/ |      100 |    72.37 |      100 |    97.67 |                |
-  IInheritancePlugin.sol        |      100 |      100 |      100 |      100 |                |
-  InheritancePlugin.sol         |      100 |    72.37 |      100 |    97.65 |         80,176 |
-  InheritancePluginProxy.sol    |      100 |      100 |      100 |      100 |                |
- contracts/protected/           |      100 |    54.35 |      100 |    95.45 |                |
-  ManagedERC721.sol             |      100 |    54.35 |      100 |    95.45 |        164,176 |
- contracts/utils/               |      100 |       75 |      100 |      100 |                |
-  CrunaRegistry.sol             |      100 |      100 |      100 |      100 |                |
-  FlexiProxy.sol                |      100 |      100 |      100 |      100 |                |
-  SignatureValidator.sol        |      100 |       75 |      100 |      100 |                |
-  Versioned.sol                 |      100 |      100 |      100 |      100 |                |
---------------------------------|----------|----------|----------|----------|----------------|
-All files                       |    97.13 |     62.5 |    98.21 |    95.88 |                |
---------------------------------|----------|----------|----------|----------|----------------|
+-----------------------------|----------|----------|----------|----------|----------------|
+File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
+-----------------------------|----------|----------|----------|----------|----------------|
+ factory/                    |      100 |    55.36 |      100 |    95.83 |                |
+  IVaultFactory.sol          |      100 |      100 |      100 |      100 |                |
+  VaultFactory.sol           |      100 |    55.36 |      100 |    95.83 |         75,127 |
+ interfaces/                 |      100 |      100 |      100 |      100 |                |
+  IBoundContract.sol         |      100 |      100 |      100 |      100 |                |
+  IERC6454.sol               |      100 |      100 |      100 |      100 |                |
+  IERC6982.sol               |      100 |      100 |      100 |      100 |                |
+  IManagedERC721.sol         |      100 |      100 |      100 |      100 |                |
+ manager/                    |    94.95 |    62.09 |    98.57 |    93.81 |                |
+  Actor.sol                  |      100 |       70 |      100 |      100 |                |
+  Guardian.sol               |      100 |       50 |      100 |       70 |       22,33,38 |
+  IManager.sol               |      100 |      100 |      100 |      100 |                |
+  ManagedERC721.sol          |      100 |       58 |      100 |    95.65 |        170,182 |
+  Manager.sol                |    91.89 |       61 |    96.67 |    92.56 |... 263,264,296 |
+  ManagerBase.sol            |       96 |    85.71 |      100 |      100 |                |
+  ManagerProxy.sol           |      100 |      100 |      100 |      100 |                |
+ plugins/                    |      100 |      100 |      100 |      100 |                |
+  IPlugin.sol                |      100 |      100 |      100 |      100 |                |
+ plugins/inheritance/        |      100 |    72.37 |      100 |     97.7 |                |
+  IInheritancePlugin.sol     |      100 |      100 |      100 |      100 |                |
+  InheritancePlugin.sol      |      100 |    72.37 |      100 |    97.67 |         84,180 |
+  InheritancePluginProxy.sol |      100 |      100 |      100 |      100 |                |
+ utils/                      |      100 |       75 |      100 |      100 |                |
+  CrunaRegistry.sol          |      100 |      100 |      100 |      100 |                |
+  FlexiProxy.sol             |      100 |      100 |      100 |      100 |                |
+  SignatureValidator.sol     |      100 |       75 |      100 |      100 |                |
+  Versioned.sol              |      100 |      100 |      100 |      100 |                |
+-----------------------------|----------|----------|----------|----------|----------------|
+All files                    |    96.73 |    63.52 |    99.11 |    95.12 |                |
+-----------------------------|----------|----------|----------|----------|----------------|
 ```
 
 ## License

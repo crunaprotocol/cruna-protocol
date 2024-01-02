@@ -165,7 +165,6 @@ const Helpers = {
     const crunaRegistry = await ethers.getContractAt("CrunaRegistry", crunaRegistryAddress);
 
     const managerAddress = await Helpers.deployContractViaNickSFactory(deployer, "Manager");
-    const manager = await ethers.getContractAt("Manager", managerAddress);
 
     const proxyAddress = await Helpers.deployContractViaNickSFactory(deployer, "ManagerProxy", ["address"], [managerAddress]);
     const proxy = await ethers.getContractAt("ManagerProxy", proxyAddress);
@@ -173,16 +172,7 @@ const Helpers = {
     const guardianAddress = await Helpers.deployContractViaNickSFactory(deployer, "Guardian", ["address"], [deployer.address]);
     const guardian = await ethers.getContractAt("Guardian", guardianAddress);
 
-    const vaultAddress = await Helpers.deployContractViaNickSFactory(
-      deployer,
-      "CrunaFlexiVault",
-      ["address"],
-      [deployer.address],
-    );
-    const vault = await ethers.getContractAt("CrunaFlexiVault", vaultAddress);
-    await vault.init(crunaRegistryAddress, guardianAddress, proxyAddress);
-
-    return [crunaRegistry, proxy, guardian, vault];
+    return [crunaRegistry, proxy, guardian];
   },
 
   async getAddressViaNickSFactory(deployer, contractName, constructorTypes, constructorArgs, salt = thiz.keccak256("Cruna")) {
@@ -287,6 +277,11 @@ const Helpers = {
     return types;
   },
 
+  async sleep(millis) {
+    // eslint-disable-next-line no-undef
+    return new Promise((resolve) => setTimeout(resolve, millis));
+  },
+
   keccak256(str) {
     const bytes = ethers.utils.toUtf8Bytes(str);
     return ethers.utils.keccak256(bytes);
@@ -312,9 +307,9 @@ const Helpers = {
     signer,
     validatorContract,
   ) {
-    const nameHash = thiz.bytes4(thiz.keccak256(name));
+    const nameId = thiz.bytes4(thiz.keccak256(name));
     const role = roleString ? thiz.bytes4(thiz.keccak256(roleString)) : "0x00000000";
-    const scope = thiz.combineBytes4ToBytes32(nameHash, role).toString();
+    const scope = thiz.combineBytes4ToBytes32(nameId, role).toString();
     timestamp = ethers.BigNumber.from(timestamp.toString()).toNumber();
     const timeValidation = thiz.combineTimestampAndValidFor(timestamp, validFor).toString();
 
@@ -365,6 +360,14 @@ const Helpers = {
       interfaceId = interfaceId.xor(selector);
     });
     return interfaceId.toHexString();
+  },
+
+  async executeAndReturnGasCost(call) {
+    const tx = await call;
+    const receipt = await tx.wait(); // Wait for transaction to be mined to get the receipt
+    const gasUsed = receipt.gasUsed;
+    const txDetails = await ethers.provider.getTransaction(receipt.transactionHash);
+    return gasUsed.mul(txDetails.gasPrice);
   },
 };
 
