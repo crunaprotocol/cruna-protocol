@@ -432,6 +432,47 @@ describe("Sentinel and Inheritance", function () {
     await inheritancePlugin.connect(beneficiary1).inherit();
   });
 
+  it("should not allow to inherit if not authorized to make transfer", async function () {
+    const tokenId = await buyAVault(bob);
+    const managerAddress = await vault.managerOf(tokenId);
+    const manager = await ethers.getContractAt("Manager", managerAddress);
+    const nameId = bytes4(keccak256("InheritancePlugin"));
+    const inheritancePluginAddress = await manager.plugin(nameId);
+
+    const inheritancePlugin = await ethers.getContractAt("InheritancePlugin", inheritancePluginAddress);
+
+    await expect(inheritancePlugin.connect(bob).configureInheritance(0, 90, 30, beneficiary1.address, 0, 0))
+      .to.emit(inheritancePlugin, "InheritanceConfigured")
+      .withArgs(bob.address, 0, 90, 30, beneficiary1.address);
+
+    let data = await inheritancePlugin.getSentinelsAndInheritanceData();
+    expect(data[1].quorum).to.equal(0);
+    expect(data[1].proofOfLifeDurationInDays).to.equal(90);
+    expect(data[1].beneficiary).to.equal(beneficiary1.address);
+
+    await increaseBlockTimestampBy(85 * days);
+    await expect(inheritancePlugin.connect(beneficiary1).inherit()).to.be.revertedWith("StillAlive");
+
+    await expect(manager.connect(bob).authorizePluginToTransfer("SomeOtherPlugin", true)).revertedWith("PluginNotFound");
+
+    await manager.connect(bob).authorizePluginToTransfer("InheritancePlugin", false);
+    await expect(manager.connect(bob).authorizePluginToTransfer("InheritancePlugin", false)).revertedWith(
+      "PluginAlreadyUnauthorized",
+    );
+
+    await increaseBlockTimestampBy(85 * days);
+
+    await expect(inheritancePlugin.connect(beneficiary1).inherit()).to.be.revertedWith("PluginNotAuthorizedToManageTransfer");
+
+    await manager.connect(bob).authorizePluginToTransfer("InheritancePlugin", true);
+    await expect(manager.connect(bob).authorizePluginToTransfer("InheritancePlugin", true)).revertedWith(
+      "PluginAlreadyAuthorized",
+    );
+
+    await increaseBlockTimestampBy(10 * days);
+    await inheritancePlugin.connect(beneficiary1).inherit();
+  });
+
   it("should set up a beneficiary and 5 sentinels and an inheritance with a quorum 3", async function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);

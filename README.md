@@ -195,7 +195,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  38 passing
+  39 passing
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -208,12 +208,12 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   IERC6454.sol               |      100 |      100 |      100 |      100 |                |
   IERC6982.sol               |      100 |      100 |      100 |      100 |                |
   IManagedERC721.sol         |      100 |      100 |      100 |      100 |                |
- manager/                    |    94.95 |    62.09 |    98.57 |    93.81 |                |
+ manager/                    |    98.48 |    68.13 |      100 |     96.9 |                |
   Actor.sol                  |      100 |       70 |      100 |      100 |                |
   Guardian.sol               |      100 |       50 |      100 |       70 |       22,33,38 |
   IManager.sol               |      100 |      100 |      100 |      100 |                |
   ManagedERC721.sol          |      100 |       58 |      100 |    95.65 |        170,182 |
-  Manager.sol                |    91.89 |       61 |    96.67 |    92.56 |... 263,264,296 |
+  Manager.sol                |     98.2 |       72 |      100 |    98.35 |        124,296 |
   ManagerBase.sol            |       96 |    85.71 |      100 |      100 |                |
   ManagerProxy.sol           |      100 |      100 |      100 |      100 |                |
  plugins/                    |      100 |      100 |      100 |      100 |                |
@@ -228,7 +228,7 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   SignatureValidator.sol     |      100 |       75 |      100 |      100 |                |
   Versioned.sol              |      100 |      100 |      100 |      100 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
-All files                    |    96.73 |    63.52 |    99.11 |    95.12 |                |
+All files                    |    99.02 |    66.98 |      100 |    97.02 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
 ```
 
