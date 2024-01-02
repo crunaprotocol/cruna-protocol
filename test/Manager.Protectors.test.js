@@ -387,7 +387,7 @@ describe("Manager : Protectors", function () {
     await manager.connect(bob).upgrade(managerV2Impl.address);
     expect(await manager.getImplementation()).to.equal(managerV2Impl.address);
 
-    expect(await manager.version()).to.equal(2e6);
+    expect(await manager.version()).to.equal(1e6 + 2e3);
     expect(await manager.hasProtectors()).to.equal(true);
 
     const managerV2 = await ethers.getContractAt("ManagerV2Mock", managerAddress);

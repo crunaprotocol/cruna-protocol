@@ -8,7 +8,7 @@ contract InheritancePluginV3Mock is InheritancePlugin {
   bool public constant SOME_OTHER_VARIABLE = true;
 
   function version() public pure virtual override returns (uint256) {
-    return 3e6;
+    return 1e6 + 3;
   }
 
   // new function in V3

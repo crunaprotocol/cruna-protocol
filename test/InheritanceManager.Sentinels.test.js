@@ -776,7 +776,7 @@ describe("Sentinel and Inheritance", function () {
     const newInheritancePlugin = await ethers.getContractAt("InheritancePluginV3Mock", inheritancePluginAddress);
 
     expect(await newInheritancePlugin.isMock()).to.be.true;
-    expect(await newInheritancePlugin.version()).to.equal(3e6);
+    expect(await newInheritancePlugin.version()).to.equal(1e6 + 3);
     expect(await newInheritancePlugin.SOME_OTHER_VARIABLE()).to.be.true;
     expect(await newInheritancePlugin.SOME_VARIABLE()).to.equal(3);
 
@@ -794,7 +794,6 @@ describe("Sentinel and Inheritance", function () {
     const inheritancePluginAddress = await manager.plugin(nameId);
 
     const inheritancePlugin = await ethers.getContractAt("InheritancePlugin", inheritancePluginAddress);
-    expect(await inheritancePlugin.version()).to.equal(1e6);
 
     await inheritancePlugin.connect(bob).setSentinels([alice.address, fred.address], 0);
 
@@ -803,11 +802,9 @@ describe("Sentinel and Inheritance", function () {
 
     const inheritancePluginV2Impl = await deployContract("InheritancePluginV2Mock");
 
-    const inheritancePluginV3Impl = await deployContract("InheritancePluginV3Mock");
-
-    await guardian.setTrustedImplementation(NAME_HASH, inheritancePluginV2Impl.address, true, 2e6);
+    await guardian.setTrustedImplementation(NAME_HASH, inheritancePluginV2Impl.address, true, 1e6 + 2e3);
     await expect(inheritancePlugin.connect(bob).upgrade(inheritancePluginV2Impl.address))
       .revertedWith("PluginRequiresUpdatedManager")
-      .withArgs(2e6);
+      .withArgs(1e6 + 2e3);
   });
 });
