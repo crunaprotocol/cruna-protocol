@@ -45,6 +45,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
   error PluginAlreadyUnauthorized();
   error NotATransferPlugin();
   error InvalidImplementation();
+  error InvalidTimeLock();
 
   mapping(bytes32 => bool) public usedSignatures;
   bytes4 public constant PROTECTOR = bytes4(keccak256("PROTECTOR"));
@@ -54,6 +55,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
 
   mapping(bytes4 => Plugin) public pluginsById;
   PluginStatus[] public allPlugins;
+  mapping(bytes4 => uint256) public timeLocks;
 
   function nameId() public virtual override returns (bytes4) {
     return bytes4(keccak256("Manager"));
@@ -253,14 +255,21 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     emit PluginStatusChange(name, address(_plugin), true);
   }
 
-  function authorizePluginToTransfer(string memory name, bool authorized) external virtual onlyTokenOwner {
+  // @dev blocks a plugin for a maximum of 30 days from transferring the NFT
+  //   If the plugins must be blocked for more time, disable it
+  function authorizePluginToTransfer(string memory name, bool authorized, uint256 timeLock) external virtual onlyTokenOwner {
     bytes4 _nameId = _stringToBytes4(name);
     if (pluginsById[_nameId].proxyAddress == address(0)) revert PluginNotFound();
-    if (authorized) {
-      if (pluginsById[_nameId].canManageTransfer) revert PluginAlreadyAuthorized();
-    } else if (!pluginsById[_nameId].canManageTransfer) revert PluginAlreadyUnauthorized();
     IPluginExt _plugin = plugin(_nameId);
     if (!_plugin.requiresToManageTransfer()) revert NotATransferPlugin();
+    if (authorized) {
+      if (pluginsById[_nameId].canManageTransfer) revert PluginAlreadyAuthorized();
+      delete timeLocks[_nameId];
+    } else {
+      if (!pluginsById[_nameId].canManageTransfer) revert PluginAlreadyUnauthorized();
+      if (timeLock > 30 days) revert InvalidTimeLock();
+      timeLocks[_nameId] = block.timestamp + timeLock;
+    }
     pluginsById[_nameId].canManageTransfer = authorized;
   }
 
@@ -344,11 +353,19 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     _plugin.reset();
   }
 
+  function _removeLockIfExpired(bytes4 _nameId) internal virtual {
+    if (timeLocks[_nameId] < block.timestamp) {
+      delete timeLocks[_nameId];
+      pluginsById[_nameId].canManageTransfer = true;
+    }
+  }
+
   // @dev See {IProtected721-managedTransfer}.
   // This is a special function that can be called only by the InheritancePlugin
   function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external virtual override nonReentrant {
     if (pluginsById[pluginNameId].proxyAddress == address(0) || !pluginsById[pluginNameId].active)
       revert PluginNotFoundOrDisabled();
+    _removeLockIfExpired(pluginNameId);
     if (!pluginsById[pluginNameId].canManageTransfer) revert PluginNotAuthorizedToManageTransfer();
     if (pluginAddress(pluginNameId) != _msgSender()) revert NotTheAuthorizedPlugin();
     _resetActorsAndDisablePlugins();

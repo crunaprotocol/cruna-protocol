@@ -453,23 +453,59 @@ describe("Sentinel and Inheritance", function () {
     await increaseBlockTimestampBy(85 * days);
     await expect(inheritancePlugin.connect(beneficiary1).inherit()).to.be.revertedWith("StillAlive");
 
-    await expect(manager.connect(bob).authorizePluginToTransfer("SomeOtherPlugin", true)).revertedWith("PluginNotFound");
+    await expect(manager.connect(bob).authorizePluginToTransfer("SomeOtherPlugin", true, 2 * days)).revertedWith(
+      "PluginNotFound",
+    );
 
-    await manager.connect(bob).authorizePluginToTransfer("InheritancePlugin", false);
-    await expect(manager.connect(bob).authorizePluginToTransfer("InheritancePlugin", false)).revertedWith(
+    await increaseBlockTimestampBy(75 * days);
+
+    await expect(manager.connect(bob).authorizePluginToTransfer("InheritancePlugin", false, 40 * days)).revertedWith(
+      "InvalidTimeLock",
+    );
+
+    await manager.connect(bob).authorizePluginToTransfer("InheritancePlugin", false, 30 * days);
+    await expect(manager.connect(bob).authorizePluginToTransfer("InheritancePlugin", false, 2 * days)).revertedWith(
       "PluginAlreadyUnauthorized",
     );
 
-    await increaseBlockTimestampBy(85 * days);
+    await increaseBlockTimestampBy(10 * days);
 
     await expect(inheritancePlugin.connect(beneficiary1).inherit()).to.be.revertedWith("PluginNotAuthorizedToManageTransfer");
 
-    await manager.connect(bob).authorizePluginToTransfer("InheritancePlugin", true);
-    await expect(manager.connect(bob).authorizePluginToTransfer("InheritancePlugin", true)).revertedWith(
+    await manager.connect(bob).authorizePluginToTransfer("InheritancePlugin", true, 2 * days);
+
+    await expect(manager.connect(bob).authorizePluginToTransfer("InheritancePlugin", true, 2 * days)).revertedWith(
       "PluginAlreadyAuthorized",
     );
 
     await increaseBlockTimestampBy(10 * days);
+    await inheritancePlugin.connect(beneficiary1).inherit();
+  });
+
+  it("should allow to inherit only after timeLock expires", async function () {
+    const tokenId = await buyAVault(bob);
+    const managerAddress = await vault.managerOf(tokenId);
+    const manager = await ethers.getContractAt("Manager", managerAddress);
+    const nameId = bytes4(keccak256("InheritancePlugin"));
+    const inheritancePluginAddress = await manager.plugin(nameId);
+
+    const inheritancePlugin = await ethers.getContractAt("InheritancePlugin", inheritancePluginAddress);
+
+    await inheritancePlugin.connect(bob).configureInheritance(0, 80, 30, beneficiary1.address, 0, 0);
+
+    await increaseBlockTimestampBy(75 * days);
+
+    await manager.connect(bob).authorizePluginToTransfer("InheritancePlugin", false, 20 * days);
+
+    const ts = await getTimestamp();
+    expect(await manager.timeLocks(bytes4(keccak256("InheritancePlugin")))).to.equal(ts + 20 * days);
+
+    await increaseBlockTimestampBy(10 * days);
+
+    await expect(inheritancePlugin.connect(beneficiary1).inherit()).to.be.revertedWith("PluginNotAuthorizedToManageTransfer");
+
+    await increaseBlockTimestampBy(12 * days);
+
     await inheritancePlugin.connect(beneficiary1).inherit();
   });
 

@@ -149,6 +149,9 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**1.0.0-beta.1**
+- Improve the function `authorizePluginToTransfer` so that it disallows only temporarily a plugin to transfer the NFT 
+
 **1.0.0-beta.0**
 - Add views to manager to be able to see which plugins are active, disabled, etc.
 - Add maxTokenId to ManagedERC721 to set a cap to the minting of tokens
@@ -195,7 +198,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  39 passing
+  40 passing
 
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -208,12 +211,12 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   IERC6454.sol               |      100 |      100 |      100 |      100 |                |
   IERC6982.sol               |      100 |      100 |      100 |      100 |                |
   IManagedERC721.sol         |      100 |      100 |      100 |      100 |                |
- manager/                    |    98.48 |    68.13 |      100 |     96.9 |                |
+ manager/                    |    98.51 |    68.82 |      100 |    97.01 |                |
   Actor.sol                  |      100 |       70 |      100 |      100 |                |
   Guardian.sol               |      100 |       50 |      100 |       70 |       22,33,38 |
   IManager.sol               |      100 |      100 |      100 |      100 |                |
   ManagedERC721.sol          |      100 |       58 |      100 |    95.65 |        170,182 |
-  Manager.sol                |     98.2 |       72 |      100 |    98.35 |        124,296 |
+  Manager.sol                |    98.25 |    73.08 |      100 |    98.45 |        126,305 |
   ManagerBase.sol            |       96 |    85.71 |      100 |      100 |                |
   ManagerProxy.sol           |      100 |      100 |      100 |      100 |                |
  plugins/                    |      100 |      100 |      100 |      100 |                |
@@ -228,7 +231,7 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   SignatureValidator.sol     |      100 |       75 |      100 |      100 |                |
   Versioned.sol              |      100 |      100 |      100 |      100 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
-All files                    |    99.02 |    66.98 |      100 |    97.02 |                |
+All files                    |    99.03 |    67.39 |      100 |    97.08 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
 ```
 
