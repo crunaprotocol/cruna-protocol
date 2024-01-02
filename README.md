@@ -86,6 +86,16 @@ Cruna Vault's adaptable architecture makes it suitable for a wide range of appli
 
 In summary, Cruna Vault's flexibility and advanced security features open up a world of possibilities, not only for ERC-6551 related applications but also for a wide array of digital assets, offering enhanced protection and legacy planning. Whether it's for individual collectors, NFT platforms, or diverse digital asset markets, Cruna Vault stands as a beacon of security and trust in the digital world.
 
+## Smart Contract Upgradeability
+
+While smart contract upgradeability is beneficial, it poses security risks, such as the potential for deploying malicious updates. To prevent this, all contracts, including the Manager and any associated plugins, are immutable, safeguarding against unauthorized alterations.
+
+Despite this, user-driven upgrades are essential. To achieve this, Cruna Protocol utilizes the approach outlined in ERC-6551. This involves deploying a new proxy contract for each token ID, connected to the protocol's Manager. This Manager, controlled by the NFT, empowers the token ID holder with ownership rights.
+
+Crucially, the Manager can integrate plugins—additional smart contracts—that are also upgradeable exclusively by the NFT owner. This ensures that when a new trusted version of the Manager or a plugin is released, the NFT owner can independently upgrade, accessing new features and security enhancements.
+
+Thus, the Cruna Protocol guarantees that no unilateral contract upgrades occur. Only the NFT owner has the authority to initiate updates for the Manager and its plugins, balancing robust security with user autonomy and flexibility.
+
 ## What's Next for Cruna Vault?
 
 We're continuously evolving and have exciting features in the pipeline:
