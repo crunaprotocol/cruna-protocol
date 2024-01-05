@@ -24,6 +24,10 @@ abstract contract SignatureValidator is EIP712 {
   //   As long as called inside the same contract, the cost adding some more parameters is negligible.
   //   Calling it from other contracts can be expensive. Use a delegate call to reduce the cost.
   // @param scope The scope of the signature.
+  //   In most cases, the scope is a combination of nameId and function selector:
+  /*
+     bytes32 scope = (bytes32(nameId) >> 192) | (bytes32(fSelector) >> 224);
+  */
   // @param owner The owner of the token.
   // @param actor The actor being authorized.
   //   It can be address(0) if the parameter is not needed.

@@ -8,9 +8,9 @@ import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
-import {IBoundContract} from "../interfaces/IBoundContract.sol";
+import {IBoundContract} from "../utils/IBoundContract.sol";
 import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
-import {Guardian} from "./Guardian.sol";
+import {Guardian} from "../utils/Guardian.sol";
 import {Versioned} from "../utils/Versioned.sol";
 
 //import {console} from "hardhat/console.sol";
