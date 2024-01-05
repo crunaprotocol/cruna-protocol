@@ -350,6 +350,20 @@ const Helpers = {
     ];
   },
 
+  async selectorId(interfaceName, functionName) {
+    const artifact = await hre.artifacts.readArtifact(interfaceName);
+    const abi = artifact.abi;
+    const functions = abi.filter((item) => item.type === "function");
+    let interfaceId = ethers.constants.Zero;
+    functions.forEach((func) => {
+      const selector = ethers.utils.id(func.name + "(" + func.inputs.map((input) => input.type).join(",") + ")").slice(0, 10);
+      if (func.name === functionName) {
+        return selector;
+      }
+    });
+    return "0x00000000";
+  },
+
   async getInterfaceId(interfaceName) {
     const artifact = await hre.artifacts.readArtifact(interfaceName);
     const abi = artifact.abi;

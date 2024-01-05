@@ -12,10 +12,10 @@ const {
   deployContract,
   getTimestamp,
   signRequest,
-  keccak256,
+  selectorId,
 } = require("./helpers");
 
-describe("Manager : Safe Recipients", function () {
+describe.only("Manager : Safe Recipients", function () {
   let crunaRegistry, proxy, managerImpl, guardian;
   let vault;
   let factory;
@@ -83,7 +83,7 @@ describe("Manager : Safe Recipients", function () {
     let signature = (
       await signRequest(
         "Manager",
-        "PROTECTOR",
+        selectorId("IManager", "setSafeRecipient"),
         bob.address,
         alice.address,
         vault.address,
