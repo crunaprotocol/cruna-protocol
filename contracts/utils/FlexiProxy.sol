@@ -6,6 +6,8 @@ import {ERC6551AccountProxy} from "erc6551/examples/upgradeable/ERC6551AccountPr
 // @dev This contract is a proxy for manager implementations.
 //   Look at ERC6551AccountProxy for more details.
 contract FlexiProxy is ERC6551AccountProxy {
+  bytes32 public proxyName;
+
   constructor(address _initialImplementation) ERC6551AccountProxy(_initialImplementation) {}
 
   // to avoid that we plug a non-proxy contract

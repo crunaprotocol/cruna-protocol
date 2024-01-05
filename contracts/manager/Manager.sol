@@ -8,8 +8,7 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import {Actor} from "./Actor.sol";
-import {IManager} from "./IManager.sol";
-import {IPlugin} from "../plugins/IPlugin.sol";
+import {IPluginExt, IManager} from "./IManager.sol";
 import {ManagerBase} from "./ManagerBase.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
 
@@ -17,10 +16,6 @@ import {SignatureValidator} from "../utils/SignatureValidator.sol";
 
 interface IProxy {
   function isProxy() external pure returns (bool);
-}
-
-interface IPluginExt is IPlugin {
-  function nameId() external returns (bytes4);
 }
 
 contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureValidator {
@@ -99,7 +94,17 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
-    _setSignedActor(nameId(), PROTECTOR, protector_, status, timestamp, validFor, signature, true, _msgSender());
+    _setSignedActor(
+      this.setProtector.selector,
+      PROTECTOR,
+      protector_,
+      status,
+      timestamp,
+      validFor,
+      signature,
+      true,
+      _msgSender()
+    );
     emit ProtectorUpdated(_msgSender(), protector_, status);
     if (status) {
       if (countActiveProtectors() == 1) {
@@ -142,7 +147,17 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
-    _setSignedActor(nameId(), SAFE_RECIPIENT, recipient, status, timestamp, validFor, signature, false, _msgSender());
+    _setSignedActor(
+      this.setSafeRecipient.selector,
+      SAFE_RECIPIENT,
+      recipient,
+      status,
+      timestamp,
+      validFor,
+      signature,
+      false,
+      _msgSender()
+    );
     emit SafeRecipientUpdated(_msgSender(), recipient, status);
   }
 
@@ -157,15 +172,15 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
   }
 
   // @dev Validates the request.
-  // @param scope The scope of the request.
-  // @param actor The actor of the request.
+  // @param _functionSelector The function selector of the request.
+  // @param target The target of the request.
   // @param status The status of the actor
-  // @param timestamp The timestamp of the request.
-  // @param validFor The validity of the request.
+  // @param timeValidation The timestamp of the request:
+  //    timestamp * 1e6 + validFor
   // @param signature The signature of the request.
+  // @param settingProtector True if the request is setting a protector.
   function _validateAndCheckSignature(
-    bytes4 _nameId,
-    bytes4 _funcHash,
+    bytes4 _functionSelector,
     address target,
     bool status,
     uint256 timeValidation,
@@ -175,11 +190,10 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     if (!settingProtector && timeValidation < 1e6) {
       if (countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
     } else {
-      bytes32 scope = combineBytes4(_nameId, _funcHash);
       if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
       usedSignatures[keccak256(signature)] = true;
       address signer = recoverSigner(
-        scope,
+        _functionSelector,
         owner(),
         target,
         tokenAddress(),
@@ -205,7 +219,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
   // @param validFor The validity of the request.
   // @param signature The signature of the request.
   function _setSignedActor(
-    bytes4 _nameId,
+    bytes4 _functionSelector,
     bytes4 role_,
     address actor,
     bool status,
@@ -217,7 +231,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
   ) internal virtual {
     if (actor == address(0)) revert ZeroAddress();
     if (actor == sender) revert CannotBeYourself();
-    _validateAndCheckSignature(_nameId, role_, actor, status, timestamp * 1e6 + validFor, signature, actorIsProtector);
+    _validateAndCheckSignature(_functionSelector, actor, status, timestamp * 1e6 + validFor, signature, actorIsProtector);
     if (!status) {
       if (timestamp != 0 && actorIsProtector && !isAProtector(actor)) revert ProtectorNotFound();
       _removeActor(actor, role_);
@@ -250,14 +264,18 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     IPluginExt _plugin = IPluginExt(_pluginAddress);
     if (_plugin.nameId() != _nameId) revert InvalidImplementation();
     allPlugins.push(PluginStatus(name, true));
-    pluginsById[_nameId] = Plugin(pluginProxy, canManageTransfer, true);
+    pluginsById[_nameId] = Plugin(pluginProxy, canManageTransfer, _plugin.requiresResetOnTransfer(), true);
     _plugin.init();
     emit PluginStatusChange(name, address(_plugin), true);
   }
 
   // @dev blocks a plugin for a maximum of 30 days from transferring the NFT
   //   If the plugins must be blocked for more time, disable it
-  function authorizePluginToTransfer(string memory name, bool authorized, uint256 timeLock) external virtual onlyTokenOwner {
+  function authorizePluginToTransfer(
+    string memory name,
+    bool authorized,
+    uint256 timeLock
+  ) external virtual override onlyTokenOwner {
     bytes4 _nameId = _stringToBytes4(name);
     if (pluginsById[_nameId].proxyAddress == address(0)) revert PluginNotFound();
     IPluginExt _plugin = plugin(_nameId);
@@ -273,15 +291,15 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     pluginsById[_nameId].canManageTransfer = authorized;
   }
 
-  function pluginAddress(bytes4 _nameId) public view virtual returns (address) {
+  function pluginAddress(bytes4 _nameId) public view virtual override returns (address) {
     return registry().boundContract(pluginsById[_nameId].proxyAddress, SALT, block.chainid, address(this), tokenId());
   }
 
-  function plugin(bytes4 _nameId) public view virtual returns (IPluginExt) {
+  function plugin(bytes4 _nameId) public view virtual override returns (IPluginExt) {
     return IPluginExt(pluginAddress(_nameId));
   }
 
-  function countPlugins() public view virtual returns (uint256, uint256) {
+  function countPlugins() public view virtual override returns (uint256, uint256) {
     uint256 active;
     uint256 disabled;
     for (uint256 i = 0; i < allPlugins.length; i++) {
@@ -329,7 +347,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     allPlugins[i].active = false;
     bytes4 _nameId = _stringToBytes4(name);
     pluginsById[_nameId].active = false;
-    if (resetPlugin) {
+    if (resetPlugin && pluginsById[_nameId].canBeReset) {
       _resetPlugin(_nameId);
     }
     emit PluginStatusChange(name, pluginAddress(_nameId), false);
@@ -342,7 +360,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     allPlugins[i].active = true;
     bytes4 _nameId = _stringToBytes4(name);
     pluginsById[_nameId].active = true;
-    if (resetPlugin) {
+    if (resetPlugin && pluginsById[_nameId].canBeReset) {
       _resetPlugin(_nameId);
     }
     emit PluginStatusChange(name, pluginAddress(_nameId), true);
@@ -385,7 +403,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
         allPlugins[i].active = false;
         bytes4 _nameId = _stringToBytes4(allPlugins[i].name);
         pluginsById[_nameId].active = false;
-        _resetPlugin(_nameId);
+        if (pluginsById[_nameId].canBeReset) _resetPlugin(_nameId);
       }
       emit AllPluginsDisabled();
     }
@@ -396,8 +414,8 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     address to,
     uint256 timeValidation,
     bytes calldata signature
-  ) external onlyTokenOwner {
-    _validateAndCheckSignature(nameId(), _stringToBytes4("protectedTransfer"), to, false, timeValidation, signature, false);
+  ) external override onlyTokenOwner {
+    _validateAndCheckSignature(this.protectedTransfer.selector, to, false, timeValidation, signature, false);
     _resetActorsAndDisablePlugins();
     vault().managedTransfer(nameId(), tokenId, to);
   }

@@ -14,6 +14,8 @@ interface IPlugin {
   // right to make a managed transfer of the vault
   function requiresToManageTransfer() external pure returns (bool);
 
+  function requiresResetOnTransfer() external pure returns (bool);
+
   // Reset the plugin to the factory settings
   function reset() external;
 }

@@ -16,6 +16,7 @@ const {
   bytes4,
   combineBytes4ToBytes32,
   getInterfaceId,
+  selectorId,
 } = require("./helpers");
 
 describe("Manager : Protectors", function () {
@@ -24,12 +25,12 @@ describe("Manager : Protectors", function () {
   let factory;
   let usdc, usdt;
   let deployer, bob, alice, fred, mark, otto;
-  let chainId, ts;
+  let selector;
 
   before(async function () {
     [deployer, bob, alice, fred, mark, otto] = await ethers.getSigners();
-
     chainId = await getChainId();
+    selector = await selectorId("IManager", "setProtector");
   });
 
   beforeEach(async function () {
@@ -130,8 +131,7 @@ describe("Manager : Protectors", function () {
 
     let signature = (
       await signRequest(
-        "Manager",
-        "PROTECTOR",
+        selector,
         bob.address,
         alice.address,
         vault.address,
@@ -160,8 +160,7 @@ describe("Manager : Protectors", function () {
 
     signature = (
       await signRequest(
-        "Manager",
-        "PROTECTOR",
+        selector,
         bob.address,
         alice.address,
         vault.address,
@@ -206,8 +205,7 @@ describe("Manager : Protectors", function () {
 
     let signature = (
       await signRequest(
-        "Manager",
-        "PROTECTOR",
+        selector,
         bob.address,
         alice.address,
         vault.address,
@@ -234,8 +232,7 @@ describe("Manager : Protectors", function () {
 
     signature = (
       await signRequest(
-        "Manager",
-        "PROTECTOR",
+        selector,
         bob.address,
         fred.address,
         vault.address,
@@ -270,8 +267,7 @@ describe("Manager : Protectors", function () {
     // let Fred remove Alice as protector
     signature = (
       await signRequest(
-        "Manager",
-        "PROTECTOR",
+        selector,
         bob.address,
         alice.address,
         vault.address,
@@ -300,8 +296,7 @@ describe("Manager : Protectors", function () {
 
     let signature = (
       await signRequest(
-        "Manager",
-        "PROTECTOR",
+        selector,
         bob.address,
         alice.address,
         vault.address,
@@ -326,8 +321,7 @@ describe("Manager : Protectors", function () {
 
     signature = (
       await signRequest(
-        "Manager",
-        "protectedTransfer",
+        await selectorId("IManager", "protectedTransfer"),
         bob.address,
         fred.address,
         vault.address,
@@ -356,8 +350,7 @@ describe("Manager : Protectors", function () {
 
     let signature = (
       await signRequest(
-        "Manager",
-        "PROTECTOR",
+        selector,
         bob.address,
         alice.address,
         vault.address,

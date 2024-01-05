@@ -3,6 +3,12 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
+import {IPlugin} from "../plugins/IPlugin.sol";
+
+interface IPluginExt is IPlugin {
+  function nameId() external returns (bytes4);
+}
+
 // erc165 interfaceId 0x8dca4bea
 interface IManager {
   // @dev Emitted when a protector is set for an tokensOwner
@@ -22,6 +28,7 @@ interface IManager {
   struct Plugin {
     address proxyAddress;
     bool canManageTransfer;
+    bool canBeReset;
     bool active;
   }
 
@@ -109,4 +116,22 @@ interface IManager {
   function protectedTransfer(uint256 tokenId, address to, uint256 timeValidation, bytes calldata signature) external;
 
   function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external;
+
+  // @dev blocks a plugin for a maximum of 30 days from transferring the NFT
+  //   If the plugins must be blocked for more time, disable it
+  function authorizePluginToTransfer(string memory name, bool authorized, uint256 timeLock) external;
+
+  function pluginAddress(bytes4 _nameId) external view returns (address);
+
+  function plugin(bytes4 _nameId) external view returns (IPluginExt);
+
+  function countPlugins() external view returns (uint256, uint256);
+
+  function plugged(string memory name) external view returns (bool);
+
+  function pluginIndex(string memory name) external view returns (bool, uint256);
+
+  function isPluginActive(string memory name) external view returns (bool);
+
+  function listPlugins(bool active) external view returns (string[] memory);
 }

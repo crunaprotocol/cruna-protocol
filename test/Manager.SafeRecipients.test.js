@@ -12,6 +12,8 @@ const {
   deployContract,
   getTimestamp,
   signRequest,
+  selectorId,
+  bytes4,
   keccak256,
 } = require("./helpers");
 
@@ -82,8 +84,7 @@ describe("Manager : Safe Recipients", function () {
 
     let signature = (
       await signRequest(
-        "Manager",
-        "PROTECTOR",
+        await selectorId("IManager", "setProtector"),
         bob.address,
         alice.address,
         vault.address,
@@ -102,11 +103,12 @@ describe("Manager : Safe Recipients", function () {
     // set Alice as first Bob's protector
     await manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature);
 
+    const selector = await selectorId("IManager", "setSafeRecipient");
+
     // Set Mark as a safe recipient
     signature = (
       await signRequest(
-        "Manager",
-        "SAFE_RECIPIENT",
+        selector,
         bob.address,
         mark.address,
         vault.address,
@@ -130,12 +132,10 @@ describe("Manager : Safe Recipients", function () {
     // // remove Fred as a safe recipient
     signature = (
       await signRequest(
-        "Manager",
-        "SAFE_RECIPIENT",
+        selector,
         bob.address,
         fred.address,
         vault.address,
-
         tokenId,
         0,
         0,
