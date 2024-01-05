@@ -32,16 +32,14 @@ describe("SignatureValidator", function () {
   });
 
   it("should recover the signer of a recoverSigner", async function () {
-    const nameId = bytes4(keccak256("Manager"));
-    const role = bytes4(keccak256("PROTECTOR"));
-    const scope = combineBytes4ToBytes32(nameId, role);
+    const selector = "0xecd52a58";
 
     const timestamp = (await getTimestamp()).toString();
     const validFor = 3600;
     const timeValidation = combineTimestampAndValidFor(timestamp, validFor);
 
     const message = {
-      scope: scope.toString(),
+      selector,
       owner: alice.address,
       actor: fred.address,
       tokenAddress: vault.address,
@@ -58,7 +56,7 @@ describe("SignatureValidator", function () {
       privateKeyByWallet[fred.address],
       "Auth",
       [
-        { name: "scope", type: "bytes32" },
+        { name: "selector", type: "bytes4" },
         { name: "owner", type: "address" },
         { name: "actor", type: "address" },
         { name: "tokenAddress", type: "address" },
@@ -73,7 +71,7 @@ describe("SignatureValidator", function () {
 
     expect(
       await validator.recoverSigner(
-        message.scope,
+        message.selector,
         message.owner,
         message.actor,
         message.tokenAddress,
@@ -92,8 +90,7 @@ describe("SignatureValidator", function () {
     const validFor = 3600;
 
     const [signature, message] = await signRequest(
-      "Manager",
-      "PROTECTOR",
+      "0xecd52a58",
       alice.address,
       fred.address,
       vault.address,
@@ -110,7 +107,7 @@ describe("SignatureValidator", function () {
 
     expect(
       await validator.recoverSigner(
-        message.scope,
+        message.selector,
         message.owner,
         message.actor,
         message.tokenAddress,

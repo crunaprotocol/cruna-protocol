@@ -14,6 +14,7 @@ const {
   getTimestamp,
   keccak256,
   bytes4,
+  selectorId,
 } = require("./helpers");
 
 describe("Sentinel and Inheritance", function () {
@@ -149,8 +150,7 @@ describe("Sentinel and Inheritance", function () {
 
     let signature = (
       await signRequest(
-        "Manager",
-        "PROTECTOR",
+        await selectorId("IManager", "setProtector"),
         bob.address,
         alice.address,
         vault.address,
@@ -172,8 +172,7 @@ describe("Sentinel and Inheritance", function () {
     // Add mark
     signature = (
       await signRequest(
-        "InheritancePlugin",
-        "SENTINEL",
+        await selectorId("IInheritancePlugin", "setSentinel"),
         bob.address,
         mark.address,
         vault.address,
@@ -200,8 +199,7 @@ describe("Sentinel and Inheritance", function () {
 
     signature = (
       await signRequest(
-        "InheritancePlugin",
-        "SENTINEL",
+        await selectorId("IInheritancePlugin", "setSentinel"),
         bob.address,
         fred.address,
         vault.address,
@@ -230,8 +228,7 @@ describe("Sentinel and Inheritance", function () {
 
     signature = (
       await signRequest(
-        "InheritancePlugin",
-        "configureInheritance",
+        await selectorId("IInheritancePlugin", "configureInheritance"),
         bob.address,
         addr0,
         vault.address,
@@ -253,8 +250,7 @@ describe("Sentinel and Inheritance", function () {
 
     signature = (
       await signRequest(
-        "InheritancePlugin",
-        "configureInheritance",
+        await selectorId("IInheritancePlugin", "configureInheritance"),
         bob.address,
         addr0,
         vault.address,

@@ -23,11 +23,6 @@ interface ICrunaRegistry {
   );
 
   /**
-   * @dev The registry MUST revert with AccountCreationFailed error if the create2 operation fails.
-   */
-  error BoundContractCreationFailed();
-
-  /**
    * @dev Creates a token bound account for a non-fungible token.
    *
    * If account has already been created, returns the account address without calling create2.

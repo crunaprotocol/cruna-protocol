@@ -38,6 +38,10 @@ contract SomePlugin is IPlugin, ManagerBase {
     _reset();
   }
 
+  function requiresResetOnTransfer() external pure returns (bool) {
+    return true;
+  }
+
   function _reset() internal {
     // reset to initial state
   }

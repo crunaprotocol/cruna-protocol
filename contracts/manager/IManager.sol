@@ -28,6 +28,7 @@ interface IManager {
   struct Plugin {
     address proxyAddress;
     bool canManageTransfer;
+    bool canBeReset;
     bool active;
   }
 

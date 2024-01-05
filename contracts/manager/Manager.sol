@@ -12,7 +12,7 @@ import {IPluginExt, IManager} from "./IManager.sol";
 import {ManagerBase} from "./ManagerBase.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
 
-import {console} from "hardhat/console.sol";
+//import {console} from "hardhat/console.sol";
 
 interface IProxy {
   function isProxy() external pure returns (bool);
@@ -95,7 +95,6 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
     _setSignedActor(
-      nameId(),
       this.setProtector.selector,
       PROTECTOR,
       protector_,
@@ -149,7 +148,6 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
     _setSignedActor(
-      nameId(),
       this.setSafeRecipient.selector,
       SAFE_RECIPIENT,
       recipient,
@@ -174,14 +172,14 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
   }
 
   // @dev Validates the request.
-  // @param scope The scope of the request.
-  // @param actor The actor of the request.
+  // @param _functionSelector The function selector of the request.
+  // @param target The target of the request.
   // @param status The status of the actor
-  // @param timestamp The timestamp of the request.
-  // @param validFor The validity of the request.
+  // @param timeValidation The timestamp of the request:
+  //    timestamp * 1e6 + validFor
   // @param signature The signature of the request.
+  // @param settingProtector True if the request is setting a protector.
   function _validateAndCheckSignature(
-    bytes4 _nameId,
     bytes4 _functionSelector,
     address target,
     bool status,
@@ -192,11 +190,10 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     if (!settingProtector && timeValidation < 1e6) {
       if (countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
     } else {
-      bytes32 scope = combineBytes4(_nameId, _functionSelector);
       if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
       usedSignatures[keccak256(signature)] = true;
       address signer = recoverSigner(
-        scope,
+        _functionSelector,
         owner(),
         target,
         tokenAddress(),
@@ -222,7 +219,6 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
   // @param validFor The validity of the request.
   // @param signature The signature of the request.
   function _setSignedActor(
-    bytes4 _nameId,
     bytes4 _functionSelector,
     bytes4 role_,
     address actor,
@@ -235,15 +231,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
   ) internal virtual {
     if (actor == address(0)) revert ZeroAddress();
     if (actor == sender) revert CannotBeYourself();
-    _validateAndCheckSignature(
-      _nameId,
-      _functionSelector,
-      actor,
-      status,
-      timestamp * 1e6 + validFor,
-      signature,
-      actorIsProtector
-    );
+    _validateAndCheckSignature(_functionSelector, actor, status, timestamp * 1e6 + validFor, signature, actorIsProtector);
     if (!status) {
       if (timestamp != 0 && actorIsProtector && !isAProtector(actor)) revert ProtectorNotFound();
       _removeActor(actor, role_);
@@ -276,7 +264,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     IPluginExt _plugin = IPluginExt(_pluginAddress);
     if (_plugin.nameId() != _nameId) revert InvalidImplementation();
     allPlugins.push(PluginStatus(name, true));
-    pluginsById[_nameId] = Plugin(pluginProxy, canManageTransfer, true);
+    pluginsById[_nameId] = Plugin(pluginProxy, canManageTransfer, _plugin.requiresResetOnTransfer(), true);
     _plugin.init();
     emit PluginStatusChange(name, address(_plugin), true);
   }
@@ -359,7 +347,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     allPlugins[i].active = false;
     bytes4 _nameId = _stringToBytes4(name);
     pluginsById[_nameId].active = false;
-    if (resetPlugin) {
+    if (resetPlugin && pluginsById[_nameId].canBeReset) {
       _resetPlugin(_nameId);
     }
     emit PluginStatusChange(name, pluginAddress(_nameId), false);
@@ -372,7 +360,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     allPlugins[i].active = true;
     bytes4 _nameId = _stringToBytes4(name);
     pluginsById[_nameId].active = true;
-    if (resetPlugin) {
+    if (resetPlugin && pluginsById[_nameId].canBeReset) {
       _resetPlugin(_nameId);
     }
     emit PluginStatusChange(name, pluginAddress(_nameId), true);
@@ -415,7 +403,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
         allPlugins[i].active = false;
         bytes4 _nameId = _stringToBytes4(allPlugins[i].name);
         pluginsById[_nameId].active = false;
-        _resetPlugin(_nameId);
+        if (pluginsById[_nameId].canBeReset) _resetPlugin(_nameId);
       }
       emit AllPluginsDisabled();
     }
@@ -427,7 +415,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     uint256 timeValidation,
     bytes calldata signature
   ) external override onlyTokenOwner {
-    _validateAndCheckSignature(nameId(), _stringToBytes4("protectedTransfer"), to, false, timeValidation, signature, false);
+    _validateAndCheckSignature(this.protectedTransfer.selector, to, false, timeValidation, signature, false);
     _resetActorsAndDisablePlugins();
     vault().managedTransfer(nameId(), tokenId, to);
   }

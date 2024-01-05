@@ -23,11 +23,7 @@ abstract contract SignatureValidator is EIP712 {
   // @dev This function validates a signature trying to be as flexible as possible.
   //   As long as called inside the same contract, the cost adding some more parameters is negligible.
   //   Calling it from other contracts can be expensive. Use a delegate call to reduce the cost.
-  // @param scope The scope of the signature.
-  //   In most cases, the scope is a combination of nameId and function selector:
-  /*
-     bytes32 scope = (bytes32(nameId) >> 192) | (bytes32(fSelector) >> 224);
-  */
+  // @param selector The selector of the function being called.
   // @param owner The owner of the token.
   // @param actor The actor being authorized.
   //   It can be address(0) if the parameter is not needed.
@@ -41,7 +37,7 @@ abstract contract SignatureValidator is EIP712 {
   //     timestamp * 1e6 + validity
   // @param Returns the signer of the signature.
   function recoverSigner(
-    bytes32 scope,
+    bytes4 selector,
     address owner,
     address actor,
     address tokenAddress,
@@ -58,9 +54,9 @@ abstract contract SignatureValidator is EIP712 {
         keccak256(
           abi.encode(
             keccak256(
-              "Auth(bytes32 scope,address owner,address actor,address tokenAddress,uint256 tokenId,uint256 extra,uint256 extra2,uint256 extra3,uint256 timeValidation)"
+              "Auth(bytes4 selector,address owner,address actor,address tokenAddress,uint256 tokenId,uint256 extra,uint256 extra2,uint256 extra3,uint256 timeValidation)"
             ),
-            scope,
+            selector,
             owner,
             actor,
             tokenAddress,

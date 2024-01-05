@@ -12,6 +12,11 @@ pragma solidity ^0.8.4;
 import {ICrunaRegistry} from "./ICrunaRegistry.sol";
 
 contract CrunaRegistry is ICrunaRegistry {
+  /**
+   * @dev The registry MUST revert with AccountCreationFailed error if the create2 operation fails.
+   */
+  error BoundContractCreationFailed();
+
   function createBoundContract(
     address implementation,
     bytes32 salt,

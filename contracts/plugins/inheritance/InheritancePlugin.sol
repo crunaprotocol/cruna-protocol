@@ -75,7 +75,15 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, S
     if (timestamp == 0) {
       if (manager.countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
     } else {
-      _validateAndCheckSignature(nameId(), SENTINEL, sentinel, status ? 1 : 0, 0, 0, timestamp * 1e6 + validFor, signature);
+      _validateAndCheckSignature(
+        this.setSentinel.selector,
+        sentinel,
+        status ? 1 : 0,
+        0,
+        0,
+        timestamp * 1e6 + validFor,
+        signature
+      );
     }
     if (!status) {
       _removeActor(sentinel, SENTINEL);
@@ -111,8 +119,7 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, S
     } else {
       if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
       _validateAndCheckSignature(
-        nameId(),
-        bytes4(keccak256("configureInheritance")),
+        this.configureInheritance.selector,
         beneficiary,
         quorum,
         proofOfLifeDurationInDays,
@@ -255,17 +262,15 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, S
   }
 
   // @dev Validates the request.
-  // @param scope The scope of the request.
-  // @param actor The actor of the request.
+  // @param _functionSelector The function selector of the request.
+  // @param target The target of the request.
   // @param extra The first extra param
   // @param extra2 The second extra param
   // @param extra3 The third extra param
-  // @param timestamp The timestamp of the request.
-  // @param validFor The validity of the request.
+  // @param timeValidation A combination of timestamp and validity of the signature.
   // @param signature The signature of the request.
   function _validateAndCheckSignature(
-    bytes4 _nameId,
-    bytes4 _funcHash,
+    bytes4 _functionSelector,
     address target,
     uint256 extra,
     uint256 extra2,
@@ -277,7 +282,7 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, S
     usedSignatures[keccak256(signature)] = true;
 
     address signer = recoverSigner(
-      combineBytes4(_nameId, _funcHash),
+      _functionSelector,
       owner(),
       target,
       manager.tokenAddress(),
@@ -289,6 +294,10 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, S
       signature
     );
     if (!manager.isAProtector(signer)) revert WrongDataOrNotSignedByProtector();
+  }
+
+  function requiresResetOnTransfer() external pure returns (bool) {
+    return true;
   }
 
   // @dev This empty reserved space is put in place to allow future versions to add new

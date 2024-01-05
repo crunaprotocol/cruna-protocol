@@ -292,8 +292,7 @@ const Helpers = {
   },
 
   async signRequest(
-    name,
-    roleString,
+    selector,
     owner,
     actor,
     tokenAddress,
@@ -307,16 +306,14 @@ const Helpers = {
     signer,
     validatorContract,
   ) {
-    const nameId = thiz.bytes4(thiz.keccak256(name));
-    const role = roleString ? thiz.bytes4(thiz.keccak256(roleString)) : "0x00000000";
-    const scope = thiz.combineBytes4ToBytes32(nameId, role).toString();
+    // const nameId = thiz.bytes4(thiz.keccak256(name));
+    // const role = roleString ? thiz.bytes4(thiz.keccak256(roleString)) : "0x00000000";
+    // const scope = thiz.combineBytes4ToBytes32(nameId, role).toString();
     timestamp = ethers.BigNumber.from(timestamp.toString()).toNumber();
     const timeValidation = thiz.combineTimestampAndValidFor(timestamp, validFor).toString();
 
-    // console.log(name, roleString, owner, actor, tokenAddress, tokenId, extra, extra2, extra3, timestamp, validFor, chainId, signer, validatorContract.address);
-
     const message = {
-      scope,
+      selector,
       owner,
       actor,
       tokenAddress,
@@ -334,7 +331,7 @@ const Helpers = {
         thiz.privateKeyByWallet[signer],
         "Auth",
         [
-          { name: "scope", type: "bytes32" },
+          { name: "selector", type: "bytes4" },
           { name: "owner", type: "address" },
           { name: "actor", type: "address" },
           { name: "tokenAddress", type: "address" },
@@ -354,14 +351,14 @@ const Helpers = {
     const artifact = await hre.artifacts.readArtifact(interfaceName);
     const abi = artifact.abi;
     const functions = abi.filter((item) => item.type === "function");
-    let interfaceId = ethers.constants.Zero;
+    let selector = "0x00000000";
     functions.forEach((func) => {
-      const selector = ethers.utils.id(func.name + "(" + func.inputs.map((input) => input.type).join(",") + ")").slice(0, 10);
+      const str = func.name + "(" + func.inputs.map((input) => input.type).join(",") + ")";
       if (func.name === functionName) {
-        return selector;
+        selector = ethers.utils.id(str).slice(0, 10);
       }
     });
-    return "0x00000000";
+    return selector;
   },
 
   async getInterfaceId(interfaceName) {
