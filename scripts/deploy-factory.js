@@ -10,12 +10,6 @@ const { expect } = require("chai");
 
 async function main() {
   deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
-  const [deployer] = await ethers.getSigners();
-
-  const vault = await deployUtils.attach("CrunaFlexiVault");
-
-  expect(await vault.owner()).to.equal(deployer.address);
-
   await deployUtils.deployProxy("VaultFactory", vault.address);
 }
 
