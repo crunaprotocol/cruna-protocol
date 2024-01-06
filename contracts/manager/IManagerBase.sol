@@ -3,11 +3,6 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {IERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
-import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
-
 import {IBoundContract} from "../utils/IBoundContract.sol";
 import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
 import {IGuardian} from "../utils/IGuardian.sol";
