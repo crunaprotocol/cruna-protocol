@@ -2,26 +2,30 @@
 pragma solidity ^0.8.13;
 
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
-import {Versioned} from "../utils/Versioned.sol";
+
+import {IVersioned} from "./IVersioned.sol";
+import {IGuardian} from "./IGuardian.sol";
 
 //import "hardhat/console.sol";
 
 /**
  * @dev Manages upgrade and cross-chain execution settings for accounts
  */
-contract Guardian is Ownable2Step, Versioned {
+contract Guardian is IGuardian, Ownable2Step, IVersioned {
   error ZeroAddress();
   error InvalidArguments();
 
   mapping(bytes4 => mapping(address => uint256)) private _isTrustedImplementation;
-
-  event TrustedImplementationUpdated(bytes4 nameId, address implementation, bool trusted, uint256 requires);
 
   constructor(address owner) {
     if (owner == address(0)) {
       revert ZeroAddress();
     }
     _transferOwnership(owner);
+  }
+
+  function version() public pure virtual returns (uint256) {
+    return 1e6;
   }
 
   /**

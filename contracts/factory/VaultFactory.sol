@@ -12,13 +12,13 @@ import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/se
 
 import {CrunaFlexiVault} from "../mocks/CrunaFlexiVault.sol";
 import {IVaultFactory} from "./IVaultFactory.sol";
-import {Versioned} from "../utils/Versioned.sol";
+import {IVersioned} from "../utils/IVersioned.sol";
 
 //import {console} from "hardhat/console.sol";
 
 contract VaultFactory is
   IVaultFactory,
-  Versioned,
+  IVersioned,
   Initializable,
   PausableUpgradeable,
   OwnableUpgradeable,
@@ -47,6 +47,10 @@ contract VaultFactory is
     __Ownable_init();
     __UUPSUpgradeable_init();
     vault = CrunaFlexiVault(vault_);
+  }
+
+  function version() public pure virtual returns (uint256) {
+    return 1e6;
   }
 
   // solhint-disable-next-line no-empty-blocks
