@@ -11,7 +11,7 @@ import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 import {IBoundContract} from "../utils/IBoundContract.sol";
 import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
 import {Guardian} from "../utils/Guardian.sol";
-import {Versioned} from "../utils/Versioned.sol";
+import {IVersioned} from "../utils/IVersioned.sol";
 
 //import {console} from "hardhat/console.sol";
 
@@ -32,7 +32,7 @@ interface IImplementation {
   @title ManagerBase
   @dev Base contract for managers and plugins
 */
-abstract contract ManagerBase is Context, IBoundContract, Versioned {
+abstract contract ManagerBase is Context, IBoundContract, IVersioned {
   error NotTheTokenOwner();
   error UntrustedImplementation();
   error InvalidVersion();
@@ -49,6 +49,10 @@ abstract contract ManagerBase is Context, IBoundContract, Versioned {
 
   constructor() {
     currentVersion = version();
+  }
+
+  function version() public pure virtual returns (uint256) {
+    return 1e6;
   }
 
   function nameId() public virtual returns (bytes4);

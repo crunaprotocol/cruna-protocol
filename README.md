@@ -203,17 +203,18 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 -----------------------------|----------|----------|----------|----------|----------------|
 File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
 -----------------------------|----------|----------|----------|----------|----------------|
- factory/                    |      100 |    55.36 |      100 |    95.83 |                |
+ factory/                    |      100 |    55.36 |      100 |    95.92 |                |
   IVaultFactory.sol          |      100 |      100 |      100 |      100 |                |
-  VaultFactory.sol           |      100 |    55.36 |      100 |    95.83 |         75,127 |
+  VaultFactory.sol           |      100 |    55.36 |      100 |    95.92 |         79,131 |
  interfaces/                 |      100 |      100 |      100 |      100 |                |
   IERC6454.sol               |      100 |      100 |      100 |      100 |                |
   IERC6982.sol               |      100 |      100 |      100 |      100 |                |
- manager/                    |    98.09 |    73.85 |      100 |    98.87 |                |
+ manager/                    |     98.1 |    73.85 |      100 |    98.88 |                |
   Actor.sol                  |      100 |       70 |      100 |      100 |                |
   IManager.sol               |      100 |      100 |      100 |      100 |                |
+  IManagerBase.sol           |      100 |      100 |      100 |      100 |                |
   Manager.sol                |    98.25 |    72.64 |      100 |    98.44 |        131,323 |
-  ManagerBase.sol            |       96 |    85.71 |      100 |      100 |                |
+  ManagerBase.sol            |    96.15 |    85.71 |      100 |      100 |                |
   ManagerProxy.sol           |      100 |      100 |      100 |      100 |                |
  plugins/                    |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                |      100 |      100 |      100 |      100 |                |
@@ -221,19 +222,21 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   IInheritancePlugin.sol     |      100 |      100 |      100 |      100 |                |
   InheritancePlugin.sol      |      100 |    72.37 |      100 |     97.7 |         92,187 |
   InheritancePluginProxy.sol |      100 |      100 |      100 |      100 |                |
- token/                      |      100 |       58 |      100 |    95.65 |                |
+ token/                      |    97.44 |       58 |    93.75 |    93.62 |                |
   IManagedERC721.sol         |      100 |      100 |      100 |      100 |                |
-  ManagedERC721.sol          |      100 |       58 |      100 |    95.65 |        170,182 |
- utils/                      |      100 |    58.33 |      100 |    83.33 |                |
+  ManagedERC721.sol          |    97.44 |       58 |    93.75 |    93.62 |     60,175,187 |
+ utils/                      |    91.67 |    58.33 |    90.91 |    77.78 |                |
   CrunaRegistry.sol          |      100 |      100 |      100 |      100 |                |
   FlexiProxy.sol             |      100 |      100 |      100 |      100 |                |
-  Guardian.sol               |      100 |       50 |      100 |       70 |       22,33,38 |
+  Guardian.sol               |    85.71 |       50 |       75 |    63.64 |    22,28,37,42 |
   IBoundContract.sol         |      100 |      100 |      100 |      100 |                |
   ICrunaRegistry.sol         |      100 |      100 |      100 |      100 |                |
+  IFlexiProxy.sol            |      100 |      100 |      100 |      100 |                |
+  IGuardian.sol              |      100 |      100 |      100 |      100 |                |
+  IVersioned.sol             |      100 |      100 |      100 |      100 |                |
   SignatureValidator.sol     |      100 |       75 |      100 |      100 |                |
-  Versioned.sol              |      100 |      100 |      100 |      100 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
-All files                    |    99.03 |    67.28 |      100 |    97.08 |                |
+All files                    |     98.4 |    67.28 |    98.29 |    96.58 |                |
 -----------------------------|----------|----------|----------|----------|----------------|
 ```
 

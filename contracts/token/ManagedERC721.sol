@@ -14,12 +14,12 @@ import {IManagedERC721} from "./IManagedERC721.sol";
 import {IERC6454} from "../interfaces/IERC6454.sol";
 import {IERC6982} from "../interfaces/IERC6982.sol";
 import {Manager} from "../manager/Manager.sol";
-import {Versioned} from "../utils/Versioned.sol";
+import {IVersioned} from "../utils/IVersioned.sol";
 
 //import {console} from "hardhat/console.sol";
 
 // @dev This contract is a base for NFTs with protected transfers.
-abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982, ERC721, Ownable2Step {
+abstract contract ManagedERC721 is IManagedERC721, IVersioned, IERC6454, IERC6982, ERC721, Ownable2Step {
   using ECDSA for bytes32;
   using Strings for uint256;
   using Address for address;
@@ -53,6 +53,11 @@ abstract contract ManagedERC721 is IManagedERC721, Versioned, IERC6454, IERC6982
   modifier onlyManager(uint256 tokenId) {
     if (managerOf(tokenId) != _msgSender()) revert NotTheManager();
     _;
+  }
+
+  function version() public pure virtual returns (uint256) {
+    // semver 1.2.3 => 1002003 = 1e6 + 2e3 + 3
+    return 1e6;
   }
 
   // @dev Constructor of the contract.
