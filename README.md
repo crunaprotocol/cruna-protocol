@@ -209,11 +209,9 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
  interfaces/                 |      100 |      100 |      100 |      100 |                |
   IERC6454.sol               |      100 |      100 |      100 |      100 |                |
   IERC6982.sol               |      100 |      100 |      100 |      100 |                |
- manager/                    |    98.46 |    69.44 |      100 |    98.21 |                |
+ manager/                    |    98.09 |    73.85 |      100 |    98.87 |                |
   Actor.sol                  |      100 |       70 |      100 |      100 |                |
-  IManagedERC721.sol         |      100 |      100 |      100 |      100 |                |
   IManager.sol               |      100 |      100 |      100 |      100 |                |
-  ManagedERC721.sol          |      100 |       58 |      100 |    95.65 |        170,182 |
   Manager.sol                |    98.25 |    72.64 |      100 |    98.44 |        131,323 |
   ManagerBase.sol            |       96 |    85.71 |      100 |      100 |                |
   ManagerProxy.sol           |      100 |      100 |      100 |      100 |                |
@@ -223,6 +221,9 @@ File                         |  % Stmts | % Branch |  % Funcs |  % Lines |Uncove
   IInheritancePlugin.sol     |      100 |      100 |      100 |      100 |                |
   InheritancePlugin.sol      |      100 |    72.37 |      100 |     97.7 |         92,187 |
   InheritancePluginProxy.sol |      100 |      100 |      100 |      100 |                |
+ token/                      |      100 |       58 |      100 |    95.65 |                |
+  IManagedERC721.sol         |      100 |      100 |      100 |      100 |                |
+  ManagedERC721.sol          |      100 |       58 |      100 |    95.65 |        170,182 |
  utils/                      |      100 |    58.33 |      100 |    83.33 |                |
   CrunaRegistry.sol          |      100 |      100 |      100 |      100 |                |
   FlexiProxy.sol             |      100 |      100 |      100 |      100 |                |

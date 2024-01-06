@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import {CrunaFlexiVault} from "./CrunaFlexiVault.sol";
-import {IManagedERC721} from "../manager/IManagedERC721.sol";
+import {IManagedERC721} from "../token/IManagedERC721.sol";
 
 contract VaultMock is CrunaFlexiVault {
   constructor(address owner) CrunaFlexiVault(owner) {}
