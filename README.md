@@ -149,6 +149,11 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**1.0.0-beta.2**
+- Fix typo in CrunaRegistry function name
+- Reorganize folders and files
+- Add function to check if plugins needs to be reset on vault transfer
+
 **1.0.0-beta.1**
 - Improve the function `authorizePluginToTransfer` so that it disallows only temporarily a plugin to transfer the NFT 
 
