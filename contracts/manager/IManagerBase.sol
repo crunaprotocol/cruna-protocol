@@ -22,7 +22,7 @@ interface IImplementation {
   function nameId() external returns (bytes4);
 }
 
-interface ManagerBase is IBoundContract {
+interface IManagerBase is IBoundContract {
   function nameId() external returns (bytes4);
 
   function guardian() external view returns (IGuardian);
