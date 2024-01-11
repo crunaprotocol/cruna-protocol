@@ -5,7 +5,7 @@ pragma solidity ^0.8.20;
 
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {Actor} from "./Actor.sol";
 import {IPluginExt, IManager} from "./IManager.sol";
@@ -45,8 +45,6 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
   mapping(bytes32 => bool) public usedSignatures;
   bytes4 public constant PROTECTOR = bytes4(keccak256("PROTECTOR"));
   bytes4 public constant SAFE_RECIPIENT = bytes4(keccak256("SAFE_RECIPIENT"));
-
-  bytes32 public constant SALT = bytes32(uint256(69));
 
   mapping(bytes4 => Plugin) public pluginsById;
   PluginStatus[] public allPlugins;
@@ -260,7 +258,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     uint256 requires = guardian().trustedImplementation(_nameId, pluginProxy);
     if (requires == 0) revert UntrustedImplementation();
     if (requires > version()) revert PluginRequiresUpdatedManager(requires);
-    address _pluginAddress = registry().createBoundContract(pluginProxy, SALT, block.chainid, address(this), tokenId());
+    address _pluginAddress = registry().createBoundContract(pluginProxy, 0x00, block.chainid, address(this), tokenId());
     IPluginExt _plugin = IPluginExt(_pluginAddress);
     if (_plugin.nameId() != _nameId) revert InvalidImplementation();
     allPlugins.push(PluginStatus(name, true));
@@ -292,7 +290,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
   }
 
   function pluginAddress(bytes4 _nameId) public view virtual override returns (address) {
-    return registry().boundContract(pluginsById[_nameId].proxyAddress, SALT, block.chainid, address(this), tokenId());
+    return registry().boundContract(pluginsById[_nameId].proxyAddress, 0x00, block.chainid, address(this), tokenId());
   }
 
   function plugin(bytes4 _nameId) public view virtual override returns (IPluginExt) {

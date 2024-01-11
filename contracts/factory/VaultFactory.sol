@@ -5,10 +5,9 @@ pragma solidity ^0.8.20;
 // (c) Superpower Labs Inc.
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import {Initializable, UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {CrunaFlexiVault} from "../mocks/CrunaFlexiVault.sol";
 import {IVaultFactory} from "./IVaultFactory.sol";
@@ -16,15 +15,7 @@ import {IVersioned} from "../utils/IVersioned.sol";
 
 //import {console} from "hardhat/console.sol";
 
-contract VaultFactory is
-  IVaultFactory,
-  IVersioned,
-  Initializable,
-  PausableUpgradeable,
-  OwnableUpgradeable,
-  ReentrancyGuardUpgradeable,
-  UUPSUpgradeable
-{
+contract VaultFactory is IVaultFactory, IVersioned, Pausable, Ownable, ReentrancyGuard {
   error ZeroAddress();
   error InsufficientFunds();
   error UnsupportedStableCoin();
@@ -38,23 +29,13 @@ contract VaultFactory is
   uint256 public discount;
   address[] private _stableCoins;
 
-  /// @custom:oz-upgrades-unsafe-allow constructor
-  constructor() {
-    _disableInitializers();
-  }
-
-  function initialize(address vault_) public initializer {
-    __Ownable_init();
-    __UUPSUpgradeable_init();
+  constructor(address vault_) Ownable(msg.sender) {
     vault = CrunaFlexiVault(vault_);
   }
 
   function version() public pure virtual returns (uint256) {
     return 1e6;
   }
-
-  // solhint-disable-next-line no-empty-blocks
-  function _authorizeUpgrade(address newImplementation) internal virtual override onlyOwner {}
 
   function pause() external onlyOwner {
     _pause();

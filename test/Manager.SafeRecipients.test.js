@@ -39,12 +39,12 @@ describe("Manager : Safe Recipients", function () {
 
     vault = await deployContract("CrunaFlexiVault", deployer.address);
     await vault.init(crunaRegistry.address, guardian.address, proxy.address);
-    factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
+    factory = await deployContract("VaultFactory", vault.address);
 
     await vault.setFactory(factory.address);
 
-    usdc = await deployContract("USDCoin");
-    usdt = await deployContract("TetherUSD");
+    usdc = await deployContract("USDCoin", deployer.address);
+    usdt = await deployContract("TetherUSD", deployer.address);
 
     await usdc.mint(bob.address, normalize("900"));
     await usdt.mint(alice.address, normalize("600", 6));

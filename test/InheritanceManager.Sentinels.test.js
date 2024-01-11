@@ -42,12 +42,12 @@ describe("Sentinel and Inheritance", function () {
 
     vault = await deployContract("CrunaFlexiVault", deployer.address);
     await vault.init(crunaRegistry.address, guardian.address, managerProxy.address);
-    factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
+    factory = await deployContract("VaultFactory", vault.address);
 
     await vault.setFactory(factory.address);
 
-    usdc = await deployContract("USDCoin");
-    usdt = await deployContract("TetherUSD");
+    usdc = await deployContract("USDCoin", deployer.address);
+    usdt = await deployContract("TetherUSD", deployer.address);
 
     await usdc.mint(bob.address, normalize("900"));
     await usdt.mint(alice.address, normalize("600", 6));
@@ -306,7 +306,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(
       inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, addr0, ((await getTimestamp()) - 10) * 1e6 + 36, 0),
-    ).revertedWith("ECDSA: invalid signature length");
+    ).revertedWith("ECDSAInvalidSignatureLength");
 
     await expect(
       inheritancePlugin
