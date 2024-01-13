@@ -11,8 +11,8 @@ const { expect } = require("chai");
 async function main() {
   deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
 
-  const vault = await deployUtils.attach("CrunaFlexiVault");
-  const factory = await deployUtils.attach("VaultFactory");
+  const vault = await deployUtils.attach("VaultMock");
+  const factory = await deployUtils.attach("VaultFactoryMock");
 
   const usdc = await deployUtils.attach("USDCoin");
   const usdt = await deployUtils.attach("TetherUSD");

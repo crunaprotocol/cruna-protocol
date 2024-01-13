@@ -16,7 +16,7 @@ const {
   executeAndReturnGasCost,
 } = require("./helpers");
 
-describe("VaultFactory", function () {
+describe("VaultFactoryMock", function () {
   let registry, proxy, guardian;
   let vault;
   let factory;
@@ -32,10 +32,10 @@ describe("VaultFactory", function () {
   async function initAndDeploy() {
     // process.exit();
 
-    vault = await deployContract("CrunaFlexiVault", deployer.address);
+    vault = await deployContract("VaultMock", deployer.address);
     await vault.init(registry.address, guardian.address, proxy.address);
 
-    factory = await deployContract("VaultFactory", vault.address);
+    factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address]);
 
     await vault.setFactory(factory.address);
 
@@ -226,6 +226,7 @@ describe("VaultFactory", function () {
 
       expect(await usdc.balanceOf(factory.address)).to.equal(pricePerVault.mul(6));
     });
+
   });
   async function expectedUsedGas(account, amount) {
     const initialBalance = (await vault.balanceOf(account.address)).toNumber() - amount;

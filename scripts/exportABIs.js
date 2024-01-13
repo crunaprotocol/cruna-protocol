@@ -16,10 +16,10 @@ async function main() {
   abi("FlexiProxy", "contracts/utils");
   abi("InheritancePlugin", "contracts/plugins/inheritance");
   abi("InheritancePluginProxy", "contracts/plugins/inheritance");
-  abi("CrunaFlexiVault", "contracts/mocks");
+  abi("VaultMock", "contracts/mocks");
   abi("SignatureValidator", "contracts/utils");
   abi("Guardian", "contracts/utils");
-  abi("VaultFactory", "contracts/factory");
+  abi("VaultFactoryMock", "contracts/factory");
 
   // for dev only
   abi("USDCoin", "contracts/mocks/fake-tokens");

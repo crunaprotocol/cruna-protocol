@@ -1,21 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-// Author : Francesco Sullo < francesco@superpower.io>
-// (c) Superpower Labs Inc.
+// Author : Francesco Sullo <francesco@sullo.co>
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-import {CrunaFlexiVault} from "../mocks/CrunaFlexiVault.sol";
-import {IVaultFactory} from "./IVaultFactory.sol";
-import {IVersioned} from "../utils/IVersioned.sol";
+import {VaultMock} from "../VaultMock.sol";
+import {IVaultFactoryMock} from "./IVaultFactoryMock.sol";
+import {IVersioned} from "../../utils/IVersioned.sol";
 
 //import {console} from "hardhat/console.sol";
 
-contract VaultFactory is IVaultFactory, IVersioned, Pausable, Ownable, ReentrancyGuard {
+contract VaultFactoryMock is IVaultFactoryMock, IVersioned, Pausable, Ownable, ReentrancyGuard {
   error ZeroAddress();
   error InsufficientFunds();
   error UnsupportedStableCoin();
@@ -23,14 +22,21 @@ contract VaultFactory is IVaultFactory, IVersioned, Pausable, Ownable, Reentranc
   error InvalidArguments();
   error InvalidDiscount();
 
-  CrunaFlexiVault public vault;
+  VaultMock public vault;
   uint256 public price;
   mapping(address => bool) public stableCoins;
   uint256 public discount;
   address[] private _stableCoins;
 
-  constructor(address vault_) Ownable(msg.sender) {
-    vault = CrunaFlexiVault(vault_);
+  /// @custom:oz-upgrades-unsafe-allow constructor
+  constructor() {
+    _disableInitializers();
+  }
+
+  function initialize(address vault_) public initializer {
+    __Ownable_init();
+    __UUPSUpgradeable_init();
+    vault = VaultMock(vault_);
   }
 
   function version() public pure virtual returns (uint256) {

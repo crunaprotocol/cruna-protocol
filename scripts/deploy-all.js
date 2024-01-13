@@ -52,7 +52,7 @@ async function main() {
 
   const vault = await deployUtils.deployContractViaNickSFactory(
     deployer,
-    "CrunaFlexiVault",
+    "VaultMock",
     ["address"],
     [deployer.address],
     salt,

@@ -1,0 +1,1 @@
+Please, ignore any file in the mocks folder. They are only for testing purposes.

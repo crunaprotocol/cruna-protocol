@@ -34,9 +34,9 @@ describe("Testing contract deployments", function () {
     managerImpl = await deployContract("Manager");
     guardian = await deployContract("Guardian", deployer.address);
     proxy = await deployContract("ManagerProxy", managerImpl.address);
-    vault = await deployContract("CrunaFlexiVault", deployer.address);
+    vault = await deployContract("VaultMock", deployer.address);
     await vault.init(crunaRegistry.address, guardian.address, proxy.address);
-    factory = await deployContract("VaultFactory", vault.address);
+    factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address]);
     await vault.setFactory(factory.address);
 
     usdc = await deployContract("USDCoin", deployer.address);
