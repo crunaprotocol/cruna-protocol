@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import {TimelockController} from "@openzeppelin/contracts/governance/TimelockController.sol";
 
-contract ExtendedTimelockController is TimelockController {
+contract FlexiTimelockController is TimelockController {
   error MustCallThroughTimeController();
 
   modifier onlyThroughTimeController() {

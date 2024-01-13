@@ -20,11 +20,12 @@ describe("Testing contract deployments", function () {
   let vault;
   let factory;
   let usdc, usdt;
-  let deployer, bob, alice, fred, mark, otto;
+  let deployer, bob, alice, fred, mark, otto, proposer, executor;
   let chainId, ts;
+  const delay = 10;
 
   before(async function () {
-    [deployer, bob, alice, fred, mark, otto] = await ethers.getSigners();
+    [deployer, bob, alice, fred, mark, otto, proposer, executor] = await ethers.getSigners();
 
     chainId = await getChainId();
   });
@@ -32,11 +33,11 @@ describe("Testing contract deployments", function () {
   beforeEach(async function () {
     crunaRegistry = await deployContract("CrunaRegistry");
     managerImpl = await deployContract("Manager");
-    guardian = await deployContract("Guardian", deployer.address);
+    guardian = await deployContract("Guardian", delay, [proposer.address], [executor.address], deployer.address);
     proxy = await deployContract("ManagerProxy", managerImpl.address);
     vault = await deployContract("VaultMock", deployer.address);
     await vault.init(crunaRegistry.address, guardian.address, proxy.address);
-    factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address]);
+    factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address, deployer.address]);
     await vault.setFactory(factory.address);
 
     usdc = await deployContract("USDCoin", deployer.address);

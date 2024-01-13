@@ -15,6 +15,7 @@ const {
   keccak256,
   bytes4,
   selectorId,
+  trustImplementation,
 } = require("./helpers");
 
 describe("Sentinel and Inheritance", function () {
@@ -22,14 +23,16 @@ describe("Sentinel and Inheritance", function () {
   let vault, inheritancePluginProxy, inheritancePluginImpl;
   let factory;
   let usdc, usdt;
-  let deployer, bob, alice, fred, mark, otto, jerry, beneficiary1, beneficiary2;
+  let deployer, bob, alice, fred, mark, otto, jerry, beneficiary1, beneficiary2, proposer, executor;
   let chainId, ts;
   const days = 24 * 3600;
+  // for test only we are setting a 10 seconds delay
+  let delay = 10;
   let SENTINEL = bytes4(keccak256("SENTINEL"));
-  let NAME_HASH = bytes4(keccak256("InheritancePlugin"));
+  let PLUGIN_ID = bytes4(keccak256("InheritancePlugin"));
 
   before(async function () {
-    [deployer, bob, alice, fred, mark, otto, jerry, beneficiary1, beneficiary2] = await ethers.getSigners();
+    [deployer, bob, alice, fred, mark, otto, jerry, beneficiary1, beneficiary2, proposer, executor] = await ethers.getSigners();
 
     chainId = await getChainId();
   });
@@ -37,12 +40,12 @@ describe("Sentinel and Inheritance", function () {
   beforeEach(async function () {
     crunaRegistry = await deployContract("CrunaRegistry");
     managerImpl = await deployContract("Manager");
-    guardian = await deployContract("Guardian", deployer.address);
+    guardian = await deployContract("Guardian", delay, [proposer.address], [executor.address], deployer.address);
     managerProxy = await deployContract("ManagerProxy", managerImpl.address);
 
     vault = await deployContract("VaultMock", deployer.address);
     await vault.init(crunaRegistry.address, guardian.address, managerProxy.address);
-    factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address]);
+    factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address, deployer.address]);
 
     await vault.setFactory(factory.address);
 
@@ -58,7 +61,7 @@ describe("Sentinel and Inheritance", function () {
     ts = (await getTimestamp()) - 100;
   });
 
-  const buyAVault = async (bob) => {
+  const buyAVaultAndPlug = async (bob) => {
     const price = await factory.finalPrice(usdc.address);
     await usdc.connect(bob).approve(factory.address, price);
     const nextTokenId = await vault.nextTokenId();
@@ -71,11 +74,10 @@ describe("Sentinel and Inheritance", function () {
     await expect(manager.connect(bob).plug("InheritancePlugin", inheritancePluginProxy.address, true)).to.be.revertedWith(
       "UntrustedImplementation",
     );
-    const nameId = bytes4(keccak256("InheritancePlugin"));
-    await guardian.setTrustedImplementation(nameId, inheritancePluginProxy.address, true, 1);
-    expect((await manager.pluginsById(nameId)).proxyAddress).to.equal(addr0);
+    await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true, 1);
+    expect((await manager.pluginsById(PLUGIN_ID)).proxyAddress).to.equal(addr0);
 
-    expect((await manager.pluginsById(nameId)).proxyAddress).equal(addr0);
+    expect((await manager.pluginsById(PLUGIN_ID)).proxyAddress).equal(addr0);
 
     await expect(manager.allPlugins(0)).revertedWith("");
 
@@ -83,7 +85,7 @@ describe("Sentinel and Inheritance", function () {
       manager,
       "PluginStatusChange",
     );
-    expect((await manager.pluginsById(nameId)).proxyAddress).not.equal(addr0);
+    expect((await manager.pluginsById(PLUGIN_ID)).proxyAddress).not.equal(addr0);
     expect((await manager.allPlugins(0)).name).equal("InheritancePlugin");
     expect((await manager.allPlugins(0)).active).to.be.true;
     const count = await manager.countPlugins();
@@ -96,17 +98,21 @@ describe("Sentinel and Inheritance", function () {
     expect(await manager.plugged("InheritancePlugin")).to.be.true;
     expect(await manager.plugged("InheritancePlugin2")).to.be.false;
 
-    const pluginAddress = await manager.plugin(nameId);
+    const pluginAddress = await manager.plugin(PLUGIN_ID);
     expect(pluginAddress).to.not.equal(addr0);
     return nextTokenId;
   };
 
+  it("should verify before/beforeEach works", async function () {
+    //
+  });
+
   it("should plug the plugin", async function () {
-    await buyAVault(bob);
+    await buyAVaultAndPlug(bob);
   });
 
   it("should set up sentinels/conf w/out protectors", async function () {
-    const tokenId = await buyAVault(bob);
+    const tokenId = await buyAVaultAndPlug(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
     const nameId = bytes4(keccak256("InheritancePlugin"));
@@ -130,7 +136,7 @@ describe("Sentinel and Inheritance", function () {
   });
 
   it("should set up sentinels/conf w/ or w/out protectors", async function () {
-    const tokenId = await buyAVault(bob);
+    const tokenId = await buyAVaultAndPlug(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
     const nameId = bytes4(keccak256("InheritancePlugin"));
@@ -274,10 +280,10 @@ describe("Sentinel and Inheritance", function () {
   //
 
   it("should set up 5 sentinels and an inheritance with a quorum 3", async function () {
-    const tokenId = await buyAVault(bob);
+    const tokenId = await buyAVaultAndPlug(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
-    const inheritancePluginAddress = await manager.plugin(NAME_HASH);
+    const inheritancePluginAddress = await manager.plugin(PLUGIN_ID);
     const inheritancePlugin = await ethers.getContractAt("InheritancePlugin", inheritancePluginAddress);
     await inheritancePlugin
       .connect(bob)
@@ -391,7 +397,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(inheritancePlugin.connect(beneficiary1).inherit())
       .to.emit(vault, "ManagedTransfer")
-      .withArgs(NAME_HASH, tokenId);
+      .withArgs(PLUGIN_ID, tokenId);
 
     data = await inheritancePlugin.getSentinelsAndInheritanceData();
     expect(data[0].length).to.equal(0);
@@ -404,7 +410,7 @@ describe("Sentinel and Inheritance", function () {
   });
 
   it("should set up a beneficiary but no sentinels", async function () {
-    const tokenId = await buyAVault(bob);
+    const tokenId = await buyAVaultAndPlug(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
     const nameId = bytes4(keccak256("InheritancePlugin"));
@@ -429,7 +435,7 @@ describe("Sentinel and Inheritance", function () {
   });
 
   it("should not allow to inherit if not authorized to make transfer", async function () {
-    const tokenId = await buyAVault(bob);
+    const tokenId = await buyAVaultAndPlug(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
     const nameId = bytes4(keccak256("InheritancePlugin"));
@@ -479,7 +485,7 @@ describe("Sentinel and Inheritance", function () {
   });
 
   it("should allow to inherit only after timeLock expires", async function () {
-    const tokenId = await buyAVault(bob);
+    const tokenId = await buyAVaultAndPlug(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
     const nameId = bytes4(keccak256("InheritancePlugin"));
@@ -506,7 +512,7 @@ describe("Sentinel and Inheritance", function () {
   });
 
   it("should set up a beneficiary and 5 sentinels and an inheritance with a quorum 3", async function () {
-    const tokenId = await buyAVault(bob);
+    const tokenId = await buyAVaultAndPlug(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
     const nameId = bytes4(keccak256("InheritancePlugin"));
@@ -627,7 +633,7 @@ describe("Sentinel and Inheritance", function () {
   });
 
   it("should disable and reset a plugin", async function () {
-    const tokenId = await buyAVault(bob);
+    const tokenId = await buyAVaultAndPlug(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
     const nameId = bytes4(keccak256("InheritancePlugin"));
@@ -688,7 +694,7 @@ describe("Sentinel and Inheritance", function () {
   });
 
   it("should reset a plugin while re-enabling it", async function () {
-    const tokenId = await buyAVault(bob);
+    const tokenId = await buyAVaultAndPlug(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
     const nameId = bytes4(keccak256("InheritancePlugin"));
@@ -806,7 +812,7 @@ describe("Sentinel and Inheritance", function () {
   });
 
   it("should upgrade the plugin", async function () {
-    const tokenId = await buyAVault(bob);
+    const tokenId = await buyAVaultAndPlug(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
     const nameId = bytes4(keccak256("InheritancePlugin"));
@@ -837,9 +843,8 @@ describe("Sentinel and Inheritance", function () {
 
     expect(toChecksumAddress(iVault.address)).equal(toChecksumAddress(vault.address));
 
-    await guardian.setTrustedImplementation(NAME_HASH, inheritancePluginV2Impl.address, true, 1);
-
-    await guardian.setTrustedImplementation(NAME_HASH, inheritancePluginV3Impl.address, true, 1);
+    await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginV2Impl.address, true, 1);
+    await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginV3Impl.address, true, 1);
 
     expect(await inheritancePlugin.getImplementation()).to.equal(addr0);
 
@@ -860,7 +865,7 @@ describe("Sentinel and Inheritance", function () {
   });
 
   it("should not upgrade if the plugin requires updated manager", async function () {
-    const tokenId = await buyAVault(bob);
+    const tokenId = await buyAVaultAndPlug(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("Manager", managerAddress);
     const nameId = bytes4(keccak256("InheritancePlugin"));
@@ -875,7 +880,7 @@ describe("Sentinel and Inheritance", function () {
 
     const inheritancePluginV2Impl = await deployContract("InheritancePluginV2Mock");
 
-    await guardian.setTrustedImplementation(NAME_HASH, inheritancePluginV2Impl.address, true, 1e6 + 2e3);
+    await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginV2Impl.address, true, 1e6 + 2e3);
     await expect(inheritancePlugin.connect(bob).upgrade(inheritancePluginV2Impl.address))
       .revertedWith("PluginRequiresUpdatedManager")
       .withArgs(1e6 + 2e3);

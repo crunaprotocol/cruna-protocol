@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import {Ownable, Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
+import {FlexiTimelockController} from "./FlexiTimelockController.sol";
 
 import {IVersioned} from "./IVersioned.sol";
 import {IGuardian} from "./IGuardian.sol";
@@ -11,12 +11,18 @@ import {IGuardian} from "./IGuardian.sol";
 /**
  * @dev Manages upgrade and cross-chain execution settings for accounts
  */
-contract Guardian is IGuardian, Ownable2Step, IVersioned {
+contract Guardian is IGuardian, FlexiTimelockController, IVersioned {
   error InvalidArguments();
 
   mapping(bytes4 => mapping(address => uint256)) private _isTrustedImplementation;
 
-  constructor(address owner) Ownable(owner) {}
+  // when deployed to production, proposers and executors will be multi-sig wallets owned by the Cruna DAO
+  constructor(
+    uint256 minDelay,
+    address[] memory proposers,
+    address[] memory executors,
+    address admin
+  ) FlexiTimelockController(minDelay, proposers, executors, admin) {}
 
   function version() public pure virtual returns (uint256) {
     return 1e6;
@@ -26,7 +32,12 @@ contract Guardian is IGuardian, Ownable2Step, IVersioned {
    * @dev Sets a given implementation address as trusted, allowing accounts to upgrade to this
    * implementation
    */
-  function setTrustedImplementation(bytes4 nameId, address implementation, bool trusted, uint256 requires) external onlyOwner {
+  function setTrustedImplementation(
+    bytes4 nameId,
+    address implementation,
+    bool trusted,
+    uint256 requires
+  ) external onlyThroughTimeController {
     if (requires == 0) {
       revert InvalidArguments();
     }

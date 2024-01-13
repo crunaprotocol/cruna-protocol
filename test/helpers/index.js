@@ -145,7 +145,7 @@ const Helpers = {
     return code !== "0x";
   },
 
-  async deployAll(deployer) {
+  async deployAll(deployer, proposer, executor, delay) {
     // using Nick's factory
     await Helpers.deployNickSFactory(deployer);
     const params = [
@@ -169,7 +169,12 @@ const Helpers = {
     const proxyAddress = await Helpers.deployContractViaNickSFactory(deployer, "ManagerProxy", ["address"], [managerAddress]);
     const proxy = await ethers.getContractAt("ManagerProxy", proxyAddress);
 
-    const guardianAddress = await Helpers.deployContractViaNickSFactory(deployer, "Guardian", ["address"], [deployer.address]);
+    const guardianAddress = await Helpers.deployContractViaNickSFactory(
+      deployer,
+      "Guardian",
+      ["uint256", "address[]", "address[]", "address"],
+      [delay, [proposer.address], [executor.address], deployer.address],
+    );
     const guardian = await ethers.getContractAt("Guardian", guardianAddress);
 
     return [crunaRegistry, proxy, guardian];
@@ -275,6 +280,17 @@ const Helpers = {
       types.push({ name, type });
     }
     return types;
+  },
+
+  async trustImplementation(guardian, proposer, executor, delay, nameId, implementation, trusted, requires) {
+    const { cl } = thiz;
+    const data = guardian.interface.encodeFunctionData("setTrustedImplementation", [nameId, implementation, trusted, requires]);
+    const predecessor = ethers.utils.formatBytes32String("");
+    const salt = ethers.utils.formatBytes32String("");
+    await guardian.connect(proposer).schedule(guardian.address, 0, data, predecessor, salt, delay);
+    await ethers.provider.send("evm_increaseTime", [delay + 1]);
+    await ethers.provider.send("evm_mine");
+    await guardian.connect(executor).execute(guardian.address, 0, data, predecessor, salt);
   },
 
   async sleep(millis) {

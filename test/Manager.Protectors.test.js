@@ -17,6 +17,7 @@ const {
   combineBytes4ToBytes32,
   getInterfaceId,
   selectorId,
+  trustImplementation,
 } = require("./helpers");
 
 describe("Manager : Protectors", function () {
@@ -24,11 +25,13 @@ describe("Manager : Protectors", function () {
   let vault;
   let factory;
   let usdc, usdt;
-  let deployer, bob, alice, fred, mark, otto;
+  let deployer, bob, alice, fred, mark, otto, proposer, executor;
   let selector;
+  // we put it very short for convenience (test-only)
+  const delay = 10;
 
   before(async function () {
-    [deployer, bob, alice, fred, mark, otto] = await ethers.getSigners();
+    [deployer, bob, alice, fred, mark, otto, proposer, executor] = await ethers.getSigners();
     chainId = await getChainId();
     selector = await selectorId("IManager", "setProtector");
   });
@@ -36,12 +39,12 @@ describe("Manager : Protectors", function () {
   beforeEach(async function () {
     crunaRegistry = await deployContract("CrunaRegistry");
     managerImpl = await deployContract("Manager");
-    guardian = await deployContract("Guardian", deployer.address);
+    guardian = await deployContract("Guardian", delay, [proposer.address], [executor.address], deployer.address);
     proxy = await deployContract("ManagerProxy", managerImpl.address);
 
     vault = await deployContract("VaultMock", deployer.address);
     await vault.init(crunaRegistry.address, guardian.address, proxy.address);
-    factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address]);
+    factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address, deployer.address]);
 
     await vault.setFactory(factory.address);
 
@@ -373,7 +376,16 @@ describe("Manager : Protectors", function () {
     await expect(manager.upgrade(managerV2Impl.address)).to.be.revertedWith("NotTheTokenOwner");
 
     await expect(manager.connect(bob).upgrade(managerV2Impl.address)).to.be.revertedWith("UntrustedImplementation");
-    await guardian.setTrustedImplementation(bytes4(keccak256("Manager")), managerV2Impl.address, true, 1);
+    await trustImplementation(
+      guardian,
+      proposer,
+      executor,
+      delay,
+      bytes4(keccak256("Manager")),
+      managerV2Impl.address,
+      true,
+      1,
+    );
     expect(await manager.getImplementation()).to.equal(addr0);
 
     await manager.connect(bob).upgrade(managerV2Impl.address);

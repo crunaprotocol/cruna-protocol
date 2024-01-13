@@ -4,9 +4,10 @@ pragma solidity ^0.8.20;
 // Author : Francesco Sullo <francesco@sullo.co>
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
-import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {Initializable, UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
 import {VaultMock} from "../VaultMock.sol";
 import {IVaultFactoryMock} from "./IVaultFactoryMock.sol";
@@ -14,7 +15,15 @@ import {IVersioned} from "../../utils/IVersioned.sol";
 
 //import {console} from "hardhat/console.sol";
 
-contract VaultFactoryMock is IVaultFactoryMock, IVersioned, Pausable, Ownable, ReentrancyGuard {
+contract VaultFactoryMock is
+  IVaultFactoryMock,
+  IVersioned,
+  Initializable,
+  PausableUpgradeable,
+  OwnableUpgradeable,
+  ReentrancyGuardUpgradeable,
+  UUPSUpgradeable
+{
   error ZeroAddress();
   error InsufficientFunds();
   error UnsupportedStableCoin();
@@ -33,8 +42,8 @@ contract VaultFactoryMock is IVaultFactoryMock, IVersioned, Pausable, Ownable, R
     _disableInitializers();
   }
 
-  function initialize(address vault_) public initializer {
-    __Ownable_init();
+  function initialize(address vault_, address owner_) public initializer {
+    __Ownable_init(owner_);
     __UUPSUpgradeable_init();
     vault = VaultMock(vault_);
   }
@@ -42,6 +51,9 @@ contract VaultFactoryMock is IVaultFactoryMock, IVersioned, Pausable, Ownable, R
   function version() public pure virtual returns (uint256) {
     return 1e6;
   }
+
+  // solhint-disable-next-line no-empty-blocks
+  function _authorizeUpgrade(address newImplementation) internal virtual override onlyOwner {}
 
   function pause() external onlyOwner {
     _pause();

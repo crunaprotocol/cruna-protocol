@@ -55,5 +55,4 @@ contract VaultMock is ManagedERC721 {
   function safeMintAndActivate(address to, bool alsoInit, uint256 amount) public virtual onlyFactory {
     _mintAndActivate(to, alsoInit, amount);
   }
-
 }

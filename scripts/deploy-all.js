@@ -50,13 +50,7 @@ async function main() {
     "Setting trusted implementation for InheritancePlugin",
   );
 
-  const vault = await deployUtils.deployContractViaNickSFactory(
-    deployer,
-    "VaultMock",
-    ["address"],
-    [deployer.address],
-    salt,
-  );
+  const vault = await deployUtils.deployContractViaNickSFactory(deployer, "VaultMock", ["address"], [deployer.address], salt);
 
   try {
     await deployUtils.Tx(

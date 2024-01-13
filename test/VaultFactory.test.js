@@ -21,12 +21,13 @@ describe("VaultFactoryMock", function () {
   let vault;
   let factory;
   let usdc, usdt;
-  let deployer, bob, alice, fred, mike;
+  let deployer, bob, alice, fred, mike, proposer, executor;
+  const delay = 10;
 
   before(async function () {
-    [deployer, bob, alice, fred, mike] = await ethers.getSigners();
+    [deployer, bob, alice, fred, mike, proposer, executor] = await ethers.getSigners();
     // we test the deploying using Nick's factory only here because if not it would create conflicts, since any contract has already been deployed and would not change its storage
-    [registry, proxy, guardian] = await deployAll(deployer);
+    [registry, proxy, guardian] = await deployAll(deployer, proposer, executor, delay);
   });
 
   async function initAndDeploy() {
@@ -35,7 +36,7 @@ describe("VaultFactoryMock", function () {
     vault = await deployContract("VaultMock", deployer.address);
     await vault.init(registry.address, guardian.address, proxy.address);
 
-    factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address]);
+    factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address, deployer.address]);
 
     await vault.setFactory(factory.address);
 
@@ -137,14 +138,13 @@ describe("VaultFactoryMock", function () {
         .withArgs(factory.address, fred.address, amount("9.8"));
     });
 
-    it.skip("should allow bob to purchase some vaults without activating them", async function () {
+    it("should allow bob to purchase some vaults without activating them", async function () {
       let nextTokenId = await vault.nextTokenId();
       await buyVault(usdc, 2, bob, false);
 
       expect(await vault.isActive(nextTokenId)).to.be.false;
 
       const precalculatedAddress = await vault.managerOf(nextTokenId);
-      // console.log(keccak256("BoundContractCreated(address,address,bytes32,uint256,address,uint256)"))
 
       await expect(vault.connect(bob).activate(nextTokenId))
         .to.emit(registry, "BoundContractCreated")
@@ -226,7 +226,6 @@ describe("VaultFactoryMock", function () {
 
       expect(await usdc.balanceOf(factory.address)).to.equal(pricePerVault.mul(6));
     });
-
   });
   async function expectedUsedGas(account, amount) {
     const initialBalance = (await vault.balanceOf(account.address)).toNumber() - amount;

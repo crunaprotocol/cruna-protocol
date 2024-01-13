@@ -187,11 +187,12 @@ abstract contract ManagedERC721 is IManagedERC721, IVersioned, IERC6454, IERC698
 
   function isActive(uint256 tokenId) public view returns (bool) {
     _requireOwned(tokenId);
-    IVersioned _manager = IVersioned(managerOf(tokenId));
-    try _manager.version() returns (uint256) {
-      return true;
-    } catch {
-      return false;
+    address _addr = managerOf(tokenId);
+    uint32 size;
+    // solhint-disable-next-line no-inline-assembly
+    assembly {
+      size := extcodesize(_addr)
     }
+    return (size > 0);
   }
 }
