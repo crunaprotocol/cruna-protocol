@@ -40,9 +40,9 @@ describe("Sentinel and Inheritance", function () {
     guardian = await deployContract("Guardian", deployer.address);
     managerProxy = await deployContract("ManagerProxy", managerImpl.address);
 
-    vault = await deployContract("CrunaFlexiVault", deployer.address);
+    vault = await deployContract("VaultMock", deployer.address);
     await vault.init(crunaRegistry.address, guardian.address, managerProxy.address);
-    factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
+    factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address]);
 
     await vault.setFactory(factory.address);
 
@@ -833,7 +833,7 @@ describe("Sentinel and Inheritance", function () {
     expect(bytes4(keccak256("Manager"))).to.equal("0x6d439300");
 
     const iVaultAddress = await inheritancePlugin.vault();
-    const iVault = await ethers.getContractAt("CrunaFlexiVault", iVaultAddress);
+    const iVault = await ethers.getContractAt("VaultMock", iVaultAddress);
 
     expect(toChecksumAddress(iVault.address)).equal(toChecksumAddress(vault.address));
 

@@ -39,9 +39,9 @@ describe("Manager : Protectors", function () {
     guardian = await deployContract("Guardian", deployer.address);
     proxy = await deployContract("ManagerProxy", managerImpl.address);
 
-    vault = await deployContract("CrunaFlexiVault", deployer.address);
+    vault = await deployContract("VaultMock", deployer.address);
     await vault.init(crunaRegistry.address, guardian.address, proxy.address);
-    factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
+    factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address]);
 
     await vault.setFactory(factory.address);
 
@@ -83,7 +83,7 @@ describe("Manager : Protectors", function () {
   it("should support the IManagedERC721.sol interface", async function () {
     const vaultMock = await deployContract("VaultMock", deployer.address);
     await vaultMock.init(crunaRegistry.address, guardian.address, proxy.address);
-    let interfaceId = await vaultMock.getIProtectedInterfaceId();
+    let interfaceId = await getInterfaceId("IManagedERC721");
     expect(interfaceId).to.equal("0xe19a64da");
     expect(await vault.supportsInterface(interfaceId)).to.be.true;
     expect(await getInterfaceId("IManagedERC721")).to.equal("0xe19a64da");

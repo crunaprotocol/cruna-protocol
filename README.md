@@ -149,6 +149,11 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+
+**1.0.0-beta.3**
+- Move contracts used only for testing to the mocks folder
+- Add Time Lock to Guardian
+
 **1.0.0-beta.2**
 - Fix typo in CrunaRegistry function name
 - Reorganize folders and files
