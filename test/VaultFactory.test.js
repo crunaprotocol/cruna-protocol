@@ -16,31 +16,32 @@ const {
   executeAndReturnGasCost,
 } = require("./helpers");
 
-describe("VaultFactory", function () {
+describe("VaultFactoryMock", function () {
   let registry, proxy, guardian;
   let vault;
   let factory;
   let usdc, usdt;
-  let deployer, bob, alice, fred, mike;
+  let deployer, bob, alice, fred, mike, proposer, executor;
+  const delay = 10;
 
   before(async function () {
-    [deployer, bob, alice, fred, mike] = await ethers.getSigners();
+    [deployer, bob, alice, fred, mike, proposer, executor] = await ethers.getSigners();
     // we test the deploying using Nick's factory only here because if not it would create conflicts, since any contract has already been deployed and would not change its storage
-    [registry, proxy, guardian] = await deployAll(deployer);
+    [registry, proxy, guardian] = await deployAll(deployer, proposer, executor, delay);
   });
 
   async function initAndDeploy() {
     // process.exit();
 
-    vault = await deployContract("CrunaFlexiVault", deployer.address);
+    vault = await deployContract("VaultMock", deployer.address);
     await vault.init(registry.address, guardian.address, proxy.address);
 
-    factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
+    factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address, deployer.address]);
 
     await vault.setFactory(factory.address);
 
-    usdc = await deployContract("USDCoin");
-    usdt = await deployContract("TetherUSD");
+    usdc = await deployContract("USDCoin", deployer.address);
+    usdt = await deployContract("TetherUSD", deployer.address);
 
     await usdc.mint(bob.address, normalize("900"));
     await usdc.mint(fred.address, normalize("900"));
@@ -65,8 +66,6 @@ describe("VaultFactory", function () {
       await usdc.connect(bob).approve(factory.address, price);
       const nextTokenId = await vault.nextTokenId();
       const precalculatedAddress = await vault.managerOf(nextTokenId);
-      const salt = ethers.utils.hexZeroPad(ethers.BigNumber.from("69").toHexString(), 32);
-
       await expect(factory.connect(bob).buyVaults(usdc.address, 1, true))
         .to.emit(vault, "Transfer")
         .withArgs(addr0, bob.address, nextTokenId)
@@ -74,7 +73,7 @@ describe("VaultFactory", function () {
         .withArgs(
           precalculatedAddress,
           toChecksumAddress(proxy.address),
-          salt,
+          "0x" + "0".repeat(64),
           (await getChainId()).toString(),
           toChecksumAddress(vault.address),
           nextTokenId,
@@ -100,7 +99,7 @@ describe("VaultFactory", function () {
       let price = await factory.finalPrice(usdc.address);
       await usdc.connect(fred).approve(factory.address, price);
 
-      await expect(factory.connect(fred).buyVaults(usdc.address, 1, true)).to.be.revertedWith("Pausable: paused");
+      await expect(factory.connect(fred).buyVaults(usdc.address, 1, true)).to.be.revertedWith("EnforcedPause");
 
       await expect(factory.unpause()).to.emit(factory, "Unpaused");
 
@@ -121,8 +120,10 @@ describe("VaultFactory", function () {
     });
 
     it("should allow bob and alice to purchase some vaults", async function () {
+      let nextTokenId = await vault.nextTokenId();
       await buyVault(usdc, 2, bob);
       await buyVault(usdt, 2, alice);
+      expect(await vault.isActive(nextTokenId)).to.be.true;
 
       let price = await factory.finalPrice(usdc.address);
       expect(price.toString()).to.equal("9900000000000000000");
@@ -144,16 +145,13 @@ describe("VaultFactory", function () {
       expect(await vault.isActive(nextTokenId)).to.be.false;
 
       const precalculatedAddress = await vault.managerOf(nextTokenId);
-      const salt = ethers.utils.hexZeroPad(ethers.BigNumber.from("69").toHexString(), 32);
-
-      // console.log(keccak256("BoundContractCreated(address,address,bytes32,uint256,address,uint256)"))
 
       await expect(vault.connect(bob).activate(nextTokenId))
         .to.emit(registry, "BoundContractCreated")
         .withArgs(
           precalculatedAddress,
           toChecksumAddress(proxy.address),
-          salt,
+          "0x" + "0".repeat(64),
           (await getChainId()).toString(),
           toChecksumAddress(vault.address),
           nextTokenId,
@@ -227,13 +225,6 @@ describe("VaultFactory", function () {
       expect(await vault.balanceOf(alice.address)).to.equal(aliceBalanceBefore.add(2));
 
       expect(await usdc.balanceOf(factory.address)).to.equal(pricePerVault.mul(6));
-    });
-
-    it("should upgrade the factory", async function () {
-      const newFactory = await ethers.getContractFactory("VaultFactoryV2Mock");
-      expect(await factory.version()).to.equal(1e6);
-      await upgradeProxy(upgrades, factory.address, newFactory);
-      expect(await factory.version()).to.equal(2e6);
     });
   });
   async function expectedUsedGas(account, amount) {

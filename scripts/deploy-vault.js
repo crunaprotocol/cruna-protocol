@@ -26,13 +26,7 @@ async function main() {
   const managerProxy = await deployUtils.attach("ManagerProxy");
 
   // deploy the vault
-  const vault = await deployUtils.deployContractViaNickSFactory(
-    deployer,
-    "CrunaFlexiVault",
-    ["address"],
-    [deployer.address],
-    salt,
-  );
+  const vault = await deployUtils.deployContractViaNickSFactory(deployer, "VaultMock", ["address"], [deployer.address], salt);
 
   await deployUtils.Tx(
     vault.init(registry.address, guardian.address, managerProxy.address, { gasLimit: 120000 }),

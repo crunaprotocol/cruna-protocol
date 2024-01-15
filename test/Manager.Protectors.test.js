@@ -17,6 +17,7 @@ const {
   combineBytes4ToBytes32,
   getInterfaceId,
   selectorId,
+  trustImplementation,
 } = require("./helpers");
 
 describe("Manager : Protectors", function () {
@@ -24,11 +25,13 @@ describe("Manager : Protectors", function () {
   let vault;
   let factory;
   let usdc, usdt;
-  let deployer, bob, alice, fred, mark, otto;
+  let deployer, bob, alice, fred, mark, otto, proposer, executor;
   let selector;
+  // we put it very short for convenience (test-only)
+  const delay = 10;
 
   before(async function () {
-    [deployer, bob, alice, fred, mark, otto] = await ethers.getSigners();
+    [deployer, bob, alice, fred, mark, otto, proposer, executor] = await ethers.getSigners();
     chainId = await getChainId();
     selector = await selectorId("IManager", "setProtector");
   });
@@ -36,17 +39,17 @@ describe("Manager : Protectors", function () {
   beforeEach(async function () {
     crunaRegistry = await deployContract("CrunaRegistry");
     managerImpl = await deployContract("Manager");
-    guardian = await deployContract("Guardian", deployer.address);
+    guardian = await deployContract("Guardian", delay, [proposer.address], [executor.address], deployer.address);
     proxy = await deployContract("ManagerProxy", managerImpl.address);
 
-    vault = await deployContract("CrunaFlexiVault", deployer.address);
+    vault = await deployContract("VaultMock", deployer.address);
     await vault.init(crunaRegistry.address, guardian.address, proxy.address);
-    factory = await deployContractUpgradeable("VaultFactory", [vault.address]);
+    factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address, deployer.address]);
 
     await vault.setFactory(factory.address);
 
-    usdc = await deployContract("USDCoin");
-    usdt = await deployContract("TetherUSD");
+    usdc = await deployContract("USDCoin", deployer.address);
+    usdt = await deployContract("TetherUSD", deployer.address);
 
     await usdc.mint(bob.address, normalize("900"));
     await usdt.mint(alice.address, normalize("600", 6));
@@ -62,7 +65,6 @@ describe("Manager : Protectors", function () {
     await usdc.connect(bob).approve(factory.address, price);
     const nextTokenId = await vault.nextTokenId();
     const precalculatedAddress = await vault.managerOf(nextTokenId);
-    const salt = ethers.utils.hexZeroPad(ethers.BigNumber.from("69").toHexString(), 32);
 
     // console.log(keccak256("BoundContractCreated(address,address,bytes32,uint256,address,uint256)"))
 
@@ -71,7 +73,7 @@ describe("Manager : Protectors", function () {
       .withArgs(
         precalculatedAddress,
         toChecksumAddress(proxy.address),
-        salt,
+        "0x" + "0".repeat(64),
         (await getChainId()).toString(),
         toChecksumAddress(vault.address),
         nextTokenId,
@@ -83,7 +85,7 @@ describe("Manager : Protectors", function () {
   it("should support the IManagedERC721.sol interface", async function () {
     const vaultMock = await deployContract("VaultMock", deployer.address);
     await vaultMock.init(crunaRegistry.address, guardian.address, proxy.address);
-    let interfaceId = await vaultMock.getIProtectedInterfaceId();
+    let interfaceId = await getInterfaceId("IManagedERC721");
     expect(interfaceId).to.equal("0xe19a64da");
     expect(await vault.supportsInterface(interfaceId)).to.be.true;
     expect(await getInterfaceId("IManagedERC721")).to.equal("0xe19a64da");
@@ -374,7 +376,16 @@ describe("Manager : Protectors", function () {
     await expect(manager.upgrade(managerV2Impl.address)).to.be.revertedWith("NotTheTokenOwner");
 
     await expect(manager.connect(bob).upgrade(managerV2Impl.address)).to.be.revertedWith("UntrustedImplementation");
-    await guardian.setTrustedImplementation(bytes4(keccak256("Manager")), managerV2Impl.address, true, 1);
+    await trustImplementation(
+      guardian,
+      proposer,
+      executor,
+      delay,
+      bytes4(keccak256("Manager")),
+      managerV2Impl.address,
+      true,
+      1,
+    );
     expect(await manager.getImplementation()).to.equal(addr0);
 
     await manager.connect(bob).upgrade(managerV2Impl.address);

@@ -6,7 +6,7 @@ pragma solidity ^0.8.20;
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
+import {Ownable, Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {IGuardian} from "../utils/IGuardian.sol";
 import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
@@ -40,7 +40,6 @@ abstract contract ManagedERC721 is IManagedERC721, IVersioned, IERC6454, IERC698
   ICrunaRegistry public registry;
   address public managerProxy;
 
-  bytes32 public constant SALT = bytes32(uint256(69));
   bytes4 public constant NAME_HASH = bytes4(keccak256("ManagedNFT"));
 
   uint256 public nextTokenId = 1;
@@ -64,10 +63,7 @@ abstract contract ManagedERC721 is IManagedERC721, IVersioned, IERC6454, IERC698
   // @param name_ The name of the token.
   // @param symbol_ The symbol of the token.
   // @param owner The address of the owner.
-  constructor(string memory name_, string memory symbol_, address owner) ERC721(name_, symbol_) {
-    // to support deployment via factories, where, if not, the owner is the factory
-    if (owner == address(0)) revert ZeroAddress();
-    _transferOwnership(owner);
+  constructor(string memory name_, string memory symbol_, address owner) ERC721(name_, symbol_) Ownable(owner) {
     nextTokenId = 1;
     emit DefaultLocked(false);
   }
@@ -93,22 +89,17 @@ abstract contract ManagedERC721 is IManagedERC721, IVersioned, IERC6454, IERC698
   // @dev See {IProtected721-managedTransfer}.
   function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external override onlyManager(tokenId) {
     _approvedTransfers[tokenId] = true;
-    _approve(managerOf(tokenId), tokenId);
+    _approve(managerOf(tokenId), tokenId, address(0));
     safeTransferFrom(ownerOf(tokenId), to, tokenId);
-    _approve(address(0), tokenId);
+    _approve(address(0), tokenId, address(0));
     delete _approvedTransfers[tokenId];
     emit ManagedTransfer(pluginNameId, tokenId);
   }
 
   // @dev See {ERC721-_beforeTokenTransfer}.
-  function _beforeTokenTransfer(
-    address from,
-    address to,
-    uint256 tokenId,
-    uint256 batchSize
-  ) internal virtual override(ERC721) {
-    if (isTransferable(tokenId, from, to)) {
-      super._beforeTokenTransfer(from, to, tokenId, batchSize);
+  function _update(address to, uint256 tokenId, address auth) internal virtual override(ERC721) returns (address) {
+    if (isTransferable(tokenId, _ownerOf(tokenId), to)) {
+      return super._update(to, tokenId, auth);
     } else revert NotTransferable();
   }
 
@@ -135,7 +126,7 @@ abstract contract ManagedERC721 is IManagedERC721, IVersioned, IERC6454, IERC698
     // if from zero, it is minting
     else if (from == address(0)) return true;
     else {
-      _requireMinted(tokenId);
+      _requireOwned(tokenId);
       return manager.countActiveProtectors() == 0 || _approvedTransfers[tokenId] || manager.isSafeRecipient(to);
     }
   }
@@ -171,7 +162,7 @@ abstract contract ManagedERC721 is IManagedERC721, IVersioned, IERC6454, IERC698
     for (uint256 i = 0; i < amount; i++) {
       if (maxTokenId > 0 && tokenId > maxTokenId) revert MaxSupplyReached();
       if (alsoInit) {
-        try registry.createBoundContract(managerProxy, SALT, block.chainid, address(this), tokenId) {} catch {
+        try registry.createBoundContract(managerProxy, 0x00, block.chainid, address(this), tokenId) {} catch {
           revert ErrorCreatingManager();
         }
       }
@@ -183,7 +174,7 @@ abstract contract ManagedERC721 is IManagedERC721, IVersioned, IERC6454, IERC698
   function activate(uint256 tokenId) external {
     if (_msgSender() != ownerOf(tokenId)) revert NotTheTokenOwner();
     if (address(registry) == address(0)) revert RegistryNotFound();
-    try registry.createBoundContract(managerProxy, SALT, block.chainid, address(this), tokenId) {} catch {
+    try registry.createBoundContract(managerProxy, 0x00, block.chainid, address(this), tokenId) {} catch {
       revert ErrorCreatingManager();
     }
   }
@@ -191,12 +182,17 @@ abstract contract ManagedERC721 is IManagedERC721, IVersioned, IERC6454, IERC698
   // @dev This function will return the address of the manager for tokenId.
   // @param tokenId The id of the token.
   function managerOf(uint256 tokenId) public view returns (address) {
-    return registry.boundContract(managerProxy, SALT, block.chainid, address(this), tokenId);
+    return registry.boundContract(managerProxy, 0x00, block.chainid, address(this), tokenId);
   }
 
   function isActive(uint256 tokenId) public view returns (bool) {
-    _requireMinted(tokenId);
-    address proxy = managerOf(tokenId);
-    return proxy.isContract();
+    _requireOwned(tokenId);
+    address _addr = managerOf(tokenId);
+    uint32 size;
+    // solhint-disable-next-line no-inline-assembly
+    assembly {
+      size := extcodesize(_addr)
+    }
+    return (size > 0);
   }
 }

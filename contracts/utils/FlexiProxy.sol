@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import {ERC6551AccountProxy} from "erc6551/examples/upgradeable/ERC6551AccountProxy.sol";
+import {ERC6551AccountProxy} from "./ERC6551AccountProxy.sol";
 import {IFlexiProxy} from "./IFlexiProxy.sol";
 
 // @dev This contract is a proxy for manager implementations.

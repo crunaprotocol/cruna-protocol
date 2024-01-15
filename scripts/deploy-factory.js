@@ -10,7 +10,7 @@ const { expect } = require("chai");
 
 async function main() {
   deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
-  await deployUtils.deployProxy("VaultFactory", vault.address);
+  await deployUtils.deployProxy("VaultFactoryMock", vault.address);
 }
 
 main()

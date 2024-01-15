@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-// Author : Francesco Sullo < francesco@superpower.io>
-// (c) Superpower Labs Inc.
+// Author : Francesco Sullo <francesco@sullo.co>
 
-// Version one manages just our first cluster
-interface IVaultFactory {
+interface IVaultFactoryMock {
   // @dev Emitted when a price is set
   // @param price the new price
 
