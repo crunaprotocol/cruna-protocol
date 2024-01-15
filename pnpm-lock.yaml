@@ -53,8 +53,8 @@ devDependencies:
     specifier: ^16.3.1
     version: 16.3.1
   eth-deploy-utils:
-    specifier: 1.0.0-beta.5
-    version: 1.0.0-beta.5(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(typescript@5.3.3)
+    specifier: 1.0.0-beta.7
+    version: 1.0.0-beta.7(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(typescript@5.3.3)
   eth-sig-util:
     specifier: ^3.0.1
     version: 3.0.1
@@ -3701,8 +3701,8 @@ packages:
     engines: {node: '>= 0.6'}
     dev: true
 
-  /eth-deploy-utils@1.0.0-beta.5(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(typescript@5.3.3):
-    resolution: {integrity: sha512-DhEXdzF9/kz53WdZyoTumW9KZSiVAhnKOzkLyk8AWOGluJV65AqUujmjWmZX9PFak59Cm3ibPcvkezSYKQQwUQ==}
+  /eth-deploy-utils@1.0.0-beta.7(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(typescript@5.3.3):
+    resolution: {integrity: sha512-kBH2tK68VB5x8DEQxEpMjT/v1n4anL/kjpdIEFUrBYG5O97jA4LHfoaRrHxIrXfa99BQ4iT28BWdauPq9l0Efw==}
     dependencies:
       '@ethersproject/contracts': 5.7.0
       '@openzeppelin/hardhat-upgrades': 1.28.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(hardhat@2.19.4)

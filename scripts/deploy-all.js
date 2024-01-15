@@ -22,7 +22,13 @@ async function main() {
 
   const registry = await deployUtils.deployContractViaNickSFactory(deployer, "CrunaRegistry", undefined, undefined, salt);
 
-  const guardian = await deployUtils.deployContractViaNickSFactory(deployer, "Guardian", ["address"], [deployer.address], salt);
+  const guardian = await deployUtils.deployContractViaNickSFactory(
+    deployer,
+    "Guardian",
+    ["uint256", "address[]", "address[]", "address"],
+    [process.env.DELAY, [process.env.PROPOSER], [process.env.EXECUTOR], deployer.address],
+    salt,
+  );
 
   const manager = await deployUtils.deployContractViaNickSFactory(deployer, "Manager", salt);
 
@@ -34,21 +40,21 @@ async function main() {
     salt,
   );
 
-  const plugin = await deployUtils.deployContractViaNickSFactory(deployer, "InheritancePlugin", salt);
-
-  // deploy the plugin's proxy
-  const proxy = await deployUtils.deployContractViaNickSFactory(
-    deployer,
-    "InheritancePluginProxy",
-    ["address"],
-    [plugin.address],
-    salt,
-  );
-
-  await deployUtils.Tx(
-    guardian.setTrustedImplementation(deployUtils.bytes4(deployUtils.keccak256("InheritancePlugin")), proxy.address, true, 1),
-    "Setting trusted implementation for InheritancePlugin",
-  );
+  // const plugin = await deployUtils.deployContractViaNickSFactory(deployer, "InheritancePlugin", salt);
+  //
+  // // deploy the plugin's proxy
+  // const proxy = await deployUtils.deployContractViaNickSFactory(
+  //   deployer,
+  //   "InheritancePluginProxy",
+  //   ["address"],
+  //   [plugin.address],
+  //   salt,
+  // );
+  //
+  // await deployUtils.Tx(
+  //   guardian.setTrustedImplementation(deployUtils.bytes4(deployUtils.keccak256("InheritancePlugin")), proxy.address, true, 1),
+  //   "Setting trusted implementation for InheritancePlugin",
+  // );
 
   const vault = await deployUtils.deployContractViaNickSFactory(deployer, "VaultMock", ["address"], [deployer.address], salt);
 
