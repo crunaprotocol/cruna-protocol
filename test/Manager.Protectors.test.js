@@ -1,6 +1,7 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { toChecksumAddress } = require("ethereumjs-util");
+const { Contract } = require("@ethersproject/contracts");
 
 const {
   amount,
@@ -29,6 +30,7 @@ describe("Manager : Protectors", function () {
   let selector;
   // we put it very short for convenience (test-only)
   const delay = 10;
+  let chainId;
 
   before(async function () {
     [deployer, bob, alice, fred, mark, otto, proposer, executor] = await ethers.getSigners();
@@ -81,6 +83,36 @@ describe("Manager : Protectors", function () {
 
     return nextTokenId;
   };
+
+  it("should fail if function not found in proxy", async function () {
+
+    const fakeAbi = [{
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "role",
+          "type": "bytes4"
+        }
+      ],
+      "name": "bullish",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }];
+
+    const tokenId = await buyAVault(bob);
+    const managerAddress = await vault.managerOf(tokenId);
+    const manager = new Contract(managerAddress, fakeAbi, ethers.provider);
+
+    await expect(manager.bullish("0x12345678")).revertedWith("");
+
+  });
 
   it("should support the IManagedERC721.sol interface", async function () {
     const vaultMock = await deployContract("VaultMock", deployer.address);

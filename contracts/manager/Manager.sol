@@ -115,6 +115,41 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     }
   }
 
+  function setProtector2(
+    address protector_,
+    bool status,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature
+  ) external virtual onlyTokenOwner {
+    _setSignedActor2(
+      this.setProtector.selector,
+      PROTECTOR,
+      protector_,
+      status,
+      timestamp,
+      validFor,
+      signature,
+      true,
+      _msgSender()
+    );
+  }
+
+  function _setSignedActor2(
+    bytes4 _functionSelector,
+    bytes4 role_,
+    address actor,
+    bool status,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature,
+    bool actorIsProtector,
+    address sender
+  ) internal virtual {
+    if (actor == address(0)) revert ZeroAddress();
+    if (actor == sender) revert CannotBeYourself();
+  }
+
   function _emitLockedEvent(bool locked_) internal virtual {
     // Avoid to revert if the emission of the event fails.
     // It should never happen, but if it happens, we are
