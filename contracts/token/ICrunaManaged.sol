@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 // Author: Francesco Sullo <francesco@sullo.co>
 
 // erc165 interfaceId 0xe19a64da
-interface IManagedERC721 {
+interface ICrunaManaged {
   // @dev Allow a plugin to transfer the token
   // @param pluginNameId The hash of the plugin name.
   // @param tokenId The id of the token.

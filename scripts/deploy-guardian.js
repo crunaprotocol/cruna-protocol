@@ -28,7 +28,7 @@ async function main() {
   // deploy the guardian
   await deployUtils.deployContractViaNickSFactory(
     deployer,
-    "Guardian",
+    "CrunaGuardian",
     ["uint256", "address[]", "address[]", "address"],
     [process.env.DELAY, [process.env.PROPOSER], [process.env.EXECUTOR], deployer.address],
     salt,

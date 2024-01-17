@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import {CrunaProxy} from "../../../utils/CrunaProxy.sol";
+import {CrunaProxy} from "../utils/CrunaProxy.sol";
 
-contract SomePluginProxy is CrunaProxy {
+contract CrunaManagerProxy is CrunaProxy {
   constructor(address _initialImplementation) CrunaProxy(_initialImplementation) {
-    proxyName = keccak256("SomePluginProxy");
+    proxyName = keccak256("CrunaManager");
   }
 }

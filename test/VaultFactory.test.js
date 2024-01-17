@@ -138,8 +138,8 @@ describe("VaultFactoryMock", function () {
         .withArgs(factory.address, fred.address, amount("9.8"));
 
       const managerAddress = await vault.managerOf(nextTokenId);
-      const manager = await ethers.getContractAt("Manager", managerAddress);
-      const selector = await selectorId("IManager", "setProtector");
+      const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+      const selector = await selectorId("ICrunaManager", "setProtector");
       const chainId = await getChainId();
       const ts = (await getTimestamp()) - 100;
 

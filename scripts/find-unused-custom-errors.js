@@ -13,7 +13,7 @@ function findUnusedCustomErrors(contractContent) {
   return errors.filter((error) => !RegExp("revert " + error + "\\(", "g").test(contractContent));
 }
 
-const skipFiles = ["CrunaRegistry.sol"];
+const skipFiles = ["CrunaRegistry"];
 
 function analyzeContracts(dir) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -24,7 +24,7 @@ function analyzeContracts(dir) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       analyzeContracts(fullPath);
-    } else if (path.extname(entry.name) === ".sol") {
+    } else if (path.extname(entry.name) === "") {
       const content = fs.readFileSync(fullPath, "utf-8");
       const unusedErrors = findUnusedCustomErrors(content);
       if (unusedErrors.length > 0) {

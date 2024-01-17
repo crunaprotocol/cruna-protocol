@@ -24,16 +24,16 @@ async function main() {
 
   const guardian = await deployUtils.deployContractViaNickSFactory(
     deployer,
-    "Guardian",
+    "CrunaGuardian",
     ["uint256", "address[]", "address[]", "address"],
     [process.env.DELAY, [process.env.PROPOSER], [process.env.EXECUTOR], deployer.address],
     salt,
   );
 
-  const manager = await deployUtils.deploy("Manager");
+  const manager = await deployUtils.deploy("CrunaManager");
 
   const managerProxy = await deployUtils.deploy(
-    "ManagerProxy",
+    "CrunaManagerProxy",
     manager.address
   );
 

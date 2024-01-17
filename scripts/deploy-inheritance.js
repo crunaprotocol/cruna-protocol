@@ -26,21 +26,21 @@ async function main() {
   // }
 
   // deploy the plugin
-  const plugin = await deployUtils.deployContractViaNickSFactory(deployer, "InheritancePlugin", salt);
+  const plugin = await deployUtils.deployContractViaNickSFactory(deployer, "CrunaInheritancePlugin", salt);
 
   // deploy the plugin's proxy
   const proxy = await deployUtils.deployContractViaNickSFactory(
     deployer,
-    "InheritancePluginProxy",
+    "CrunaInheritancePluginProxy",
     ["address"],
     [plugin.address],
     salt,
   );
 
-  const guardian = await deployUtils.attach("Guardian");
+  const guardian = await deployUtils.attach("CrunaGuardian");
   await deployUtils.Tx(
-    guardian.setTrustedImplementation(deployUtils.bytes4(deployUtils.keccak256("InheritancePlugin")), proxy.address, true, 1),
-    "Setting trusted implementation for InheritancePlugin",
+    guardian.setTrustedImplementation(deployUtils.bytes4(deployUtils.keccak256("CrunaInheritancePlugin")), proxy.address, true, 1),
+    "Setting trusted implementation for CrunaInheritancePlugin",
   );
 }
 

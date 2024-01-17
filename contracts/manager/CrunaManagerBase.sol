@@ -10,18 +10,18 @@ import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
 import {IBoundContract} from "../utils/IBoundContract.sol";
 import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
-import {IGuardian} from "../utils/IGuardian.sol";
+import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 
-import {IManagerBase, IVault, IImplementation} from "./IManagerBase.sol";
+import {ICrunaManagerBase, IVault, IImplementation} from "./ICrunaManagerBase.sol";
 
 //import {console} from "hardhat/console.sol";
 
 /**
-  @title ManagerBase
+  @title CrunaManagerBase.sol
   @dev Base contract for managers and plugins
 */
-abstract contract ManagerBase is Context, IBoundContract, IVersioned, IManagerBase {
+abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICrunaManagerBase {
   error NotTheTokenOwner();
   error UntrustedImplementation();
   error InvalidVersion();
@@ -46,7 +46,7 @@ abstract contract ManagerBase is Context, IBoundContract, IVersioned, IManagerBa
 
   function nameId() public virtual returns (bytes4);
 
-  function guardian() public view virtual returns (IGuardian) {
+  function guardian() public view virtual returns (ICrunaGuardian) {
     return vault().guardian();
   }
 

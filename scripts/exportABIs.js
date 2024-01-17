@@ -2,9 +2,7 @@ const fs = require("fs-extra");
 const path = require("path");
 
 async function main() {
-  const ABIs = {
-
-  };
+  const ABIs = {};
 
   function abi(name, folder, rename) {
     let source = path.resolve(__dirname, `../artifacts/${folder ? folder + "/" : ""}${name}.sol/${name}.json`);
@@ -12,13 +10,13 @@ async function main() {
     ABIs[rename || name] = json.abi;
   }
   abi("CrunaRegistry", "contracts/utils");
-  abi("Manager", "contracts/manager");
-  abi("FlexiProxy", "contracts/utils");
-  abi("InheritancePlugin", "contracts/plugins/inheritance");
-  abi("InheritancePluginProxy", "contracts/plugins/inheritance");
+  abi("CrunaManager", "contracts/manager");
+  abi("CrunaProxy", "contracts/utils");
+  abi("CrunaInheritancePlugin", "contracts/plugins/inheritance");
+  abi("CrunaInheritancePluginProxy", "contracts/plugins/inheritance");
   abi("VaultMock", "contracts/mocks");
   abi("SignatureValidator", "contracts/utils");
-  abi("Guardian", "contracts/utils");
+  abi("CrunaGuardian", "contracts/utils");
   abi("VaultFactoryMock", "contracts/mocks/factory");
 
   // for dev only

@@ -8,18 +8,18 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Ownable, Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {IGuardian} from "../utils/IGuardian.sol";
+import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
 import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
-import {IManagedERC721} from "./IManagedERC721.sol";
+import {ICrunaManaged} from "./ICrunaManaged.sol";
 import {IERC6454} from "../interfaces/IERC6454.sol";
 import {IERC6982} from "../interfaces/IERC6982.sol";
-import {IManager} from "../manager/IManager.sol";
+import {ICrunaManager} from "../manager/ICrunaManager.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 
 //import {console} from "hardhat/console.sol";
 
 // @dev This contract is a base for NFTs with protected transfers.
-abstract contract ManagedERC721 is IManagedERC721, IVersioned, IERC6454, IERC6982, ERC721, Ownable2Step {
+abstract contract CrunaManaged is ICrunaManaged, IVersioned, IERC6454, IERC6982, ERC721, Ownable2Step {
   using ECDSA for bytes32;
   using Strings for uint256;
   using Address for address;
@@ -36,9 +36,9 @@ abstract contract ManagedERC721 is IManagedERC721, IVersioned, IERC6454, IERC698
   error NotTheTokenOwner();
 
   mapping(bytes32 => bool) public usedSignatures;
-  IGuardian public guardian;
+  ICrunaGuardian public guardian;
   ICrunaRegistry public registry;
-  address public managerProxy;
+  address public managerAddress;
 
   bytes4 public constant NAME_HASH = bytes4(keccak256("ManagedNFT"));
 
@@ -75,15 +75,15 @@ abstract contract ManagedERC721 is IManagedERC721, IVersioned, IERC6454, IERC698
 
   // @dev This function will initialize the contract.
   // @param registry_ The address of the registry contract.
-  // @param guardian_ The address of the Manager.sol guardian.
+  // @param guardian_ The address of the CrunaManager.sol guardian.
   // @param managerProxy_ The address of the manager proxy.
   function init(address registry_, address guardian_, address managerProxy_) external onlyOwner {
     // must be called immediately after deployment
     if (address(registry) != address(0)) revert AlreadyInitiated();
     if (registry_ == address(0) || guardian_ == address(0) || managerProxy_ == address(0)) revert ZeroAddress();
-    guardian = IGuardian(guardian_);
+    guardian = ICrunaGuardian(guardian_);
     registry = ICrunaRegistry(registry_);
-    managerProxy = managerProxy_;
+    managerAddress = managerProxy_;
   }
 
   // @dev See {IProtected721-managedTransfer}.
@@ -106,7 +106,7 @@ abstract contract ManagedERC721 is IManagedERC721, IVersioned, IERC6454, IERC698
   // @dev See {ERC165-supportsInterface}.
   function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721) returns (bool) {
     return
-      interfaceId == type(IManagedERC721).interfaceId ||
+      interfaceId == type(ICrunaManaged).interfaceId ||
       interfaceId == type(IERC6454).interfaceId ||
       interfaceId == type(IERC6982).interfaceId ||
       super.supportsInterface(interfaceId);
@@ -120,7 +120,7 @@ abstract contract ManagedERC721 is IManagedERC721, IVersioned, IERC6454, IERC698
   // @param to The address of the recipient.
   // @return true if the token is transferable, false otherwise.
   function isTransferable(uint256 tokenId, address from, address to) public view override returns (bool) {
-    IManager manager = IManager(managerOf(tokenId));
+    ICrunaManager manager = ICrunaManager(managerOf(tokenId));
     // Burnings and self transfers are not allowed
     if (to == address(0) || from == to) return false;
     // if from zero, it is minting
@@ -143,11 +143,11 @@ abstract contract ManagedERC721 is IManagedERC721, IVersioned, IERC6454, IERC698
   // lock status.
   // This function MUST revert if the token does not exist.
   function locked(uint256 tokenId) external view override returns (bool) {
-    return IManager(managerOf(tokenId)).hasProtectors();
+    return ICrunaManager(managerOf(tokenId)).hasProtectors();
   }
 
   // When a protector is set and the token becomes locked, this event must be emit
-  // from the Manager
+  // from the CrunaManager.sol
   function emitLockedEvent(uint256 tokenId, bool locked_) external onlyManager(tokenId) {
     emit Locked(tokenId, locked_);
   }
@@ -162,7 +162,7 @@ abstract contract ManagedERC721 is IManagedERC721, IVersioned, IERC6454, IERC698
     for (uint256 i = 0; i < amount; i++) {
       if (maxTokenId > 0 && tokenId > maxTokenId) revert MaxSupplyReached();
       if (alsoInit) {
-        try registry.createBoundContract(managerProxy, 0x00, block.chainid, address(this), tokenId) {} catch {
+        try registry.createBoundContract(managerAddress, 0x00, block.chainid, address(this), tokenId) {} catch {
           revert ErrorCreatingManager();
         }
       }
@@ -174,7 +174,7 @@ abstract contract ManagedERC721 is IManagedERC721, IVersioned, IERC6454, IERC698
   function activate(uint256 tokenId) external {
     if (_msgSender() != ownerOf(tokenId)) revert NotTheTokenOwner();
     if (address(registry) == address(0)) revert RegistryNotFound();
-    try registry.createBoundContract(managerProxy, 0x00, block.chainid, address(this), tokenId) {} catch {
+    try registry.createBoundContract(managerAddress, 0x00, block.chainid, address(this), tokenId) {} catch {
       revert ErrorCreatingManager();
     }
   }
@@ -182,7 +182,7 @@ abstract contract ManagedERC721 is IManagedERC721, IVersioned, IERC6454, IERC698
   // @dev This function will return the address of the manager for tokenId.
   // @param tokenId The id of the token.
   function managerOf(uint256 tokenId) public view returns (address) {
-    return registry.boundContract(managerProxy, 0x00, block.chainid, address(this), tokenId);
+    return registry.boundContract(managerAddress, 0x00, block.chainid, address(this), tokenId);
   }
 
   function isActive(uint256 tokenId) public view returns (bool) {

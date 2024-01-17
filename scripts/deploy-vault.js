@@ -22,8 +22,8 @@ async function main() {
   let salt = deployUtils.keccak256("Cruna");
 
   const registry = await deployUtils.attach("CrunaRegistry");
-  const guardian = await deployUtils.attach("Guardian");
-  const managerProxy = await deployUtils.attach("ManagerProxy");
+  const guardian = await deployUtils.attach("CrunaGuardian");
+  const managerProxy = await deployUtils.attach("CrunaManagerProxy");
 
   // deploy the vault
   const vault = await deployUtils.deployContractViaNickSFactory(deployer, "VaultMock", ["address"], [deployer.address], salt);

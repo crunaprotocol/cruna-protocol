@@ -4,14 +4,14 @@ pragma solidity ^0.8.13;
 import {FlexiTimelockController} from "./FlexiTimelockController.sol";
 
 import {IVersioned} from "./IVersioned.sol";
-import {IGuardian} from "./IGuardian.sol";
+import {ICrunaGuardian} from "./ICrunaGuardian.sol";
 
 //import "hardhat/console.sol";
 
 /**
  * @dev Manages upgrade and cross-chain execution settings for accounts
  */
-contract Guardian is IGuardian, FlexiTimelockController, IVersioned {
+contract CrunaGuardian is ICrunaGuardian, FlexiTimelockController, IVersioned {
   error InvalidArguments();
 
   mapping(bytes4 => mapping(address => uint256)) private _isTrustedImplementation;

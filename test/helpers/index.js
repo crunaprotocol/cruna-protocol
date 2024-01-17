@@ -164,18 +164,18 @@ const Helpers = {
 
     const crunaRegistry = await ethers.getContractAt("CrunaRegistry", crunaRegistryAddress);
 
-    const managerAddress = await Helpers.deployContractViaNickSFactory(deployer, "Manager");
+    const managerAddress = await Helpers.deployContractViaNickSFactory(deployer, "CrunaManager");
 
-    const proxyAddress = await Helpers.deployContractViaNickSFactory(deployer, "ManagerProxy", ["address"], [managerAddress]);
-    const proxy = await ethers.getContractAt("ManagerProxy", proxyAddress);
+    const proxyAddress = await Helpers.deployContractViaNickSFactory(deployer, "CrunaManagerProxy", ["address"], [managerAddress]);
+    const proxy = await ethers.getContractAt("CrunaManagerProxy", proxyAddress);
 
     const guardianAddress = await Helpers.deployContractViaNickSFactory(
       deployer,
-      "Guardian",
+      "CrunaGuardian",
       ["uint256", "address[]", "address[]", "address"],
       [delay, [proposer.address], [executor.address], deployer.address],
     );
-    const guardian = await ethers.getContractAt("Guardian", guardianAddress);
+    const guardian = await ethers.getContractAt("CrunaGuardian", guardianAddress);
 
     return [crunaRegistry, proxy, guardian];
   },

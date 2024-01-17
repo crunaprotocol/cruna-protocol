@@ -22,10 +22,10 @@ async function main() {
   let salt = deployUtils.keccak256("Cruna");
 
   // deploy the manager
-  const manager = await deployUtils.deployContractViaNickSFactory(deployer, "Manager", salt);
+  const manager = await deployUtils.deployContractViaNickSFactory(deployer, "CrunaManager", salt);
 
   // deploy the manager's proxy
-  await deployUtils.deployContractViaNickSFactory(deployer, "ManagerProxy", ["address"], [manager.address], salt);
+  await deployUtils.deployContractViaNickSFactory(deployer, "CrunaManagerProxy", ["address"], [manager.address], salt);
 }
 
 main()

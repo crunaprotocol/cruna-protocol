@@ -32,9 +32,9 @@ describe("Testing contract deployments", function () {
 
   beforeEach(async function () {
     crunaRegistry = await deployContract("CrunaRegistry");
-    managerImpl = await deployContract("Manager");
-    guardian = await deployContract("Guardian", delay, [proposer.address], [executor.address], deployer.address);
-    proxy = await deployContract("ManagerProxy", managerImpl.address);
+    managerImpl = await deployContract("CrunaManager");
+    guardian = await deployContract("CrunaGuardian", delay, [proposer.address], [executor.address], deployer.address);
+    proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
     vault = await deployContract("VaultMock", deployer.address);
     await vault.init(crunaRegistry.address, guardian.address, proxy.address);
     factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address, deployer.address]);
@@ -55,7 +55,7 @@ describe("Testing contract deployments", function () {
   it("should deploy everything as expected", async function () {
     // test the beforeEach
     // to cover it
-    const flexiProxy = await deployContract("FlexiProxy", managerImpl.address);
+    const flexiProxy = await deployContract("CrunaProxy", managerImpl.address);
     expect(await flexiProxy.isProxy()).to.be.true;
   });
 
@@ -67,7 +67,7 @@ describe("Testing contract deployments", function () {
     expect(await ethers.provider.getCode(managerAddress)).equal("0x");
     await factory.connect(bob).buyVaults(usdc.address, 1, true);
     expect(await ethers.provider.getCode(managerAddress)).not.equal("0x");
-    const manager = await ethers.getContractAt("Manager", managerAddress);
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
     expect(await manager.tokenId()).to.equal(nextTokenId);
     expect(await manager.vault()).to.equal(vault.address);
     expect(await manager.owner()).to.equal(bob.address);

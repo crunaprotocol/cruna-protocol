@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {Manager} from "../manager/Manager.sol";
+import {CrunaManager} from "../manager/CrunaManager.sol";
 
-contract ManagerV2Mock is Manager {
+contract ManagerV2Mock is CrunaManager {
   function version() public pure virtual override returns (uint256) {
     return 1e6 + 2e3;
   }
