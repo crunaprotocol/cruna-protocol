@@ -14,7 +14,7 @@ async function main() {
   abi("CrunaProxy", "contracts/utils");
   abi("CrunaInheritancePlugin", "contracts/plugins/inheritance");
   abi("CrunaInheritancePluginProxy", "contracts/plugins/inheritance");
-  abi("VaultMock", "contracts/mocks");
+  abi("CrunaVaults.sol", "contracts/mocks");
   abi("SignatureValidator", "contracts/utils");
   abi("CrunaGuardian", "contracts/utils");
   abi("VaultFactoryMock", "contracts/mocks/factory");

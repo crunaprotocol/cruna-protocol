@@ -166,7 +166,12 @@ const Helpers = {
 
     const managerAddress = await Helpers.deployContractViaNickSFactory(deployer, "CrunaManager");
 
-    const proxyAddress = await Helpers.deployContractViaNickSFactory(deployer, "CrunaManagerProxy", ["address"], [managerAddress]);
+    const proxyAddress = await Helpers.deployContractViaNickSFactory(
+      deployer,
+      "CrunaManagerProxy",
+      ["address"],
+      [managerAddress],
+    );
     const proxy = await ethers.getContractAt("CrunaManagerProxy", proxyAddress);
 
     const guardianAddress = await Helpers.deployContractViaNickSFactory(

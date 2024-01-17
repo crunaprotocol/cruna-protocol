@@ -12,7 +12,7 @@ async function main() {
   deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
 
   const [deployer] = await ethers.getSigners();
-  const vault = await deployUtils.attach("VaultMock");
+  const vault = await deployUtils.attach("CrunaVaults.sol");
 
   const factory = await deployUtils.deployProxy("VaultFactoryMock", vault.address, deployer.address);
 

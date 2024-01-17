@@ -56,7 +56,7 @@ contract CrunaInheritancePlugin is IPlugin, ICrunaInheritancePlugin, CrunaManage
   }
 
   function nameId() public virtual override returns (bytes4) {
-    return bytes4(keccak256("InheritancePlugin"));
+    return bytes4(keccak256("CrunaInheritancePlugin"));
   }
 
   function vault() public view virtual override returns (IVault) {

@@ -40,7 +40,13 @@ async function main() {
     salt,
   );
 
-  const vault = await deployUtils.deployContractViaNickSFactory(deployer, "VaultMock", ["address"], [deployer.address], salt);
+  const vault = await deployUtils.deployContractViaNickSFactory(
+    deployer,
+    "CrunaVaults.sol",
+    ["uint256", "address[]", "address[]", "address"],
+    [process.env.DELAY, [process.env.PROPOSER], [process.env.EXECUTOR], deployer.address],
+    salt,
+  );
 
   try {
     await deployUtils.Tx(
@@ -64,7 +70,6 @@ async function main() {
   await deployUtils.Tx(factory.setDiscount(2010), "Set discount");
 
   await deployUtils.Tx(vault.setFactory(factory.address, { gasLimit: 100000 }), "Set the factory");
-
 }
 
 main()

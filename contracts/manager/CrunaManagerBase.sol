@@ -102,7 +102,7 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICrun
     IImplementation impl = IImplementation(implementation_);
     uint256 _version = impl.version();
     if (_version <= currentVersion) revert InvalidVersion();
-    if (impl.nameId() != _stringToBytes4("Manager")) {
+    if (impl.nameId() != _stringToBytes4("CrunaManager")) {
       IImplementation manager = IImplementation(vault().managerOf(tokenId()));
       if (manager.version() < requires) revert PluginRequiresUpdatedManager(requires);
     }

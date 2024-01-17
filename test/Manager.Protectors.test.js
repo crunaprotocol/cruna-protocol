@@ -44,7 +44,7 @@ describe("CrunaManager.sol : Protectors", function () {
     guardian = await deployContract("CrunaGuardian", delay, [proposer.address], [executor.address], deployer.address);
     proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
 
-    vault = await deployContract("VaultMock", deployer.address);
+    vault = await deployContract("VaultMockSimple", deployer.address);
     await vault.init(crunaRegistry.address, guardian.address, proxy.address);
     factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address, deployer.address]);
 
@@ -85,38 +85,38 @@ describe("CrunaManager.sol : Protectors", function () {
   };
 
   it("should fail if function not found in proxy", async function () {
-
-    const fakeAbi = [{
-      "inputs": [
-        {
-          "internalType": "bytes4",
-          "name": "role",
-          "type": "bytes4"
-        }
-      ],
-      "name": "bullish",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    }];
+    const fakeAbi = [
+      {
+        inputs: [
+          {
+            internalType: "bytes4",
+            name: "role",
+            type: "bytes4",
+          },
+        ],
+        name: "bullish",
+        outputs: [
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+    ];
 
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = new Contract(managerAddress, fakeAbi, ethers.provider);
 
     await expect(manager.bullish("0x12345678")).revertedWith("");
-
   });
 
   it("should support the ICrunaManaged.sol interface", async function () {
-    const vaultMock = await deployContract("VaultMock", deployer.address);
-    await vaultMock.init(crunaRegistry.address, guardian.address, proxy.address);
+    const VaultMockSimple = await deployContract("VaultMockSimple", deployer.address);
+    await VaultMockSimple.init(crunaRegistry.address, guardian.address, proxy.address);
     let interfaceId = await getInterfaceId("ICrunaManaged");
     expect(interfaceId).to.equal("0xe19a64da");
     expect(await vault.supportsInterface(interfaceId)).to.be.true;
@@ -375,7 +375,7 @@ describe("CrunaManager.sol : Protectors", function () {
       .withArgs(bob.address, fred.address, tokenId);
   });
 
-  it.only("should allow bob to upgrade the manager", async function () {
+  it("should allow bob to upgrade the manager", async function () {
     const tokenId = await buyAVault(bob);
     const managerV2Impl = await deployContract("ManagerV2Mock");
     const managerAddress = await vault.managerOf(tokenId);

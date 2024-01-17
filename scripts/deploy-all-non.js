@@ -32,12 +32,9 @@ async function main() {
 
   const manager = await deployUtils.deploy("CrunaManager");
 
-  const managerProxy = await deployUtils.deploy(
-    "CrunaManagerProxy",
-    manager.address
-  );
+  const managerProxy = await deployUtils.deploy("CrunaManagerProxy", manager.address);
 
-  const vault = await deployUtils.deploy("VaultMock", deployer.address);
+  const vault = await deployUtils.deploy("CrunaVaults.sol", deployer.address);
 
   try {
     await deployUtils.Tx(

@@ -26,7 +26,13 @@ async function main() {
   const managerProxy = await deployUtils.attach("CrunaManagerProxy");
 
   // deploy the vault
-  const vault = await deployUtils.deployContractViaNickSFactory(deployer, "VaultMock", ["address"], [deployer.address], salt);
+  const vault = await deployUtils.deployContractViaNickSFactory(
+    deployer,
+    "CrunaVaults.sol",
+    ["uint256", "address[]", "address[]", "address"],
+    [process.env.DELAY, [process.env.PROPOSER], [process.env.EXECUTOR], deployer.address],
+    salt,
+  );
 
   await deployUtils.Tx(
     vault.init(registry.address, guardian.address, managerProxy.address, { gasLimit: 120000 }),

@@ -51,7 +51,7 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
   mapping(bytes4 => uint256) public timeLocks;
 
   function nameId() public virtual override returns (bytes4) {
-    return bytes4(keccak256("Manager"));
+    return bytes4(keccak256("CrunaManager"));
   }
 
   // simulate ERC-721 to allow plugins to be deployed via ERC-6551 Registry
@@ -108,7 +108,7 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
         _emitLockedEvent(true);
       }
     } else if (countActiveProtectors() == 0) {
-        _emitLockedEvent(false);
+      _emitLockedEvent(false);
     }
     emit ProtectorUpdated(_msgSender(), protector_, status);
   }

@@ -39,7 +39,12 @@ async function main() {
 
   const guardian = await deployUtils.attach("CrunaGuardian");
   await deployUtils.Tx(
-    guardian.setTrustedImplementation(deployUtils.bytes4(deployUtils.keccak256("CrunaInheritancePlugin")), proxy.address, true, 1),
+    guardian.setTrustedImplementation(
+      deployUtils.bytes4(deployUtils.keccak256("CrunaInheritancePlugin")),
+      proxy.address,
+      true,
+      1,
+    ),
     "Setting trusted implementation for CrunaInheritancePlugin",
   );
 }

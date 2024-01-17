@@ -6,7 +6,6 @@ pragma solidity ^0.8.20;
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import {Ownable, Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
 import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
@@ -15,11 +14,11 @@ import {IERC6454} from "../interfaces/IERC6454.sol";
 import {IERC6982} from "../interfaces/IERC6982.sol";
 import {ICrunaManager} from "../manager/ICrunaManager.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
+import {CrunaManagerProxy} from "../manager/CrunaManagerProxy.sol";
 
 //import {console} from "hardhat/console.sol";
 
-// @dev This contract is a base for NFTs with protected transfers.
-abstract contract CrunaManaged is ICrunaManaged, IVersioned, IERC6454, IERC6982, ERC721, Ownable2Step {
+abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6982, ERC721 {
   using ECDSA for bytes32;
   using Strings for uint256;
   using Address for address;
@@ -34,13 +33,15 @@ abstract contract CrunaManaged is ICrunaManaged, IVersioned, IERC6454, IERC6982,
   error MaxSupplyReached();
   error ErrorCreatingManager();
   error NotTheTokenOwner();
+  error CannotUpgradeToAnOlderVersion();
+  error UntrustedImplementation();
 
   mapping(bytes32 => bool) public usedSignatures;
   ICrunaGuardian public guardian;
   ICrunaRegistry public registry;
   address public managerAddress;
 
-  bytes4 public constant NAME_HASH = bytes4(keccak256("ManagedNFT"));
+  bytes4 public constant NAME_HASH = bytes4(keccak256("CrunaManaged"));
 
   uint256 public nextTokenId = 1;
   uint256 public maxTokenId;
@@ -63,12 +64,19 @@ abstract contract CrunaManaged is ICrunaManaged, IVersioned, IERC6454, IERC6982,
   // @param name_ The name of the token.
   // @param symbol_ The symbol of the token.
   // @param owner The address of the owner.
-  constructor(string memory name_, string memory symbol_, address owner) ERC721(name_, symbol_) Ownable(owner) {
+  constructor(string memory name_, string memory symbol_) ERC721(name_, symbol_) {
     nextTokenId = 1;
     emit DefaultLocked(false);
   }
 
-  function setMaxTokenId(uint256 maxTokenId_) external onlyOwner {
+  // Must be overridden to specify who can manage changes in the contract states
+  // It should revert it the caller is not allowed to manage
+  // @param init True if the contract is being initialized, false otherwise
+  //   During initialization, the caller may be the deployer
+  function _canManage(bool isInitializing) internal view virtual;
+
+  function setMaxTokenId(uint256 maxTokenId_) external virtual {
+    _canManage(maxTokenId == 0);
     if (nextTokenId > 0 && maxTokenId_ < nextTokenId - 1) maxTokenId_ = nextTokenId - 1;
     maxTokenId = maxTokenId_;
   }
@@ -77,7 +85,8 @@ abstract contract CrunaManaged is ICrunaManaged, IVersioned, IERC6454, IERC6982,
   // @param registry_ The address of the registry contract.
   // @param guardian_ The address of the CrunaManager.sol guardian.
   // @param managerProxy_ The address of the manager proxy.
-  function init(address registry_, address guardian_, address managerProxy_) external onlyOwner {
+  function init(address registry_, address guardian_, address managerProxy_) external virtual {
+    _canManage(true);
     // must be called immediately after deployment
     if (address(registry) != address(0)) revert AlreadyInitiated();
     if (registry_ == address(0) || guardian_ == address(0) || managerProxy_ == address(0)) revert ZeroAddress();
@@ -86,8 +95,20 @@ abstract contract CrunaManaged is ICrunaManaged, IVersioned, IERC6454, IERC6982,
     managerAddress = managerProxy_;
   }
 
+  function upgradeDefaultManager(address payable newManagerProxy) external virtual {
+    _canManage(false);
+    bytes4 nameId = bytes4(keccak256("CrunaManagerProxy"));
+    uint256 requires = guardian.trustedImplementation(nameId, newManagerProxy);
+    if (requires == 0) revert UntrustedImplementation();
+    CrunaManagerProxy proxy = CrunaManagerProxy(newManagerProxy);
+    IVersioned manager = IVersioned(managerAddress);
+    IVersioned newManager = IVersioned(proxy.DEFAULT_IMPLEMENTATION());
+    if (newManager.version() <= manager.version()) revert CannotUpgradeToAnOlderVersion();
+    managerAddress = newManagerProxy;
+  }
+
   // @dev See {IProtected721-managedTransfer}.
-  function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external override onlyManager(tokenId) {
+  function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external virtual override onlyManager(tokenId) {
     _approvedTransfers[tokenId] = true;
     _approve(managerOf(tokenId), tokenId, address(0));
     safeTransferFrom(ownerOf(tokenId), to, tokenId);
@@ -119,7 +140,7 @@ abstract contract CrunaManaged is ICrunaManaged, IVersioned, IERC6454, IERC6982,
   // @param from The address of the sender.
   // @param to The address of the recipient.
   // @return true if the token is transferable, false otherwise.
-  function isTransferable(uint256 tokenId, address from, address to) public view override returns (bool) {
+  function isTransferable(uint256 tokenId, address from, address to) public view virtual override returns (bool) {
     ICrunaManager manager = ICrunaManager(managerOf(tokenId));
     // Burnings and self transfers are not allowed
     if (to == address(0) || from == to) return false;
@@ -133,7 +154,7 @@ abstract contract CrunaManaged is ICrunaManaged, IVersioned, IERC6454, IERC6982,
 
   // ERC6982
 
-  function defaultLocked() external pure override returns (bool) {
+  function defaultLocked() external pure virtual override returns (bool) {
     return false;
   }
 
@@ -142,13 +163,13 @@ abstract contract CrunaManaged is ICrunaManaged, IVersioned, IERC6454, IERC6982,
   // the value that defaultLocked() returns, which represents the default
   // lock status.
   // This function MUST revert if the token does not exist.
-  function locked(uint256 tokenId) external view override returns (bool) {
+  function locked(uint256 tokenId) external view virtual override returns (bool) {
     return ICrunaManager(managerOf(tokenId)).hasProtectors();
   }
 
   // When a protector is set and the token becomes locked, this event must be emit
   // from the CrunaManager.sol
-  function emitLockedEvent(uint256 tokenId, bool locked_) external onlyManager(tokenId) {
+  function emitLockedEvent(uint256 tokenId, bool locked_) external virtual onlyManager(tokenId) {
     emit Locked(tokenId, locked_);
   }
 
@@ -156,7 +177,7 @@ abstract contract CrunaManaged is ICrunaManaged, IVersioned, IERC6454, IERC6982,
 
   // @dev This function will mint a new token and initialize it.
   // @param to The address of the recipient.
-  function _mintAndActivate(address to, bool alsoInit, uint256 amount) internal {
+  function _mintAndActivate(address to, bool alsoInit, uint256 amount) internal virtual {
     if (alsoInit && address(registry) == address(0)) revert RegistryNotFound();
     uint256 tokenId = nextTokenId;
     for (uint256 i = 0; i < amount; i++) {
@@ -171,7 +192,7 @@ abstract contract CrunaManaged is ICrunaManaged, IVersioned, IERC6454, IERC6982,
     nextTokenId = tokenId;
   }
 
-  function activate(uint256 tokenId) external {
+  function activate(uint256 tokenId) external virtual {
     if (_msgSender() != ownerOf(tokenId)) revert NotTheTokenOwner();
     if (address(registry) == address(0)) revert RegistryNotFound();
     try registry.createBoundContract(managerAddress, 0x00, block.chainid, address(this), tokenId) {} catch {
@@ -181,11 +202,11 @@ abstract contract CrunaManaged is ICrunaManaged, IVersioned, IERC6454, IERC6982,
 
   // @dev This function will return the address of the manager for tokenId.
   // @param tokenId The id of the token.
-  function managerOf(uint256 tokenId) public view returns (address) {
+  function managerOf(uint256 tokenId) public view virtual returns (address) {
     return registry.boundContract(managerAddress, 0x00, block.chainid, address(this), tokenId);
   }
 
-  function isActive(uint256 tokenId) public view returns (bool) {
+  function isActive(uint256 tokenId) public view virtual returns (bool) {
     _requireOwned(tokenId);
     address _addr = managerOf(tokenId);
     uint32 size;

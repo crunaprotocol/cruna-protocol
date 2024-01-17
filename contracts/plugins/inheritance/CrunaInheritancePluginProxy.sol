@@ -5,6 +5,6 @@ import {CrunaProxy} from "../../utils/CrunaProxy.sol";
 
 contract CrunaInheritancePluginProxy is CrunaProxy {
   constructor(address _initialImplementation) CrunaProxy(_initialImplementation) {
-    proxyName = keccak256("CrunaInheritancePlugin");
+    proxyName = keccak256("CrunaInheritancePluginProxy");
   }
 }
