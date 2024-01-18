@@ -11,11 +11,11 @@ async function main() {
   }
   abi("CrunaRegistry", "contracts/utils");
   abi("CrunaManager", "contracts/manager");
-  abi("CrunaProxy", "contracts/utils");
+  // abi("CrunaProxy", "contracts/utils");
   abi("CrunaInheritancePlugin", "contracts/plugins/inheritance");
-  abi("CrunaInheritancePluginProxy", "contracts/plugins/inheritance");
-  abi("CrunaVaults.sol", "contracts/mocks");
-  abi("SignatureValidator", "contracts/utils");
+  // abi("CrunaInheritancePluginProxy", "contracts/plugins/inheritance");
+  abi("CrunaVaults", "contracts/mocks");
+  // abi("SignatureValidator", "contracts/utils");
   abi("CrunaGuardian", "contracts/utils");
   abi("VaultFactoryMock", "contracts/mocks/factory");
 
@@ -28,7 +28,7 @@ async function main() {
   // abi("ERC1155", "@openzeppelin/contracts/token/ERC1155");
   // abi("ERC721Enumerable", "@openzeppelin/contracts/token/ERC721/extensions");
 
-  await fs.writeFile(path.resolve(__dirname, "../export/ABIs.json"), JSON.stringify(ABIs, null, 2));
+  await fs.writeFile(path.resolve(__dirname, "../export/Cruna.json"), JSON.stringify(ABIs, null, 2));
 }
 
 main()

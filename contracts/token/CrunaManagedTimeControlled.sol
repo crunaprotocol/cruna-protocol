@@ -25,7 +25,7 @@ abstract contract CrunaManagedTimeControlled is CrunaManagedBase, FlexiTimelockC
   function _canManage(bool isInitializing) internal view virtual override {
     if (isInitializing) {
       if (!hasRole(DEFAULT_ADMIN_ROLE, _msgSender())) revert NotAuthorized();
-    } else if (msg.sender != address(this)) revert MustCallThroughTimeController();
+    } else if (_msgSender() != address(this)) revert MustCallThroughTimeController();
   }
 
   // @dev See {ERC165-supportsInterface}.

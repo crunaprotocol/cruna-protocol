@@ -42,7 +42,7 @@ async function main() {
 
   const vault = await deployUtils.deployContractViaNickSFactory(
     deployer,
-    "CrunaVaults.sol",
+    "CrunaVaults",
     ["uint256", "address[]", "address[]", "address"],
     [process.env.DELAY, [process.env.PROPOSER], [process.env.EXECUTOR], deployer.address],
     salt,

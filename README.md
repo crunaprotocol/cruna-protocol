@@ -230,7 +230,7 @@ File                              |  % Stmts | % Branch |  % Funcs |  % Lines |U
   CrunaInheritancePluginProxy.sol |      100 |      100 |      100 |      100 |                |
   ICrunaInheritancePlugin.sol     |      100 |      100 |      100 |      100 |                |
  token/                           |    79.25 |    51.79 |    86.36 |    79.03 |                |
-  CrunaManagedBase.sol            |    81.25 |    54.17 |    88.24 |    79.31 |... 107,187,199 |
+  CrunaManagedBase.sol            |    81.25 |    54.17 |    88.24 |    79.31 |... 108,188,200 |
   CrunaManagedOwnable.sol         |      100 |       50 |      100 |      100 |                |
   CrunaManagedTimeControlled.sol  |       50 |    33.33 |    66.67 |    66.67 |             35 |
   ICrunaManaged.sol               |      100 |      100 |      100 |      100 |                |

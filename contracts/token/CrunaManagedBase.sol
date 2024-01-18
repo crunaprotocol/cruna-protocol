@@ -71,8 +71,9 @@ abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6
 
   // Must be overridden to specify who can manage changes in the contract states
   // It should revert it the caller is not allowed to manage
-  // @param init True if the contract is being initialized, false otherwise
-  //   During initialization, the caller may be the deployer
+  // @param isInitializing True if the contract is being initialized, false otherwise
+  //   During initialization, the caller is often the deployer, while later governance
+  //   strategies can be applied (time lock, etc.).
   function _canManage(bool isInitializing) internal view virtual;
 
   function setMaxTokenId(uint256 maxTokenId_) external virtual {

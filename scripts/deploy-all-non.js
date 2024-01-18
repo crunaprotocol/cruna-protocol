@@ -34,7 +34,7 @@ async function main() {
 
   const managerProxy = await deployUtils.deploy("CrunaManagerProxy", manager.address);
 
-  const vault = await deployUtils.deploy("CrunaVaults.sol", deployer.address);
+  const vault = await deployUtils.deploy("CrunaVaults", deployer.address);
 
   try {
     await deployUtils.Tx(
