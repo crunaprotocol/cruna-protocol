@@ -288,14 +288,28 @@ const Helpers = {
   },
 
   async trustImplementation(guardian, proposer, executor, delay, nameId, implementation, trusted, requires) {
-    const { cl } = thiz;
-    const data = guardian.interface.encodeFunctionData("setTrustedImplementation", [nameId, implementation, trusted, requires]);
+    return thiz.proposeAndExecute(
+      guardian,
+      proposer,
+      executor,
+      delay,
+      "setTrustedImplementation",
+      nameId,
+      implementation,
+      trusted,
+      requires,
+    );
+  },
+
+  async proposeAndExecute(contract, proposer, executor, delay, funcName, ...params) {
+    // const { cl } = thiz;
+    const data = contract.interface.encodeFunctionData(funcName, [...params]);
     const predecessor = ethers.utils.formatBytes32String("");
     const salt = ethers.utils.formatBytes32String("");
-    await guardian.connect(proposer).schedule(guardian.address, 0, data, predecessor, salt, delay);
+    await contract.connect(proposer).schedule(contract.address, 0, data, predecessor, salt, delay);
     await ethers.provider.send("evm_increaseTime", [delay + 1]);
     await ethers.provider.send("evm_mine");
-    await guardian.connect(executor).execute(guardian.address, 0, data, predecessor, salt);
+    return contract.connect(executor).execute(contract.address, 0, data, predecessor, salt);
   },
 
   async sleep(millis) {

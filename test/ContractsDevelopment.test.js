@@ -12,7 +12,8 @@ const {
   deployContract,
   getTimestamp,
   signRequest,
-  keccak256,
+  getInterfaceId,
+  proposeAndExecute,
 } = require("./helpers");
 
 describe("Testing contract deployments", function () {
@@ -20,12 +21,12 @@ describe("Testing contract deployments", function () {
   let vault;
   let factory;
   let usdc, usdt;
-  let deployer, bob, alice, fred, mark, otto, proposer, executor;
+  let deployer, bob, alice, fred, mark, otto, proposer, executor, proposer2, executor2;
   let chainId, ts;
   const delay = 10;
 
   before(async function () {
-    [deployer, bob, alice, fred, mark, otto, proposer, executor] = await ethers.getSigners();
+    [deployer, bob, alice, fred, mark, otto, proposer, executor, proposer2, executor2] = await ethers.getSigners();
 
     chainId = await getChainId();
   });
@@ -34,11 +35,24 @@ describe("Testing contract deployments", function () {
     crunaRegistry = await deployContract("CrunaRegistry");
     managerImpl = await deployContract("CrunaManager");
     guardian = await deployContract("CrunaGuardian", delay, [proposer.address], [executor.address], deployer.address);
+    expect(await guardian.version()).to.equal(1000000);
     proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
+    // sent 2 ETH to proxy
+    await expect(
+      deployer.sendTransaction({ to: proxy.address, value: amount("2"), gasLimit: ethers.utils.hexlify(100000) }),
+    ).revertedWith("ERC1967NonPayable");
+
     vault = await deployContract("CrunaVaults", delay, [proposer.address], [executor.address], deployer.address);
+    expect(await vault.version()).to.equal(1000000);
     await vault.init(crunaRegistry.address, guardian.address, proxy.address);
     factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address, deployer.address]);
     await vault.setFactory(factory.address);
+    expect(await vault.supportsInterface(getInterfaceId("IAccessControl"))).to.equal(true);
+
+    expect(await vault.maxTokenId()).to.equal(0);
+    // first time it does not require a proposer/executor approach
+    await vault.setMaxTokenId(10000);
+    expect(await vault.maxTokenId()).to.equal(10000);
 
     usdc = await deployContract("USDCoin", deployer.address);
     usdt = await deployContract("TetherUSD", deployer.address);
@@ -50,6 +64,11 @@ describe("Testing contract deployments", function () {
     await expect(factory.setStableCoin(usdc.address, true)).to.emit(factory, "StableCoinSet").withArgs(usdc.address, true);
     await expect(factory.setStableCoin(usdt.address, true)).to.emit(factory, "StableCoinSet").withArgs(usdt.address, true);
     ts = (await getTimestamp()) - 100;
+
+    // second time it requires a proposer/executor approach
+    await expect(vault.setMaxTokenId(20000)).revertedWith("MustCallThroughTimeController");
+    await proposeAndExecute(vault, proposer, executor, 10, "setMaxTokenId", 20000);
+    expect(await vault.maxTokenId()).to.equal(20000);
   });
 
   it("should deploy everything as expected", async function () {
@@ -68,5 +87,26 @@ describe("Testing contract deployments", function () {
     expect(await manager.tokenId()).to.equal(nextTokenId);
     expect(await manager.vault()).to.equal(vault.address);
     expect(await manager.owner()).to.equal(bob.address);
+  });
+
+  it("should update the parameters", async function () {
+    expect(await vault.totalProposers()).to.equal(1);
+    await expect(proposeAndExecute(vault, proposer, executor, 10, "addProposer", proposer2.address))
+      .to.emit(vault, "RoleGranted")
+      .withArgs(await vault.PROPOSER_ROLE(), proposer2.address, vault.address);
+    expect(await vault.totalProposers()).to.equal(2);
+    expect(await vault.totalExecutors()).to.equal(1);
+    await expect(proposeAndExecute(vault, proposer, executor, 10, "addExecutor", executor2.address))
+      .to.emit(vault, "RoleGranted")
+      .withArgs(await vault.EXECUTOR_ROLE(), executor2.address, vault.address);
+    expect(await vault.totalExecutors()).to.equal(2);
+    await expect(proposeAndExecute(vault, proposer2, executor, 10, "removeProposer", proposer.address))
+      .to.emit(vault, "RoleRevoked")
+      .withArgs(await vault.PROPOSER_ROLE(), proposer.address, vault.address);
+    expect(await vault.totalProposers()).to.equal(1);
+    await expect(proposeAndExecute(vault, proposer2, executor2, 10, "removeExecutor", executor.address))
+      .to.emit(vault, "RoleRevoked")
+      .withArgs(await vault.EXECUTOR_ROLE(), executor.address, vault.address);
+    expect(await vault.totalExecutors()).to.equal(1);
   });
 });

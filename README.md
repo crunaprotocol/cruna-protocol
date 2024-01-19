@@ -208,7 +208,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  42 passing
+  43 passing
 
 ----------------------------------|----------|----------|----------|----------|----------------|
 File                              |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -229,23 +229,23 @@ File                              |  % Stmts | % Branch |  % Funcs |  % Lines |U
   CrunaInheritancePlugin.sol      |      100 |    72.37 |      100 |     97.7 |         92,187 |
   CrunaInheritancePluginProxy.sol |      100 |      100 |      100 |      100 |                |
   ICrunaInheritancePlugin.sol     |      100 |      100 |      100 |      100 |                |
- token/                           |       94 |    57.14 |    90.91 |    93.33 |                |
-  CrunaManagedBase.sol            |    97.78 |    60.42 |    94.12 |    94.64 |     75,201,213 |
+ token/                           |      100 |     62.5 |      100 |    96.67 |                |
+  CrunaManagedBase.sol            |      100 |    60.42 |      100 |    96.43 |        201,213 |
   CrunaManagedOwnable.sol         |      100 |       50 |      100 |      100 |                |
-  CrunaManagedTimeControlled.sol  |       50 |    33.33 |    66.67 |    66.67 |             35 |
+  CrunaManagedTimeControlled.sol  |      100 |    83.33 |      100 |      100 |                |
   ICrunaManaged.sol               |      100 |      100 |      100 |      100 |                |
- utils/                           |    66.67 |    39.29 |    72.22 |    64.52 |                |
-  CrunaGuardian.sol               |       80 |       50 |       75 |     62.5 |       28,42,47 |
+ utils/                           |    96.43 |    58.33 |      100 |    92.68 |                |
+  CrunaGuardian.sol               |      100 |       50 |      100 |       75 |          42,47 |
   CrunaRegistry.sol               |      100 |      100 |      100 |      100 |                |
-  ERC6551AccountProxy.sol         |       70 |       50 |      100 |    63.64 |    15,33,34,35 |
-  FlexiTimelockController.sol     |       20 |       10 |    33.33 |    33.33 |    30,38,46,54 |
+  ERC6551AccountProxy.sol         |       90 |       75 |      100 |    90.91 |             35 |
+  FlexiTimelockController.sol     |      100 |       50 |      100 |      100 |                |
   IBoundContract.sol              |      100 |      100 |      100 |      100 |                |
   ICrunaGuardian.sol              |      100 |      100 |      100 |      100 |                |
   ICrunaRegistry.sol              |      100 |      100 |      100 |      100 |                |
   IVersioned.sol                  |      100 |      100 |      100 |      100 |                |
   SignatureValidator.sol          |      100 |       75 |      100 |      100 |                |
 ----------------------------------|----------|----------|----------|----------|----------------|
-All files                         |    95.27 |     66.9 |    93.91 |     94.6 |                |
+All files                         |    98.67 |    69.46 |      100 |    97.51 |                |
 ----------------------------------|----------|----------|----------|----------|----------------|
 ```
 

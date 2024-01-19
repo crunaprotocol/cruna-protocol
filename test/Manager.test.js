@@ -142,7 +142,8 @@ describe("CrunaManager.sol : Protectors", function () {
 
   it("should allow deployer to upgrade the default manager", async function () {
     const managerV2Impl = await deployContract("ManagerV2Mock");
-    const proxyV2 = await deployContract("CrunaManagerProxy", managerV2Impl.address);
+    const proxyV2 = await deployContract("ManagerProxyV2Mock", managerV2Impl.address);
+    expect(await proxyV2.getImplementation()).to.equal(managerV2Impl.address);
     const initialManagerProxy = await vault.managerProxy();
     const initialManager = await ethers.getContractAt("CrunaManager", initialManagerProxy);
     expect(await initialManager.version()).to.equal(1e6);
