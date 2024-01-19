@@ -208,7 +208,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  41 passing
+  42 passing
 
 ----------------------------------|----------|----------|----------|----------|----------------|
 File                              |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -229,8 +229,8 @@ File                              |  % Stmts | % Branch |  % Funcs |  % Lines |U
   CrunaInheritancePlugin.sol      |      100 |    72.37 |      100 |     97.7 |         92,187 |
   CrunaInheritancePluginProxy.sol |      100 |      100 |      100 |      100 |                |
   ICrunaInheritancePlugin.sol     |      100 |      100 |      100 |      100 |                |
- token/                           |    85.71 |    51.79 |    86.36 |    83.05 |                |
-  CrunaManagedBase.sol            |    88.64 |    54.17 |    88.24 |    83.64 |... 119,199,211 |
+ token/                           |       94 |    57.14 |    90.91 |    93.33 |                |
+  CrunaManagedBase.sol            |    97.78 |    60.42 |    94.12 |    94.64 |     75,201,213 |
   CrunaManagedOwnable.sol         |      100 |       50 |      100 |      100 |                |
   CrunaManagedTimeControlled.sol  |       50 |    33.33 |    66.67 |    66.67 |             35 |
   ICrunaManaged.sol               |      100 |      100 |      100 |      100 |                |
@@ -245,7 +245,7 @@ File                              |  % Stmts | % Branch |  % Funcs |  % Lines |U
   IVersioned.sol                  |      100 |      100 |      100 |      100 |                |
   SignatureValidator.sol          |      100 |       75 |      100 |      100 |                |
 ----------------------------------|----------|----------|----------|----------|----------------|
-All files                         |     93.9 |    65.86 |    93.04 |    92.88 |                |
+All files                         |    95.27 |     66.9 |    93.91 |     94.6 |                |
 ----------------------------------|----------|----------|----------|----------|----------------|
 ```
 

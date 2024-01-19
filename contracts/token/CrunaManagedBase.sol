@@ -38,6 +38,7 @@ abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6
   using Address for address;
 
   event ManagedTransfer(bytes4 indexed pluginNameId, uint256 indexed tokenId);
+  event DefaultManagerUpgrade(address newManagerProxy);
 
   error NotTransferable();
   error NotTheManager();
@@ -53,7 +54,7 @@ abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6
   mapping(bytes32 => bool) public usedSignatures;
   ICrunaGuardian public guardian;
   ICrunaRegistry public registry;
-  address public managerAddress;
+  address public managerProxy;
 
   bytes4 public constant NAME_HASH = bytes4(keccak256("CrunaManaged"));
 
@@ -107,7 +108,7 @@ abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6
     if (registry_ == address(0) || guardian_ == address(0) || managerProxy_ == address(0)) revert ZeroAddress();
     guardian = ICrunaGuardian(guardian_);
     registry = ICrunaRegistry(registry_);
-    managerAddress = managerProxy_;
+    managerProxy = managerProxy_;
   }
 
   function upgradeDefaultManager(address payable newManagerProxy) external virtual {
@@ -115,8 +116,9 @@ abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6
     IVersionedManager newManager = IVersionedManager(newManagerProxy);
     if (guardian.trustedImplementation(newManager.nameId(), newManager.DEFAULT_IMPLEMENTATION()) == 0)
       revert UntrustedImplementation();
-    if (newManager.version() <= IVersionedManager(managerAddress).version()) revert CannotUpgradeToAnOlderVersion();
-    managerAddress = newManagerProxy;
+    if (newManager.version() <= IVersionedManager(managerProxy).version()) revert CannotUpgradeToAnOlderVersion();
+    managerProxy = newManagerProxy;
+    emit DefaultManagerUpgrade(newManagerProxy);
   }
 
   // @dev See {IProtected721-managedTransfer}.
@@ -195,7 +197,7 @@ abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6
     for (uint256 i = 0; i < amount; i++) {
       if (maxTokenId > 0 && tokenId > maxTokenId) revert MaxSupplyReached();
       if (alsoInit) {
-        try registry.createBoundContract(managerAddress, 0x00, block.chainid, address(this), tokenId) {} catch {
+        try registry.createBoundContract(managerProxy, 0x00, block.chainid, address(this), tokenId) {} catch {
           revert ErrorCreatingManager();
         }
       }
@@ -207,7 +209,7 @@ abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6
   function activate(uint256 tokenId) external virtual {
     if (_msgSender() != ownerOf(tokenId)) revert NotTheTokenOwner();
     if (address(registry) == address(0)) revert RegistryNotFound();
-    try registry.createBoundContract(managerAddress, 0x00, block.chainid, address(this), tokenId) {} catch {
+    try registry.createBoundContract(managerProxy, 0x00, block.chainid, address(this), tokenId) {} catch {
       revert ErrorCreatingManager();
     }
   }
@@ -215,7 +217,7 @@ abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6
   // @dev This function will return the address of the manager for tokenId.
   // @param tokenId The id of the token.
   function managerOf(uint256 tokenId) public view virtual returns (address) {
-    return registry.boundContract(managerAddress, 0x00, block.chainid, address(this), tokenId);
+    return registry.boundContract(managerProxy, 0x00, block.chainid, address(this), tokenId);
   }
 
   function isActive(uint256 tokenId) public view virtual returns (bool) {
