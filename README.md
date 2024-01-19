@@ -1,6 +1,12 @@
-# Cruna Protocol: The Future of Secure Digital Asset Management
+# Welcome to the Cruna Protocol - Redefining NFTs for Enhanced Security and Limitless Expandability
 
-Welcome to Cruna Protocol, a groundbreaking innovation in the world of NFTs (Non-Fungible Tokens). Unlike ordinary NFTs, Protected NFTs, and in particular Cruna Vault tokens, are powerful tools designed to enhance the safety and management of your digital assets, perfect for pairing with [ERC-6551](https://eips.ethereum.org/EIPS/eip-6551) smart wallets.
+Dive into the realm of Cruna Protocol, a revolutionary advancement reshaping the landscape of Non-Fungible Tokens (NFTs). Cruna Protocol transcends traditional NFT functionalities, offering an innovative fusion of security and adaptability. At the heart of our protocol are the Cruna Vault tokens, a new class of Protected NFTs, ingeniously engineered to fortify digital asset management while maintaining unparalleled flexibility.
+
+Our protocol is adeptly designed to synergize with ERC-6551 smart wallets, setting a new standard for asset security. Cruna Vaults, working alongside ERC-6551, create a dynamic ecosystem where NFTs not only hold value but also actively secure and manage it with unparalleled efficiency.
+
+Through the Cruna Protocol, NFTs evolve beyond static assets, transforming into expandable, secure entities capable of owning and interacting with a wide range of digital assets and applications. This shift marks a groundbreaking leap in NFT technology, opening doors to endless possibilities in the digital asset space.
+
+Join us as we explore the forefront of NFT innovation, where security meets scalability, and every digital asset gains the power to be more than just a token – a safeguarded, expandable asset in the ever-evolving digital world.
 
 ## Cruna Vault + ERC-6551: A Game-Changer in Asset Security
 
