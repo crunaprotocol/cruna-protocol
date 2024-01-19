@@ -1,6 +1,7 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { toChecksumAddress } = require("ethereumjs-util");
+const { Contract } = require("@ethersproject/contracts");
 
 const {
   amount,
@@ -20,7 +21,7 @@ const {
   trustImplementation,
 } = require("./helpers");
 
-describe("Manager : Protectors", function () {
+describe("CrunaManager.sol : Protectors", function () {
   let crunaRegistry, proxy, managerImpl, guardian;
   let vault;
   let factory;
@@ -29,20 +30,21 @@ describe("Manager : Protectors", function () {
   let selector;
   // we put it very short for convenience (test-only)
   const delay = 10;
+  let chainId;
 
   before(async function () {
     [deployer, bob, alice, fred, mark, otto, proposer, executor] = await ethers.getSigners();
     chainId = await getChainId();
-    selector = await selectorId("IManager", "setProtector");
+    selector = await selectorId("ICrunaManager", "setProtector");
   });
 
   beforeEach(async function () {
     crunaRegistry = await deployContract("CrunaRegistry");
-    managerImpl = await deployContract("Manager");
-    guardian = await deployContract("Guardian", delay, [proposer.address], [executor.address], deployer.address);
-    proxy = await deployContract("ManagerProxy", managerImpl.address);
+    managerImpl = await deployContract("CrunaManager");
+    guardian = await deployContract("CrunaGuardian", delay, [proposer.address], [executor.address], deployer.address);
+    proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
 
-    vault = await deployContract("VaultMock", deployer.address);
+    vault = await deployContract("VaultMockSimple", deployer.address);
     await vault.init(crunaRegistry.address, guardian.address, proxy.address);
     factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address, deployer.address]);
 
@@ -82,19 +84,49 @@ describe("Manager : Protectors", function () {
     return nextTokenId;
   };
 
-  it("should support the IManagedERC721.sol interface", async function () {
-    const vaultMock = await deployContract("VaultMock", deployer.address);
-    await vaultMock.init(crunaRegistry.address, guardian.address, proxy.address);
-    let interfaceId = await getInterfaceId("IManagedERC721");
-    expect(interfaceId).to.equal("0xe19a64da");
-    expect(await vault.supportsInterface(interfaceId)).to.be.true;
-    expect(await getInterfaceId("IManagedERC721")).to.equal("0xe19a64da");
-  });
+  it("should fail if function not found in proxy", async function () {
+    const fakeAbi = [
+      {
+        inputs: [
+          {
+            internalType: "bytes4",
+            name: "role",
+            type: "bytes4",
+          },
+        ],
+        name: "bullish",
+        outputs: [
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+    ];
 
-  it("should verify ManagerBase parameters", async function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
-    const manager = await ethers.getContractAt("Manager", managerAddress);
+    const manager = new Contract(managerAddress, fakeAbi, ethers.provider);
+
+    await expect(manager.bullish("0x12345678")).revertedWith("");
+  });
+
+  it("should support the ICrunaManaged.sol interface", async function () {
+    const VaultMockSimple = await deployContract("VaultMockSimple", deployer.address);
+    await VaultMockSimple.init(crunaRegistry.address, guardian.address, proxy.address);
+    let interfaceId = await getInterfaceId("ICrunaManaged");
+    expect(interfaceId).to.equal("0xe19a64da");
+    expect(await vault.supportsInterface(interfaceId)).to.be.true;
+    expect(await getInterfaceId("ICrunaManaged")).to.equal("0xe19a64da");
+  });
+
+  it("should verify CrunaManagerBase.sol parameters", async function () {
+    const tokenId = await buyAVault(bob);
+    const managerAddress = await vault.managerOf(tokenId);
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
 
     expect(await manager.version()).to.equal(1e6);
     expect(await manager.tokenId()).to.equal(tokenId);
@@ -106,8 +138,8 @@ describe("Manager : Protectors", function () {
   it("should verify vault base parameters", async function () {
     expect(await vault.defaultLocked()).to.be.false;
     const tokenId = await buyAVault(bob);
-    expect(await vault.tokenURI(tokenId)).to.equal("https://meta.cruna.cc/flexi-vault/v1/31337/1");
-    expect(await vault.contractURI()).to.equal("https://meta.cruna.cc/flexi-vault/v1/31337/info");
+    expect(await vault.tokenURI(tokenId)).to.equal("https://meta.cruna.cc/vault/v1/31337/1");
+    expect(await vault.contractURI()).to.equal("https://meta.cruna.cc/vault/v1/31337/info");
     expect(await vault.locked(tokenId)).to.be.false;
     expect(await vault.isTransferable(tokenId, bob.address, addr0)).to.be.false;
     expect(await vault.isTransferable(tokenId, bob.address, bob.address)).to.be.false;
@@ -117,8 +149,8 @@ describe("Manager : Protectors", function () {
   it("should verify that scope is correctly formed", async function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
-    const manager = await ethers.getContractAt("Manager", managerAddress);
-    const nameId = bytes4(keccak256("Manager"));
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+    const nameId = bytes4(keccak256("CrunaManager"));
     const role = bytes4(keccak256("PROTECTOR"));
     const scope = combineBytes4ToBytes32(nameId, role).toString();
     expect(await manager.combineBytes4(nameId, role)).equal(scope);
@@ -127,7 +159,7 @@ describe("Manager : Protectors", function () {
   it("should add the first protector and remove it", async function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
-    const manager = await ethers.getContractAt("Manager", managerAddress);
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
 
     expect(await vault.supportsInterface("0x80ac58cd")).to.equal(true);
 
@@ -192,7 +224,7 @@ describe("Manager : Protectors", function () {
   it("should throw is wrong data for first protector", async function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
-    const manager = await ethers.getContractAt("Manager", managerAddress);
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
     // set Alice as first Bob's protector
     await expect(manager.connect(bob).setProtector(addr0, true, 0, 0, 0)).revertedWith("ZeroAddress");
     await expect(manager.connect(bob).setProtector(bob.address, true, 0, 0, 0)).revertedWith("CannotBeYourself");
@@ -201,7 +233,7 @@ describe("Manager : Protectors", function () {
   it("should add many protectors", async function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
-    const manager = await ethers.getContractAt("Manager", managerAddress);
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
 
     expect(await manager.hasProtectors()).to.equal(false);
 
@@ -294,7 +326,7 @@ describe("Manager : Protectors", function () {
   it("should add a protector and transfer a vault", async function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
-    const manager = await ethers.getContractAt("Manager", managerAddress);
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
 
     let signature = (
       await signRequest(
@@ -323,7 +355,7 @@ describe("Manager : Protectors", function () {
 
     signature = (
       await signRequest(
-        await selectorId("IManager", "protectedTransfer"),
+        await selectorId("ICrunaManager", "protectedTransfer"),
         bob.address,
         fred.address,
         vault.address,
@@ -341,61 +373,5 @@ describe("Manager : Protectors", function () {
     await expect(manager.connect(bob).protectedTransfer(tokenId, fred.address, ts * 1e6 + 3600, signature))
       .to.emit(vault, "Transfer")
       .withArgs(bob.address, fred.address, tokenId);
-  });
-
-  it("should allow bob to upgrade the manager", async function () {
-    const tokenId = await buyAVault(bob);
-    const managerV2Impl = await deployContract("ManagerV2Mock");
-    const managerAddress = await vault.managerOf(tokenId);
-    const manager = await ethers.getContractAt("Manager", managerAddress);
-    expect(await manager.version()).to.equal(1e6);
-
-    let signature = (
-      await signRequest(
-        selector,
-        bob.address,
-        alice.address,
-        vault.address,
-        tokenId,
-        1,
-        0,
-        0,
-        ts,
-        3600,
-        chainId,
-        alice.address,
-        manager,
-      )
-    )[0];
-
-    // set Alice as first Bob's protector
-    await manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature);
-
-    expect(await manager.hasProtectors()).to.equal(true);
-
-    await expect(manager.upgrade(managerV2Impl.address)).to.be.revertedWith("NotTheTokenOwner");
-
-    await expect(manager.connect(bob).upgrade(managerV2Impl.address)).to.be.revertedWith("UntrustedImplementation");
-    await trustImplementation(
-      guardian,
-      proposer,
-      executor,
-      delay,
-      bytes4(keccak256("Manager")),
-      managerV2Impl.address,
-      true,
-      1,
-    );
-    expect(await manager.getImplementation()).to.equal(addr0);
-
-    await manager.connect(bob).upgrade(managerV2Impl.address);
-    expect(await manager.getImplementation()).to.equal(managerV2Impl.address);
-
-    expect(await manager.version()).to.equal(1e6 + 2e3);
-    expect(await manager.hasProtectors()).to.equal(true);
-
-    const managerV2 = await ethers.getContractAt("ManagerV2Mock", managerAddress);
-    const b4 = "0xaabbccdd";
-    expect(await managerV2.bytes4ToHexString(b4)).equal(b4);
   });
 });

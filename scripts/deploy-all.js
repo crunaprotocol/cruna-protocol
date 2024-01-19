@@ -24,39 +24,29 @@ async function main() {
 
   const guardian = await deployUtils.deployContractViaNickSFactory(
     deployer,
-    "Guardian",
+    "CrunaGuardian",
     ["uint256", "address[]", "address[]", "address"],
     [process.env.DELAY, [process.env.PROPOSER], [process.env.EXECUTOR], deployer.address],
     salt,
   );
 
-  const manager = await deployUtils.deployContractViaNickSFactory(deployer, "Manager", salt);
+  const manager = await deployUtils.deployContractViaNickSFactory(deployer, "CrunaManager", salt);
 
   const managerProxy = await deployUtils.deployContractViaNickSFactory(
     deployer,
-    "ManagerProxy",
+    "CrunaManagerProxy",
     ["address"],
     [manager.address],
     salt,
   );
 
-  // const plugin = await deployUtils.deployContractViaNickSFactory(deployer, "InheritancePlugin", salt);
-  //
-  // // deploy the plugin's proxy
-  // const proxy = await deployUtils.deployContractViaNickSFactory(
-  //   deployer,
-  //   "InheritancePluginProxy",
-  //   ["address"],
-  //   [plugin.address],
-  //   salt,
-  // );
-  //
-  // await deployUtils.Tx(
-  //   guardian.setTrustedImplementation(deployUtils.bytes4(deployUtils.keccak256("InheritancePlugin")), proxy.address, true, 1),
-  //   "Setting trusted implementation for InheritancePlugin",
-  // );
-
-  const vault = await deployUtils.deployContractViaNickSFactory(deployer, "VaultMock", ["address"], [deployer.address], salt);
+  const vault = await deployUtils.deployContractViaNickSFactory(
+    deployer,
+    "CrunaVaults",
+    ["uint256", "address[]", "address[]", "address"],
+    [process.env.DELAY, [process.env.PROPOSER], [process.env.EXECUTOR], deployer.address],
+    salt,
+  );
 
   try {
     await deployUtils.Tx(
@@ -66,6 +56,20 @@ async function main() {
   } catch (e) {
     // we are calling the script again
   }
+
+  const factory = await deployUtils.deployProxy("VaultFactoryMock", vault.address, deployer.address);
+
+  const usdc = await deployUtils.attach("USDCoin");
+  const usdt = await deployUtils.attach("TetherUSD");
+
+  await deployUtils.Tx(factory.setPrice(3000, { gasLimit: 60000 }), "Setting price");
+  await deployUtils.Tx(factory.setStableCoin(usdc.address, true), "Set USDC as stable coin");
+  await deployUtils.Tx(factory.setStableCoin(usdt.address, true), "Set USDT as stable coin");
+
+  // discount campaign selling for $9.9
+  await deployUtils.Tx(factory.setDiscount(2010), "Set discount");
+
+  await deployUtils.Tx(vault.setFactory(factory.address, { gasLimit: 100000 }), "Set the factory");
 }
 
 main()

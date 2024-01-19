@@ -12,12 +12,16 @@ async function main() {
   deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
 
   const [deployer] = await ethers.getSigners();
-  const vault = await deployUtils.attach("VaultMock");
+  const vault = await deployUtils.attach("CrunaVaults");
 
   const factory = await deployUtils.deployProxy("VaultFactoryMock", vault.address, deployer.address);
 
   const usdc = await deployUtils.attach("USDCoin");
+  // await usdc.mint("0xF61101A3c7988725369ba481084227971aa55fc2", 100000000000000000000000n);
   const usdt = await deployUtils.attach("TetherUSD");
+  // await usdt.mint("0xF61101A3c7988725369ba481084227971aa55fc2", 100000000000n);
+
+  // return;
 
   await deployUtils.Tx(factory.setPrice(3000, { gasLimit: 60000 }), "Setting price");
   await deployUtils.Tx(factory.setStableCoin(usdc.address, true), "Set USDC as stable coin");

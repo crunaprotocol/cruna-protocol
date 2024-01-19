@@ -8,17 +8,13 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {Actor} from "./Actor.sol";
-import {IPluginExt, IManager} from "./IManager.sol";
-import {ManagerBase} from "./ManagerBase.sol";
+import {IPluginExt, ICrunaManager} from "./ICrunaManager.sol";
+import {CrunaManagerBase} from "./CrunaManagerBase.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
 
 //import {console} from "hardhat/console.sol";
 
-interface IProxy {
-  function isProxy() external pure returns (bool);
-}
-
-contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureValidator {
+contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard, SignatureValidator {
   using ECDSA for bytes32;
   using Strings for uint256;
 
@@ -29,7 +25,6 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
   error CannotBeYourself();
   error NotTheAuthorizedPlugin();
   error SignatureAlreadyUsed();
-  error NotAProxy();
   error PluginAlreadyPlugged();
   error PluginNotFound();
   error PluginNotFoundOrDisabled();
@@ -51,7 +46,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
   mapping(bytes4 => uint256) public timeLocks;
 
   function nameId() public virtual override returns (bytes4) {
-    return bytes4(keccak256("Manager"));
+    return bytes4(keccak256("CrunaManager"));
   }
 
   // simulate ERC-721 to allow plugins to be deployed via ERC-6551 Registry
@@ -84,7 +79,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     return actorCount(PROTECTOR) > 0;
   }
 
-  // @dev see {IManager-setProtector}
+  // @dev see {ICrunaManager.sol-setProtector}
   function setProtector(
     address protector_,
     bool status,
@@ -103,16 +98,14 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
       true,
       _msgSender()
     );
-    emit ProtectorUpdated(_msgSender(), protector_, status);
     if (status) {
       if (countActiveProtectors() == 1) {
         _emitLockedEvent(true);
       }
-    } else {
-      if (countActiveProtectors() == 0) {
-        _emitLockedEvent(false);
-      }
+    } else if (countActiveProtectors() == 0) {
+      _emitLockedEvent(false);
     }
+    emit ProtectorUpdated(_msgSender(), protector_, status);
   }
 
   function _emitLockedEvent(bool locked_) internal virtual {
@@ -130,13 +123,13 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     }
   }
 
-  // @dev see {IManager-getProtectors}
+  // @dev see {ICrunaManager.sol-getProtectors}
   function getProtectors() external view virtual override returns (address[] memory) {
     return getActors(PROTECTOR);
   }
 
   // safe recipients
-  // @dev see {IManager-setSafeRecipient}
+  // @dev see {ICrunaManager.sol-setSafeRecipient}
   // We do not set a batch function because it can be dangerous
   function setSafeRecipient(
     address recipient,
@@ -159,12 +152,12 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     emit SafeRecipientUpdated(_msgSender(), recipient, status);
   }
 
-  // @dev see {IManager-isSafeRecipient}
+  // @dev see {ICrunaManager.sol-isSafeRecipient}
   function isSafeRecipient(address recipient) public view virtual override returns (bool) {
     return actorIndex(recipient, SAFE_RECIPIENT) != MAX_ACTORS;
   }
 
-  // @dev see {IManager-getSafeRecipients}
+  // @dev see {ICrunaManager.sol-getSafeRecipients}
   function getSafeRecipients() external view virtual override returns (address[] memory) {
     return getActors(SAFE_RECIPIENT);
   }
@@ -250,9 +243,6 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
     address pluginProxy,
     bool canManageTransfer
   ) external virtual override onlyTokenOwner nonReentrant {
-    try IProxy(pluginProxy).isProxy() returns (bool) {} catch {
-      revert NotAProxy();
-    }
     bytes4 _nameId = _stringToBytes4(name);
     if (pluginsById[_nameId].proxyAddress != address(0)) revert PluginAlreadyPlugged();
     uint256 requires = guardian().trustedImplementation(_nameId, pluginProxy);
@@ -377,7 +367,7 @@ contract Manager is IManager, Actor, ManagerBase, ReentrancyGuard, SignatureVali
   }
 
   // @dev See {IProtected721-managedTransfer}.
-  // This is a special function that can be called only by the InheritancePlugin
+  // This is a special function that can be called only by the CrunaInheritancePlugin.sol
   function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external virtual override nonReentrant {
     if (pluginsById[pluginNameId].proxyAddress == address(0) || !pluginsById[pluginNameId].active)
       revert PluginNotFoundOrDisabled();

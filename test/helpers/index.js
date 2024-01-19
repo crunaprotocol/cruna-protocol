@@ -164,18 +164,23 @@ const Helpers = {
 
     const crunaRegistry = await ethers.getContractAt("CrunaRegistry", crunaRegistryAddress);
 
-    const managerAddress = await Helpers.deployContractViaNickSFactory(deployer, "Manager");
+    const managerAddress = await Helpers.deployContractViaNickSFactory(deployer, "CrunaManager");
 
-    const proxyAddress = await Helpers.deployContractViaNickSFactory(deployer, "ManagerProxy", ["address"], [managerAddress]);
-    const proxy = await ethers.getContractAt("ManagerProxy", proxyAddress);
+    const proxyAddress = await Helpers.deployContractViaNickSFactory(
+      deployer,
+      "CrunaManagerProxy",
+      ["address"],
+      [managerAddress],
+    );
+    const proxy = await ethers.getContractAt("CrunaManagerProxy", proxyAddress);
 
     const guardianAddress = await Helpers.deployContractViaNickSFactory(
       deployer,
-      "Guardian",
+      "CrunaGuardian",
       ["uint256", "address[]", "address[]", "address"],
       [delay, [proposer.address], [executor.address], deployer.address],
     );
-    const guardian = await ethers.getContractAt("Guardian", guardianAddress);
+    const guardian = await ethers.getContractAt("CrunaGuardian", guardianAddress);
 
     return [crunaRegistry, proxy, guardian];
   },
@@ -283,14 +288,28 @@ const Helpers = {
   },
 
   async trustImplementation(guardian, proposer, executor, delay, nameId, implementation, trusted, requires) {
-    const { cl } = thiz;
-    const data = guardian.interface.encodeFunctionData("setTrustedImplementation", [nameId, implementation, trusted, requires]);
+    return thiz.proposeAndExecute(
+      guardian,
+      proposer,
+      executor,
+      delay,
+      "setTrustedImplementation",
+      nameId,
+      implementation,
+      trusted,
+      requires,
+    );
+  },
+
+  async proposeAndExecute(contract, proposer, executor, delay, funcName, ...params) {
+    // const { cl } = thiz;
+    const data = contract.interface.encodeFunctionData(funcName, [...params]);
     const predecessor = ethers.utils.formatBytes32String("");
     const salt = ethers.utils.formatBytes32String("");
-    await guardian.connect(proposer).schedule(guardian.address, 0, data, predecessor, salt, delay);
+    await contract.connect(proposer).schedule(contract.address, 0, data, predecessor, salt, delay);
     await ethers.provider.send("evm_increaseTime", [delay + 1]);
     await ethers.provider.send("evm_mine");
-    await guardian.connect(executor).execute(guardian.address, 0, data, predecessor, salt);
+    return contract.connect(executor).execute(contract.address, 0, data, predecessor, salt);
   },
 
   async sleep(millis) {

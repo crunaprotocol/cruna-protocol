@@ -14,6 +14,8 @@ const {
   deployAll,
   upgradeProxy,
   executeAndReturnGasCost,
+  signRequest,
+  selectorId,
 } = require("./helpers");
 
 describe("VaultFactoryMock", function () {
@@ -33,7 +35,7 @@ describe("VaultFactoryMock", function () {
   async function initAndDeploy() {
     // process.exit();
 
-    vault = await deployContract("VaultMock", deployer.address);
+    vault = await deployContract("VaultMockSimple", deployer.address);
     await vault.init(registry.address, guardian.address, proxy.address);
 
     factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address, deployer.address]);
@@ -136,6 +138,37 @@ describe("VaultFactoryMock", function () {
       await expect(factory.withdrawProceeds(fred.address, usdc.address, 0))
         .to.emit(usdc, "Transfer")
         .withArgs(factory.address, fred.address, amount("9.8"));
+
+      const managerAddress = await vault.managerOf(nextTokenId);
+      const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+      const selector = await selectorId("ICrunaManager", "setProtector");
+      const chainId = await getChainId();
+      const ts = (await getTimestamp()) - 100;
+
+      let signature = (
+        await signRequest(
+          selector,
+          bob.address,
+          alice.address,
+          vault.address,
+          nextTokenId,
+          1,
+          0,
+          0,
+          ts,
+          3600,
+          chainId,
+          alice.address,
+          manager,
+        )
+      )[0];
+
+      // set Alice as first Bob's protector
+      await expect(manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature))
+        .to.emit(manager, "ProtectorUpdated")
+        .withArgs(bob.address, alice.address, true)
+        .to.emit(vault, "Locked")
+        .withArgs(nextTokenId, true);
     });
 
     it("should allow bob to purchase some vaults without activating them", async function () {

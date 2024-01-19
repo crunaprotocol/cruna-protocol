@@ -6,6 +6,8 @@ import {Proxy} from "@openzeppelin/contracts/proxy/Proxy.sol";
 
 error InvalidImplementation();
 
+// This version of ERC6551AccountProxy is modified to work with the OpenZeppelin Contracts v5
+// The original version can be found in https://github.com/erc6551/reference
 contract ERC6551AccountProxy is Proxy {
   address public immutable DEFAULT_IMPLEMENTATION;
 

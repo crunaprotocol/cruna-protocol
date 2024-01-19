@@ -5,6 +5,13 @@ import {TimelockController} from "@openzeppelin/contracts/governance/TimelockCon
 
 contract FlexiTimelockController is TimelockController {
   error MustCallThroughTimeController();
+  error ProposerAlreadyExists();
+  error ProposerDoesNotExist();
+  error ExecutorAlreadyExists();
+  error ExecutorDoesNotExist();
+
+  uint256 public totalProposers;
+  uint256 public totalExecutors;
 
   modifier onlyThroughTimeController() {
     if (msg.sender != address(this)) revert MustCallThroughTimeController();
@@ -20,14 +27,19 @@ contract FlexiTimelockController is TimelockController {
     address[] memory proposers,
     address[] memory executors,
     address admin
-  ) TimelockController(minDelay, proposers, executors, admin) {}
+  ) TimelockController(minDelay, proposers, executors, admin) {
+    totalProposers = proposers.length;
+    totalExecutors = executors.length;
+  }
 
   /**
    * @dev Adds a new proposer.
    * Can only be called through the TimelockController.
    */
   function addProposer(address proposer) external onlyThroughTimeController {
+    if (hasRole(PROPOSER_ROLE, proposer)) revert ProposerAlreadyExists();
     _grantRole(PROPOSER_ROLE, proposer);
+    totalProposers++;
   }
 
   /**
@@ -35,7 +47,9 @@ contract FlexiTimelockController is TimelockController {
    * Can only be called through the TimelockController.
    */
   function removeProposer(address proposer) external onlyThroughTimeController {
+    if (!hasRole(PROPOSER_ROLE, proposer)) revert ProposerDoesNotExist();
     _revokeRole(PROPOSER_ROLE, proposer);
+    totalProposers--;
   }
 
   /**
@@ -43,7 +57,9 @@ contract FlexiTimelockController is TimelockController {
    * Can only be called through the TimelockController.
    */
   function addExecutor(address executor) external onlyThroughTimeController {
+    if (hasRole(EXECUTOR_ROLE, executor)) revert ExecutorAlreadyExists();
     _grantRole(EXECUTOR_ROLE, executor);
+    totalExecutors++;
   }
 
   /**
@@ -51,6 +67,8 @@ contract FlexiTimelockController is TimelockController {
    * Can only be called through the TimelockController.
    */
   function removeExecutor(address executor) external onlyThroughTimeController {
+    if (!hasRole(EXECUTOR_ROLE, executor)) revert ExecutorDoesNotExist();
     _revokeRole(EXECUTOR_ROLE, executor);
+    totalExecutors--;
   }
 }

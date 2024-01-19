@@ -9,7 +9,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
-import {VaultMock} from "../VaultMock.sol";
+import {CrunaVaults} from "../CrunaVaults.sol";
 import {IVaultFactoryMock} from "./IVaultFactoryMock.sol";
 import {IVersioned} from "../../utils/IVersioned.sol";
 
@@ -31,7 +31,7 @@ contract VaultFactoryMock is
   error InvalidArguments();
   error InvalidDiscount();
 
-  VaultMock public vault;
+  CrunaVaults public vault;
   uint256 public price;
   mapping(address => bool) public stableCoins;
   uint256 public discount;
@@ -42,10 +42,10 @@ contract VaultFactoryMock is
     _disableInitializers();
   }
 
-  function initialize(address vault_, address owner_) public initializer {
+  function initialize(address payable vault_, address owner_) public initializer {
     __Ownable_init(owner_);
     __UUPSUpgradeable_init();
-    vault = VaultMock(vault_);
+    vault = CrunaVaults(vault_);
   }
 
   function version() public pure virtual returns (uint256) {

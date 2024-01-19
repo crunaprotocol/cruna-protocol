@@ -5,14 +5,14 @@ pragma solidity ^0.8.20;
 
 import {IBoundContract} from "../utils/IBoundContract.sol";
 import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
-import {IGuardian} from "../utils/IGuardian.sol";
+import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
 
 //import {console} from "hardhat/console.sol";
 
 interface IVault {
   function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external;
   function emitLockedEvent(uint256 tokenId, bool locked_) external;
-  function guardian() external view returns (IGuardian);
+  function guardian() external view returns (ICrunaGuardian);
   function registry() external view returns (ICrunaRegistry);
   function managerOf(uint256 tokenId) external view returns (address);
 }
@@ -22,10 +22,10 @@ interface IImplementation {
   function nameId() external returns (bytes4);
 }
 
-interface IManagerBase is IBoundContract {
+interface ICrunaManagerBase is IBoundContract {
   function nameId() external returns (bytes4);
 
-  function guardian() external view returns (IGuardian);
+  function guardian() external view returns (ICrunaGuardian);
 
   function registry() external view returns (ICrunaRegistry);
 

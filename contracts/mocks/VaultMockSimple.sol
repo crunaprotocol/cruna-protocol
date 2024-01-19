@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL3
 pragma solidity ^0.8.20;
 
-import {ManagedERC721, Strings} from "../token/ManagedERC721.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+import {CrunaManagedOwnable} from "../token/CrunaManagedOwnable.sol";
 
 //import "hardhat/console.sol";
 
@@ -9,7 +10,7 @@ import {ManagedERC721, Strings} from "../token/ManagedERC721.sol";
 // We put it in mocks because it should not be used loading the package.
 
 // @dev This contract is a simple example of a protected NFT.
-contract VaultMock is ManagedERC721 {
+contract VaultMockSimple is CrunaManagedOwnable {
   using Strings for uint256;
 
   error NotTheFactory();
@@ -28,26 +29,27 @@ contract VaultMock is ManagedERC721 {
   //   using Nick's factory, so we may in theory hardcode them in the code. However,
   //   if so, we will not be able to test the contract.
   // @param owner The address of the owner.
-  constructor(address owner) ManagedERC721("Cruna Flexi Vault V1", "CRUNA1", owner) {}
+  constructor(address admin) CrunaManagedOwnable("Cruna Vaults", "CRUNA1", admin) {}
 
   // @dev Set factory to 0x0 to disable a factory.
   // @notice This is the only function that can be called by the owner.
   //   It does not introduce centralization, because it is related with
   //   the factory that sells the tokens, not the NFT itself.
   // @param factory The address of the factory.
-  function setFactory(address factory_) external virtual onlyOwner {
+  function setFactory(address factory_) external virtual {
+    _canManage(true);
     if (factory_ == address(0)) revert ZeroAddress();
     factory = factory_;
   }
 
   // @dev This function will return the base URI of the contract
   function _baseURI() internal view virtual override returns (string memory) {
-    return string(abi.encodePacked("https://meta.cruna.cc/flexi-vault/v1/", block.chainid.toString(), "/"));
+    return string(abi.encodePacked("https://meta.cruna.cc/vault/v1/", block.chainid.toString(), "/"));
   }
 
   // @dev This function will return the contract URI of the contract
   function contractURI() public view virtual returns (string memory) {
-    return string(abi.encodePacked("https://meta.cruna.cc/flexi-vault/v1/", block.chainid.toString(), "/info"));
+    return string(abi.encodePacked("https://meta.cruna.cc/vault/v1/", block.chainid.toString(), "/info"));
   }
 
   // @dev This function will mint a new token

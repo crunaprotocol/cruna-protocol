@@ -6,16 +6,16 @@ pragma solidity ^0.8.20;
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
-import {Manager} from "../../manager/Manager.sol";
-import {IInheritancePlugin} from "./IInheritancePlugin.sol";
+import {CrunaManager} from "../../manager/CrunaManager.sol";
+import {ICrunaInheritancePlugin} from "./ICrunaInheritancePlugin.sol";
 import {IPlugin} from "../IPlugin.sol";
-import {IVault, ManagerBase} from "../../manager/ManagerBase.sol";
+import {IVault, CrunaManagerBase} from "../../manager/CrunaManagerBase.sol";
 import {Actor} from "../../manager/Actor.sol";
 import {SignatureValidator} from "../../utils/SignatureValidator.sol";
 
 //import {console} from "hardhat/console.sol";
 
-contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, SignatureValidator {
+contract CrunaInheritancePlugin is IPlugin, ICrunaInheritancePlugin, CrunaManagerBase, Actor, SignatureValidator {
   using ECDSA for bytes32;
   using Strings for uint256;
 
@@ -39,16 +39,16 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, S
 
   mapping(bytes32 => bool) public usedSignatures;
   bytes4 public constant SENTINEL = bytes4(keccak256(abi.encodePacked("SENTINEL")));
-  Manager public manager;
+  CrunaManager public manager;
   InheritanceConf internal _inheritanceConf;
 
-  // @dev see {IInheritancePlugin.sol-init}
+  // @dev see {ICrunaInheritancePlugin.sol-init}
   // this must be execute immediately after the deployment
   function init() external virtual override {
     // Notice that the manager pretends to be an NFT
     // so tokenAddress() returns the manager address
     if (_msgSender() != tokenAddress()) revert Forbidden();
-    manager = Manager(_msgSender());
+    manager = CrunaManager(_msgSender());
   }
 
   function requiresToManageTransfer() external pure override returns (bool) {
@@ -56,7 +56,7 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, S
   }
 
   function nameId() public virtual override returns (bytes4) {
-    return bytes4(keccak256("InheritancePlugin"));
+    return bytes4(keccak256("CrunaInheritancePlugin"));
   }
 
   function vault() public view virtual override returns (IVault) {
@@ -64,7 +64,7 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, S
   }
 
   // sentinels and beneficiaries
-  // @dev see {IInheritancePlugin.sol-setSentinel}
+  // @dev see {ICrunaInheritancePlugin.sol.sol-setSentinel}
   function setSentinel(
     address sentinel,
     bool status,
@@ -97,14 +97,14 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, S
     emit SentinelUpdated(_msgSender(), sentinel, status);
   }
 
-  // @dev see {IInheritancePlugin.sol-setSentinels}
+  // @dev see {ICrunaInheritancePlugin.sol-setSentinels}
   function setSentinels(address[] memory sentinels, bytes calldata emptySignature) external virtual override onlyTokenOwner {
     for (uint256 i = 0; i < sentinels.length; i++) {
       setSentinel(sentinels[i], true, 0, 0, emptySignature);
     }
   }
 
-  // @dev see {IInheritancePlugin.sol-configureInheritance}
+  // @dev see {ICrunaInheritancePlugin.sol.sol-configureInheritance}
   // allow when protectors are active
   function configureInheritance(
     uint256 quorum,
@@ -154,12 +154,12 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, S
     emit InheritanceConfigured(_msgSender(), quorum, proofOfLifeDurationInDays, gracePeriod, beneficiary);
   }
 
-  // @dev see {IInheritancePlugin.sol-getSentinelsAndInheritanceData}
+  // @dev see {ICrunaInheritancePlugin.sol-getSentinelsAndInheritanceData}
   function getSentinelsAndInheritanceData() external view virtual override returns (address[] memory, InheritanceConf memory) {
     return (getActors(SENTINEL), _inheritanceConf);
   }
 
-  // @dev see {IInheritancePlugin.sol-proofOfLife}
+  // @dev see {ICrunaInheritancePlugin.sol.sol-proofOfLife}
   function proofOfLife() external virtual override onlyTokenOwner {
     if (_inheritanceConf.proofOfLifeDurationInDays == 0) revert InheritanceNotConfigured();
     // solhint-disable-next-line not-rely-on-time
@@ -173,7 +173,7 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, S
     emit ProofOfLife(_msgSender());
   }
 
-  // @dev see {IInheritancePlugin.sol-requestTransfer}
+  // @dev see {ICrunaInheritancePlugin.sol.sol-requestTransfer}
   function requestTransfer(address beneficiary) external virtual override {
     if (beneficiary == address(0)) revert ZeroAddress();
     if (_inheritanceConf.proofOfLifeDurationInDays == 0) revert InheritanceNotConfigured();
@@ -233,7 +233,7 @@ contract InheritancePlugin is IPlugin, IInheritancePlugin, ManagerBase, Actor, S
     return block.timestamp - _inheritanceConf.requestUpdatedAt > _inheritanceConf.gracePeriod * 1 days;
   }
 
-  // @dev see {IInheritancePlugin.sol-inherit}
+  // @dev see {ICrunaInheritancePlugin.sol-inherit}
   function inherit() external virtual override {
     _checkIfStillAlive();
     if (_inheritanceConf.beneficiary == address(0)) revert BeneficiaryNotSet();

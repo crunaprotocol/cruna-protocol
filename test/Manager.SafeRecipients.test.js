@@ -17,7 +17,7 @@ const {
   keccak256,
 } = require("./helpers");
 
-describe("Manager : Safe Recipients", function () {
+describe("CrunaManager.sol : Safe Recipients", function () {
   let crunaRegistry, proxy, managerImpl, guardian;
   let vault;
   let factory;
@@ -34,11 +34,11 @@ describe("Manager : Safe Recipients", function () {
 
   beforeEach(async function () {
     crunaRegistry = await deployContract("CrunaRegistry");
-    managerImpl = await deployContract("Manager");
-    guardian = await deployContract("Guardian", delay, [proposer.address], [executor.address], deployer.address);
-    proxy = await deployContract("ManagerProxy", managerImpl.address);
+    managerImpl = await deployContract("CrunaManager");
+    guardian = await deployContract("CrunaGuardian", delay, [proposer.address], [executor.address], deployer.address);
+    proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
 
-    vault = await deployContract("VaultMock", deployer.address);
+    vault = await deployContract("VaultMockSimple", deployer.address);
     await vault.init(crunaRegistry.address, guardian.address, proxy.address);
     factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address, deployer.address]);
 
@@ -68,7 +68,7 @@ describe("Manager : Safe Recipients", function () {
     // cl(true)
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
-    const manager = await ethers.getContractAt("Manager", managerAddress);
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
     // set Alice and Fred as a safe recipient
     await expect(manager.connect(bob).setSafeRecipient(alice.address, true, 0, 0, 0))
       .to.emit(manager, "SafeRecipientUpdated")
@@ -85,7 +85,7 @@ describe("Manager : Safe Recipients", function () {
 
     let signature = (
       await signRequest(
-        await selectorId("IManager", "setProtector"),
+        await selectorId("ICrunaManager", "setProtector"),
         bob.address,
         alice.address,
         vault.address,
@@ -104,7 +104,7 @@ describe("Manager : Safe Recipients", function () {
     // set Alice as first Bob's protector
     await manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature);
 
-    const selector = await selectorId("IManager", "setSafeRecipient");
+    const selector = await selectorId("ICrunaManager", "setSafeRecipient");
 
     // Set Mark as a safe recipient
     signature = (
