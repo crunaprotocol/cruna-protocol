@@ -14,10 +14,6 @@ import {SignatureValidator} from "../utils/SignatureValidator.sol";
 
 //import {console} from "hardhat/console.sol";
 
-interface IProxy {
-  function isProxy() external pure returns (bool);
-}
-
 contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard, SignatureValidator {
   using ECDSA for bytes32;
   using Strings for uint256;
@@ -29,7 +25,6 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
   error CannotBeYourself();
   error NotTheAuthorizedPlugin();
   error SignatureAlreadyUsed();
-  error NotAProxy();
   error PluginAlreadyPlugged();
   error PluginNotFound();
   error PluginNotFoundOrDisabled();
@@ -248,9 +243,6 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
     address pluginProxy,
     bool canManageTransfer
   ) external virtual override onlyTokenOwner nonReentrant {
-    try IProxy(pluginProxy).isProxy() returns (bool) {} catch {
-      revert NotAProxy();
-    }
     bytes4 _nameId = _stringToBytes4(name);
     if (pluginsById[_nameId].proxyAddress != address(0)) revert PluginAlreadyPlugged();
     uint256 requires = guardian().trustedImplementation(_nameId, pluginProxy);

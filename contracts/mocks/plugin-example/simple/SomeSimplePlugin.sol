@@ -16,11 +16,6 @@ contract SomeSimplePlugin is IPlugin, CrunaManagerBase {
 
   CrunaManager public manager;
 
-  // It pretends to be a proxy, if not the manager won't accept it
-  function isProxy() external pure returns (bool) {
-    return true;
-  }
-
   function requiresToManageTransfer() external pure override returns (bool) {
     return false;
   }

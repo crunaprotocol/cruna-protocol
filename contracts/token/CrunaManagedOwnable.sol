@@ -9,6 +9,8 @@ import {CrunaManagedBase} from "./CrunaManagedBase.sol";
 //import {console} from "hardhat/console.sol";
 
 // @dev This contract is a base for NFTs with protected transfers.
+//   We advise to use CrunaManagedTimeControlled instead, since it allows
+//   a better governance.
 abstract contract CrunaManagedOwnable is CrunaManagedBase, Ownable2Step {
   error NotTheOwner();
 

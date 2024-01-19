@@ -14,10 +14,24 @@ import {IERC6454} from "../interfaces/IERC6454.sol";
 import {IERC6982} from "../interfaces/IERC6982.sol";
 import {ICrunaManager} from "../manager/ICrunaManager.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
-import {CrunaManagerProxy} from "../manager/CrunaManagerProxy.sol";
 
 //import {console} from "hardhat/console.sol";
 
+interface IVersionedManager {
+  function version() external pure returns (uint256);
+
+  // solhint-disable-next-line func-name-mixedcase
+  function DEFAULT_IMPLEMENTATION() external pure returns (address);
+  function nameId() external pure returns (bytes4);
+}
+
+/**
+ * @dev This contracts is a base for NFTs with protected transfers. It must be extended implementing
+ *   the _canManage function to define who can alter the contract. Two versions are provided in this repo,
+ *   CrunaManagedTimeControlled and CrunaManagedOwnable. The first is the recommended one, since it allows
+ *   a governance aligned with best practices. The second is simpler, and can be used in
+ *   less critical scenarios. If none of them fits your needs, you can implement your own policy.
+ */
 abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6982, ERC721 {
   using ECDSA for bytes32;
   using Strings for uint256;
@@ -98,13 +112,10 @@ abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6
 
   function upgradeDefaultManager(address payable newManagerProxy) external virtual {
     _canManage(false);
-    bytes4 nameId = bytes4(keccak256("CrunaManagerProxy"));
-    uint256 requires = guardian.trustedImplementation(nameId, newManagerProxy);
-    if (requires == 0) revert UntrustedImplementation();
-    CrunaManagerProxy proxy = CrunaManagerProxy(newManagerProxy);
-    IVersioned manager = IVersioned(managerAddress);
-    IVersioned newManager = IVersioned(proxy.DEFAULT_IMPLEMENTATION());
-    if (newManager.version() <= manager.version()) revert CannotUpgradeToAnOlderVersion();
+    IVersionedManager newManager = IVersionedManager(newManagerProxy);
+    if (guardian.trustedImplementation(newManager.nameId(), newManager.DEFAULT_IMPLEMENTATION()) == 0)
+      revert UntrustedImplementation();
+    if (newManager.version() <= IVersionedManager(managerAddress).version()) revert CannotUpgradeToAnOlderVersion();
     managerAddress = newManagerProxy;
   }
 

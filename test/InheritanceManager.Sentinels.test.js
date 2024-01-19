@@ -69,8 +69,6 @@ describe("Sentinel and Inheritance", function () {
     const manager = await ethers.getContractAt("CrunaManager", await vault.managerOf(nextTokenId));
     inheritancePluginImpl = await deployContract("CrunaInheritancePlugin");
     inheritancePluginProxy = await deployContract("CrunaInheritancePluginProxy", inheritancePluginImpl.address);
-    await expect(manager.connect(bob).plug("CrunaInheritancePlugin", vault.address, true)).to.be.revertedWith("NotAProxy");
-
     await expect(manager.connect(bob).plug("CrunaInheritancePlugin", inheritancePluginProxy.address, true)).to.be.revertedWith(
       "UntrustedImplementation",
     );

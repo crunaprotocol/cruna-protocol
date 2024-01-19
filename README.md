@@ -216,38 +216,36 @@ File                              |  % Stmts | % Branch |  % Funcs |  % Lines |U
  interfaces/                      |      100 |      100 |      100 |      100 |                |
   IERC6454.sol                    |      100 |      100 |      100 |      100 |                |
   IERC6982.sol                    |      100 |      100 |      100 |      100 |                |
- manager/                         |     98.1 |    73.85 |      100 |    98.87 |                |
+ manager/                         |    98.09 |    73.85 |      100 |    98.85 |                |
   Actor.sol                       |      100 |       70 |      100 |      100 |                |
-  CrunaManager.sol                |    98.25 |    72.64 |      100 |    98.43 |        127,319 |
+  CrunaManager.sol                |    98.23 |    72.64 |      100 |     98.4 |        122,311 |
   CrunaManagerBase.sol            |    96.15 |    85.71 |      100 |      100 |                |
   CrunaManagerProxy.sol           |      100 |      100 |      100 |      100 |                |
   ICrunaManager.sol               |      100 |      100 |      100 |      100 |                |
   ICrunaManagerBase.sol           |      100 |      100 |      100 |      100 |                |
  plugins/                         |      100 |      100 |      100 |      100 |                |
   IPlugin.sol                     |      100 |      100 |      100 |      100 |                |
- plugins/inheritance/             |      100 |    72.37 |      100 |    97.73 |                |
+ plugins/inheritance/             |      100 |    72.37 |      100 |     97.7 |                |
   CrunaInheritancePlugin.sol      |      100 |    72.37 |      100 |     97.7 |         92,187 |
   CrunaInheritancePluginProxy.sol |      100 |      100 |      100 |      100 |                |
   ICrunaInheritancePlugin.sol     |      100 |      100 |      100 |      100 |                |
- token/                           |    79.25 |    51.79 |    86.36 |    79.03 |                |
-  CrunaManagedBase.sol            |    81.25 |    54.17 |    88.24 |    79.31 |... 108,188,200 |
+ token/                           |    85.71 |    51.79 |    86.36 |    83.05 |                |
+  CrunaManagedBase.sol            |    88.64 |    54.17 |    88.24 |    83.64 |... 119,199,211 |
   CrunaManagedOwnable.sol         |      100 |       50 |      100 |      100 |                |
   CrunaManagedTimeControlled.sol  |       50 |    33.33 |    66.67 |    66.67 |             35 |
   ICrunaManaged.sol               |      100 |      100 |      100 |      100 |                |
- utils/                           |       68 |    39.29 |       75 |    65.63 |                |
+ utils/                           |    66.67 |    39.29 |    72.22 |    64.52 |                |
   CrunaGuardian.sol               |       80 |       50 |       75 |     62.5 |       28,42,47 |
-  CrunaProxy.sol                  |      100 |      100 |      100 |      100 |                |
   CrunaRegistry.sol               |      100 |      100 |      100 |      100 |                |
-  ERC6551AccountProxy.sol         |       70 |       50 |      100 |    63.64 |    13,31,32,33 |
+  ERC6551AccountProxy.sol         |       70 |       50 |      100 |    63.64 |    15,33,34,35 |
   FlexiTimelockController.sol     |       20 |       10 |    33.33 |    33.33 |    30,38,46,54 |
   IBoundContract.sol              |      100 |      100 |      100 |      100 |                |
   ICrunaGuardian.sol              |      100 |      100 |      100 |      100 |                |
-  ICrunaProxy.sol                 |      100 |      100 |      100 |      100 |                |
   ICrunaRegistry.sol              |      100 |      100 |      100 |      100 |                |
   IVersioned.sol                  |      100 |      100 |      100 |      100 |                |
   SignatureValidator.sol          |      100 |       75 |      100 |      100 |                |
 ----------------------------------|----------|----------|----------|----------|----------------|
-All files                         |    92.69 |    65.86 |    93.16 |     92.2 |                |
+All files                         |     93.9 |    65.86 |    93.04 |    92.88 |                |
 ----------------------------------|----------|----------|----------|----------|----------------|
 ```
 
