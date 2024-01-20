@@ -155,6 +155,13 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**1.0.0-beta.4**
+- Renaming contracts to better distinguish them
+- Add a function to allow a CrunaManaged NFT to upgrade the default implementation of the CrunaManager to a new version
+- Simplify proxies
+- Split ManagedERC721 in a basic contract, CrunaManagedBase, and two implementations based on Ownable and TimeControlled. The second is used by CrunaVaults, but the other can be chosen by less critical projects.
+- Extend TimeControlled also in the Guardian, to guarantee the fairness of the trusted implementations 
+
 **1.0.0-beta.3**
 - Better interface organization
 - Move contracts used only for testing to the mocks folder
