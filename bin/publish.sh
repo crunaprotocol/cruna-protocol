@@ -29,12 +29,10 @@ fi
 cp README.md contracts/README.md
 cd contracts
 
-if [[ $version == *"-alpha"* ]]; then
-  echo "Publishing alpha version $version"
-  npm publish --tag alpha
-elif [[ $version == *"-beta"* ]]; then
-  echo "Publishing beta version $version"
-  npm publish --tag beta
+if [[ $version =~ -([a-zA-Z]+) ]]; then
+  tag=${BASH_REMATCH[1]}
+  echo "Publishing $tag version $version"
+  npm publish --tag $tag
 else
   echo "Publishing stable version $version"
   npm publish
