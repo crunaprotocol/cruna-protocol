@@ -223,43 +223,43 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ```
   43 passing
 
-----------------------------------|----------|----------|----------|----------|----------------|
-File                              |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
-----------------------------------|----------|----------|----------|----------|----------------|
- interfaces/                      |      100 |      100 |      100 |      100 |                |
-  IERC6454.sol                    |      100 |      100 |      100 |      100 |                |
-  IERC6982.sol                    |      100 |      100 |      100 |      100 |                |
- manager/                         |    98.09 |    73.85 |      100 |    98.85 |                |
-  Actor.sol                       |      100 |       70 |      100 |      100 |                |
-  CrunaManager.sol                |    98.23 |    72.64 |      100 |     98.4 |        122,311 |
-  CrunaManagerBase.sol            |    96.15 |    85.71 |      100 |      100 |                |
-  CrunaManagerProxy.sol           |      100 |      100 |      100 |      100 |                |
-  ICrunaManager.sol               |      100 |      100 |      100 |      100 |                |
-  ICrunaManagerBase.sol           |      100 |      100 |      100 |      100 |                |
- plugins/                         |      100 |      100 |      100 |      100 |                |
-  IPlugin.sol                     |      100 |      100 |      100 |      100 |                |
- plugins/inheritance/             |      100 |    72.37 |      100 |     97.7 |                |
-  CrunaInheritancePlugin.sol      |      100 |    72.37 |      100 |     97.7 |         92,187 |
-  CrunaInheritancePluginProxy.sol |      100 |      100 |      100 |      100 |                |
-  ICrunaInheritancePlugin.sol     |      100 |      100 |      100 |      100 |                |
- token/                           |      100 |     62.5 |      100 |    96.67 |                |
-  CrunaManagedBase.sol            |      100 |    60.42 |      100 |    96.43 |        201,213 |
-  CrunaManagedOwnable.sol         |      100 |       50 |      100 |      100 |                |
-  CrunaManagedTimeControlled.sol  |      100 |    83.33 |      100 |      100 |                |
-  ICrunaManaged.sol               |      100 |      100 |      100 |      100 |                |
- utils/                           |    96.43 |    58.33 |      100 |    92.68 |                |
-  CrunaGuardian.sol               |      100 |       50 |      100 |       75 |          42,47 |
-  CrunaRegistry.sol               |      100 |      100 |      100 |      100 |                |
-  ERC6551AccountProxy.sol         |       90 |       75 |      100 |    90.91 |             35 |
-  FlexiTimelockController.sol     |      100 |       50 |      100 |      100 |                |
-  IBoundContract.sol              |      100 |      100 |      100 |      100 |                |
-  ICrunaGuardian.sol              |      100 |      100 |      100 |      100 |                |
-  ICrunaRegistry.sol              |      100 |      100 |      100 |      100 |                |
-  IVersioned.sol                  |      100 |      100 |      100 |      100 |                |
-  SignatureValidator.sol          |      100 |       75 |      100 |      100 |                |
-----------------------------------|----------|----------|----------|----------|----------------|
-All files                         |    98.67 |    69.46 |      100 |    97.51 |                |
-----------------------------------|----------|----------|----------|----------|----------------|
+----------------------------------|----------|----------|----------|----------
+File                              |  % Stmts | % Branch |  % Funcs |  % Lines 
+----------------------------------|----------|----------|----------|----------
+ interfaces/                      |      100 |      100 |      100 |      100 
+  IERC6454.sol                    |      100 |      100 |      100 |      100 
+  IERC6982.sol                    |      100 |      100 |      100 |      100 
+ manager/                         |    98.09 |    73.85 |      100 |    98.85 
+  Actor.sol                       |      100 |       70 |      100 |      100 
+  CrunaManager.sol                |    98.23 |    72.64 |      100 |     98.4 
+  CrunaManagerBase.sol            |    96.15 |    85.71 |      100 |      100 
+  CrunaManagerProxy.sol           |      100 |      100 |      100 |      100 
+  ICrunaManager.sol               |      100 |      100 |      100 |      100 
+  ICrunaManagerBase.sol           |      100 |      100 |      100 |      100 
+ plugins/                         |      100 |      100 |      100 |      100 
+  IPlugin.sol                     |      100 |      100 |      100 |      100 
+ plugins/inheritance/             |      100 |    72.37 |      100 |     97.7 
+  CrunaInheritancePlugin.sol      |      100 |    72.37 |      100 |     97.7 
+  CrunaInheritancePluginProxy.sol |      100 |      100 |      100 |      100 
+  ICrunaInheritancePlugin.sol     |      100 |      100 |      100 |      100 
+ token/                           |      100 |     62.5 |      100 |    96.67 
+  CrunaManagedBase.sol            |      100 |    60.42 |      100 |    96.43 
+  CrunaManagedOwnable.sol         |      100 |       50 |      100 |      100 
+  CrunaManagedTimeControlled.sol  |      100 |    83.33 |      100 |      100 
+  ICrunaManaged.sol               |      100 |      100 |      100 |      100 
+ utils/                           |    96.43 |    58.33 |      100 |    92.68 
+  CrunaGuardian.sol               |      100 |       50 |      100 |       75 
+  CrunaRegistry.sol               |      100 |      100 |      100 |      100 
+  ERC6551AccountProxy.sol         |       90 |       75 |      100 |    90.91 
+  FlexiTimelockController.sol     |      100 |       50 |      100 |      100 
+  IBoundContract.sol              |      100 |      100 |      100 |      100 
+  ICrunaGuardian.sol              |      100 |      100 |      100 |      100 
+  ICrunaRegistry.sol              |      100 |      100 |      100 |      100 
+  IVersioned.sol                  |      100 |      100 |      100 |      100 
+  SignatureValidator.sol          |      100 |       75 |      100 |      100 
+----------------------------------|----------|----------|----------|----------
+All files                         |    98.67 |    69.46 |      100 |    97.51 
+----------------------------------|----------|----------|----------|----------
 ```
 
 ## License

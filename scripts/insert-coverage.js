@@ -22,6 +22,7 @@ for (let row of coverage) {
     if (result[2] && !row) {
       break;
     }
+    row = row.replace(/\|[^|]+\|$/, "");
     result.push(row);
   }
   if (/ {2}\d+ passing/.test(row)) {
