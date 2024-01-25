@@ -37,9 +37,6 @@ abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6
   using Strings for uint256;
   using Address for address;
 
-  event ManagedTransfer(bytes4 indexed pluginNameId, uint256 indexed tokenId);
-  event DefaultManagerUpgrade(address newManagerProxy);
-
   error NotTransferable();
   error NotTheManager();
   error ZeroAddress();
@@ -185,6 +182,35 @@ abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6
   // from the CrunaManager.sol
   function emitLockedEvent(uint256 tokenId, bool locked_) external virtual onlyManager(tokenId) {
     emit Locked(tokenId, locked_);
+  }
+
+  // We let the NFT emit the events, so that it is easier to listen to them
+  function emitProtectorChangeEvent(
+    uint256 tokenId,
+    address protector,
+    bool status,
+    uint256 protectorsCount
+  ) external virtual onlyManager(tokenId) {
+    emit ProtectorChange(tokenId, protector, status);
+    if (status && protectorsCount == 1) emit Locked(tokenId, true);
+    else if (!status && protectorsCount == 0) emit Locked(tokenId, false);
+  }
+
+  function emitSafeRecipientChangeEvent(uint256 tokenId, address recipient, bool status) external virtual onlyManager(tokenId) {
+    emit SafeRecipientChange(tokenId, recipient, status);
+  }
+
+  function emitPluginStatusChangeEvent(
+    uint256 tokenId,
+    string memory name,
+    address plugin,
+    bool status
+  ) external virtual onlyManager(tokenId) {
+    emit PluginStatusChange(tokenId, name, plugin, status);
+  }
+
+  function emitResetEvent(uint256 tokenId) external virtual onlyManager(tokenId) onlyManager(tokenId) {
+    emit Reset(tokenId);
   }
 
   // minting and initialization
