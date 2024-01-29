@@ -11,7 +11,10 @@ import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
 
 interface IVault {
   function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external;
-  function emitLockedEvent(uint256 tokenId, bool locked_) external;
+  function emitProtectorChangeEvent(uint256 tokenId, address protector, bool status, bool lock, bool unlock) external;
+  function emitSafeRecipientChangeEvent(uint256 tokenId, address recipient, bool status) external;
+  function emitPluginStatusChangeEvent(uint256 tokenId, string memory name, address plugin, bool status) external;
+  function emitResetEvent(uint256 tokenId) external;
   function guardian() external view returns (ICrunaGuardian);
   function registry() external view returns (ICrunaRegistry);
   function managerOf(uint256 tokenId) external view returns (address);
