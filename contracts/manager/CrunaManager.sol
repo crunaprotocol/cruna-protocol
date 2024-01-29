@@ -102,28 +102,23 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
       true,
       _msgSender()
     );
-    if (status) {
-      if (countActiveProtectors() == 1) {
-        _emitLockedEvent(true);
-      }
-    } else if (countActiveProtectors() == 0) {
-      _emitLockedEvent(false);
-    }
-    emit ProtectorUpdated(_msgSender(), protector_, status);
-  }
-
-  function _emitLockedEvent(bool locked_) internal virtual {
     // Avoid to revert if the emission of the event fails.
     // It should never happen, but if it happens, we are
-    // notified by the LockFailed event, instead of reverting
+    // notified by the EmitEventFailed event, instead of reverting
     // the entire transaction.
-    bytes memory data = abi.encodeWithSignature("emitLockedEvent(uint256,bool)", tokenId(), locked_);
+    bytes memory data = abi.encodeWithSignature(
+      "emitProtectorChangeEvent(uint256,address,bool,uint256)",
+      tokenId(),
+      protector_,
+      status,
+      countActiveProtectors()
+    );
     address vaultAddress = address(vault());
     // solhint-disable-next-line avoid-low-level-calls
     (bool success, ) = vaultAddress.call(data);
     if (!success) {
-      // this way we can ask the user to execute an explicit lock
-      emit LockFailed(tokenId(), locked_);
+      // we emit a local event to alert. Not ideal, but better than reverting
+      emit EmitEventFailed(tokenId(), EventAction.ProtectorChange);
     }
   }
 
@@ -153,7 +148,23 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
       false,
       _msgSender()
     );
-    emit SafeRecipientUpdated(_msgSender(), recipient, status);
+    // Avoid to revert if the emission of the event fails.
+    // It should never happen, but if it happens, we are
+    // notified by the EmitEventFailed event, instead of reverting
+    // the entire transaction.
+    bytes memory data = abi.encodeWithSignature(
+      "emitSafeRecipientChangeEvent(uint256,address,bool)",
+      tokenId(),
+      recipient,
+      status
+    );
+    address vaultAddress = address(vault());
+    // solhint-disable-next-line avoid-low-level-calls
+    (bool success, ) = vaultAddress.call(data);
+    if (!success) {
+      // we emit a local event to alert. Not ideal, but better than reverting
+      emit EmitEventFailed(tokenId(), EventAction.SafeRecipientChange);
+    }
   }
 
   // @dev see {ICrunaManager.sol-isSafeRecipient}
@@ -273,7 +284,28 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
     allPlugins.push(PluginStatus(name, true));
     pluginsById[_nameId] = Plugin(pluginProxy, canManageTransfer, _plugin.requiresResetOnTransfer(), true);
     _plugin.init();
-    emit PluginStatusChange(name, address(_plugin), true);
+    _emitPluginStatusChange(name, address(_plugin), true);
+  }
+
+  function _emitPluginStatusChange(string memory name, address pluginAddress_, bool status) internal virtual {
+    // Avoid to revert if the emission of the event fails.
+    // It should never happen, but if it happens, we are
+    // notified by the EmitEventFailed event, instead of reverting
+    // the entire transaction.
+    bytes memory data = abi.encodeWithSignature(
+      "emitPluginStatusChangeEvent(uint256,string,address,bool)",
+      tokenId(),
+      name,
+      pluginAddress_,
+      status
+    );
+    address vaultAddress = address(vault());
+    // solhint-disable-next-line avoid-low-level-calls
+    (bool success, ) = vaultAddress.call(data);
+    if (!success) {
+      // we emit a local event to alert. Not ideal, but better than reverting
+      emit EmitEventFailed(tokenId(), EventAction.PluginStatusChange);
+    }
   }
 
   // TODO require a protector signature if protectors are active
@@ -376,7 +408,7 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
     if (resetPlugin && pluginsById[_nameId].canBeReset) {
       _resetPlugin(_nameId);
     }
-    emit PluginStatusChange(name, pluginAddress(_nameId), false);
+    _emitPluginStatusChange(name, pluginAddress(_nameId), false);
   }
 
   function reEnablePlugin(
@@ -403,7 +435,7 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
     if (resetPlugin && pluginsById[_nameId].canBeReset) {
       _resetPlugin(_nameId);
     }
-    emit PluginStatusChange(name, pluginAddress(_nameId), true);
+    _emitPluginStatusChange(name, pluginAddress(_nameId), true);
   }
 
   function _resetPlugin(bytes4 _nameId) internal virtual {
@@ -445,7 +477,14 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
         pluginsById[_nameId].active = false;
         if (pluginsById[_nameId].canBeReset) _resetPlugin(_nameId);
       }
-      emit AllPluginsDisabled();
+    }
+    bytes memory data = abi.encodeWithSignature("emitResetEvent(uint256)", tokenId());
+    address vaultAddress = address(vault());
+    // solhint-disable-next-line avoid-low-level-calls
+    (bool success, ) = vaultAddress.call(data);
+    if (!success) {
+      // we emit a local event to alert. Not ideal, but better than reverting
+      emit EmitEventFailed(tokenId(), EventAction.Reset);
     }
   }
 

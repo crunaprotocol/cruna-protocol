@@ -130,30 +130,33 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 
 ## Development
 
-Cruna is in beta stage, and to use it you must specify the version you want to install. Install it with
+Cruna is in beta stage, and to use it you must specify the version you want to install. Install it with, for example
 
 ```sh
-npm install @cruna/protocol@1.0.0-beta.3 @openzeppelin/contracts erc6551
+npm install @cruna/protocol@1.0.0-beta.5 @openzeppelin/contracts erc6551
 ```
 or similar commands using Yarn or Pnpm, and use in your Solidity smart contracts, for example, as
 
 ```
-import {ManagedERC721} from "@cruna/protocol/contracts/manager/ManagedERC721.sol";
+import {CrunaManagedOwnable} from "@cruna/protocol/contracts/manager/CrunaManagedOwnable.sol";
 
-contract MySuperToken is ManagedERC721 {
+contract MySuperToken is CrunaManagedOwnable {
    
     constructor(
     address registry_,
     address guardian_,
     address signatureValidator_,
     address managerProxy_
-  ) ManagedERC721("My Super Token", "MST", registry_, guardian_, signatureValidator_, managerProxy_) {}
+  ) CrunaManagedOwnable("My Super Token", "MST", registry_, guardian_, signatureValidator_, managerProxy_) {}
 }
 ```
 
 If your goal is to build a plugin, look at the contracts in [contracts/mocks/plugin-example](./contracts/mocks/plugin-example) to start from.
 
 ## History
+
+**1.0.0-beta-5**
+- Move events like ProtectorChange, SafeRecipientChange, etc. from the Manager to the Vault, because listening to events emitted by the vault is simpler than listening to the events emitted by all the managers
 
 **1.0.0-beta.4**
 - Renaming contracts to better distinguish them
@@ -229,9 +232,9 @@ File                              |  % Stmts | % Branch |  % Funcs |  % Lines
  interfaces/                      |      100 |      100 |      100 |      100 
   IERC6454.sol                    |      100 |      100 |      100 |      100 
   IERC6982.sol                    |      100 |      100 |      100 |      100 
- manager/                         |    98.09 |    73.85 |      100 |    98.85 
+ manager/                         |    96.34 |    71.54 |      100 |    97.25 
   Actor.sol                       |      100 |       70 |      100 |      100 
-  CrunaManager.sol                |    98.23 |    72.64 |      100 |     98.4 
+  CrunaManager.sol                |    95.83 |    69.81 |      100 |    96.24 
   CrunaManagerBase.sol            |    96.15 |    85.71 |      100 |      100 
   CrunaManagerProxy.sol           |      100 |      100 |      100 |      100 
   ICrunaManager.sol               |      100 |      100 |      100 |      100 
@@ -242,8 +245,8 @@ File                              |  % Stmts | % Branch |  % Funcs |  % Lines
   CrunaInheritancePlugin.sol      |      100 |    72.37 |      100 |     97.7 
   CrunaInheritancePluginProxy.sol |      100 |      100 |      100 |      100 
   ICrunaInheritancePlugin.sol     |      100 |      100 |      100 |      100 
- token/                           |      100 |     62.5 |      100 |    96.67 
-  CrunaManagedBase.sol            |      100 |    60.42 |      100 |    96.43 
+ token/                           |    98.28 |    61.43 |    96.15 |    95.38 
+  CrunaManagedBase.sol            |    98.11 |    59.68 |    95.24 |    95.08 
   CrunaManagedOwnable.sol         |      100 |       50 |      100 |      100 
   CrunaManagedTimeControlled.sol  |      100 |    83.33 |      100 |      100 
   ICrunaManaged.sol               |      100 |      100 |      100 |      100 
@@ -258,7 +261,7 @@ File                              |  % Stmts | % Branch |  % Funcs |  % Lines
   IVersioned.sol                  |      100 |      100 |      100 |      100 
   SignatureValidator.sol          |      100 |       75 |      100 |      100 
 ----------------------------------|----------|----------|----------|----------
-All files                         |    98.67 |    69.46 |      100 |    97.51 
+All files                         |    97.46 |    67.95 |    99.16 |    96.53 
 ----------------------------------|----------|----------|----------|----------
 ```
 
