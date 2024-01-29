@@ -165,8 +165,8 @@ describe("VaultFactoryMock", function () {
 
       // set Alice as first Bob's protector
       await expect(manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature))
-        .to.emit(manager, "ProtectorUpdated")
-        .withArgs(bob.address, alice.address, true)
+        .to.emit(vault, "ProtectorChange")
+        .withArgs(nextTokenId, alice.address, true)
         .to.emit(vault, "Locked")
         .withArgs(nextTokenId, true);
     });
