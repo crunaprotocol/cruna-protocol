@@ -242,6 +242,10 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
    *
    */
 
+  // TODO require a protector signature if protectors are active
+  //   actor = pluginProxy
+  //   extra = canManageTransfer ? 1 : 0;
+  //   extra2 = uint256(bytes32(bytes(name)));
   function plug(
     string memory name,
     address pluginProxy,
@@ -250,6 +254,7 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
     uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner nonReentrant {
+
     bytes4 _nameId = _stringToBytes4(name);
     if (pluginsById[_nameId].proxyAddress != address(0)) revert PluginAlreadyPlugged();
     uint256 requires = guardian().trustedImplementation(_nameId, pluginProxy);
@@ -265,8 +270,9 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
     emit PluginStatusChange(name, address(_plugin), true);
   }
 
-  // @dev blocks a plugin for a maximum of 30 days from transferring the NFT
-  //   If the plugins must be blocked for more time, disable it
+  // TODO require a protector signature if protectors are active
+  // @dev Id removing the authorization, it blocks a plugin for a maximum of 30 days from transferring
+  // the NFT. If the plugins must be blocked for more time, disable it
   function authorizePluginToTransfer(
     string memory name,
     bool authorized,
@@ -336,6 +342,7 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
     return _plugins;
   }
 
+  // TODO require a protector signature if protectors are active
   function disablePlugin(string memory name, bool resetPlugin) external virtual override onlyTokenOwner nonReentrant {
     (bool plugged_, uint256 i) = pluginIndex(name);
     if (!plugged_) revert PluginNotFound();
@@ -349,6 +356,7 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
     emit PluginStatusChange(name, pluginAddress(_nameId), false);
   }
 
+  // TODO require a protector signature if protectors are active
   function reEnablePlugin(string memory name, bool resetPlugin) external virtual override onlyTokenOwner nonReentrant {
     (bool plugged_, uint256 i) = pluginIndex(name);
     if (!plugged_) revert PluginNotFound();
@@ -375,7 +383,7 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
   }
 
   // @dev See {IProtected721-managedTransfer}.
-  // This is a special function that can be called only by the CrunaInheritancePlugin.sol
+  // This is a special function that can be called only by authorized plugins
   function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external virtual override nonReentrant {
     if (pluginsById[pluginNameId].proxyAddress == address(0) || !pluginsById[pluginNameId].active)
       revert PluginNotFoundOrDisabled();
