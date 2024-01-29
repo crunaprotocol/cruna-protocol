@@ -46,7 +46,11 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
   mapping(bytes4 => uint256) public timeLocks;
 
   function nameId() public virtual override returns (bytes4) {
-    return bytes4(keccak256("CrunaManager"));
+    return _getNameId("CrunaManager");
+  }
+
+  function _getNameId(string memory name) internal pure virtual returns (bytes4) {
+    return bytes4(keccak256(abi.encodePacked(name)));
   }
 
   // simulate ERC-721 to allow plugins to be deployed via ERC-6551 Registry
@@ -241,13 +245,17 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
   function plug(
     string memory name,
     address pluginProxy,
-    bool canManageTransfer
+    bool canManageTransfer,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature
   ) external virtual override onlyTokenOwner nonReentrant {
     bytes4 _nameId = _stringToBytes4(name);
     if (pluginsById[_nameId].proxyAddress != address(0)) revert PluginAlreadyPlugged();
     uint256 requires = guardian().trustedImplementation(_nameId, pluginProxy);
     if (requires == 0) revert UntrustedImplementation();
     if (requires > version()) revert PluginRequiresUpdatedManager(requires);
+    _validateAndCheckSignature(this.plug.selector, pluginProxy, canManageTransfer, timestamp * 1e6 + validFor, signature, false);
     address _pluginAddress = registry().createBoundContract(pluginProxy, 0x00, block.chainid, address(this), tokenId());
     IPluginExt _plugin = IPluginExt(_pluginAddress);
     if (_plugin.nameId() != _nameId) revert InvalidImplementation();

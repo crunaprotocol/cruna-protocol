@@ -38,7 +38,14 @@ interface ICrunaManager {
     bool active;
   }
 
-  function plug(string memory name, address implementation, bool canManageTransfer) external;
+  function plug(
+    string memory name,
+    address pluginProxy,
+    bool canManageTransfer,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature
+  ) external;
 
   function disablePlugin(string memory name, bool resetPlugin) external;
 
