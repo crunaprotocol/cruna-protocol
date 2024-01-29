@@ -254,13 +254,19 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
     uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner nonReentrant {
-
     bytes4 _nameId = _stringToBytes4(name);
     if (pluginsById[_nameId].proxyAddress != address(0)) revert PluginAlreadyPlugged();
     uint256 requires = guardian().trustedImplementation(_nameId, pluginProxy);
     if (requires == 0) revert UntrustedImplementation();
     if (requires > version()) revert PluginRequiresUpdatedManager(requires);
-    _validateAndCheckSignature(this.plug.selector, pluginProxy, canManageTransfer, timestamp * 1e6 + validFor, signature, false);
+    _validateAndCheckSignature(
+      this.plug.selector,
+      pluginProxy,
+      canManageTransfer,
+      timestamp * 1e6 + validFor,
+      signature,
+      false
+    );
     address _pluginAddress = registry().createBoundContract(pluginProxy, 0x00, block.chainid, address(this), tokenId());
     IPluginExt _plugin = IPluginExt(_pluginAddress);
     if (_plugin.nameId() != _nameId) revert InvalidImplementation();
@@ -342,11 +348,28 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
     return _plugins;
   }
 
-  // TODO require a protector signature if protectors are active
-  function disablePlugin(string memory name, bool resetPlugin) external virtual override onlyTokenOwner nonReentrant {
+  function pseudoAddress(string memory name) public view virtual returns (address) {
+    return address(uint160(uint256(keccak256(abi.encodePacked(name)))));
+  }
+
+  function disablePlugin(
+    string memory name,
+    bool resetPlugin,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature
+  ) external virtual override onlyTokenOwner nonReentrant {
     (bool plugged_, uint256 i) = pluginIndex(name);
     if (!plugged_) revert PluginNotFound();
     if (!allPlugins[i].active) revert PluginAlreadyDisabled();
+    _validateAndCheckSignature(
+      this.disablePlugin.selector,
+      pseudoAddress(name),
+      resetPlugin,
+      timestamp * 1e6 + validFor,
+      signature,
+      false
+    );
     allPlugins[i].active = false;
     bytes4 _nameId = _stringToBytes4(name);
     pluginsById[_nameId].active = false;
@@ -356,11 +379,24 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
     emit PluginStatusChange(name, pluginAddress(_nameId), false);
   }
 
-  // TODO require a protector signature if protectors are active
-  function reEnablePlugin(string memory name, bool resetPlugin) external virtual override onlyTokenOwner nonReentrant {
+  function reEnablePlugin(
+    string memory name,
+    bool resetPlugin,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature
+  ) external virtual override onlyTokenOwner nonReentrant {
     (bool plugged_, uint256 i) = pluginIndex(name);
     if (!plugged_) revert PluginNotFound();
     if (allPlugins[i].active) revert PluginNotDisabled();
+    _validateAndCheckSignature(
+      this.reEnablePlugin.selector,
+      pseudoAddress(name),
+      resetPlugin,
+      timestamp * 1e6 + validFor,
+      signature,
+      false
+    );
     allPlugins[i].active = true;
     bytes4 _nameId = _stringToBytes4(name);
     pluginsById[_nameId].active = true;

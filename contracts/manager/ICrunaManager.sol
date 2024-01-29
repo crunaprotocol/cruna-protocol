@@ -47,9 +47,21 @@ interface ICrunaManager {
     bytes calldata signature
   ) external;
 
-  function disablePlugin(string memory name, bool resetPlugin) external;
+  function disablePlugin(
+    string memory name,
+    bool resetPlugin,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature
+  ) external;
 
-  function reEnablePlugin(string memory name, bool resetPlugin) external;
+  function reEnablePlugin(
+    string memory name,
+    bool resetPlugin,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature
+  ) external;
 
   // simulate ERC-721
 
