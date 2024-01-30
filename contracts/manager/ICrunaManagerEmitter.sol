@@ -34,5 +34,4 @@ interface ICrunaManagerEmitter {
   ) external;
 
   function emitResetEvent(uint256 tokenId) external;
-
 }

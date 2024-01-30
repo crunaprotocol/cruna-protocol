@@ -133,14 +133,14 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 Cruna is in beta stage, and to use it you must specify the version you want to install. Install it with, for example
 
 ```sh
-npm install @cruna/protocol@1.0.0-beta.5 @openzeppelin/contracts erc6551
+npm install @cruna/protocol@1.0.0-beta.7 @openzeppelin/contracts erc6551
 ```
 or similar commands using Yarn or Pnpm, and use in your Solidity smart contracts, for example, as
 
 ```
-import {CrunaManagedOwnable} from "@cruna/protocol/contracts/manager/CrunaManagedOwnable.sol";
+import {CrunaManagedNFTOwnable} from "@cruna/protocol/contracts/manager/CrunaManagedNFTOwnable.sol";
 
-contract MySuperToken is CrunaManagedOwnable {
+contract MySuperToken is CrunaManagedNFTOwnable {
    
     constructor(
     address registry_,
@@ -154,6 +154,9 @@ contract MySuperToken is CrunaManagedOwnable {
 If your goal is to build a plugin, look at the contracts in [contracts/mocks/plugin-example](./contracts/mocks/plugin-example) to start from.
 
 ## History
+
+**1.0.0-beta.7**
+- Add common event emitters for managers, instead of emitting via the vault, to allow the manager to evolve independently from the vault
 
 **1.0.0-beta.6**
 - Require signature, if protectors are active, to plug a new plugin, disable and re-enable a plugin, and to authorize/de-authorize a plugin to transfer the NFT
@@ -243,6 +246,7 @@ File                              |  % Stmts | % Branch |  % Funcs |  % Lines
   CrunaManagerProxy.sol           |      100 |      100 |        0 |      100 
   ICrunaManager.sol               |      100 |      100 |      100 |      100 
   ICrunaManagerBase.sol           |      100 |      100 |      100 |      100 
+  ICrunaManagerEmitter.sol        |      100 |      100 |      100 |      100 
  plugins/                         |      100 |      100 |      100 |      100 
   IPlugin.sol                     |      100 |      100 |      100 |      100 
  plugins/inheritance/             |      100 |    72.86 |    95.24 |    97.62 
