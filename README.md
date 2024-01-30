@@ -224,7 +224,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  43 passing
+  45 passing
 
 ----------------------------------|----------|----------|----------|----------
 File                              |  % Stmts | % Branch |  % Funcs |  % Lines 
@@ -232,21 +232,21 @@ File                              |  % Stmts | % Branch |  % Funcs |  % Lines
  interfaces/                      |      100 |      100 |      100 |      100 
   IERC6454.sol                    |      100 |      100 |      100 |      100 
   IERC6982.sol                    |      100 |      100 |      100 |      100 
- manager/                         |    96.34 |    71.54 |      100 |    97.25 
+ manager/                         |    96.05 |    72.79 |      100 |    96.92 
   Actor.sol                       |      100 |       70 |      100 |      100 
-  CrunaManager.sol                |    95.83 |    69.81 |      100 |    96.24 
+  CrunaManager.sol                |    95.49 |    71.43 |      100 |    95.89 
   CrunaManagerBase.sol            |    96.15 |    85.71 |      100 |      100 
   CrunaManagerProxy.sol           |      100 |      100 |      100 |      100 
   ICrunaManager.sol               |      100 |      100 |      100 |      100 
   ICrunaManagerBase.sol           |      100 |      100 |      100 |      100 
  plugins/                         |      100 |      100 |      100 |      100 
   IPlugin.sol                     |      100 |      100 |      100 |      100 
- plugins/inheritance/             |      100 |    72.37 |      100 |     97.7 
-  CrunaInheritancePlugin.sol      |      100 |    72.37 |      100 |     97.7 
+ plugins/inheritance/             |      100 |    72.86 |      100 |    97.62 
+  CrunaInheritancePlugin.sol      |      100 |    72.86 |      100 |    97.62 
   CrunaInheritancePluginProxy.sol |      100 |      100 |      100 |      100 
   ICrunaInheritancePlugin.sol     |      100 |      100 |      100 |      100 
- token/                           |    98.28 |    61.43 |    96.15 |    95.38 
-  CrunaManagedBase.sol            |    98.11 |    59.68 |    95.24 |    95.08 
+ token/                           |    98.31 |    61.43 |     96.3 |    95.45 
+  CrunaManagedBase.sol            |    98.15 |    59.68 |    95.45 |    95.16 
   CrunaManagedOwnable.sol         |      100 |       50 |      100 |      100 
   CrunaManagedTimeControlled.sol  |      100 |    83.33 |      100 |      100 
   ICrunaManaged.sol               |      100 |      100 |      100 |      100 
@@ -261,7 +261,7 @@ File                              |  % Stmts | % Branch |  % Funcs |  % Lines
   IVersioned.sol                  |      100 |      100 |      100 |      100 
   SignatureValidator.sol          |      100 |       75 |      100 |      100 
 ----------------------------------|----------|----------|----------|----------
-All files                         |    97.46 |    67.95 |    99.16 |    96.53 
+All files                         |    97.24 |    68.59 |    99.19 |    96.37 
 ----------------------------------|----------|----------|----------|----------
 ```
 

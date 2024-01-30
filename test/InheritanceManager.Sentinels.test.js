@@ -61,7 +61,7 @@ describe("Sentinel and Inheritance", function () {
     ts = (await getTimestamp()) - 100;
   });
 
-  const buyAVaultAndPlug = async (bob) => {
+  const buyAVaultAndPlug = async (bob, withProtectors) => {
     const price = await factory.finalPrice(usdc.address);
     await usdc.connect(bob).approve(factory.address, price);
     const nextTokenId = await vault.nextTokenId();
@@ -69,9 +69,9 @@ describe("Sentinel and Inheritance", function () {
     const manager = await ethers.getContractAt("CrunaManager", await vault.managerOf(nextTokenId));
     inheritancePluginImpl = await deployContract("CrunaInheritancePlugin");
     inheritancePluginProxy = await deployContract("CrunaInheritancePluginProxy", inheritancePluginImpl.address);
-    await expect(manager.connect(bob).plug("CrunaInheritancePlugin", inheritancePluginProxy.address, true)).to.be.revertedWith(
-      "UntrustedImplementation",
-    );
+    await expect(
+      manager.connect(bob).plug("CrunaInheritancePlugin", inheritancePluginProxy.address, true, 0, 0, 0),
+    ).to.be.revertedWith("UntrustedImplementation");
     await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true, 1);
     expect((await manager.pluginsById(PLUGIN_ID)).proxyAddress).to.equal(addr0);
 
@@ -79,10 +79,58 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(manager.allPlugins(0)).revertedWith("");
 
-    await expect(manager.connect(bob).plug("CrunaInheritancePlugin", inheritancePluginProxy.address, true)).to.emit(
-      vault,
-      "PluginStatusChange",
-    );
+    if (withProtectors) {
+      ts = (await getTimestamp()) - 100;
+      // let sele = await manager.pseudoAddress("
+      let signature = (
+        await signRequest(
+          await selectorId("ICrunaManager", "setProtector"),
+          bob.address,
+          alice.address,
+          vault.address,
+          nextTokenId,
+          1,
+          0,
+          0,
+          ts,
+          3600,
+          chainId,
+          alice.address,
+          manager,
+        )
+      )[0];
+
+      // set Alice as Bob's protector
+      await manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature);
+
+      signature = (
+        await signRequest(
+          await selectorId("ICrunaManager", "plug"),
+          bob.address,
+          inheritancePluginProxy.address,
+          vault.address,
+          nextTokenId,
+          1,
+          0,
+          0,
+          ts,
+          3600,
+          chainId,
+          alice.address,
+          manager,
+        )
+      )[0];
+
+      await expect(
+        manager.connect(bob).plug("CrunaInheritancePlugin", inheritancePluginProxy.address, true, ts, 3600, signature),
+      ).to.emit(vault, "PluginStatusChange");
+    } else {
+      await expect(manager.connect(bob).plug("CrunaInheritancePlugin", inheritancePluginProxy.address, true, 0, 0, 0)).to.emit(
+        vault,
+        "PluginStatusChange",
+      );
+    }
+
     expect((await manager.pluginsById(PLUGIN_ID)).proxyAddress).not.equal(addr0);
     expect((await manager.allPlugins(0)).name).equal("CrunaInheritancePlugin");
     expect((await manager.allPlugins(0)).active).to.be.true;
@@ -101,12 +149,14 @@ describe("Sentinel and Inheritance", function () {
     return nextTokenId;
   };
 
-  it("should verify before/beforeEach works", async function () {
-    //
-  });
+  it("should verify before/beforeEach works", async function () {});
 
   it("should plug the plugin", async function () {
     await buyAVaultAndPlug(bob);
+  });
+
+  it("should plug the plugin when protectors are active", async function () {
+    await buyAVaultAndPlug(bob, true);
   });
 
   it("should set up sentinels/conf w/out protectors", async function () {
@@ -128,7 +178,7 @@ describe("Sentinel and Inheritance", function () {
       .to.emit(inheritancePlugin, "SentinelUpdated")
       .withArgs(bob.address, mark.address, true);
 
-    await expect(inheritancePlugin.connect(bob).configureInheritance(1, 90, 30, addr0, 0, 0))
+    await expect(inheritancePlugin.connect(bob).configureInheritance(1, 90, 30, addr0, 0, 0, 0))
       .to.emit(inheritancePlugin, "InheritanceConfigured")
       .withArgs(bob.address, 1, 90, 30, addr0);
   });
@@ -152,6 +202,7 @@ describe("Sentinel and Inheritance", function () {
       .to.emit(inheritancePlugin, "SentinelUpdated")
       .withArgs(bob.address, alice.address, false);
 
+    // add the protector after the initial set up
     let signature = (
       await signRequest(
         await selectorId("ICrunaManager", "setProtector"),
@@ -248,9 +299,9 @@ describe("Sentinel and Inheritance", function () {
       )
     )[0];
 
-    await expect(
-      inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, addr0, ts * 1e6 + 3600, signature),
-    ).revertedWith("QuorumCannotBeGreaterThanSentinels");
+    await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, addr0, ts, 3600, signature)).revertedWith(
+      "QuorumCannotBeGreaterThanSentinels",
+    );
 
     signature = (
       await signRequest(
@@ -270,7 +321,7 @@ describe("Sentinel and Inheritance", function () {
       )
     )[0];
 
-    await expect(inheritancePlugin.connect(bob).configureInheritance(1, 90, 30, addr0, ts * 1e6 + 3600, signature))
+    await expect(inheritancePlugin.connect(bob).configureInheritance(1, 90, 30, addr0, ts, 3600, signature))
       .to.emit(inheritancePlugin, "InheritanceConfigured")
       .withArgs(bob.address, 1, 90, 30, addr0);
   });
@@ -304,12 +355,12 @@ describe("Sentinel and Inheritance", function () {
       "InheritanceNotConfigured",
     );
 
-    await expect(inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, addr0, 11111111 * 1e6, 0)).revertedWith(
+    await expect(inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, addr0, 11111111, 0, 0)).revertedWith(
       "TimestampInvalidOrExpired",
     );
 
     await expect(
-      inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, addr0, ((await getTimestamp()) - 10) * 1e6 + 36, 0),
+      inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, addr0, (await getTimestamp()) - 10, 36, 0),
     ).revertedWith("ECDSAInvalidSignatureLength");
 
     await expect(
@@ -320,15 +371,16 @@ describe("Sentinel and Inheritance", function () {
           90,
           30,
           addr0,
-          ((await getTimestamp()) - 10) * 1e6 + 36,
+          (await getTimestamp()) - 10,
+          36,
           "0x3bebc7dbc355bc64b7c6de84de84da2fe6eba6a8360654d9c76cd2a9892a570d4eeb231fcee82921f3dd7aca46cdefcaec51845dae42a1492b9df47bf43ec9821c",
         ),
     ).revertedWith("WrongDataOrNotSignedByProtector");
 
-    await expect(inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, addr0, 0, 0)).revertedWith(
+    await expect(inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, addr0, 0, 0, 0)).revertedWith(
       "QuorumCannotBeGreaterThanSentinels",
     );
-    await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, addr0, 0, 0))
+    await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, addr0, 0, 0, 0))
       .to.emit(inheritancePlugin, "InheritanceConfigured")
       .withArgs(bob.address, 3, 90, 30, addr0);
 
@@ -416,7 +468,7 @@ describe("Sentinel and Inheritance", function () {
 
     const inheritancePlugin = await ethers.getContractAt("CrunaInheritancePlugin", inheritancePluginAddress);
 
-    await expect(inheritancePlugin.connect(bob).configureInheritance(0, 90, 30, beneficiary1.address, 0, 0))
+    await expect(inheritancePlugin.connect(bob).configureInheritance(0, 90, 30, beneficiary1.address, 0, 0, 0))
       .to.emit(inheritancePlugin, "InheritanceConfigured")
       .withArgs(bob.address, 0, 90, 30, beneficiary1.address);
 
@@ -432,6 +484,125 @@ describe("Sentinel and Inheritance", function () {
     await inheritancePlugin.connect(beneficiary1).inherit();
   });
 
+  it("should set up a beneficiary, enabling and disabling the plugin with protectors active", async function () {
+    const tokenId = await buyAVaultAndPlug(bob, true);
+    const managerAddress = await vault.managerOf(tokenId);
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+    const nameId = bytes4(keccak256("CrunaInheritancePlugin"));
+    const inheritancePluginAddress = await manager.plugin(nameId);
+
+    const inheritancePlugin = await ethers.getContractAt("CrunaInheritancePlugin", inheritancePluginAddress);
+
+    let signature = (
+      await signRequest(
+        await selectorId("ICrunaInheritancePlugin", "setSentinel"),
+        bob.address,
+        mark.address,
+        vault.address,
+        tokenId,
+        1,
+        0,
+        0,
+        ts,
+        3600,
+        chainId,
+        alice.address,
+        inheritancePlugin,
+      )
+    )[0];
+
+    await expect(inheritancePlugin.connect(bob).setSentinel(mark.address, true, ts, 3600, signature))
+      .to.emit(inheritancePlugin, "SentinelUpdated")
+      .withArgs(bob.address, mark.address, true);
+
+    expect((await manager.listPlugins(true)).length).to.equal(1);
+    expect((await manager.listPlugins(true))[0]).to.equal("CrunaInheritancePlugin");
+
+    await expect(manager.connect(bob).disablePlugin("CrunaInheritancePlugin", false, 0, 0, 0)).revertedWith(
+      "NotPermittedWhenProtectorsAreActive",
+    );
+
+    let nameAddress = await manager.pseudoAddress("CrunaInheritancePlugin");
+
+    signature = (
+      await signRequest(
+        await selectorId("ICrunaManager", "disablePlugin"),
+        bob.address,
+        nameAddress,
+        vault.address,
+        tokenId,
+        0,
+        0,
+        0,
+        ts,
+        3600,
+        chainId,
+        alice.address,
+        manager,
+      )
+    )[0];
+
+    await expect(manager.connect(bob).disablePlugin("CrunaInheritancePlugin", false, ts, 3600, signature))
+      .to.emit(vault, "PluginStatusChange")
+      .withArgs(tokenId, "CrunaInheritancePlugin", inheritancePlugin.address, false);
+
+    expect((await manager.listPlugins(true)).length).to.equal(0);
+
+    await expect(manager.connect(bob).reEnablePlugin("CrunaInheritancePlugin", false, 0, 0, 0)).revertedWith(
+      "NotPermittedWhenProtectorsAreActive",
+    );
+
+    signature = (
+      await signRequest(
+        await selectorId("ICrunaManager", "reEnablePlugin"),
+        bob.address,
+        nameAddress,
+        vault.address,
+        tokenId,
+        0,
+        0,
+        0,
+        ts,
+        3600,
+        chainId,
+        alice.address,
+        manager,
+      )
+    )[0];
+
+    await expect(manager.connect(bob).reEnablePlugin("CrunaInheritancePlugin", false, ts, 3600, signature))
+      .to.emit(vault, "PluginStatusChange")
+      .withArgs(tokenId, "CrunaInheritancePlugin", inheritancePlugin.address, true);
+
+    await expect(manager.connect(bob).authorizePluginToTransfer("CrunaInheritancePlugin", false, 0, 0, 0, 0)).revertedWith(
+      "NotPermittedWhenProtectorsAreActive",
+    );
+
+    signature = (
+      await signRequest(
+        await selectorId("ICrunaManager", "authorizePluginToTransfer"),
+        bob.address,
+        nameAddress,
+        vault.address,
+        tokenId,
+        0,
+        30 * days,
+        0,
+        ts,
+        3600,
+        chainId,
+        alice.address,
+        manager,
+      )
+    )[0];
+
+    await expect(
+      manager.connect(bob).authorizePluginToTransfer("CrunaInheritancePlugin", false, 30 * days, ts, 3600, signature),
+    )
+      .emit(vault, "PluginAuthorizationChange")
+      .withArgs(tokenId, "CrunaInheritancePlugin", inheritancePlugin.address, false, 30 * days);
+  });
+
   it("should not allow to inherit if not authorized to make transfer", async function () {
     const tokenId = await buyAVaultAndPlug(bob);
     const managerAddress = await vault.managerOf(tokenId);
@@ -441,7 +612,7 @@ describe("Sentinel and Inheritance", function () {
 
     const inheritancePlugin = await ethers.getContractAt("CrunaInheritancePlugin", inheritancePluginAddress);
 
-    await expect(inheritancePlugin.connect(bob).configureInheritance(0, 90, 30, beneficiary1.address, 0, 0))
+    await expect(inheritancePlugin.connect(bob).configureInheritance(0, 90, 30, beneficiary1.address, 0, 0, 0))
       .to.emit(inheritancePlugin, "InheritanceConfigured")
       .withArgs(bob.address, 0, 90, 30, beneficiary1.address);
 
@@ -453,28 +624,36 @@ describe("Sentinel and Inheritance", function () {
     await increaseBlockTimestampBy(85 * days);
     await expect(inheritancePlugin.connect(beneficiary1).inherit()).to.be.revertedWith("StillAlive");
 
-    await expect(manager.connect(bob).authorizePluginToTransfer("SomeOtherPlugin", true, 2 * days)).revertedWith(
+    await expect(manager.connect(bob).authorizePluginToTransfer("SomeOtherPlugin", true, 2 * days, 0, 0, 0)).revertedWith(
       "PluginNotFound",
     );
 
     await increaseBlockTimestampBy(75 * days);
 
-    await expect(manager.connect(bob).authorizePluginToTransfer("CrunaInheritancePlugin", false, 40 * days)).revertedWith(
+    await expect(
+      manager.connect(bob).authorizePluginToTransfer("CrunaInheritancePlugin", false, 40 * days, 0, 0, 0),
+    ).revertedWith("InvalidTimeLock");
+
+    await expect(manager.connect(bob).authorizePluginToTransfer("CrunaInheritancePlugin", false, 0, 0, 0, 0)).revertedWith(
       "InvalidTimeLock",
     );
 
-    await manager.connect(bob).authorizePluginToTransfer("CrunaInheritancePlugin", false, 30 * days);
-    await expect(manager.connect(bob).authorizePluginToTransfer("CrunaInheritancePlugin", false, 2 * days)).revertedWith(
-      "PluginAlreadyUnauthorized",
-    );
+    await expect(
+      manager.connect(bob).authorizePluginToTransfer("CrunaInheritancePlugin", true, 10 * days, 0, 0, 0),
+    ).revertedWith("InvalidTimeLock");
+
+    await manager.connect(bob).authorizePluginToTransfer("CrunaInheritancePlugin", false, 30 * days, 0, 0, 0);
+    await expect(
+      manager.connect(bob).authorizePluginToTransfer("CrunaInheritancePlugin", false, 2 * days, 0, 0, 0),
+    ).revertedWith("PluginAlreadyUnauthorized");
 
     await increaseBlockTimestampBy(10 * days);
 
     await expect(inheritancePlugin.connect(beneficiary1).inherit()).to.be.revertedWith("PluginNotAuthorizedToManageTransfer");
 
-    await manager.connect(bob).authorizePluginToTransfer("CrunaInheritancePlugin", true, 2 * days);
+    await manager.connect(bob).authorizePluginToTransfer("CrunaInheritancePlugin", true, 0, 0, 0, 0);
 
-    await expect(manager.connect(bob).authorizePluginToTransfer("CrunaInheritancePlugin", true, 2 * days)).revertedWith(
+    await expect(manager.connect(bob).authorizePluginToTransfer("CrunaInheritancePlugin", true, 0, 0, 0, 0)).revertedWith(
       "PluginAlreadyAuthorized",
     );
 
@@ -491,11 +670,11 @@ describe("Sentinel and Inheritance", function () {
 
     const inheritancePlugin = await ethers.getContractAt("CrunaInheritancePlugin", inheritancePluginAddress);
 
-    await inheritancePlugin.connect(bob).configureInheritance(0, 80, 30, beneficiary1.address, 0, 0);
+    await inheritancePlugin.connect(bob).configureInheritance(0, 80, 30, beneficiary1.address, 0, 0, 0);
 
     await increaseBlockTimestampBy(75 * days);
 
-    await manager.connect(bob).authorizePluginToTransfer("CrunaInheritancePlugin", false, 20 * days);
+    await manager.connect(bob).authorizePluginToTransfer("CrunaInheritancePlugin", false, 20 * days, 0, 0, 0);
 
     const ts = await getTimestamp();
     expect(await manager.timeLocks(bytes4(keccak256("CrunaInheritancePlugin")))).to.equal(ts + 20 * days);
@@ -539,10 +718,10 @@ describe("Sentinel and Inheritance", function () {
       "InheritanceNotConfigured",
     );
 
-    await expect(inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, beneficiary1.address, 0, 0)).revertedWith(
+    await expect(inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, beneficiary1.address, 0, 0, 0)).revertedWith(
       "QuorumCannotBeGreaterThanSentinels",
     );
-    await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, beneficiary1.address, 0, 0))
+    await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, beneficiary1.address, 0, 0, 0))
       .to.emit(inheritancePlugin, "InheritanceConfigured")
       .withArgs(bob.address, 3, 90, 30, beneficiary1.address);
 
@@ -563,7 +742,7 @@ describe("Sentinel and Inheritance", function () {
 
     // the user disable the plugin
 
-    await expect(manager.connect(bob).disablePlugin("CrunaInheritancePlugin", false))
+    await expect(manager.connect(bob).disablePlugin("CrunaInheritancePlugin", false, 0, 0, 0))
       .to.emit(vault, "PluginStatusChange")
       .withArgs(tokenId, "CrunaInheritancePlugin", inheritancePlugin.address, false);
 
@@ -613,7 +792,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(inheritancePlugin.connect(beneficiary2).inherit()).to.be.revertedWith("PluginNotFoundOrDisabled");
 
-    await expect(manager.connect(bob).reEnablePlugin("CrunaInheritancePlugin", false))
+    await expect(manager.connect(bob).reEnablePlugin("CrunaInheritancePlugin", false, 0, 0, 0))
       .to.emit(vault, "PluginStatusChange")
       .withArgs(tokenId, "CrunaInheritancePlugin", inheritancePlugin.address, true);
 
@@ -656,7 +835,7 @@ describe("Sentinel and Inheritance", function () {
     expect(data[1].requestUpdatedAt).to.equal(0);
     expect(data[1].approvers.length).to.equal(0);
 
-    await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, beneficiary1.address, 0, 0))
+    await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, beneficiary1.address, 0, 0, 0))
       .to.emit(inheritancePlugin, "InheritanceConfigured")
       .withArgs(bob.address, 3, 90, 30, beneficiary1.address);
 
@@ -677,7 +856,7 @@ describe("Sentinel and Inheritance", function () {
 
     // the user disable the plugin
 
-    await expect(manager.connect(bob).disablePlugin("CrunaInheritancePlugin", true))
+    await expect(manager.connect(bob).disablePlugin("CrunaInheritancePlugin", true, 0, 0, 0))
       .to.emit(vault, "PluginStatusChange")
       .withArgs(tokenId, "CrunaInheritancePlugin", inheritancePlugin.address, false);
 
@@ -721,10 +900,10 @@ describe("Sentinel and Inheritance", function () {
       "InheritanceNotConfigured",
     );
 
-    await expect(inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, beneficiary1.address, 0, 0)).revertedWith(
+    await expect(inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, beneficiary1.address, 0, 0, 0)).revertedWith(
       "QuorumCannotBeGreaterThanSentinels",
     );
-    await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, beneficiary1.address, 0, 0))
+    await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, beneficiary1.address, 0, 0, 0))
       .to.emit(inheritancePlugin, "InheritanceConfigured")
       .withArgs(bob.address, 3, 90, 30, beneficiary1.address);
 
@@ -745,7 +924,7 @@ describe("Sentinel and Inheritance", function () {
 
     // the user disable the plugin
 
-    await expect(manager.connect(bob).disablePlugin("CrunaInheritancePlugin", false))
+    await expect(manager.connect(bob).disablePlugin("CrunaInheritancePlugin", false, 0, 0, 0))
       .to.emit(vault, "PluginStatusChange")
       .withArgs(tokenId, "CrunaInheritancePlugin", inheritancePlugin.address, false);
 
@@ -795,7 +974,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(inheritancePlugin.connect(beneficiary2).inherit()).to.be.revertedWith("PluginNotFoundOrDisabled");
 
-    await expect(manager.connect(bob).reEnablePlugin("CrunaInheritancePlugin", true))
+    await expect(manager.connect(bob).reEnablePlugin("CrunaInheritancePlugin", true, 0, 0, 0))
       .to.emit(vault, "PluginStatusChange")
       .withArgs(tokenId, "CrunaInheritancePlugin", inheritancePlugin.address, true);
 

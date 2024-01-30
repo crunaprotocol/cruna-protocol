@@ -3,11 +3,13 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 interface ICrunaManaged {
-  event ProtectorChange(uint256 indexed okenId, address indexed protector, bool status);
+  event ProtectorChange(uint256 indexed tokenId, address indexed protector, bool status);
 
-  event SafeRecipientChange(uint256 indexed okenId, address indexed recipient, bool status);
+  event SafeRecipientChange(uint256 indexed tokenId, address indexed recipient, bool status);
 
-  event PluginStatusChange(uint256 indexed okenId, string name, address plugin, bool status);
+  event PluginStatusChange(uint256 indexed tokenId, string name, address plugin, bool status);
+
+  event PluginAuthorizationChange(uint256 indexed tokenId, string name, address plugin, bool status, uint256 lockTime);
 
   // Emitted when  protectors and safe recipients are removed and all plugins are disabled (if they require it)
   // This event overrides any specific ProtectorChange, SafeRecipientChange and PluginStatusChange event
@@ -38,6 +40,14 @@ interface ICrunaManaged {
   function emitSafeRecipientChangeEvent(uint256 tokenId, address recipient, bool status) external;
 
   function emitPluginStatusChangeEvent(uint256 tokenId, string memory name, address plugin, bool status) external;
+
+  function emitPluginAuthorizationChangeEvent(
+    uint256 tokenId,
+    string memory name,
+    address plugin,
+    bool status,
+    uint256 lockTime
+  ) external;
 
   function emitResetEvent(uint256 tokenId) external;
 

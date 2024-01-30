@@ -127,13 +127,26 @@ interface ICrunaManager {
   // @param tokenId The id of the token.
   // @param to The address of the recipient.
   // @param timeValidation The timestamp of the signature combined with the validity of the signature.
-  function protectedTransfer(uint256 tokenId, address to, uint256 timeValidation, bytes calldata signature) external;
+  function protectedTransfer(
+    uint256 tokenId,
+    address to,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature
+  ) external;
 
   function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external;
 
   // @dev blocks a plugin for a maximum of 30 days from transferring the NFT
   //   If the plugins must be blocked for more time, disable it
-  function authorizePluginToTransfer(string memory name, bool authorized, uint256 timeLock) external;
+  function authorizePluginToTransfer(
+    string memory name,
+    bool authorized,
+    uint256 timeLock,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature
+  ) external;
 
   function pluginAddress(bytes4 _nameId) external view returns (address);
 

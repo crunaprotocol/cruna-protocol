@@ -119,9 +119,9 @@ describe("CrunaManager.sol : Protectors", function () {
     const VaultMockSimple = await deployContract("VaultMockSimple", deployer.address);
     await VaultMockSimple.init(crunaRegistry.address, guardian.address, proxy.address);
     let interfaceId = await getInterfaceId("ICrunaManaged");
-    expect(interfaceId).to.equal("0x01a6d010");
+    expect(interfaceId).to.equal("0xbaeb82a4");
     expect(await vault.supportsInterface(interfaceId)).to.be.true;
-    expect(await getInterfaceId("ICrunaManaged")).to.equal("0x01a6d010");
+    expect(await getInterfaceId("ICrunaManaged")).to.equal("0xbaeb82a4");
   });
 
   it("should verify CrunaManagerBase.sol parameters", async function () {
@@ -372,7 +372,7 @@ describe("CrunaManager.sol : Protectors", function () {
         manager,
       )
     )[0];
-    await expect(manager.connect(bob).protectedTransfer(tokenId, fred.address, ts * 1e6 + 3600, signature))
+    await expect(manager.connect(bob).protectedTransfer(tokenId, fred.address, ts, 3600, signature))
       .to.emit(vault, "Reset")
       .withArgs(tokenId)
       .to.emit(vault, "Transfer")

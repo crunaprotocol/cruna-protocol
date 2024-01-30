@@ -64,7 +64,8 @@ interface ICrunaInheritancePlugin {
     uint256 proofOfLifeDurationInDays,
     uint256 gracePeriod,
     address beneficiary,
-    uint256 timeValidation,
+    uint256 timestamp,
+    uint256 validFor,
     bytes calldata signature
   ) external;
 

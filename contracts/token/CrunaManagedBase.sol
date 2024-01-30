@@ -209,6 +209,16 @@ abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6
     emit PluginStatusChange(tokenId, name, plugin, status);
   }
 
+  function emitPluginAuthorizationChangeEvent(
+    uint256 tokenId,
+    string memory name,
+    address plugin,
+    bool status,
+    uint256 lockTime
+  ) external {
+    emit PluginAuthorizationChange(tokenId, name, plugin, status, lockTime);
+  }
+
   function emitResetEvent(uint256 tokenId) external virtual onlyManager(tokenId) onlyManager(tokenId) {
     emit Reset(tokenId);
   }

@@ -189,6 +189,7 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
     bytes4 _functionSelector,
     address target,
     bool status,
+    uint256 extra2,
     uint256 timeValidation,
     bytes calldata signature,
     bool settingProtector
@@ -205,7 +206,7 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
         tokenAddress(),
         tokenId(),
         status ? 1 : 0,
-        0,
+        extra2,
         0,
         timeValidation,
         signature
@@ -237,7 +238,7 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
   ) internal virtual {
     if (actor == address(0)) revert ZeroAddress();
     if (actor == sender) revert CannotBeYourself();
-    _validateAndCheckSignature(_functionSelector, actor, status, timestamp * 1e6 + validFor, signature, actorIsProtector);
+    _validateAndCheckSignature(_functionSelector, actor, status, 0, timestamp * 1e6 + validFor, signature, actorIsProtector);
     if (!status) {
       if (timestamp != 0 && actorIsProtector && !isAProtector(actor)) revert ProtectorNotFound();
       _removeActor(actor, role_);
@@ -274,6 +275,7 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
       this.plug.selector,
       pluginProxy,
       canManageTransfer,
+      0,
       timestamp * 1e6 + validFor,
       signature,
       false
@@ -308,27 +310,67 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
     }
   }
 
-  // TODO require a protector signature if protectors are active
   // @dev Id removing the authorization, it blocks a plugin for a maximum of 30 days from transferring
   // the NFT. If the plugins must be blocked for more time, disable it
   function authorizePluginToTransfer(
     string memory name,
     bool authorized,
-    uint256 timeLock
+    uint256 timeLock,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature
   ) external virtual override onlyTokenOwner {
     bytes4 _nameId = _stringToBytes4(name);
     if (pluginsById[_nameId].proxyAddress == address(0)) revert PluginNotFound();
     IPluginExt _plugin = plugin(_nameId);
     if (!_plugin.requiresToManageTransfer()) revert NotATransferPlugin();
+    _validateAndCheckSignature(
+      this.authorizePluginToTransfer.selector,
+      pseudoAddress(name),
+      authorized,
+      timeLock,
+      timestamp * 1e6 + validFor,
+      signature,
+      false
+    );
     if (authorized) {
+      if (timeLock > 0) revert InvalidTimeLock();
       if (pluginsById[_nameId].canManageTransfer) revert PluginAlreadyAuthorized();
       delete timeLocks[_nameId];
     } else {
       if (!pluginsById[_nameId].canManageTransfer) revert PluginAlreadyUnauthorized();
-      if (timeLock > 30 days) revert InvalidTimeLock();
+      if (timeLock == 0 || timeLock > 30 days) revert InvalidTimeLock();
       timeLocks[_nameId] = block.timestamp + timeLock;
     }
     pluginsById[_nameId].canManageTransfer = authorized;
+    _emitPluginAuthorizationChange(name, pluginAddress(_nameId), authorized, timeLock);
+  }
+
+  function _emitPluginAuthorizationChange(
+    string memory name,
+    address pluginAddress_,
+    bool status,
+    uint256 lockTime
+  ) internal virtual {
+    // Avoid to revert if the emission of the event fails.
+    // It should never happen, but if it happens, we are
+    // notified by the EmitEventFailed event, instead of reverting
+    // the entire transaction.
+    bytes memory data = abi.encodeWithSignature(
+      "emitPluginAuthorizationChangeEvent(uint256,string,address,bool,uint256)",
+      tokenId(),
+      name,
+      pluginAddress_,
+      status,
+      lockTime
+    );
+    address vaultAddress = address(vault());
+    // solhint-disable-next-line avoid-low-level-calls
+    (bool success, ) = vaultAddress.call(data);
+    if (!success) {
+      // we emit a local event to alert. Not ideal, but better than reverting
+      emit EmitEventFailed(tokenId(), EventAction.PluginStatusChange);
+    }
   }
 
   function pluginAddress(bytes4 _nameId) public view virtual override returns (address) {
@@ -398,6 +440,7 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
       this.disablePlugin.selector,
       pseudoAddress(name),
       resetPlugin,
+      0,
       timestamp * 1e6 + validFor,
       signature,
       false
@@ -425,6 +468,7 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
       this.reEnablePlugin.selector,
       pseudoAddress(name),
       resetPlugin,
+      0,
       timestamp * 1e6 + validFor,
       signature,
       false
@@ -491,10 +535,11 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
   function protectedTransfer(
     uint256 tokenId,
     address to,
-    uint256 timeValidation,
+    uint256 timestamp,
+    uint256 validFor,
     bytes calldata signature
   ) external override onlyTokenOwner {
-    _validateAndCheckSignature(this.protectedTransfer.selector, to, false, timeValidation, signature, false);
+    _validateAndCheckSignature(this.protectedTransfer.selector, to, false, 0, timestamp * 1e6 + validFor, signature, false);
     _resetActorsAndDisablePlugins();
     vault().managedTransfer(nameId(), tokenId, to);
   }

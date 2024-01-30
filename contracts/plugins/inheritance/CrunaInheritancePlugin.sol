@@ -72,19 +72,15 @@ contract CrunaInheritancePlugin is IPlugin, ICrunaInheritancePlugin, CrunaManage
     uint256 validFor,
     bytes calldata signature
   ) public virtual override onlyTokenOwner {
-    if (timestamp == 0) {
-      if (manager.countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
-    } else {
-      _validateAndCheckSignature(
-        this.setSentinel.selector,
-        sentinel,
-        status ? 1 : 0,
-        0,
-        0,
-        timestamp * 1e6 + validFor,
-        signature
-      );
-    }
+    _validateAndCheckSignature(
+      this.setSentinel.selector,
+      sentinel,
+      status ? 1 : 0,
+      0,
+      0,
+      timestamp * 1e6 + validFor,
+      signature
+    );
     if (!status) {
       _removeActor(sentinel, SENTINEL);
       uint256 shares = actorCount(SENTINEL);
@@ -111,23 +107,19 @@ contract CrunaInheritancePlugin is IPlugin, ICrunaInheritancePlugin, CrunaManage
     uint256 proofOfLifeDurationInDays,
     uint256 gracePeriod,
     address beneficiary,
-    uint256 timeValidation,
+    uint256 timestamp,
+    uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
-    if (timeValidation < 1e6) {
-      if (manager.countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
-    } else {
-      if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
-      _validateAndCheckSignature(
-        this.configureInheritance.selector,
-        beneficiary,
-        quorum,
-        proofOfLifeDurationInDays,
-        gracePeriod,
-        timeValidation,
-        signature
-      );
-    }
+    _validateAndCheckSignature(
+      this.configureInheritance.selector,
+      beneficiary,
+      quorum,
+      proofOfLifeDurationInDays,
+      gracePeriod,
+      timestamp * 1e6 + validFor,
+      signature
+    );
     _configureInheritance(uint16(quorum), uint16(proofOfLifeDurationInDays), uint16(gracePeriod), beneficiary);
   }
 
@@ -278,22 +270,25 @@ contract CrunaInheritancePlugin is IPlugin, ICrunaInheritancePlugin, CrunaManage
     uint256 timeValidation,
     bytes calldata signature
   ) internal virtual {
-    if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
-    usedSignatures[keccak256(signature)] = true;
-
-    address signer = recoverSigner(
-      _functionSelector,
-      owner(),
-      target,
-      manager.tokenAddress(),
-      manager.tokenId(),
-      extra,
-      extra2,
-      extra3,
-      timeValidation,
-      signature
-    );
-    if (!manager.isAProtector(signer)) revert WrongDataOrNotSignedByProtector();
+    if (timeValidation < 1e6) {
+      if (manager.countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
+    } else {
+      if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
+      usedSignatures[keccak256(signature)] = true;
+      address signer = recoverSigner(
+        _functionSelector,
+        owner(),
+        target,
+        manager.tokenAddress(),
+        manager.tokenId(),
+        extra,
+        extra2,
+        extra3,
+        timeValidation,
+        signature
+      );
+      if (!manager.isAProtector(signer)) revert WrongDataOrNotSignedByProtector();
+    }
   }
 
   function requiresResetOnTransfer() external pure returns (bool) {
