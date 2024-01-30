@@ -155,6 +155,10 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**1.0.0-beta.6**
+- Require signature, if protectors are active, to plug a new plugin, disable and re-enable a plugin, and to authorize/de-authorize a plugin to transfer the NFT
+- Minor alignment of function signatures, keeping timeValidation as an internal parameter, in favor of timestamp and validFor
+
 **1.0.0-beta-5**
 - Move events like ProtectorChange, SafeRecipientChange, etc. from the Manager to the Vault, because listening to events emitted by the vault is simpler than listening to the events emitted by all the managers
 
