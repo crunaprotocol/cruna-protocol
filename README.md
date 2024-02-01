@@ -145,15 +145,17 @@ contract MySuperToken is CrunaManagedNFTOwnable {
     constructor(
     address registry_,
     address guardian_,
-    address signatureValidator_,
     address managerProxy_
-  ) CrunaManagedOwnable("My Super Token", "MST", registry_, guardian_, signatureValidator_, managerProxy_) {}
+  ) CrunaManagedOwnable("My Super Token", "MST", registry_, guardian_, managerProxy_) {}
 }
 ```
 
 If your goal is to build a plugin, look at the contracts in [contracts/mocks/plugin-example](./contracts/mocks/plugin-example) to start from.
 
 ## History
+
+**1.0.0-beta.8**
+- Relevant events emitted from the single manager are hard to listen to. In this version, the emitter is the proxy implemented by the registry when creating a manager or a plugin for a specific token ID.
 
 **1.0.0-beta.7**
 - Add common event emitters for managers, instead of emitting via the vault, to allow the manager to evolve independently from the vault
