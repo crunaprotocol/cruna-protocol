@@ -169,8 +169,8 @@ const Helpers = {
     const proxyAddress = await Helpers.deployContractViaNickSFactory(
       deployer,
       "CrunaManagerProxy",
-      ["address"],
-      [managerAddress],
+      ["address", "address"],
+      [managerAddress, deployer.address],
     );
     const proxy = await ethers.getContractAt("CrunaManagerProxy", proxyAddress);
 

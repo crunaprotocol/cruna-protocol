@@ -2,12 +2,20 @@
 pragma solidity ^0.8.9;
 
 /**
- @title IPlugin
+ @title ICrunaPlugin.sol
  @dev Interface for plugins
    Technically, plugins are secondary managers, pluggable in
    the primary manage, which is CrunaManager.sol.sol
 */
-interface IPlugin {
+interface ICrunaPlugin {
+  // this is also used in the CrunaManager
+  struct CrunaPlugin {
+    address proxyAddress;
+    bool canManageTransfer;
+    bool canBeReset;
+    bool active;
+  }
+
   function init() external;
 
   // function called in the dashboard to know if the plugin is asking the

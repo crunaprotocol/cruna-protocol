@@ -2,6 +2,8 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { toChecksumAddress } = require("ethereumjs-util");
 const { Contract } = require("@ethersproject/contracts");
+const EthDeployUtils = require("eth-deploy-utils");
+const deployUtils = new EthDeployUtils();
 
 const {
   amount,
@@ -42,9 +44,11 @@ describe("CrunaManager.sol : Protectors", function () {
     crunaRegistry = await deployContract("CrunaRegistry");
     managerImpl = await deployContract("CrunaManager");
     guardian = await deployContract("CrunaGuardian", delay, [proposer.address], [executor.address], deployer.address);
-    proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
+    proxy = await deployContract("CrunaManagerProxy", managerImpl.address, deployer.address);
+    proxy = await deployUtils.attach("CrunaManager", proxy.address);
 
     vault = await deployContract("VaultMockSimple", deployer.address);
+    await proxy.setController(vault.address);
     await vault.init(crunaRegistry.address, guardian.address, proxy.address);
     factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address, deployer.address]);
 
@@ -142,9 +146,9 @@ describe("CrunaManager.sol : Protectors", function () {
 
   it("should allow deployer to upgrade the default manager", async function () {
     const managerV2Impl = await deployContract("ManagerV2Mock");
-    const proxyV2 = await deployContract("ManagerProxyV2Mock", managerV2Impl.address);
+    const proxyV2 = await deployContract("ManagerProxyV2Mock", managerV2Impl.address, deployer.address);
     expect(await proxyV2.getImplementation()).to.equal(managerV2Impl.address);
-    const initialManagerProxy = await vault.managerProxy();
+    const initialManagerProxy = await vault.emitter();
     const initialManager = await ethers.getContractAt("CrunaManager", initialManagerProxy);
     expect(await initialManager.version()).to.equal(1e6);
 
@@ -165,7 +169,7 @@ describe("CrunaManager.sol : Protectors", function () {
       .to.emit(vault, "DefaultManagerUpgrade")
       .withArgs(proxyV2.address);
 
-    const newManagerProxy = await vault.managerProxy();
+    const newManagerProxy = await vault.emitter();
     const newManager = await ethers.getContractAt("CrunaManager", newManagerProxy);
 
     expect(await newManager.version()).to.equal(1e6 + 2e3);

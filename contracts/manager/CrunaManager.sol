@@ -10,11 +10,12 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 import {Actor} from "./Actor.sol";
 import {IPluginExt, ICrunaManager} from "./ICrunaManager.sol";
 import {CrunaManagerBase} from "./CrunaManagerBase.sol";
+import {ICrunaManagerEmitter} from "./ICrunaManagerEmitter.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
 
 //import {console} from "hardhat/console.sol";
 
-contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard, SignatureValidator {
+contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManagerBase, ReentrancyGuard, SignatureValidator {
   using ECDSA for bytes32;
   using Strings for uint256;
 
@@ -41,9 +42,15 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
   bytes4 public constant PROTECTOR = bytes4(keccak256("PROTECTOR"));
   bytes4 public constant SAFE_RECIPIENT = bytes4(keccak256("SAFE_RECIPIENT"));
 
-  mapping(bytes4 => Plugin) public pluginsById;
+  mapping(bytes4 => CrunaPlugin) public pluginsById;
   PluginStatus[] public allPlugins;
   mapping(bytes4 => uint256) public timeLocks;
+
+  // used by the emitter only
+  modifier onlyManagerOf(uint256 tokenId_) virtual {
+    if (controller.managerOf(tokenId_) != _msgSender()) revert Forbidden();
+    _;
+  }
 
   function nameId() public virtual override returns (bytes4) {
     return _getNameId("CrunaManager");
@@ -102,24 +109,8 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
       true,
       _msgSender()
     );
-    // Avoid to revert if the emission of the event fails.
-    // It should never happen, but if it happens, we are
-    // notified by the EmitEventFailed event, instead of reverting
-    // the entire transaction.
-    bytes memory data = abi.encodeWithSignature(
-      "emitProtectorChangeEvent(uint256,address,bool,uint256)",
-      tokenId(),
-      protector_,
-      status,
-      countActiveProtectors()
-    );
-    address vaultAddress = address(vault());
-    // solhint-disable-next-line avoid-low-level-calls
-    (bool success, ) = vaultAddress.call(data);
-    if (!success) {
-      // we emit a local event to alert. Not ideal, but better than reverting
-      emit EmitEventFailed(tokenId(), EventAction.ProtectorChange);
-    }
+    ICrunaManagerEmitter(emitter()).emitProtectorChangeEvent(tokenId(), protector_, status);
+    _emitLockeEvent(status);
   }
 
   // @dev see {ICrunaManager.sol-getProtectors}
@@ -148,23 +139,7 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
       false,
       _msgSender()
     );
-    // Avoid to revert if the emission of the event fails.
-    // It should never happen, but if it happens, we are
-    // notified by the EmitEventFailed event, instead of reverting
-    // the entire transaction.
-    bytes memory data = abi.encodeWithSignature(
-      "emitSafeRecipientChangeEvent(uint256,address,bool)",
-      tokenId(),
-      recipient,
-      status
-    );
-    address vaultAddress = address(vault());
-    // solhint-disable-next-line avoid-low-level-calls
-    (bool success, ) = vaultAddress.call(data);
-    if (!success) {
-      // we emit a local event to alert. Not ideal, but better than reverting
-      emit EmitEventFailed(tokenId(), EventAction.SafeRecipientChange);
-    }
+    ICrunaManagerEmitter(emitter()).emitSafeRecipientChangeEvent(tokenId(), recipient, status);
   }
 
   // @dev see {ICrunaManager.sol-isSafeRecipient}
@@ -282,11 +257,16 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
     );
     address _pluginAddress = registry().createBoundContract(pluginProxy, 0x00, block.chainid, address(this), tokenId());
     IPluginExt _plugin = IPluginExt(_pluginAddress);
-    if (_plugin.nameId() != _nameId) revert InvalidImplementation();
+    if (address(CrunaManagerBase(pluginProxy).controller()) != address(vault()) || _plugin.nameId() != _nameId)
+      revert InvalidImplementation();
     allPlugins.push(PluginStatus(name, true));
-    pluginsById[_nameId] = Plugin(pluginProxy, canManageTransfer, _plugin.requiresResetOnTransfer(), true);
+    pluginsById[_nameId] = CrunaPlugin(pluginProxy, canManageTransfer, _plugin.requiresResetOnTransfer(), true);
     _plugin.init();
     _emitPluginStatusChange(name, address(_plugin), true);
+  }
+
+  function pluginEmitter(bytes4 _nameId) public view virtual returns (address) {
+    return pluginsById[_nameId].proxyAddress;
   }
 
   function _emitPluginStatusChange(string memory name, address pluginAddress_, bool status) internal virtual {
@@ -294,20 +274,7 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
     // It should never happen, but if it happens, we are
     // notified by the EmitEventFailed event, instead of reverting
     // the entire transaction.
-    bytes memory data = abi.encodeWithSignature(
-      "emitPluginStatusChangeEvent(uint256,string,address,bool)",
-      tokenId(),
-      name,
-      pluginAddress_,
-      status
-    );
-    address vaultAddress = address(vault());
-    // solhint-disable-next-line avoid-low-level-calls
-    (bool success, ) = vaultAddress.call(data);
-    if (!success) {
-      // we emit a local event to alert. Not ideal, but better than reverting
-      emit EmitEventFailed(tokenId(), EventAction.PluginStatusChange);
-    }
+    ICrunaManagerEmitter(emitter()).emitPluginStatusChangeEvent(tokenId(), name, pluginAddress_, status);
   }
 
   // @dev Id removing the authorization, it blocks a plugin for a maximum of 30 days from transferring
@@ -343,33 +310,30 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
       timeLocks[_nameId] = block.timestamp + timeLock;
     }
     pluginsById[_nameId].canManageTransfer = authorized;
-    _emitPluginAuthorizationChange(name, pluginAddress(_nameId), authorized, timeLock);
-  }
-
-  function _emitPluginAuthorizationChange(
-    string memory name,
-    address pluginAddress_,
-    bool status,
-    uint256 lockTime
-  ) internal virtual {
-    // Avoid to revert if the emission of the event fails.
-    // It should never happen, but if it happens, we are
-    // notified by the EmitEventFailed event, instead of reverting
-    // the entire transaction.
-    bytes memory data = abi.encodeWithSignature(
-      "emitPluginAuthorizationChangeEvent(uint256,string,address,bool,uint256)",
+    ICrunaManagerEmitter(emitter()).emitPluginAuthorizationChangeEvent(
       tokenId(),
       name,
-      pluginAddress_,
-      status,
-      lockTime
+      pluginAddress(_nameId),
+      authorized,
+      timeLock
     );
-    address vaultAddress = address(vault());
-    // solhint-disable-next-line avoid-low-level-calls
-    (bool success, ) = vaultAddress.call(data);
-    if (!success) {
-      // we emit a local event to alert. Not ideal, but better than reverting
-      emit EmitEventFailed(tokenId(), EventAction.PluginStatusChange);
+  }
+
+  function _emitLockeEvent(bool status) internal virtual {
+    uint256 protectorsCount = countActiveProtectors();
+    if ((status && protectorsCount == 1) || (!status && protectorsCount == 0)) {
+      // Avoid to revert if the emission of the event fails.
+      // It should never happen, but if it happens, we are
+      // notified by the EmitEventFailed event, instead of reverting
+      // the entire transaction.
+      bytes memory data = abi.encodeWithSignature("emitLockedEvent(uint256,bool)", tokenId(), status && protectorsCount == 1);
+      address vaultAddress = address(vault());
+      // solhint-disable-next-line avoid-low-level-calls
+      (bool success, ) = vaultAddress.call(data);
+      if (!success) {
+        // we emit a local event to alert. Not ideal, but better than reverting
+        emit EmitEventFailed(tokenId(), EventAction.PluginStatusChange);
+      }
     }
   }
 
@@ -522,14 +486,7 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
         if (pluginsById[_nameId].canBeReset) _resetPlugin(_nameId);
       }
     }
-    bytes memory data = abi.encodeWithSignature("emitResetEvent(uint256)", tokenId());
-    address vaultAddress = address(vault());
-    // solhint-disable-next-line avoid-low-level-calls
-    (bool success, ) = vaultAddress.call(data);
-    if (!success) {
-      // we emit a local event to alert. Not ideal, but better than reverting
-      emit EmitEventFailed(tokenId(), EventAction.Reset);
-    }
+    ICrunaManagerEmitter(emitter()).emitResetEvent(tokenId());
   }
 
   function protectedTransfer(
@@ -542,6 +499,61 @@ contract CrunaManager is ICrunaManager, Actor, CrunaManagerBase, ReentrancyGuard
     _validateAndCheckSignature(this.protectedTransfer.selector, to, false, 0, timestamp * 1e6 + validFor, signature, false);
     _resetActorsAndDisablePlugins();
     vault().managedTransfer(nameId(), tokenId, to);
+  }
+
+  // ICrunaManagerEmitter
+  // Those functions are executed by the CrunaManager implementation, not by the single manager
+  // So, they can only be called by the manager of the involved tokenId
+
+  function emitProtectorChangeEvent(
+    uint256 tokenId_,
+    address protector,
+    bool status
+  ) external override onlyManagerOf(tokenId_) {
+    emit ProtectorChange(tokenId_, protector, status);
+  }
+
+  function emitSafeRecipientChangeEvent(
+    uint256 tokenId_,
+    address recipient,
+    bool status
+  ) external override onlyManagerOf(tokenId_) {
+    emit SafeRecipientChange(tokenId_, recipient, status);
+  }
+
+  function emitPluginStatusChangeEvent(
+    uint256 tokenId_,
+    string memory name,
+    address plugin_,
+    bool status
+  ) external override onlyManagerOf(tokenId_) {
+    emit PluginStatusChange(tokenId_, name, plugin_, status);
+  }
+
+  function emitPluginAuthorizationChangeEvent(
+    uint256 tokenId_,
+    string memory name,
+    address plugin_,
+    bool status,
+    uint256 lockTime
+  ) external override onlyManagerOf(tokenId_) {
+    emit PluginAuthorizationChange(tokenId_, name, plugin_, status, lockTime);
+  }
+
+  function emitResetEvent(uint256 tokenId_) external override onlyManagerOf(tokenId_) {
+    emit Reset(tokenId_);
+  }
+
+  // this is not used right now, but may be used in future versions
+  function emitFutureEvent(
+    uint256 tokenId_,
+    string memory eventName,
+    address actor,
+    bool status,
+    uint256 extraUint256,
+    bytes32 extraBytes32
+  ) external override onlyManagerOf(tokenId_) {
+    //    emit FutureEvent(tokenId_, name, actor, status, extraUint256, extraBytes32);
   }
 
   // @dev This empty reserved space is put in place to allow future versions to add new

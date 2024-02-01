@@ -24,6 +24,7 @@ interface IVault {
   function emitResetEvent(uint256 tokenId) external;
   function guardian() external view returns (ICrunaGuardian);
   function registry() external view returns (ICrunaRegistry);
+  function emitter() external view returns (address);
   function managerOf(uint256 tokenId) external view returns (address);
 }
 
@@ -38,6 +39,8 @@ interface ICrunaManagerBase is IBoundContract {
   function guardian() external view returns (ICrunaGuardian);
 
   function registry() external view returns (ICrunaRegistry);
+
+  function emitter() external view returns (address);
 
   function vault() external view returns (IVault);
 

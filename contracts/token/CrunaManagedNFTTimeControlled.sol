@@ -3,14 +3,14 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 //
-import {CrunaManagedBase} from "./CrunaManagedBase.sol";
+import {CrunaManagedNFTBase} from "./CrunaManagedNFTBase.sol";
 import {TimelockController, FlexiTimelockController} from "../utils/FlexiTimelockController.sol";
 
 //import {console} from "hardhat/console.sol";
 
 // @dev This contract is a base for NFTs with protected transfers.
 //   It implements best practices for governance and timelock.
-abstract contract CrunaManagedTimeControlled is CrunaManagedBase, FlexiTimelockController {
+abstract contract CrunaManagedNFTTimeControlled is CrunaManagedNFTBase, FlexiTimelockController {
   error NotAuthorized();
 
   constructor(
@@ -20,7 +20,7 @@ abstract contract CrunaManagedTimeControlled is CrunaManagedBase, FlexiTimelockC
     address[] memory proposers,
     address[] memory executors,
     address admin
-  ) CrunaManagedBase(name_, symbol_) FlexiTimelockController(minDelay, proposers, executors, admin) {}
+  ) CrunaManagedNFTBase(name_, symbol_) FlexiTimelockController(minDelay, proposers, executors, admin) {}
 
   function _canManage(bool isInitializing) internal view virtual override {
     if (isInitializing) {
@@ -31,7 +31,7 @@ abstract contract CrunaManagedTimeControlled is CrunaManagedBase, FlexiTimelockC
   // @dev See {ERC165-supportsInterface}.
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(TimelockController, CrunaManagedBase) returns (bool) {
+  ) public view virtual override(TimelockController, CrunaManagedNFTBase) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

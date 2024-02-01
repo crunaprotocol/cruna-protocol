@@ -5,11 +5,9 @@ pragma solidity ^0.8.20;
 
 import {CrunaManager} from "../../../manager/CrunaManager.sol";
 import {CrunaManagerBase} from "../../../manager/CrunaManagerBase.sol";
-import {IPlugin} from "../../../plugins/IPlugin.sol";
+import {ICrunaPlugin} from "../../../plugins/ICrunaPlugin.sol";
 
-contract SomePlugin is IPlugin, CrunaManagerBase {
-  error Forbidden();
-
+contract SomePlugin is ICrunaPlugin, CrunaManagerBase {
   // Replace with the roles required by the plugin, if any, or delete it
   bytes4 public constant SOME_OTHER_ROLE = bytes4(keccak256("SOME_ROLE"));
 

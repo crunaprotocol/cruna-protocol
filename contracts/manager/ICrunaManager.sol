@@ -3,9 +3,9 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {IPlugin} from "../plugins/IPlugin.sol";
+import {ICrunaPlugin} from "../plugins/ICrunaPlugin.sol";
 
-interface IPluginExt is IPlugin {
+interface IPluginExt is ICrunaPlugin {
   function nameId() external returns (bytes4);
 }
 
@@ -20,7 +20,7 @@ interface ICrunaManager {
     Reset
   }
 
-  struct Plugin {
+  struct CrunaPlugin {
     address proxyAddress;
     bool canManageTransfer;
     bool canBeReset;

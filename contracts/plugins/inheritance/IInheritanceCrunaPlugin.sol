@@ -4,24 +4,7 @@ pragma solidity ^0.8.20;
 // Author: Francesco Sullo <francesco@sullo.co>
 
 // erc165 interfaceId 0x8dca4bea
-interface ICrunaInheritancePlugin {
-  // @dev Emitted when a sentinel is updated
-  event SentinelUpdated(address indexed owner, address indexed sentinel, bool status);
-
-  event InheritanceConfigured(
-    address indexed owner,
-    uint256 quorum,
-    uint256 proofOfLifeDurationInDays,
-    uint256 gracePeriod,
-    address beneficiary
-  );
-
-  event ProofOfLife(address indexed owner);
-
-  event TransferRequested(address indexed sentinel, address indexed beneficiary);
-
-  event TransferRequestApproved(address indexed sentinel);
-
+interface IInheritanceCrunaPlugin {
   // @dev Struct to store the configuration for the inheritance
   struct InheritanceConf {
     uint16 quorum;

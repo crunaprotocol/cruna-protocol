@@ -1,6 +1,8 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { toChecksumAddress } = require("ethereumjs-util");
+const EthDeployUtils = require("eth-deploy-utils");
+const deployUtils = new EthDeployUtils();
 
 const {
   cl,
@@ -29,15 +31,21 @@ describe("VaultFactoryMock", function () {
   before(async function () {
     [deployer, bob, alice, fred, mike, proposer, executor] = await ethers.getSigners();
     // we test the deploying using Nick's factory only here because if not it would create conflicts, since any contract has already been deployed and would not change its storage
-    [registry, proxy, guardian] = await deployAll(deployer, proposer, executor, delay);
+    // [registry, proxy, guardian] = await deployAll(deployer, proposer, executor, delay);
   });
 
   async function initAndDeploy() {
     // process.exit();
 
-    vault = await deployContract("VaultMockSimple", deployer.address);
-    await vault.init(registry.address, guardian.address, proxy.address);
+    registry = await deployContract("CrunaRegistry");
+    const managerImpl = await deployContract("CrunaManager");
+    guardian = await deployContract("CrunaGuardian", delay, [proposer.address], [executor.address], deployer.address);
+    proxy = await deployContract("CrunaManagerProxy", managerImpl.address, deployer.address);
+    proxy = await deployUtils.attach("CrunaManager", proxy.address);
 
+    vault = await deployContract("VaultMockSimple", deployer.address);
+    await proxy.setController(vault.address);
+    await vault.init(registry.address, guardian.address, proxy.address);
     factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address, deployer.address]);
 
     await vault.setFactory(factory.address);
@@ -165,7 +173,7 @@ describe("VaultFactoryMock", function () {
 
       // set Alice as first Bob's protector
       await expect(manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature))
-        .to.emit(vault, "ProtectorChange")
+        .to.emit(proxy, "ProtectorChange")
         .withArgs(nextTokenId, alice.address, true)
         .to.emit(vault, "Locked")
         .withArgs(nextTokenId, true);
