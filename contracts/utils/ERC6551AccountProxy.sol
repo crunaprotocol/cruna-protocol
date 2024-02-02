@@ -4,13 +4,13 @@ pragma solidity ^0.8.0;
 import {ERC1967Utils} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
 import {Proxy} from "@openzeppelin/contracts/proxy/Proxy.sol";
 
-import {Deployed} from "./Deployed.sol";
+import {WithDeployer} from "./WithDeployer.sol";
+
 //import "hardhat/console.sol";
 
 // This version of ERC6551AccountProxy is modified to work with the OpenZeppelin Contracts v5
 // The original version can be found in https://github.com/erc6551/reference
-contract ERC6551AccountProxy is Proxy, Deployed {
-
+contract ERC6551AccountProxy is Proxy, WithDeployer {
   error InvalidImplementation();
 
   address public immutable DEFAULT_IMPLEMENTATION;
@@ -19,7 +19,7 @@ contract ERC6551AccountProxy is Proxy, Deployed {
     _fallback();
   }
 
-  constructor(address _defaultImplementation, address deployer_) Deployed(deployer_){
+  constructor(address _defaultImplementation, address deployer_) WithDeployer(deployer_) {
     if (_defaultImplementation == address(0)) revert InvalidImplementation();
     DEFAULT_IMPLEMENTATION = _defaultImplementation;
   }

@@ -12,14 +12,11 @@ import {IBoundContract} from "../utils/IBoundContract.sol";
 import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
 import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
-
-import {ICrunaManagerBase, IVault, IImplementation} from "./ICrunaManagerBase.sol";
+import {INamedAndVersioned} from "../utils/INamedAndVersioned.sol";
+import {ICrunaManagerBase, IVault} from "./ICrunaManagerBase.sol";
+import {WithDeployer} from "../utils/WithDeployer.sol";
 
 //import {console} from "hardhat/console.sol";
-
-interface IProxy {
-  function deployer() external view returns (address);
-}
 
 /**
   @title CrunaManagerBase.sol
@@ -56,7 +53,7 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICrun
   // It must be called after deploying the proxy contract implementing this contract
   // and cannot be called again.
   function setController(address controller_) external {
-    IProxy proxy = IProxy(address(this));
+    WithDeployer proxy = WithDeployer(address(this));
     if (proxy.deployer() != _msgSender()) revert NotTheDeployer();
     if (address(controller) != address(0)) revert ControllerAlreadySet();
     controller = IVault(controller_);
@@ -125,11 +122,11 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICrun
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     uint256 requires = guardian().trustedImplementation(nameId(), implementation_);
     if (requires == 0) revert UntrustedImplementation();
-    IImplementation impl = IImplementation(implementation_);
+    INamedAndVersioned impl = INamedAndVersioned(implementation_);
     uint256 _version = impl.version();
     if (_version <= currentVersion) revert InvalidVersion();
     if (impl.nameId() != _stringToBytes4("CrunaManager")) {
-      IImplementation manager = IImplementation(vault().managerOf(tokenId()));
+      INamedAndVersioned manager = INamedAndVersioned(vault().managerOf(tokenId()));
       if (manager.version() < requires) revert PluginRequiresUpdatedManager(requires);
     }
     currentVersion = _version;

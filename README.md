@@ -256,23 +256,28 @@ File                                 |  % Stmts | % Branch |  % Funcs |  % Lines
   IInheritanceCrunaPluginEmitter.sol |      100 |      100 |      100 |      100 
   InheritanceCrunaPlugin.sol         |    98.59 |    69.51 |    93.33 |    96.81 
   InheritanceCrunaPluginProxy.sol    |      100 |      100 |      100 |      100 
- token/                              |      100 |     62.5 |      100 |    96.67 
-  CrunaManagedNFTBase.sol            |      100 |    60.42 |      100 |    96.43 
+ token/                              |      100 |     62.5 |      100 |    96.83 
+  CrunaManagedNFTBase.sol            |      100 |    60.42 |      100 |    96.61 
   CrunaManagedNFTOwnable.sol         |      100 |       50 |      100 |      100 
   CrunaManagedNFTTimeControlled.sol  |      100 |    83.33 |      100 |      100 
   ICrunaManagedNFT.sol               |      100 |      100 |      100 |      100 
- utils/                              |    96.43 |    58.33 |      100 |    92.86 
+  IReference.sol                     |      100 |      100 |      100 |      100 
+  IVault.sol                         |      100 |      100 |      100 |      100 
+ utils/                              |    96.55 |    58.33 |      100 |    93.02 
   CrunaGuardian.sol                  |      100 |       50 |      100 |       75 
   CrunaRegistry.sol                  |      100 |      100 |      100 |      100 
-  ERC6551AccountProxy.sol            |       90 |       75 |      100 |    91.67 
+  ERC6551AccountProxy.sol            |       90 |       75 |      100 |    90.91 
   FlexiTimelockController.sol        |      100 |       50 |      100 |      100 
   IBoundContract.sol                 |      100 |      100 |      100 |      100 
+  IControlled.sol                    |      100 |      100 |      100 |      100 
   ICrunaGuardian.sol                 |      100 |      100 |      100 |      100 
   ICrunaRegistry.sol                 |      100 |      100 |      100 |      100 
+  INamedAndVersioned.sol             |      100 |      100 |      100 |      100 
   IVersioned.sol                     |      100 |      100 |      100 |      100 
   SignatureValidator.sol             |      100 |       75 |      100 |      100 
+  WithDeployer.sol                   |      100 |      100 |      100 |      100 
 -------------------------------------|----------|----------|----------|----------
-All files                            |    98.46 |    67.48 |    97.83 |    97.19 
+All files                            |    98.48 |    67.48 |     97.9 |    97.22 
 -------------------------------------|----------|----------|----------|----------
 ```
 
