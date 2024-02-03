@@ -15,6 +15,7 @@ import {IVersioned} from "../utils/IVersioned.sol";
 import {INamedAndVersioned} from "../utils/INamedAndVersioned.sol";
 import {ICrunaManagerBase, IVault} from "./ICrunaManagerBase.sol";
 import {WithDeployer} from "../utils/WithDeployer.sol";
+import {IControlled} from "../utils/IControlled.sol";
 
 //import {console} from "hardhat/console.sol";
 
@@ -22,7 +23,7 @@ import {WithDeployer} from "../utils/WithDeployer.sol";
   @title CrunaManagerBase.sol
   @dev Base contract for managers and plugins
 */
-abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICrunaManagerBase {
+abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, IControlled, ICrunaManagerBase {
   error NotTheTokenOwner();
   error UntrustedImplementation();
   error InvalidVersion();
@@ -42,7 +43,7 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICrun
 
   // the controller is the vault inside the manager proxy (i.e., the event emitter),
   // not inside the manager of the single tokenId
-  IVault public controller;
+  IVault internal _controller;
 
   address private _deployer;
 
@@ -50,13 +51,17 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICrun
     currentVersion = version();
   }
 
+  function controller() public view virtual override returns (address) {
+    return address(_controller);
+  }
+
   // It must be called after deploying the proxy contract implementing this contract
   // and cannot be called again.
-  function setController(address controller_) external {
+  function setController(address controller_) external override {
     WithDeployer proxy = WithDeployer(address(this));
     if (proxy.deployer() != _msgSender()) revert NotTheDeployer();
-    if (address(controller) != address(0)) revert ControllerAlreadySet();
-    controller = IVault(controller_);
+    if (address(_controller) != address(0)) revert ControllerAlreadySet();
+    _controller = IVault(controller_);
   }
 
   function version() public pure virtual returns (uint256) {

@@ -12,6 +12,7 @@ import {IPluginExt, ICrunaManager} from "./ICrunaManager.sol";
 import {CrunaManagerBase} from "./CrunaManagerBase.sol";
 import {ICrunaManagerEmitter} from "./ICrunaManagerEmitter.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
+import {IControlled} from "../utils/IControlled.sol";
 
 //import {console} from "hardhat/console.sol";
 
@@ -37,6 +38,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
   error NotATransferPlugin();
   error InvalidImplementation();
   error InvalidTimeLock();
+  error InvalidValidity();
 
   mapping(bytes32 => bool) public usedSignatures;
   bytes4 public constant PROTECTOR = bytes4(keccak256("PROTECTOR"));
@@ -48,7 +50,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
 
   // used by the emitter only
   modifier onlyManagerOf(uint256 tokenId_) virtual {
-    if (controller.managerOf(tokenId_) != _msgSender()) revert Forbidden();
+    if (_controller.managerOf(tokenId_) != _msgSender()) revert Forbidden();
     _;
   }
 
@@ -213,6 +215,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
   ) internal virtual {
     if (actor == address(0)) revert ZeroAddress();
     if (actor == sender) revert CannotBeYourself();
+    if (validFor > 999999) revert InvalidValidity();
     _validateAndCheckSignature(_functionSelector, actor, status, 0, timestamp * 1e6 + validFor, signature, actorIsProtector);
     if (!status) {
       if (timestamp != 0 && actorIsProtector && !isAProtector(actor)) revert ProtectorNotFound();
@@ -241,6 +244,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
     uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner nonReentrant {
+    if (validFor > 999999) revert InvalidValidity();
     bytes4 _nameId = _stringToBytes4(name);
     if (pluginsById[_nameId].proxyAddress != address(0)) revert PluginAlreadyPlugged();
     uint256 requires = guardian().trustedImplementation(_nameId, pluginProxy);
@@ -257,8 +261,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
     );
     address _pluginAddress = registry().createBoundContract(pluginProxy, 0x00, block.chainid, address(this), tokenId());
     IPluginExt _plugin = IPluginExt(_pluginAddress);
-    if (address(CrunaManagerBase(pluginProxy).controller()) != address(vault()) || _plugin.nameId() != _nameId)
-      revert InvalidImplementation();
+    if (IControlled(pluginProxy).controller() != tokenAddress() || _plugin.nameId() != _nameId) revert InvalidImplementation();
     allPlugins.push(PluginStatus(name, true));
     pluginsById[_nameId] = CrunaPlugin(pluginProxy, canManageTransfer, _plugin.requiresResetOnTransfer(), true);
     _plugin.init();
@@ -287,6 +290,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
     uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
+    if (validFor > 999999) revert InvalidValidity();
     bytes4 _nameId = _stringToBytes4(name);
     if (pluginsById[_nameId].proxyAddress == address(0)) revert PluginNotFound();
     IPluginExt _plugin = plugin(_nameId);
@@ -397,6 +401,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
     uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner nonReentrant {
+    if (validFor > 999999) revert InvalidValidity();
     (bool plugged_, uint256 i) = pluginIndex(name);
     if (!plugged_) revert PluginNotFound();
     if (!allPlugins[i].active) revert PluginAlreadyDisabled();
@@ -425,6 +430,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
     uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner nonReentrant {
+    if (validFor > 999999) revert InvalidValidity();
     (bool plugged_, uint256 i) = pluginIndex(name);
     if (!plugged_) revert PluginNotFound();
     if (allPlugins[i].active) revert PluginNotDisabled();
@@ -496,6 +502,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
     uint256 validFor,
     bytes calldata signature
   ) external override onlyTokenOwner {
+    if (validFor > 999999) revert InvalidValidity();
     _validateAndCheckSignature(this.protectedTransfer.selector, to, false, 0, timestamp * 1e6 + validFor, signature, false);
     _resetActorsAndDisablePlugins();
     vault().managedTransfer(nameId(), tokenId, to);
