@@ -21,8 +21,6 @@ interface ICrunaManagerBase is IBoundContractExtended, INamed {
 
   function vault() external view returns (IVault);
 
-  function combineBytes4(bytes4 a, bytes4 b) external pure returns (bytes32);
-
   // @dev Upgrade the implementation of the manager/plugin
   //   Notice that the owner can upgrade active or disable plugins
   //   so that, if a plugin is compromised, the user can disable it,

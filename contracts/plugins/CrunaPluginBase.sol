@@ -73,10 +73,6 @@ abstract contract CrunaPluginBase is Context, IBoundContract, IVersioned, ICruna
     return manager.guardian();
   }
 
-  function registry() public view virtual override returns (ICrunaRegistry) {
-    return manager.registry();
-  }
-
   function vault() public view virtual override returns (IVault) {
     return manager.vault();
   }
@@ -103,14 +99,6 @@ abstract contract CrunaPluginBase is Context, IBoundContract, IVersioned, ICruna
   function tokenId() public view virtual override returns (uint256) {
     (, , uint256 tokenId_) = token();
     return tokenId_;
-  }
-
-  function combineBytes4(bytes4 a, bytes4 b) public pure override returns (bytes32) {
-    return (bytes32(a) >> 192) | (bytes32(b) >> 224);
-  }
-
-  function _stringToBytes4(string memory str) internal pure returns (bytes4) {
-    return bytes4(keccak256(abi.encodePacked(str)));
   }
 
   // @dev Upgrade the implementation of the manager/plugin

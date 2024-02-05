@@ -121,10 +121,6 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICont
     return tokenId_;
   }
 
-  function combineBytes4(bytes4 a, bytes4 b) public pure returns (bytes32) {
-    return (bytes32(a) >> 192) | (bytes32(b) >> 224);
-  }
-
   function _stringToBytes4(string memory str) internal pure returns (bytes4) {
     return bytes4(keccak256(abi.encodePacked(str)));
   }
