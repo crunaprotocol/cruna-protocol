@@ -154,6 +154,10 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**1.0.0-beta.9**
+- Allow to update the emitters for managers and plugins
+- Minor refactoring
+
 **1.0.0-beta.8**
 - Relevant events emitted from the single manager are hard to listen to. In this version, the emitter is the proxy implemented by the registry when creating a manager or a plugin for a specific token ID.
 
