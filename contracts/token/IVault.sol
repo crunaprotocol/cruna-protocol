@@ -12,6 +12,6 @@ interface IVault {
   function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external;
   function guardian() external view returns (ICrunaGuardian);
   function registry() external view returns (ICrunaRegistry);
-  function emitter() external view returns (address);
+  function emitter(uint256 _tokenId) external view returns (address);
   function managerOf(uint256 tokenId) external view returns (address);
 }

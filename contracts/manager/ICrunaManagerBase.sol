@@ -18,7 +18,7 @@ interface ICrunaManagerBase is IBoundContract {
 
   function registry() external view returns (ICrunaRegistry);
 
-  function emitter() external view returns (address);
+  function emitter(uint256 _tokenId) external view returns (address);
 
   function vault() external view returns (IVault);
 

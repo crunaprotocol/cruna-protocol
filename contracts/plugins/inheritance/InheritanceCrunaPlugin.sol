@@ -66,7 +66,8 @@ contract InheritanceCrunaPlugin is
   }
 
   // for a plugin, the emitter is the manager proxy
-  function emitter() public view virtual override returns (address) {
+  function emitter(uint256) public view virtual override returns (address) {
+    // TODO think about how to solve this
     return manager.pluginEmitter(nameId());
   }
 
@@ -118,7 +119,7 @@ contract InheritanceCrunaPlugin is
     } else {
       _addActor(sentinel, SENTINEL);
     }
-    IInheritanceCrunaPluginEmitter(emitter()).emitSentinelUpdatedEvent(tokenId(), _msgSender(), sentinel, status);
+    IInheritanceCrunaPluginEmitter(emitter(tokenId())).emitSentinelUpdatedEvent(tokenId(), _msgSender(), sentinel, status);
   }
 
   // @dev see {IInheritanceCrunaPlugin.sol.sol-setSentinels}
@@ -172,7 +173,7 @@ contract InheritanceCrunaPlugin is
       _inheritanceConf.waitForGracePeriod = true;
     }
     delete _inheritanceConf.approvers;
-    IInheritanceCrunaPluginEmitter(emitter()).emitInheritanceConfiguredEvent(
+    IInheritanceCrunaPluginEmitter(emitter(tokenId())).emitInheritanceConfiguredEvent(
       tokenId(),
       _msgSender(),
       quorum,
@@ -198,7 +199,7 @@ contract InheritanceCrunaPlugin is
     }
     delete _inheritanceConf.approvers;
     delete _inheritanceConf.requestUpdatedAt;
-    IInheritanceCrunaPluginEmitter(emitter()).emitProofOfLifeEvent(tokenId(), _msgSender());
+    IInheritanceCrunaPluginEmitter(emitter(tokenId())).emitProofOfLifeEvent(tokenId(), _msgSender());
   }
 
   // @dev see {IInheritanceCrunaPlugin.sol.sol.sol-requestTransfer}
@@ -225,9 +226,9 @@ contract InheritanceCrunaPlugin is
     if (_inheritanceConf.approvers.length == _inheritanceConf.quorum) revert QuorumAlreadyReached();
     if (_inheritanceConf.beneficiary == address(0)) {
       _inheritanceConf.beneficiary = beneficiary;
-      IInheritanceCrunaPluginEmitter(emitter()).emitTransferRequestedEvent(tokenId(), _msgSender(), beneficiary);
+      IInheritanceCrunaPluginEmitter(emitter(tokenId())).emitTransferRequestedEvent(tokenId(), _msgSender(), beneficiary);
     } else {
-      IInheritanceCrunaPluginEmitter(emitter()).emitTransferRequestApprovedEvent(tokenId(), _msgSender());
+      IInheritanceCrunaPluginEmitter(emitter(tokenId())).emitTransferRequestApprovedEvent(tokenId(), _msgSender());
     }
     _inheritanceConf.approvers.push(_msgSender());
     // updating all the time, gives more time to the beneficiary to inherit

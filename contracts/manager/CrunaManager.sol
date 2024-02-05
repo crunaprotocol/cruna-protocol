@@ -111,7 +111,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
       true,
       _msgSender()
     );
-    ICrunaManagerEmitter(emitter()).emitProtectorChangeEvent(tokenId(), protector_, status);
+    ICrunaManagerEmitter(emitter(tokenId())).emitProtectorChangeEvent(tokenId(), protector_, status);
     _emitLockeEvent(status);
   }
 
@@ -141,7 +141,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
       false,
       _msgSender()
     );
-    ICrunaManagerEmitter(emitter()).emitSafeRecipientChangeEvent(tokenId(), recipient, status);
+    ICrunaManagerEmitter(emitter(tokenId())).emitSafeRecipientChangeEvent(tokenId(), recipient, status);
   }
 
   // @dev see {ICrunaManager.sol-isSafeRecipient}
@@ -277,7 +277,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
     // It should never happen, but if it happens, we are
     // notified by the EmitEventFailed event, instead of reverting
     // the entire transaction.
-    ICrunaManagerEmitter(emitter()).emitPluginStatusChangeEvent(tokenId(), name, pluginAddress_, status);
+    ICrunaManagerEmitter(emitter(tokenId())).emitPluginStatusChangeEvent(tokenId(), name, pluginAddress_, status);
   }
 
   // @dev Id removing the authorization, it blocks a plugin for a maximum of 30 days from transferring
@@ -314,7 +314,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
       timeLocks[_nameId] = block.timestamp + timeLock;
     }
     pluginsById[_nameId].canManageTransfer = authorized;
-    ICrunaManagerEmitter(emitter()).emitPluginAuthorizationChangeEvent(
+    ICrunaManagerEmitter(emitter(tokenId())).emitPluginAuthorizationChangeEvent(
       tokenId(),
       name,
       pluginAddress(_nameId),
@@ -492,7 +492,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
         if (pluginsById[_nameId].canBeReset) _resetPlugin(_nameId);
       }
     }
-    ICrunaManagerEmitter(emitter()).emitResetEvent(tokenId());
+    ICrunaManagerEmitter(emitter(tokenId())).emitResetEvent(tokenId());
   }
 
   function protectedTransfer(

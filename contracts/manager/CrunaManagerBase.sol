@@ -78,8 +78,8 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICont
     return vault().registry();
   }
 
-  function emitter() public view virtual returns (address) {
-    return vault().emitter();
+  function emitter(uint256 _tokenId) public view virtual returns (address) {
+    return vault().emitter(_tokenId);
   }
 
   function vault() public view virtual returns (IVault) {

@@ -6,6 +6,12 @@ interface ICrunaManagedNFT {
   event ManagedTransfer(bytes4 indexed pluginNameId, uint256 indexed tokenId);
   event DefaultManagerUpgrade(address newManagerProxy);
 
+  struct ManagerHistory {
+    address managerAddress;
+    uint256 firstTokenId;
+    uint256 lastTokenId;
+  }
+
   // @dev Allow a plugin to transfer the token
   // @param pluginNameId The hash of the plugin name.
   // @param tokenId The id of the token.

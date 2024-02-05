@@ -9,5 +9,5 @@ import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
 interface IReference {
   function guardian() external view returns (ICrunaGuardian);
   function registry() external view returns (ICrunaRegistry);
-  function emitter() external view returns (address);
+  function emitter(uint256 _tokenId) external view returns (address);
 }
