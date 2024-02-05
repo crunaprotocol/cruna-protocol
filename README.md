@@ -241,16 +241,16 @@ File                                 |  % Stmts | % Branch |  % Funcs |  % Lines
  interfaces/                         |      100 |      100 |      100 |      100 
   IERC6454.sol                       |      100 |      100 |      100 |      100 
   IERC6982.sol                       |      100 |      100 |      100 |      100 
- manager/                            |     97.8 |    66.87 |    97.06 |    98.51 
+ manager/                            |     97.8 |    66.87 |    97.01 |    98.51 
   Actor.sol                          |      100 |       70 |      100 |      100 
   CrunaManager.sol                   |    98.46 |    67.65 |    97.44 |    98.61 
-  CrunaManagerBase.sol               |    94.12 |       60 |       95 |     97.3 
+  CrunaManagerBase.sol               |    94.12 |       60 |    94.74 |     97.3 
   CrunaManagerProxy.sol              |      100 |      100 |      100 |      100 
   ICrunaManager.sol                  |      100 |      100 |      100 |      100 
   ICrunaManagerBase.sol              |      100 |      100 |      100 |      100 
   ICrunaManagerEmitter.sol           |      100 |      100 |      100 |      100 
- plugins/                            |     87.1 |       75 |    82.35 |    91.43 
-  CrunaPluginBase.sol                |     87.1 |       75 |    82.35 |    91.43 
+ plugins/                            |     87.1 |       75 |    82.35 |    90.91 
+  CrunaPluginBase.sol                |     87.1 |       75 |    82.35 |    90.91 
   ICrunaPlugin.sol                   |      100 |      100 |      100 |      100 
  plugins/inheritance/                |      100 |     68.6 |     96.3 |    97.83 
   IInheritanceCrunaPlugin.sol        |      100 |      100 |      100 |      100 
@@ -280,7 +280,7 @@ File                                 |  % Stmts | % Branch |  % Funcs |  % Lines
   SignatureValidator.sol             |      100 |       75 |      100 |      100 
   WithDeployer.sol                   |      100 |      100 |      100 |      100 
 -------------------------------------|----------|----------|----------|----------
-All files                            |     97.3 |    66.67 |     96.2 |    96.83 
+All files                            |     97.3 |    66.67 |    96.18 |    96.81 
 -------------------------------------|----------|----------|----------|----------
 ```
 

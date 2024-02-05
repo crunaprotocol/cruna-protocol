@@ -35,15 +35,13 @@ abstract contract CrunaPluginBase is Context, IBoundContract, IVersioned, ICruna
    */
   bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
-  uint256 public currentVersion;
+  address private _deployer;
+  mapping(bytes32 => bool) public usedSignatures;
+  CrunaManager public manager;
 
   // the controller is the vault inside the manager proxy (i.e., the event emitter),
   // not inside the manager of the single tokenId
   IVault internal _controller;
-
-  address private _deployer;
-  mapping(bytes32 => bool) public usedSignatures;
-  CrunaManager public manager;
 
   modifier onlyTokenOwner() {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
@@ -51,7 +49,7 @@ abstract contract CrunaPluginBase is Context, IBoundContract, IVersioned, ICruna
   }
 
   constructor() {
-    currentVersion = version();
+    //    currentVersion = version();
   }
 
   function controller() public view virtual override returns (address) {
@@ -125,10 +123,9 @@ abstract contract CrunaPluginBase is Context, IBoundContract, IVersioned, ICruna
     if (requires == 0) revert UntrustedImplementation();
     CrunaManager impl = CrunaManager(implementation_);
     uint256 _version = impl.version();
-    if (_version <= currentVersion) revert InvalidVersion();
+    if (_version <= version()) revert InvalidVersion();
     CrunaManager _manager = CrunaManager(vault().managerOf(tokenId()));
     if (_manager.version() < requires) revert PluginRequiresUpdatedManager(requires);
-    currentVersion = _version;
     StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
     manager.updateEmitterForPlugin(nameId(), implementation_);
   }

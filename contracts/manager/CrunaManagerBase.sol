@@ -42,7 +42,6 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICont
   bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
   mapping(bytes32 => bool) public usedSignatures;
-  //  uint256 public currentVersion;
 
   // the controller is the vault inside the manager proxy (i.e., the event emitter),
   // not inside the manager of the single tokenId
@@ -59,10 +58,6 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICont
   modifier onlyManagerOf(uint256 tokenId_) virtual {
     if (_controller.managerOf(tokenId_) != _msgSender()) revert Forbidden();
     _;
-  }
-
-  constructor() {
-    //    currentVersion = version();
   }
 
   function controller() public view virtual override returns (address) {
