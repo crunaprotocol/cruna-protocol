@@ -133,27 +133,36 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 Cruna is in beta stage, and to use it you must specify the version you want to install. Install it with, for example
 
 ```sh
-npm install @cruna/protocol@1.0.0-beta.5 @openzeppelin/contracts erc6551
+npm install @cruna/protocol@1.0.0-beta.7 @openzeppelin/contracts erc6551
 ```
 or similar commands using Yarn or Pnpm, and use in your Solidity smart contracts, for example, as
 
 ```
-import {CrunaManagedOwnable} from "@cruna/protocol/contracts/manager/CrunaManagedOwnable.sol";
+import {CrunaManagedNFTOwnable} from "@cruna/protocol/contracts/manager/CrunaManagedNFTOwnable.sol";
 
-contract MySuperToken is CrunaManagedOwnable {
+contract MySuperToken is CrunaManagedNFTOwnable {
    
     constructor(
     address registry_,
     address guardian_,
-    address signatureValidator_,
     address managerProxy_
-  ) CrunaManagedOwnable("My Super Token", "MST", registry_, guardian_, signatureValidator_, managerProxy_) {}
+  ) CrunaManagedOwnable("My Super Token", "MST", registry_, guardian_, managerProxy_) {}
 }
 ```
 
 If your goal is to build a plugin, look at the contracts in [contracts/mocks/plugin-example](./contracts/mocks/plugin-example) to start from.
 
 ## History
+
+**1.0.0-beta.8**
+- Relevant events emitted from the single manager are hard to listen to. In this version, the emitter is the proxy implemented by the registry when creating a manager or a plugin for a specific token ID.
+
+**1.0.0-beta.7**
+- Add common event emitters for managers, instead of emitting via the vault, to allow the manager to evolve independently from the vault
+
+**1.0.0-beta.6**
+- Require signature, if protectors are active, to plug a new plugin, disable and re-enable a plugin, and to authorize/de-authorize a plugin to transfer the NFT
+- Minor alignment of function signatures, keeping timeValidation as an internal parameter, in favor of timestamp and validFor
 
 **1.0.0-beta-5**
 - Move events like ProtectorChange, SafeRecipientChange, etc. from the Manager to the Vault, because listening to events emitted by the vault is simpler than listening to the events emitted by all the managers
@@ -224,45 +233,47 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  43 passing
+  45 passing
 
-----------------------------------|----------|----------|----------|----------
-File                              |  % Stmts | % Branch |  % Funcs |  % Lines 
-----------------------------------|----------|----------|----------|----------
- interfaces/                      |      100 |      100 |      100 |      100 
-  IERC6454.sol                    |      100 |      100 |      100 |      100 
-  IERC6982.sol                    |      100 |      100 |      100 |      100 
- manager/                         |    96.34 |    71.54 |      100 |    97.25 
-  Actor.sol                       |      100 |       70 |      100 |      100 
-  CrunaManager.sol                |    95.83 |    69.81 |      100 |    96.24 
-  CrunaManagerBase.sol            |    96.15 |    85.71 |      100 |      100 
-  CrunaManagerProxy.sol           |      100 |      100 |      100 |      100 
-  ICrunaManager.sol               |      100 |      100 |      100 |      100 
-  ICrunaManagerBase.sol           |      100 |      100 |      100 |      100 
- plugins/                         |      100 |      100 |      100 |      100 
-  IPlugin.sol                     |      100 |      100 |      100 |      100 
- plugins/inheritance/             |      100 |    72.37 |      100 |     97.7 
-  CrunaInheritancePlugin.sol      |      100 |    72.37 |      100 |     97.7 
-  CrunaInheritancePluginProxy.sol |      100 |      100 |      100 |      100 
-  ICrunaInheritancePlugin.sol     |      100 |      100 |      100 |      100 
- token/                           |    98.28 |    61.43 |    96.15 |    95.38 
-  CrunaManagedBase.sol            |    98.11 |    59.68 |    95.24 |    95.08 
-  CrunaManagedOwnable.sol         |      100 |       50 |      100 |      100 
-  CrunaManagedTimeControlled.sol  |      100 |    83.33 |      100 |      100 
-  ICrunaManaged.sol               |      100 |      100 |      100 |      100 
- utils/                           |    96.43 |    58.33 |      100 |    92.68 
-  CrunaGuardian.sol               |      100 |       50 |      100 |       75 
-  CrunaRegistry.sol               |      100 |      100 |      100 |      100 
-  ERC6551AccountProxy.sol         |       90 |       75 |      100 |    90.91 
-  FlexiTimelockController.sol     |      100 |       50 |      100 |      100 
-  IBoundContract.sol              |      100 |      100 |      100 |      100 
-  ICrunaGuardian.sol              |      100 |      100 |      100 |      100 
-  ICrunaRegistry.sol              |      100 |      100 |      100 |      100 
-  IVersioned.sol                  |      100 |      100 |      100 |      100 
-  SignatureValidator.sol          |      100 |       75 |      100 |      100 
-----------------------------------|----------|----------|----------|----------
-All files                         |    97.46 |    67.95 |    99.16 |    96.53 
-----------------------------------|----------|----------|----------|----------
+-------------------------------------|----------|----------|----------|----------
+File                                 |  % Stmts | % Branch |  % Funcs |  % Lines 
+-------------------------------------|----------|----------|----------|----------
+ interfaces/                         |      100 |      100 |      100 |      100 
+  IERC6454.sol                       |      100 |      100 |      100 |      100 
+  IERC6982.sol                       |      100 |      100 |      100 |      100 
+ manager/                            |    98.29 |    70.39 |    98.51 |    98.47 
+  Actor.sol                          |      100 |       70 |      100 |      100 
+  CrunaManager.sol                   |    98.43 |    69.35 |    97.62 |    97.89 
+  CrunaManagerBase.sol               |    96.67 |    77.78 |      100 |      100 
+  CrunaManagerProxy.sol              |      100 |      100 |      100 |      100 
+  ICrunaManager.sol                  |      100 |      100 |      100 |      100 
+  ICrunaManagerBase.sol              |      100 |      100 |      100 |      100 
+  ICrunaManagerEmitter.sol           |      100 |      100 |      100 |      100 
+ plugins/                            |      100 |      100 |      100 |      100 
+  ICrunaPlugin.sol                   |      100 |      100 |      100 |      100 
+ plugins/inheritance/                |    98.59 |    69.51 |    93.55 |    96.81 
+  IInheritanceCrunaPlugin.sol        |      100 |      100 |      100 |      100 
+  IInheritanceCrunaPluginEmitter.sol |      100 |      100 |      100 |      100 
+  InheritanceCrunaPlugin.sol         |    98.59 |    69.51 |    93.33 |    96.81 
+  InheritanceCrunaPluginProxy.sol    |      100 |      100 |      100 |      100 
+ token/                              |      100 |     62.5 |      100 |    96.67 
+  CrunaManagedNFTBase.sol            |      100 |    60.42 |      100 |    96.43 
+  CrunaManagedNFTOwnable.sol         |      100 |       50 |      100 |      100 
+  CrunaManagedNFTTimeControlled.sol  |      100 |    83.33 |      100 |      100 
+  ICrunaManagedNFT.sol               |      100 |      100 |      100 |      100 
+ utils/                              |    96.43 |    58.33 |      100 |    92.86 
+  CrunaGuardian.sol                  |      100 |       50 |      100 |       75 
+  CrunaRegistry.sol                  |      100 |      100 |      100 |      100 
+  ERC6551AccountProxy.sol            |       90 |       75 |      100 |    91.67 
+  FlexiTimelockController.sol        |      100 |       50 |      100 |      100 
+  IBoundContract.sol                 |      100 |      100 |      100 |      100 
+  ICrunaGuardian.sol                 |      100 |      100 |      100 |      100 
+  ICrunaRegistry.sol                 |      100 |      100 |      100 |      100 
+  IVersioned.sol                     |      100 |      100 |      100 |      100 
+  SignatureValidator.sol             |      100 |       75 |      100 |      100 
+-------------------------------------|----------|----------|----------|----------
+All files                            |    98.46 |    67.48 |    97.83 |    97.19 
+-------------------------------------|----------|----------|----------|----------
 ```
 
 ## License

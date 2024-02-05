@@ -1,6 +1,6 @@
 {
   "name": "@cruna/protocol",
-  "version": "1.0.0-beta.5",
+  "version": "1.0.0-beta.8",
   "description": "The Cruna protocol",
   "publishConfig": {
     "access": "public"

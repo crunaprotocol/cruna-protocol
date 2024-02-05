@@ -2,6 +2,8 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { toChecksumAddress } = require("ethereumjs-util");
 const { Contract } = require("@ethersproject/contracts");
+const EthDeployUtils = require("eth-deploy-utils");
+const deployUtils = new EthDeployUtils();
 
 const {
   amount,
@@ -43,9 +45,11 @@ describe("CrunaManager.sol : Protectors", function () {
     crunaRegistry = await deployContract("CrunaRegistry");
     managerImpl = await deployContract("CrunaManager");
     guardian = await deployContract("CrunaGuardian", delay, [proposer.address], [executor.address], deployer.address);
-    proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
+    proxy = await deployContract("CrunaManagerProxy", managerImpl.address, deployer.address);
+    proxy = await deployUtils.attach("CrunaManager", proxy.address);
 
     vault = await deployContract("VaultMockSimple", deployer.address);
+    await proxy.setController(vault.address);
     await vault.init(crunaRegistry.address, guardian.address, proxy.address);
     factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address, deployer.address]);
 
@@ -115,13 +119,11 @@ describe("CrunaManager.sol : Protectors", function () {
     await expect(manager.bullish("0x12345678")).revertedWith("");
   });
 
-  it("should support the ICrunaManaged.sol interface", async function () {
+  it("should support the ICrunaManagedNFT.sol.sol interface", async function () {
     const VaultMockSimple = await deployContract("VaultMockSimple", deployer.address);
     await VaultMockSimple.init(crunaRegistry.address, guardian.address, proxy.address);
-    let interfaceId = await getInterfaceId("ICrunaManaged");
-    expect(interfaceId).to.equal("0x01a6d010");
+    let interfaceId = await getInterfaceId("ICrunaManagedNFT");
     expect(await vault.supportsInterface(interfaceId)).to.be.true;
-    expect(await getInterfaceId("ICrunaManaged")).to.equal("0x01a6d010");
   });
 
   it("should verify CrunaManagerBase.sol parameters", async function () {
@@ -184,7 +186,7 @@ describe("CrunaManager.sol : Protectors", function () {
 
     // set Alice as first Bob's protector
     await expect(manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature))
-      .to.emit(vault, "ProtectorChange")
+      .to.emit(proxy, "ProtectorChange")
       .withArgs(tokenId, alice.address, true)
       .to.emit(vault, "Locked")
       .withArgs(tokenId, true);
@@ -216,7 +218,7 @@ describe("CrunaManager.sol : Protectors", function () {
     );
 
     await expect(manager.connect(bob).setProtector(alice.address, false, ts, 3600, signature))
-      .to.emit(vault, "ProtectorChange")
+      .to.emit(proxy, "ProtectorChange")
       .withArgs(tokenId, alice.address, false)
       .to.emit(vault, "Locked")
       .withArgs(tokenId, false);
@@ -284,7 +286,7 @@ describe("CrunaManager.sol : Protectors", function () {
     )[0];
 
     await expect(manager.connect(bob).setProtector(fred.address, true, ts, 3600, signature))
-      .to.emit(vault, "ProtectorChange")
+      .to.emit(proxy, "ProtectorChange")
       .withArgs(tokenId, fred.address, true);
 
     allProtectors = await manager.getProtectors();
@@ -319,7 +321,7 @@ describe("CrunaManager.sol : Protectors", function () {
     )[0];
 
     await expect(manager.connect(bob).setProtector(alice.address, false, ts, 3600, signature))
-      .to.emit(vault, "ProtectorChange")
+      .to.emit(proxy, "ProtectorChange")
       .withArgs(tokenId, alice.address, false);
 
     expect(await manager.findProtectorIndex(fred.address)).to.equal(0);
@@ -372,8 +374,8 @@ describe("CrunaManager.sol : Protectors", function () {
         manager,
       )
     )[0];
-    await expect(manager.connect(bob).protectedTransfer(tokenId, fred.address, ts * 1e6 + 3600, signature))
-      .to.emit(vault, "Reset")
+    await expect(manager.connect(bob).protectedTransfer(tokenId, fred.address, ts, 3600, signature))
+      .to.emit(proxy, "Reset")
       .withArgs(tokenId)
       .to.emit(vault, "Transfer")
       .withArgs(bob.address, fred.address, tokenId);

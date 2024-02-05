@@ -9,7 +9,7 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
 import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
-import {ICrunaManaged} from "./ICrunaManaged.sol";
+import {ICrunaManagedNFT} from "./ICrunaManagedNFT.sol";
 import {IERC6454} from "../interfaces/IERC6454.sol";
 import {IERC6982} from "../interfaces/IERC6982.sol";
 import {ICrunaManager} from "../manager/ICrunaManager.sol";
@@ -28,11 +28,11 @@ interface IVersionedManager {
 /**
  * @dev This contracts is a base for NFTs with protected transfers. It must be extended implementing
  *   the _canManage function to define who can alter the contract. Two versions are provided in this repo,
- *   CrunaManagedTimeControlled and CrunaManagedOwnable. The first is the recommended one, since it allows
+ *   CrunaManagedNFTTimeControlled.sol and CrunaManagedNFTOwnable.sol. The first is the recommended one, since it allows
  *   a governance aligned with best practices. The second is simpler, and can be used in
  *   less critical scenarios. If none of them fits your needs, you can implement your own policy.
  */
-abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6982, ERC721 {
+abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IERC6454, IERC6982, ERC721 {
   using ECDSA for bytes32;
   using Strings for uint256;
   using Address for address;
@@ -51,7 +51,7 @@ abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6
   mapping(bytes32 => bool) public usedSignatures;
   ICrunaGuardian public guardian;
   ICrunaRegistry public registry;
-  address public managerProxy;
+  address public emitter;
 
   bytes4 public constant NAME_HASH = bytes4(keccak256("CrunaManaged"));
 
@@ -105,7 +105,7 @@ abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6
     if (registry_ == address(0) || guardian_ == address(0) || managerProxy_ == address(0)) revert ZeroAddress();
     guardian = ICrunaGuardian(guardian_);
     registry = ICrunaRegistry(registry_);
-    managerProxy = managerProxy_;
+    emitter = managerProxy_;
   }
 
   function upgradeDefaultManager(address payable newManagerProxy) external virtual {
@@ -113,8 +113,8 @@ abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6
     IVersionedManager newManager = IVersionedManager(newManagerProxy);
     if (guardian.trustedImplementation(newManager.nameId(), newManager.DEFAULT_IMPLEMENTATION()) == 0)
       revert UntrustedImplementation();
-    if (newManager.version() <= IVersionedManager(managerProxy).version()) revert CannotUpgradeToAnOlderVersion();
-    managerProxy = newManagerProxy;
+    if (newManager.version() <= IVersionedManager(emitter).version()) revert CannotUpgradeToAnOlderVersion();
+    emitter = newManagerProxy;
     emit DefaultManagerUpgrade(newManagerProxy);
   }
 
@@ -138,7 +138,7 @@ abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6
   // @dev See {ERC165-supportsInterface}.
   function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721) returns (bool) {
     return
-      interfaceId == type(ICrunaManaged).interfaceId ||
+      interfaceId == type(ICrunaManagedNFT).interfaceId ||
       interfaceId == type(IERC6454).interfaceId ||
       interfaceId == type(IERC6982).interfaceId ||
       super.supportsInterface(interfaceId);
@@ -184,35 +184,6 @@ abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6
     emit Locked(tokenId, locked_);
   }
 
-  // We let the NFT emit the events, so that it is easier to listen to them
-  function emitProtectorChangeEvent(
-    uint256 tokenId,
-    address protector,
-    bool status,
-    uint256 protectorsCount
-  ) external virtual onlyManager(tokenId) {
-    emit ProtectorChange(tokenId, protector, status);
-    if (status && protectorsCount == 1) emit Locked(tokenId, true);
-    else if (!status && protectorsCount == 0) emit Locked(tokenId, false);
-  }
-
-  function emitSafeRecipientChangeEvent(uint256 tokenId, address recipient, bool status) external virtual onlyManager(tokenId) {
-    emit SafeRecipientChange(tokenId, recipient, status);
-  }
-
-  function emitPluginStatusChangeEvent(
-    uint256 tokenId,
-    string memory name,
-    address plugin,
-    bool status
-  ) external virtual onlyManager(tokenId) {
-    emit PluginStatusChange(tokenId, name, plugin, status);
-  }
-
-  function emitResetEvent(uint256 tokenId) external virtual onlyManager(tokenId) onlyManager(tokenId) {
-    emit Reset(tokenId);
-  }
-
   // minting and initialization
 
   // @dev This function will mint a new token and initialize it.
@@ -223,7 +194,7 @@ abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6
     for (uint256 i = 0; i < amount; i++) {
       if (maxTokenId > 0 && tokenId > maxTokenId) revert MaxSupplyReached();
       if (alsoInit) {
-        try registry.createBoundContract(managerProxy, 0x00, block.chainid, address(this), tokenId) {} catch {
+        try registry.createBoundContract(emitter, 0x00, block.chainid, address(this), tokenId) {} catch {
           revert ErrorCreatingManager();
         }
       }
@@ -235,7 +206,7 @@ abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6
   function activate(uint256 tokenId) external virtual {
     if (_msgSender() != ownerOf(tokenId)) revert NotTheTokenOwner();
     if (address(registry) == address(0)) revert RegistryNotFound();
-    try registry.createBoundContract(managerProxy, 0x00, block.chainid, address(this), tokenId) {} catch {
+    try registry.createBoundContract(emitter, 0x00, block.chainid, address(this), tokenId) {} catch {
       revert ErrorCreatingManager();
     }
   }
@@ -243,7 +214,7 @@ abstract contract CrunaManagedBase is ICrunaManaged, IVersioned, IERC6454, IERC6
   // @dev This function will return the address of the manager for tokenId.
   // @param tokenId The id of the token.
   function managerOf(uint256 tokenId) public view virtual returns (address) {
-    return registry.boundContract(managerProxy, 0x00, block.chainid, address(this), tokenId);
+    return registry.boundContract(emitter, 0x00, block.chainid, address(this), tokenId);
   }
 
   function isActive(uint256 tokenId) public view virtual returns (bool) {

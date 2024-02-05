@@ -14,9 +14,17 @@ interface IVault {
   function emitProtectorChangeEvent(uint256 tokenId, address protector, bool status, bool lock, bool unlock) external;
   function emitSafeRecipientChangeEvent(uint256 tokenId, address recipient, bool status) external;
   function emitPluginStatusChangeEvent(uint256 tokenId, string memory name, address plugin, bool status) external;
+  function emitPluginAuthorizationChangeEvent(
+    uint256 tokenId,
+    string memory name,
+    address plugin,
+    bool status,
+    uint256 lockTime
+  ) external;
   function emitResetEvent(uint256 tokenId) external;
   function guardian() external view returns (ICrunaGuardian);
   function registry() external view returns (ICrunaRegistry);
+  function emitter() external view returns (address);
   function managerOf(uint256 tokenId) external view returns (address);
 }
 
@@ -31,6 +39,8 @@ interface ICrunaManagerBase is IBoundContract {
   function guardian() external view returns (ICrunaGuardian);
 
   function registry() external view returns (ICrunaRegistry);
+
+  function emitter() external view returns (address);
 
   function vault() external view returns (IVault);
 

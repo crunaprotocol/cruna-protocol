@@ -1,6 +1,7 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-const { toChecksumAddress } = require("ethereumjs-util");
+const EthDeployUtils = require("eth-deploy-utils");
+const deployUtils = new EthDeployUtils();
 
 const {
   cl,
@@ -36,7 +37,8 @@ describe("Testing contract deployments", function () {
     managerImpl = await deployContract("CrunaManager");
     guardian = await deployContract("CrunaGuardian", delay, [proposer.address], [executor.address], deployer.address);
     expect(await guardian.version()).to.equal(1000000);
-    proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
+    proxy = await deployContract("CrunaManagerProxy", managerImpl.address, deployer.address);
+    proxy = await deployUtils.attach("CrunaManager", proxy.address);
     // sent 2 ETH to proxy
     await expect(
       deployer.sendTransaction({ to: proxy.address, value: amount("2"), gasLimit: ethers.utils.hexlify(100000) }),

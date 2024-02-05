@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import {CrunaManagedTimeControlled} from "../token/CrunaManagedTimeControlled.sol";
+import {CrunaManagedNFTTimeControlled} from "../token/CrunaManagedNFTTimeControlled.sol";
 
 //import "hardhat/console.sol";
 
@@ -10,7 +10,7 @@ import {CrunaManagedTimeControlled} from "../token/CrunaManagedTimeControlled.so
 // We put it in mocks because it should not be used loading the package.
 
 // @dev This contract is a simple example of a protected NFT.
-contract CrunaVaults is CrunaManagedTimeControlled {
+contract CrunaVaults is CrunaManagedNFTTimeControlled {
   using Strings for uint256;
 
   error NotTheFactory();
@@ -34,7 +34,7 @@ contract CrunaVaults is CrunaManagedTimeControlled {
     address[] memory proposers,
     address[] memory executors,
     address admin
-  ) CrunaManagedTimeControlled("Cruna Vaults", "CRUNA1", minDelay, proposers, executors, admin) {}
+  ) CrunaManagedNFTTimeControlled("Cruna Vaults", "CRUNA1", minDelay, proposers, executors, admin) {}
 
   // @dev Set factory to 0x0 to disable a factory.
   // @notice This is the only function that can be called by the owner.

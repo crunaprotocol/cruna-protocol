@@ -1,6 +1,8 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { toChecksumAddress } = require("ethereumjs-util");
+const EthDeployUtils = require("eth-deploy-utils");
+const deployUtils = new EthDeployUtils();
 
 const {
   amount,
@@ -36,9 +38,11 @@ describe("CrunaManager.sol : Safe Recipients", function () {
     crunaRegistry = await deployContract("CrunaRegistry");
     managerImpl = await deployContract("CrunaManager");
     guardian = await deployContract("CrunaGuardian", delay, [proposer.address], [executor.address], deployer.address);
-    proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
+    proxy = await deployContract("CrunaManagerProxy", managerImpl.address, deployer.address);
+    proxy = await deployUtils.attach("CrunaManager", proxy.address);
 
     vault = await deployContract("VaultMockSimple", deployer.address);
+    await proxy.setController(vault.address);
     await vault.init(crunaRegistry.address, guardian.address, proxy.address);
     factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address, deployer.address]);
 
@@ -71,16 +75,16 @@ describe("CrunaManager.sol : Safe Recipients", function () {
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
     // set Alice and Fred as a safe recipient
     await expect(manager.connect(bob).setSafeRecipient(alice.address, true, 0, 0, 0))
-      .to.emit(vault, "SafeRecipientChange")
+      .to.emit(proxy, "SafeRecipientChange")
       .withArgs(tokenId, alice.address, true);
     await expect(manager.connect(bob).setSafeRecipient(fred.address, true, 0, 0, 0))
-      .to.emit(vault, "SafeRecipientChange")
+      .to.emit(proxy, "SafeRecipientChange")
       .withArgs(tokenId, fred.address, true);
 
     expect(await manager.getSafeRecipients()).deep.equal([alice.address, fred.address]);
 
     await expect(manager.connect(bob).setSafeRecipient(alice.address, false, 0, 0, 0))
-      .to.emit(vault, "SafeRecipientChange")
+      .to.emit(proxy, "SafeRecipientChange")
       .withArgs(tokenId, alice.address, false);
 
     let signature = (
@@ -125,7 +129,7 @@ describe("CrunaManager.sol : Safe Recipients", function () {
       )
     )[0];
     await expect(manager.connect(bob).setSafeRecipient(mark.address, true, ts, 3600, signature))
-      .to.emit(vault, "SafeRecipientChange")
+      .to.emit(proxy, "SafeRecipientChange")
       .withArgs(tokenId, mark.address, true);
 
     expect(await vault.isTransferable(tokenId, bob.address, mark.address)).to.be.true;
@@ -154,7 +158,7 @@ describe("CrunaManager.sol : Safe Recipients", function () {
     );
 
     await expect(manager.connect(bob).setSafeRecipient(fred.address, false, ts, 3600, signature))
-      .to.emit(vault, "SafeRecipientChange")
+      .to.emit(proxy, "SafeRecipientChange")
       .withArgs(tokenId, fred.address, false);
   });
 });

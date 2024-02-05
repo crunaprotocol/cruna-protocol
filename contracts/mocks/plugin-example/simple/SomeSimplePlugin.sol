@@ -5,10 +5,9 @@ pragma solidity ^0.8.20;
 
 import {CrunaManager} from "../../../manager/CrunaManager.sol";
 import {CrunaManagerBase} from "../../../manager/CrunaManagerBase.sol";
-import {IPlugin} from "../../../plugins/IPlugin.sol";
+import {ICrunaPlugin} from "../../../plugins/ICrunaPlugin.sol";
 
-contract SomeSimplePlugin is IPlugin, CrunaManagerBase {
-  error Forbidden();
+contract SomeSimplePlugin is ICrunaPlugin, CrunaManagerBase {
   error NotUpgradeable();
 
   // Replace with the roles required by the plugin, if any, or delete it

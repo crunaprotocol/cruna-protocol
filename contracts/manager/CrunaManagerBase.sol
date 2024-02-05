@@ -17,6 +17,10 @@ import {ICrunaManagerBase, IVault, IImplementation} from "./ICrunaManagerBase.so
 
 //import {console} from "hardhat/console.sol";
 
+interface IProxy {
+  function deployer() external view returns (address);
+}
+
 /**
   @title CrunaManagerBase.sol
   @dev Base contract for managers and plugins
@@ -26,6 +30,9 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICrun
   error UntrustedImplementation();
   error InvalidVersion();
   error PluginRequiresUpdatedManager(uint256 requiredVersion);
+  error ControllerAlreadySet();
+  error NotTheDeployer();
+  error Forbidden();
 
   /**
    * @dev Storage slot with the address of the current implementation.
@@ -36,8 +43,23 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICrun
 
   uint256 public currentVersion;
 
+  // the controller is the vault inside the manager proxy (i.e., the event emitter),
+  // not inside the manager of the single tokenId
+  IVault public controller;
+
+  address private _deployer;
+
   constructor() {
     currentVersion = version();
+  }
+
+  // It must be called after deploying the proxy contract implementing this contract
+  // and cannot be called again.
+  function setController(address controller_) external {
+    IProxy proxy = IProxy(address(this));
+    if (proxy.deployer() != _msgSender()) revert NotTheDeployer();
+    if (address(controller) != address(0)) revert ControllerAlreadySet();
+    controller = IVault(controller_);
   }
 
   function version() public pure virtual returns (uint256) {
@@ -52,6 +74,10 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICrun
 
   function registry() public view virtual returns (ICrunaRegistry) {
     return vault().registry();
+  }
+
+  function emitter() public view virtual returns (address) {
+    return vault().emitter();
   }
 
   function vault() public view virtual returns (IVault) {

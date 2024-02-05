@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import {CrunaManagedOwnable} from "../token/CrunaManagedOwnable.sol";
+import {CrunaManagedNFTOwnable} from "../token/CrunaManagedNFTOwnable.sol";
 
 //import "hardhat/console.sol";
 
@@ -10,7 +10,7 @@ import {CrunaManagedOwnable} from "../token/CrunaManagedOwnable.sol";
 // We put it in mocks because it should not be used loading the package.
 
 // @dev This contract is a simple example of a protected NFT.
-contract VaultMockSimple is CrunaManagedOwnable {
+contract VaultMockSimple is CrunaManagedNFTOwnable {
   using Strings for uint256;
 
   error NotTheFactory();
@@ -29,7 +29,7 @@ contract VaultMockSimple is CrunaManagedOwnable {
   //   using Nick's factory, so we may in theory hardcode them in the code. However,
   //   if so, we will not be able to test the contract.
   // @param owner The address of the owner.
-  constructor(address admin) CrunaManagedOwnable("Cruna Vaults", "CRUNA1", admin) {}
+  constructor(address admin) CrunaManagedNFTOwnable("Cruna Vaults", "CRUNA1", admin) {}
 
   // @dev Set factory to 0x0 to disable a factory.
   // @notice This is the only function that can be called by the owner.

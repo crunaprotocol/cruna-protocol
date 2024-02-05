@@ -3,9 +3,9 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {IPlugin} from "../plugins/IPlugin.sol";
+import {ICrunaPlugin} from "../plugins/ICrunaPlugin.sol";
 
-interface IPluginExt is IPlugin {
+interface IPluginExt is ICrunaPlugin {
   function nameId() external returns (bytes4);
 }
 
@@ -20,7 +20,7 @@ interface ICrunaManager {
     Reset
   }
 
-  struct Plugin {
+  struct CrunaPlugin {
     address proxyAddress;
     bool canManageTransfer;
     bool canBeReset;
@@ -33,11 +33,30 @@ interface ICrunaManager {
     bool active;
   }
 
-  function plug(string memory name, address implementation, bool canManageTransfer) external;
+  function plug(
+    string memory name,
+    address pluginProxy,
+    bool canManageTransfer,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature
+  ) external;
 
-  function disablePlugin(string memory name, bool resetPlugin) external;
+  function disablePlugin(
+    string memory name,
+    bool resetPlugin,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature
+  ) external;
 
-  function reEnablePlugin(string memory name, bool resetPlugin) external;
+  function reEnablePlugin(
+    string memory name,
+    bool resetPlugin,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature
+  ) external;
 
   // simulate ERC-721
 
@@ -108,13 +127,26 @@ interface ICrunaManager {
   // @param tokenId The id of the token.
   // @param to The address of the recipient.
   // @param timeValidation The timestamp of the signature combined with the validity of the signature.
-  function protectedTransfer(uint256 tokenId, address to, uint256 timeValidation, bytes calldata signature) external;
+  function protectedTransfer(
+    uint256 tokenId,
+    address to,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature
+  ) external;
 
   function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external;
 
   // @dev blocks a plugin for a maximum of 30 days from transferring the NFT
   //   If the plugins must be blocked for more time, disable it
-  function authorizePluginToTransfer(string memory name, bool authorized, uint256 timeLock) external;
+  function authorizePluginToTransfer(
+    string memory name,
+    bool authorized,
+    uint256 timeLock,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature
+  ) external;
 
   function pluginAddress(bytes4 _nameId) external view returns (address);
 

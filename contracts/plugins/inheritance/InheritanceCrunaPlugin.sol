@@ -7,19 +7,26 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 import {CrunaManager} from "../../manager/CrunaManager.sol";
-import {ICrunaInheritancePlugin} from "./ICrunaInheritancePlugin.sol";
-import {IPlugin} from "../IPlugin.sol";
-import {IVault, CrunaManagerBase} from "../../manager/CrunaManagerBase.sol";
+import {IInheritanceCrunaPlugin} from "./IInheritanceCrunaPlugin.sol";
+import {IInheritanceCrunaPluginEmitter} from "./IInheritanceCrunaPluginEmitter.sol";
+import {ICrunaPlugin} from "../ICrunaPlugin.sol";
+import {IVault, CrunaManagerBase, ICrunaGuardian, ICrunaRegistry} from "../../manager/CrunaManagerBase.sol";
 import {Actor} from "../../manager/Actor.sol";
 import {SignatureValidator} from "../../utils/SignatureValidator.sol";
 
 //import {console} from "hardhat/console.sol";
 
-contract CrunaInheritancePlugin is IPlugin, ICrunaInheritancePlugin, CrunaManagerBase, Actor, SignatureValidator {
+contract InheritanceCrunaPlugin is
+  ICrunaPlugin,
+  IInheritanceCrunaPlugin,
+  IInheritanceCrunaPluginEmitter,
+  CrunaManagerBase,
+  Actor,
+  SignatureValidator
+{
   using ECDSA for bytes32;
   using Strings for uint256;
 
-  error Forbidden();
   error NotPermittedWhenProtectorsAreActive();
   error QuorumCannotBeZero();
   error QuorumCannotBeGreaterThanSentinels();
@@ -42,8 +49,14 @@ contract CrunaInheritancePlugin is IPlugin, ICrunaInheritancePlugin, CrunaManage
   CrunaManager public manager;
   InheritanceConf internal _inheritanceConf;
 
-  // @dev see {ICrunaInheritancePlugin.sol-init}
-  // this must be execute immediately after the deployment
+  // used by the emitter only
+  modifier onlyCallerOf(uint256 tokenId_) {
+    if (CrunaManager(controller.managerOf(tokenId_)).pluginAddress(nameId()) != _msgSender()) revert Forbidden();
+    _;
+  }
+
+  // @dev see {IInheritanceCrunaPlugin.sol.sol-init}
+  // this must be executed immediately after the deployment
   function init() external virtual override {
     // Notice that the manager pretends to be an NFT
     // so tokenAddress() returns the manager address
@@ -51,20 +64,33 @@ contract CrunaInheritancePlugin is IPlugin, ICrunaInheritancePlugin, CrunaManage
     manager = CrunaManager(_msgSender());
   }
 
+  // for a plugin, the emitter is the manager proxy
+  function emitter() public view virtual override returns (address) {
+    return manager.pluginEmitter(nameId());
+  }
+
+  function guardian() public view virtual override returns (ICrunaGuardian) {
+    return manager.guardian();
+  }
+
+  function registry() public view virtual override returns (ICrunaRegistry) {
+    return manager.registry();
+  }
+
+  function vault() public view virtual override returns (IVault) {
+    return manager.vault();
+  }
+
   function requiresToManageTransfer() external pure override returns (bool) {
     return true;
   }
 
-  function nameId() public virtual override returns (bytes4) {
-    return bytes4(keccak256("CrunaInheritancePlugin"));
-  }
-
-  function vault() public view virtual override returns (IVault) {
-    return IVault(manager.tokenAddress());
+  function nameId() public pure virtual override returns (bytes4) {
+    return bytes4(keccak256("InheritanceCrunaPlugin"));
   }
 
   // sentinels and beneficiaries
-  // @dev see {ICrunaInheritancePlugin.sol.sol-setSentinel}
+  // @dev see {IInheritanceCrunaPlugin.sol.sol-setSentinel}
   function setSentinel(
     address sentinel,
     bool status,
@@ -72,19 +98,15 @@ contract CrunaInheritancePlugin is IPlugin, ICrunaInheritancePlugin, CrunaManage
     uint256 validFor,
     bytes calldata signature
   ) public virtual override onlyTokenOwner {
-    if (timestamp == 0) {
-      if (manager.countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
-    } else {
-      _validateAndCheckSignature(
-        this.setSentinel.selector,
-        sentinel,
-        status ? 1 : 0,
-        0,
-        0,
-        timestamp * 1e6 + validFor,
-        signature
-      );
-    }
+    _validateAndCheckSignature(
+      this.setSentinel.selector,
+      sentinel,
+      status ? 1 : 0,
+      0,
+      0,
+      timestamp * 1e6 + validFor,
+      signature
+    );
     if (!status) {
       _removeActor(sentinel, SENTINEL);
       uint256 shares = actorCount(SENTINEL);
@@ -94,40 +116,36 @@ contract CrunaInheritancePlugin is IPlugin, ICrunaInheritancePlugin, CrunaManage
     } else {
       _addActor(sentinel, SENTINEL);
     }
-    emit SentinelUpdated(_msgSender(), sentinel, status);
+    IInheritanceCrunaPluginEmitter(emitter()).emitSentinelUpdatedEvent(tokenId(), _msgSender(), sentinel, status);
   }
 
-  // @dev see {ICrunaInheritancePlugin.sol-setSentinels}
+  // @dev see {IInheritanceCrunaPlugin.sol.sol-setSentinels}
   function setSentinels(address[] memory sentinels, bytes calldata emptySignature) external virtual override onlyTokenOwner {
     for (uint256 i = 0; i < sentinels.length; i++) {
       setSentinel(sentinels[i], true, 0, 0, emptySignature);
     }
   }
 
-  // @dev see {ICrunaInheritancePlugin.sol.sol-configureInheritance}
+  // @dev see {IInheritanceCrunaPlugin.sol.sol.sol-configureInheritance}
   // allow when protectors are active
   function configureInheritance(
     uint256 quorum,
     uint256 proofOfLifeDurationInDays,
     uint256 gracePeriod,
     address beneficiary,
-    uint256 timeValidation,
+    uint256 timestamp,
+    uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
-    if (timeValidation < 1e6) {
-      if (manager.countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
-    } else {
-      if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
-      _validateAndCheckSignature(
-        this.configureInheritance.selector,
-        beneficiary,
-        quorum,
-        proofOfLifeDurationInDays,
-        gracePeriod,
-        timeValidation,
-        signature
-      );
-    }
+    _validateAndCheckSignature(
+      this.configureInheritance.selector,
+      beneficiary,
+      quorum,
+      proofOfLifeDurationInDays,
+      gracePeriod,
+      timestamp * 1e6 + validFor,
+      signature
+    );
     _configureInheritance(uint16(quorum), uint16(proofOfLifeDurationInDays), uint16(gracePeriod), beneficiary);
   }
 
@@ -151,15 +169,22 @@ contract CrunaInheritancePlugin is IPlugin, ICrunaInheritancePlugin, CrunaManage
       _inheritanceConf.waitForGracePeriod = true;
     }
     delete _inheritanceConf.approvers;
-    emit InheritanceConfigured(_msgSender(), quorum, proofOfLifeDurationInDays, gracePeriod, beneficiary);
+    IInheritanceCrunaPluginEmitter(emitter()).emitInheritanceConfiguredEvent(
+      tokenId(),
+      _msgSender(),
+      quorum,
+      proofOfLifeDurationInDays,
+      gracePeriod,
+      beneficiary
+    );
   }
 
-  // @dev see {ICrunaInheritancePlugin.sol-getSentinelsAndInheritanceData}
+  // @dev see {IInheritanceCrunaPlugin.sol-getSentinelsAndInheritanceData}
   function getSentinelsAndInheritanceData() external view virtual override returns (address[] memory, InheritanceConf memory) {
     return (getActors(SENTINEL), _inheritanceConf);
   }
 
-  // @dev see {ICrunaInheritancePlugin.sol.sol-proofOfLife}
+  // @dev see {IInheritanceCrunaPlugin.sol.sol-proofOfLife}
   function proofOfLife() external virtual override onlyTokenOwner {
     if (_inheritanceConf.proofOfLifeDurationInDays == 0) revert InheritanceNotConfigured();
     // solhint-disable-next-line not-rely-on-time
@@ -170,10 +195,10 @@ contract CrunaInheritancePlugin is IPlugin, ICrunaInheritancePlugin, CrunaManage
     }
     delete _inheritanceConf.approvers;
     delete _inheritanceConf.requestUpdatedAt;
-    emit ProofOfLife(_msgSender());
+    IInheritanceCrunaPluginEmitter(emitter()).emitProofOfLifeEvent(tokenId(), _msgSender());
   }
 
-  // @dev see {ICrunaInheritancePlugin.sol.sol-requestTransfer}
+  // @dev see {IInheritanceCrunaPlugin.sol.sol.sol-requestTransfer}
   function requestTransfer(address beneficiary) external virtual override {
     if (beneficiary == address(0)) revert ZeroAddress();
     if (_inheritanceConf.proofOfLifeDurationInDays == 0) revert InheritanceNotConfigured();
@@ -197,9 +222,9 @@ contract CrunaInheritancePlugin is IPlugin, ICrunaInheritancePlugin, CrunaManage
     if (_inheritanceConf.approvers.length == _inheritanceConf.quorum) revert QuorumAlreadyReached();
     if (_inheritanceConf.beneficiary == address(0)) {
       _inheritanceConf.beneficiary = beneficiary;
-      emit TransferRequested(_msgSender(), beneficiary);
+      IInheritanceCrunaPluginEmitter(emitter()).emitTransferRequestedEvent(tokenId(), _msgSender(), beneficiary);
     } else {
-      emit TransferRequestApproved(_msgSender());
+      IInheritanceCrunaPluginEmitter(emitter()).emitTransferRequestApprovedEvent(tokenId(), _msgSender());
     }
     _inheritanceConf.approvers.push(_msgSender());
     // updating all the time, gives more time to the beneficiary to inherit
@@ -233,7 +258,7 @@ contract CrunaInheritancePlugin is IPlugin, ICrunaInheritancePlugin, CrunaManage
     return block.timestamp - _inheritanceConf.requestUpdatedAt > _inheritanceConf.gracePeriod * 1 days;
   }
 
-  // @dev see {ICrunaInheritancePlugin.sol-inherit}
+  // @dev see {IInheritanceCrunaPlugin.sol-inherit}
   function inherit() external virtual override {
     _checkIfStillAlive();
     if (_inheritanceConf.beneficiary == address(0)) revert BeneficiaryNotSet();
@@ -278,27 +303,78 @@ contract CrunaInheritancePlugin is IPlugin, ICrunaInheritancePlugin, CrunaManage
     uint256 timeValidation,
     bytes calldata signature
   ) internal virtual {
-    if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
-    usedSignatures[keccak256(signature)] = true;
-
-    address signer = recoverSigner(
-      _functionSelector,
-      owner(),
-      target,
-      manager.tokenAddress(),
-      manager.tokenId(),
-      extra,
-      extra2,
-      extra3,
-      timeValidation,
-      signature
-    );
-    if (!manager.isAProtector(signer)) revert WrongDataOrNotSignedByProtector();
+    if (timeValidation < 1e6) {
+      if (manager.countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
+    } else {
+      if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
+      usedSignatures[keccak256(signature)] = true;
+      address signer = recoverSigner(
+        _functionSelector,
+        owner(),
+        target,
+        manager.tokenAddress(),
+        manager.tokenId(),
+        extra,
+        extra2,
+        extra3,
+        timeValidation,
+        signature
+      );
+      if (!manager.isAProtector(signer)) revert WrongDataOrNotSignedByProtector();
+    }
   }
 
   function requiresResetOnTransfer() external pure returns (bool) {
     return true;
   }
+
+  // IInheritanceCrunaPluginEmitter
+
+  function emitSentinelUpdatedEvent(
+    uint256 tokenId_,
+    address owner,
+    address sentinel,
+    bool status
+  ) external override onlyCallerOf(tokenId_) {
+    emit SentinelUpdated(tokenId_, owner, sentinel, status);
+  }
+
+  function emitInheritanceConfiguredEvent(
+    uint256 tokenId_,
+    address owner,
+    uint256 quorum,
+    uint256 proofOfLifeDurationInDays,
+    uint256 gracePeriod,
+    address beneficiary
+  ) external override onlyCallerOf(tokenId_) {
+    emit InheritanceConfigured(tokenId_, owner, quorum, proofOfLifeDurationInDays, gracePeriod, beneficiary);
+  }
+
+  function emitProofOfLifeEvent(uint256 tokenId_, address owner) external override onlyCallerOf(tokenId_) {
+    emit ProofOfLife(tokenId_, owner);
+  }
+
+  function emitTransferRequestedEvent(
+    uint256 tokenId_,
+    address sentinel,
+    address beneficiary
+  ) external override onlyCallerOf(tokenId_) {
+    emit TransferRequested(tokenId_, sentinel, beneficiary);
+  }
+
+  function emitTransferRequestApprovedEvent(uint256 tokenId_, address sentinel) external override onlyCallerOf(tokenId_) {
+    emit TransferRequestApproved(tokenId_, sentinel);
+  }
+
+  // for the future
+  function emitFutureEvent(
+    uint256 tokenId_,
+    string memory eventName,
+    address actor,
+    bool status,
+    uint256 extraUint256,
+    bytes32 extraBytes32
+  ) external {}
 
   // @dev This empty reserved space is put in place to allow future versions to add new
   // variables without shifting down storage in the inheritance chain.
