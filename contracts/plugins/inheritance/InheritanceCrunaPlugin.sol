@@ -43,6 +43,7 @@ contract InheritanceCrunaPlugin is
   error QuorumAlreadyReached();
   error WrongDataOrNotSignedByProtector();
   error SignatureAlreadyUsed();
+  error InvalidValidity();
 
   mapping(bytes32 => bool) public usedSignatures;
   bytes4 public constant SENTINEL = bytes4(keccak256(abi.encodePacked("SENTINEL")));
@@ -51,7 +52,7 @@ contract InheritanceCrunaPlugin is
 
   // used by the emitter only
   modifier onlyCallerOf(uint256 tokenId_) {
-    if (CrunaManager(controller.managerOf(tokenId_)).pluginAddress(nameId()) != _msgSender()) revert Forbidden();
+    if (CrunaManager(_controller.managerOf(tokenId_)).pluginAddress(nameId()) != _msgSender()) revert Forbidden();
     _;
   }
 
@@ -98,6 +99,7 @@ contract InheritanceCrunaPlugin is
     uint256 validFor,
     bytes calldata signature
   ) public virtual override onlyTokenOwner {
+    if (validFor > 999999) revert InvalidValidity();
     _validateAndCheckSignature(
       this.setSentinel.selector,
       sentinel,
@@ -137,6 +139,7 @@ contract InheritanceCrunaPlugin is
     uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
+    if (validFor > 999999) revert InvalidValidity();
     _validateAndCheckSignature(
       this.configureInheritance.selector,
       beneficiary,

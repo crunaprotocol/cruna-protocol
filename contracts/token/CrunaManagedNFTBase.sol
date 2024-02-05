@@ -14,6 +14,7 @@ import {IERC6454} from "../interfaces/IERC6454.sol";
 import {IERC6982} from "../interfaces/IERC6982.sol";
 import {ICrunaManager} from "../manager/ICrunaManager.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
+import {IReference} from "./IReference.sol";
 
 //import {console} from "hardhat/console.sol";
 
@@ -32,7 +33,7 @@ interface IVersionedManager {
  *   a governance aligned with best practices. The second is simpler, and can be used in
  *   less critical scenarios. If none of them fits your needs, you can implement your own policy.
  */
-abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IERC6454, IERC6982, ERC721 {
+abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReference, IERC6454, IERC6982, ERC721 {
   using ECDSA for bytes32;
   using Strings for uint256;
   using Address for address;
@@ -49,9 +50,9 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IERC6454,
   error UntrustedImplementation();
 
   mapping(bytes32 => bool) public usedSignatures;
-  ICrunaGuardian public guardian;
-  ICrunaRegistry public registry;
-  address public emitter;
+  ICrunaGuardian private _guardian;
+  ICrunaRegistry private _registry;
+  address private _emitter;
 
   bytes4 public constant NAME_HASH = bytes4(keccak256("CrunaManaged"));
 
@@ -81,6 +82,18 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IERC6454,
     emit DefaultLocked(false);
   }
 
+  function guardian() external view virtual override returns (ICrunaGuardian) {
+    return _guardian;
+  }
+
+  function registry() external view virtual override returns (ICrunaRegistry) {
+    return _registry;
+  }
+
+  function emitter() external view virtual override returns (address) {
+    return _emitter;
+  }
+
   // Must be overridden to specify who can manage changes in the contract states
   // It should revert it the caller is not allowed to manage
   // @param isInitializing True if the contract is being initialized, false otherwise
@@ -101,20 +114,20 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IERC6454,
   function init(address registry_, address guardian_, address managerProxy_) external virtual {
     _canManage(true);
     // must be called immediately after deployment
-    if (address(registry) != address(0)) revert AlreadyInitiated();
+    if (address(_registry) != address(0)) revert AlreadyInitiated();
     if (registry_ == address(0) || guardian_ == address(0) || managerProxy_ == address(0)) revert ZeroAddress();
-    guardian = ICrunaGuardian(guardian_);
-    registry = ICrunaRegistry(registry_);
-    emitter = managerProxy_;
+    _guardian = ICrunaGuardian(guardian_);
+    _registry = ICrunaRegistry(registry_);
+    _emitter = managerProxy_;
   }
 
   function upgradeDefaultManager(address payable newManagerProxy) external virtual {
     _canManage(false);
     IVersionedManager newManager = IVersionedManager(newManagerProxy);
-    if (guardian.trustedImplementation(newManager.nameId(), newManager.DEFAULT_IMPLEMENTATION()) == 0)
+    if (_guardian.trustedImplementation(newManager.nameId(), newManager.DEFAULT_IMPLEMENTATION()) == 0)
       revert UntrustedImplementation();
-    if (newManager.version() <= IVersionedManager(emitter).version()) revert CannotUpgradeToAnOlderVersion();
-    emitter = newManagerProxy;
+    if (newManager.version() <= IVersionedManager(_emitter).version()) revert CannotUpgradeToAnOlderVersion();
+    _emitter = newManagerProxy;
     emit DefaultManagerUpgrade(newManagerProxy);
   }
 
@@ -189,12 +202,12 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IERC6454,
   // @dev This function will mint a new token and initialize it.
   // @param to The address of the recipient.
   function _mintAndActivate(address to, bool alsoInit, uint256 amount) internal virtual {
-    if (alsoInit && address(registry) == address(0)) revert RegistryNotFound();
+    if (alsoInit && address(_registry) == address(0)) revert RegistryNotFound();
     uint256 tokenId = nextTokenId;
     for (uint256 i = 0; i < amount; i++) {
       if (maxTokenId > 0 && tokenId > maxTokenId) revert MaxSupplyReached();
       if (alsoInit) {
-        try registry.createBoundContract(emitter, 0x00, block.chainid, address(this), tokenId) {} catch {
+        try _registry.createBoundContract(_emitter, 0x00, block.chainid, address(this), tokenId) {} catch {
           revert ErrorCreatingManager();
         }
       }
@@ -205,8 +218,8 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IERC6454,
 
   function activate(uint256 tokenId) external virtual {
     if (_msgSender() != ownerOf(tokenId)) revert NotTheTokenOwner();
-    if (address(registry) == address(0)) revert RegistryNotFound();
-    try registry.createBoundContract(emitter, 0x00, block.chainid, address(this), tokenId) {} catch {
+    if (address(_registry) == address(0)) revert RegistryNotFound();
+    try _registry.createBoundContract(_emitter, 0x00, block.chainid, address(this), tokenId) {} catch {
       revert ErrorCreatingManager();
     }
   }
@@ -214,7 +227,7 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IERC6454,
   // @dev This function will return the address of the manager for tokenId.
   // @param tokenId The id of the token.
   function managerOf(uint256 tokenId) public view virtual returns (address) {
-    return registry.boundContract(emitter, 0x00, block.chainid, address(this), tokenId);
+    return _registry.boundContract(_emitter, 0x00, block.chainid, address(this), tokenId);
   }
 
   function isActive(uint256 tokenId) public view virtual returns (bool) {

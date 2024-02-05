@@ -7,31 +7,9 @@ import {IBoundContract} from "../utils/IBoundContract.sol";
 import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
 import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
 
+import {IVault} from "../token/IVault.sol";
+
 //import {console} from "hardhat/console.sol";
-
-interface IVault {
-  function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external;
-  function emitProtectorChangeEvent(uint256 tokenId, address protector, bool status, bool lock, bool unlock) external;
-  function emitSafeRecipientChangeEvent(uint256 tokenId, address recipient, bool status) external;
-  function emitPluginStatusChangeEvent(uint256 tokenId, string memory name, address plugin, bool status) external;
-  function emitPluginAuthorizationChangeEvent(
-    uint256 tokenId,
-    string memory name,
-    address plugin,
-    bool status,
-    uint256 lockTime
-  ) external;
-  function emitResetEvent(uint256 tokenId) external;
-  function guardian() external view returns (ICrunaGuardian);
-  function registry() external view returns (ICrunaRegistry);
-  function emitter() external view returns (address);
-  function managerOf(uint256 tokenId) external view returns (address);
-}
-
-interface IImplementation {
-  function version() external pure returns (uint256);
-  function nameId() external returns (bytes4);
-}
 
 interface ICrunaManagerBase is IBoundContract {
   function nameId() external returns (bytes4);
