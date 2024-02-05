@@ -94,7 +94,7 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
     return _registry;
   }
 
-  function emitter(uint256 _tokenId) external view virtual override returns (address) {
+  function managerEmitter(uint256 _tokenId) external view virtual override returns (address) {
     return _emitter(_tokenId);
   }
 
@@ -126,13 +126,13 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
     managerHistoryLength = 1;
   }
 
-  function _emitter(uint256 tokenId) internal view virtual returns (address) {
+  function _emitter(uint256 _tokenId) internal view virtual returns (address) {
     if (managerHistoryLength == 1) return managerHistory[0].managerAddress;
     else {
       for (uint256 i = 0; i < managerHistoryLength; i++) {
         if (
-          tokenId >= managerHistory[i].firstTokenId &&
-          (managerHistory[i].lastTokenId == 0 || tokenId <= managerHistory[i].lastTokenId)
+          _tokenId >= managerHistory[i].firstTokenId &&
+          (managerHistory[i].lastTokenId == 0 || _tokenId <= managerHistory[i].lastTokenId)
         ) return managerHistory[i].managerAddress;
       }
     }

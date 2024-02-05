@@ -4,16 +4,13 @@ pragma solidity ^0.8.20;
 // Author: Francesco Sullo <francesco@sullo.co>
 
 import {CrunaManager} from "../../../manager/CrunaManager.sol";
-import {CrunaManagerBase} from "../../../manager/CrunaManagerBase.sol";
-import {ICrunaPlugin} from "../../../plugins/ICrunaPlugin.sol";
+import {CrunaPluginBase} from "../../../plugins/CrunaPluginBase.sol";
 
-contract SomeSimplePlugin is ICrunaPlugin, CrunaManagerBase {
+contract SomeSimplePlugin is CrunaPluginBase {
   error NotUpgradeable();
 
   // Replace with the roles required by the plugin, if any, or delete it
   bytes4 public constant SOME_ROLE = bytes4(keccak256("SOME_ROLE"));
-
-  CrunaManager public manager;
 
   function requiresToManageTransfer() external pure override returns (bool) {
     return false;
@@ -25,7 +22,7 @@ contract SomeSimplePlugin is ICrunaPlugin, CrunaManagerBase {
     manager = CrunaManager(_msgSender());
   }
 
-  function nameId() public virtual override returns (bytes4) {
+  function nameId() public view virtual override(CrunaPluginBase) returns (bytes4) {
     return bytes4(keccak256("SomeSimplePlugin"));
   }
 

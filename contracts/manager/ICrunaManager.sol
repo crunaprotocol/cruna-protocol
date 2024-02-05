@@ -6,7 +6,7 @@ pragma solidity ^0.8.20;
 import {ICrunaPlugin} from "../plugins/ICrunaPlugin.sol";
 
 interface IPluginExt is ICrunaPlugin {
-  function nameId() external returns (bytes4);
+  function nameId() external view returns (bytes4);
 }
 
 // erc165 interfaceId 0x8dca4bea
@@ -59,8 +59,6 @@ interface ICrunaManager {
   ) external;
 
   // simulate ERC-721
-
-  function ownerOf(uint256) external view returns (address);
 
   // @dev Return the protectors
   // @return The addresses of active protectors set for the tokensOwner
@@ -134,6 +132,8 @@ interface ICrunaManager {
     uint256 validFor,
     bytes calldata signature
   ) external;
+
+  function updateEmitterForPlugin(bytes4 pluginNameId, address newEmitter) external;
 
   function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external;
 

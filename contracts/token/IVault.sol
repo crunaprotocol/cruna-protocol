@@ -3,15 +3,12 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
-import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
+import {IReference} from "./IReference.sol";
 
 //import {console} from "hardhat/console.sol";
 
-interface IVault {
+interface IVault is IReference {
   function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external;
-  function guardian() external view returns (ICrunaGuardian);
-  function registry() external view returns (ICrunaRegistry);
-  function emitter(uint256 _tokenId) external view returns (address);
   function managerOf(uint256 tokenId) external view returns (address);
+  function managerEmitter(uint256 _tokenId) external view returns (address);
 }

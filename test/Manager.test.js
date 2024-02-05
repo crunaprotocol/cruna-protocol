@@ -149,7 +149,7 @@ describe("CrunaManager.sol : Protectors", function () {
     const managerV2Impl = await deployContract("ManagerV2Mock");
     const proxyV2 = await deployContract("ManagerProxyV2Mock", managerV2Impl.address, deployer.address);
     expect(await proxyV2.getImplementation()).to.equal(managerV2Impl.address);
-    const initialManagerProxy = await vault.emitter(tokenId);
+    const initialManagerProxy = await vault.managerEmitter(tokenId);
     const initialManager = await ethers.getContractAt("CrunaManager", initialManagerProxy);
     expect(await initialManager.version()).to.equal(1e6);
 
@@ -171,12 +171,12 @@ describe("CrunaManager.sol : Protectors", function () {
       .withArgs(proxyV2.address);
 
     tokenId = await buyAVault(bob, proxyV2);
-    const newManagerProxy = await vault.emitter(tokenId);
+    const newManagerProxy = await vault.managerEmitter(tokenId);
     const newManager = await ethers.getContractAt("CrunaManager", newManagerProxy);
 
     expect(await newManager.version()).to.equal(1e6 + 2e3);
 
-    const oldManagerProxy = await vault.emitter(1);
+    const oldManagerProxy = await vault.managerEmitter(1);
     const oldManager = await ethers.getContractAt("CrunaManager", oldManagerProxy);
 
     expect(await oldManager.version()).to.equal(1e6);

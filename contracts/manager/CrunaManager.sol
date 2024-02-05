@@ -11,12 +11,11 @@ import {Actor} from "./Actor.sol";
 import {IPluginExt, ICrunaManager} from "./ICrunaManager.sol";
 import {CrunaManagerBase} from "./CrunaManagerBase.sol";
 import {ICrunaManagerEmitter} from "./ICrunaManagerEmitter.sol";
-import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {IControlled} from "../utils/IControlled.sol";
 
 //import {console} from "hardhat/console.sol";
 
-contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManagerBase, ReentrancyGuard, SignatureValidator {
+contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManagerBase, ReentrancyGuard {
   using ECDSA for bytes32;
   using Strings for uint256;
 
@@ -40,32 +39,12 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
   error InvalidTimeLock();
   error InvalidValidity();
 
-  mapping(bytes32 => bool) public usedSignatures;
   bytes4 public constant PROTECTOR = bytes4(keccak256("PROTECTOR"));
   bytes4 public constant SAFE_RECIPIENT = bytes4(keccak256("SAFE_RECIPIENT"));
 
   mapping(bytes4 => CrunaPlugin) public pluginsById;
   PluginStatus[] public allPlugins;
   mapping(bytes4 => uint256) public timeLocks;
-
-  // used by the emitter only
-  modifier onlyManagerOf(uint256 tokenId_) virtual {
-    if (_controller.managerOf(tokenId_) != _msgSender()) revert Forbidden();
-    _;
-  }
-
-  function nameId() public virtual override returns (bytes4) {
-    return _getNameId("CrunaManager");
-  }
-
-  function _getNameId(string memory name) internal pure virtual returns (bytes4) {
-    return bytes4(keccak256(abi.encodePacked(name)));
-  }
-
-  // simulate ERC-721 to allow plugins to be deployed via ERC-6551 Registry
-  function ownerOf(uint256) external view virtual override returns (address) {
-    return owner();
-  }
 
   // @dev Counts the protectors.
   function countActiveProtectors() public view virtual override returns (uint256) {
@@ -462,6 +441,11 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
       delete timeLocks[_nameId];
       pluginsById[_nameId].canManageTransfer = true;
     }
+  }
+
+  function updateEmitterForPlugin(bytes4 pluginNameId, address newEmitter) external virtual override {
+    if (pluginsById[pluginNameId].proxyAddress == address(0)) revert PluginNotFound();
+    pluginsById[pluginNameId].proxyAddress = newEmitter;
   }
 
   // @dev See {IProtected721-managedTransfer}.

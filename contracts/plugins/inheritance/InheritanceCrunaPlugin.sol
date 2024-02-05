@@ -9,8 +9,7 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {CrunaManager} from "../../manager/CrunaManager.sol";
 import {IInheritanceCrunaPlugin} from "./IInheritanceCrunaPlugin.sol";
 import {IInheritanceCrunaPluginEmitter} from "./IInheritanceCrunaPluginEmitter.sol";
-import {ICrunaPlugin} from "../ICrunaPlugin.sol";
-import {IVault, CrunaManagerBase, ICrunaGuardian, ICrunaRegistry} from "../../manager/CrunaManagerBase.sol";
+import {ICrunaPlugin, CrunaPluginBase} from "../CrunaPluginBase.sol";
 import {Actor} from "../../manager/Actor.sol";
 import {SignatureValidator} from "../../utils/SignatureValidator.sol";
 
@@ -20,7 +19,7 @@ contract InheritanceCrunaPlugin is
   ICrunaPlugin,
   IInheritanceCrunaPlugin,
   IInheritanceCrunaPluginEmitter,
-  CrunaManagerBase,
+  CrunaPluginBase,
   Actor,
   SignatureValidator
 {
@@ -45,9 +44,7 @@ contract InheritanceCrunaPlugin is
   error SignatureAlreadyUsed();
   error InvalidValidity();
 
-  mapping(bytes32 => bool) public usedSignatures;
   bytes4 public constant SENTINEL = bytes4(keccak256(abi.encodePacked("SENTINEL")));
-  CrunaManager public manager;
   InheritanceConf internal _inheritanceConf;
 
   // used by the emitter only
@@ -65,29 +62,11 @@ contract InheritanceCrunaPlugin is
     manager = CrunaManager(_msgSender());
   }
 
-  // for a plugin, the emitter is the manager proxy
-  function emitter(uint256) public view virtual override returns (address) {
-    // TODO think about how to solve this
-    return manager.pluginEmitter(nameId());
-  }
-
-  function guardian() public view virtual override returns (ICrunaGuardian) {
-    return manager.guardian();
-  }
-
-  function registry() public view virtual override returns (ICrunaRegistry) {
-    return manager.registry();
-  }
-
-  function vault() public view virtual override returns (IVault) {
-    return manager.vault();
-  }
-
   function requiresToManageTransfer() external pure override returns (bool) {
     return true;
   }
 
-  function nameId() public pure virtual override returns (bytes4) {
+  function nameId() public pure virtual override(ICrunaPlugin, CrunaPluginBase) returns (bytes4) {
     return bytes4(keccak256("InheritanceCrunaPlugin"));
   }
 
@@ -119,7 +98,7 @@ contract InheritanceCrunaPlugin is
     } else {
       _addActor(sentinel, SENTINEL);
     }
-    IInheritanceCrunaPluginEmitter(emitter(tokenId())).emitSentinelUpdatedEvent(tokenId(), _msgSender(), sentinel, status);
+    IInheritanceCrunaPluginEmitter(emitter()).emitSentinelUpdatedEvent(tokenId(), _msgSender(), sentinel, status);
   }
 
   // @dev see {IInheritanceCrunaPlugin.sol.sol-setSentinels}
@@ -173,7 +152,7 @@ contract InheritanceCrunaPlugin is
       _inheritanceConf.waitForGracePeriod = true;
     }
     delete _inheritanceConf.approvers;
-    IInheritanceCrunaPluginEmitter(emitter(tokenId())).emitInheritanceConfiguredEvent(
+    IInheritanceCrunaPluginEmitter(emitter()).emitInheritanceConfiguredEvent(
       tokenId(),
       _msgSender(),
       quorum,
@@ -199,7 +178,7 @@ contract InheritanceCrunaPlugin is
     }
     delete _inheritanceConf.approvers;
     delete _inheritanceConf.requestUpdatedAt;
-    IInheritanceCrunaPluginEmitter(emitter(tokenId())).emitProofOfLifeEvent(tokenId(), _msgSender());
+    IInheritanceCrunaPluginEmitter(emitter()).emitProofOfLifeEvent(tokenId(), _msgSender());
   }
 
   // @dev see {IInheritanceCrunaPlugin.sol.sol.sol-requestTransfer}
@@ -226,9 +205,9 @@ contract InheritanceCrunaPlugin is
     if (_inheritanceConf.approvers.length == _inheritanceConf.quorum) revert QuorumAlreadyReached();
     if (_inheritanceConf.beneficiary == address(0)) {
       _inheritanceConf.beneficiary = beneficiary;
-      IInheritanceCrunaPluginEmitter(emitter(tokenId())).emitTransferRequestedEvent(tokenId(), _msgSender(), beneficiary);
+      IInheritanceCrunaPluginEmitter(emitter()).emitTransferRequestedEvent(tokenId(), _msgSender(), beneficiary);
     } else {
-      IInheritanceCrunaPluginEmitter(emitter(tokenId())).emitTransferRequestApprovedEvent(tokenId(), _msgSender());
+      IInheritanceCrunaPluginEmitter(emitter()).emitTransferRequestApprovedEvent(tokenId(), _msgSender());
     }
     _inheritanceConf.approvers.push(_msgSender());
     // updating all the time, gives more time to the beneficiary to inherit

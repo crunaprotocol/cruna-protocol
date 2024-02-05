@@ -35,4 +35,7 @@ interface ICrunaManagedNFT {
   function managerOf(uint256 tokenId) external view returns (address);
 
   function isActive(uint256 tokenId) external view returns (bool);
+
+  // manager Emitter
+  function managerEmitter(uint256 _tokenId) external view returns (address);
 }

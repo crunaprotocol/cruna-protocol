@@ -3,17 +3,16 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {IBoundContract} from "../utils/IBoundContract.sol";
 import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
 import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
 
 import {IVault} from "../token/IVault.sol";
+import {INamed} from "../utils/INamed.sol";
+import {IBoundContractExtended} from "../utils/IBoundContractExtended.sol";
 
 //import {console} from "hardhat/console.sol";
 
-interface ICrunaManagerBase is IBoundContract {
-  function nameId() external returns (bytes4);
-
+interface ICrunaManagerBase is IBoundContractExtended, INamed {
   function guardian() external view returns (ICrunaGuardian);
 
   function registry() external view returns (ICrunaRegistry);
@@ -21,12 +20,6 @@ interface ICrunaManagerBase is IBoundContract {
   function emitter(uint256 _tokenId) external view returns (address);
 
   function vault() external view returns (IVault);
-
-  function owner() external view returns (address);
-
-  function tokenAddress() external view returns (address);
-
-  function tokenId() external view returns (uint256);
 
   function combineBytes4(bytes4 a, bytes4 b) external pure returns (bytes32);
 
@@ -37,4 +30,7 @@ interface ICrunaManagerBase is IBoundContract {
   function upgrade(address implementation_) external;
 
   function getImplementation() external view returns (address);
+
+  // simulate ERC-721 to allow plugins to be deployed via ERC-6551 Registry
+  function ownerOf(uint256) external view returns (address);
 }
