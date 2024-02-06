@@ -71,6 +71,8 @@ interface ICrunaManager is IBoundContractExtended, INamed, IReference {
     bytes calldata signature
   ) external;
 
+  function isTransferable() external view returns (bool);
+
   // simulate ERC-721
 
   // @dev Return the protectors
