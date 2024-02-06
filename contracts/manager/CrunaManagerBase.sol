@@ -13,7 +13,7 @@ import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
 import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
 import {INamed} from "../utils/INamed.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
-import {ICrunaManagerBase, IVault} from "./ICrunaManagerBase.sol";
+import {ICrunaManager, IVault} from "./ICrunaManager.sol";
 import {WithDeployer} from "../utils/WithDeployer.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {IControlled} from "../utils/IControlled.sol";
@@ -26,7 +26,7 @@ interface INamedAndVersioned is INamed, IVersioned {}
   @title CrunaManagerBase.sol
   @dev Base contract for managers and plugins
 */
-abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, IControlled, ICrunaManagerBase, SignatureValidator {
+abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, IControlled, ICrunaManager, SignatureValidator {
   error NotTheTokenOwner();
   error UntrustedImplementation();
   error InvalidVersion();
@@ -75,23 +75,27 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICont
     _controller = IVault(controller_);
   }
 
-  function version() public pure virtual returns (uint256) {
+  function version() public pure virtual override returns (uint256) {
     return 1e6;
   }
 
-  function guardian() public view virtual returns (ICrunaGuardian) {
+  function guardian() public view virtual override returns (ICrunaGuardian) {
     return vault().guardian();
   }
 
-  function registry() public view virtual returns (ICrunaRegistry) {
+  function registry() public view virtual override returns (ICrunaRegistry) {
     return vault().registry();
   }
 
-  function emitter(uint256 _tokenId) public view virtual returns (address) {
-    return vault().managerEmitter(_tokenId);
+  function emitter() public view virtual override returns (address) {
+    address _emitter = StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value;
+    if (_emitter == address(0)) {
+      _emitter = ERC6551AccountLib.implementation();
+    }
+    return _emitter;
   }
 
-  function vault() public view virtual returns (IVault) {
+  function vault() public view virtual override returns (IVault) {
     return IVault(tokenAddress());
   }
 
@@ -103,7 +107,7 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICont
     return ERC6551AccountLib.token();
   }
 
-  function owner() public view virtual returns (address) {
+  function owner() public view virtual override returns (address) {
     (uint256 chainId, address tokenContract_, uint256 tokenId_) = token();
     if (chainId != block.chainid) return address(0);
     return IERC721(tokenContract_).ownerOf(tokenId_);
@@ -113,12 +117,12 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICont
     return owner();
   }
 
-  function tokenAddress() public view virtual returns (address) {
+  function tokenAddress() public view virtual override returns (address) {
     (, address tokenContract_, ) = token();
     return tokenContract_;
   }
 
-  function tokenId() public view virtual returns (uint256) {
+  function tokenId() public view virtual override returns (uint256) {
     (, , uint256 tokenId_) = token();
     return tokenId_;
   }
@@ -131,7 +135,7 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICont
   //   Notice that the owner can upgrade active or disable plugins
   //   so that, if a plugin is compromised, the user can disable it,
   //   wait for a new trusted implementation and upgrade it.
-  function upgrade(address implementation_) external virtual {
+  function upgrade(address implementation_) external virtual override {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     uint256 requires = guardian().trustedImplementation(nameId(), implementation_);
     if (requires == 0) revert UntrustedImplementation();
@@ -144,9 +148,9 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICont
     StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
   }
 
-  function getImplementation() external view returns (address) {
-    return StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value;
-  }
+  //  function getImplementation() external view override returns (address) {
+  //    return StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value;
+  //  }
 
   // @dev This empty reserved space is put in place to allow future versions to add new
   // variables without shifting down storage in the inheritance chain.

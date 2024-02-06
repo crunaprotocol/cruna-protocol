@@ -52,13 +52,12 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
   mapping(bytes32 => bool) public usedSignatures;
   ICrunaGuardian private _guardian;
   ICrunaRegistry private _registry;
-  mapping(uint256 => address) private _emitters;
 
   // this is supposed to be a small array, ideally with a single element
   mapping(uint256 => ManagerHistory) public managerHistory;
   uint256 public managerHistoryLength;
 
-  bytes4 public constant NAME_HASH = bytes4(keccak256("CrunaManaged"));
+  bytes4 public constant NAME_HASH = bytes4(keccak256("CrunaManagedNFT"));
 
   uint256 public nextTokenId = 1;
   uint256 public maxTokenId;
@@ -94,10 +93,6 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
     return _registry;
   }
 
-  function managerEmitter(uint256 _tokenId) external view virtual override returns (address) {
-    return _emitter(_tokenId);
-  }
-
   // Must be overridden to specify who can manage changes in the contract states
   // It should revert it the caller is not allowed to manage
   // @param isInitializing True if the contract is being initialized, false otherwise
@@ -126,7 +121,7 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
     managerHistoryLength = 1;
   }
 
-  function _emitter(uint256 _tokenId) internal view virtual returns (address) {
+  function defaultManagerImplementation(uint256 _tokenId) public view virtual override returns (address) {
     if (managerHistoryLength == 1) return managerHistory[0].managerAddress;
     else {
       for (uint256 i = 0; i < managerHistoryLength; i++) {
@@ -232,7 +227,9 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
     for (uint256 i = 0; i < amount; i++) {
       if (maxTokenId > 0 && tokenId > maxTokenId) revert MaxSupplyReached();
       if (alsoInit) {
-        try _registry.createBoundContract(_emitter(tokenId), 0x00, block.chainid, address(this), tokenId) {} catch {
+        try
+          _registry.createBoundContract(defaultManagerImplementation(tokenId), 0x00, block.chainid, address(this), tokenId)
+        {} catch {
           revert ErrorCreatingManager();
         }
       }
@@ -244,7 +241,9 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
   function activate(uint256 tokenId) external virtual {
     if (_msgSender() != ownerOf(tokenId)) revert NotTheTokenOwner();
     if (address(_registry) == address(0)) revert RegistryNotFound();
-    try _registry.createBoundContract(_emitter(tokenId), 0x00, block.chainid, address(this), tokenId) {} catch {
+    try
+      _registry.createBoundContract(defaultManagerImplementation(tokenId), 0x00, block.chainid, address(this), tokenId)
+    {} catch {
       revert ErrorCreatingManager();
     }
   }
@@ -252,7 +251,7 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
   // @dev This function will return the address of the manager for tokenId.
   // @param tokenId The id of the token.
   function managerOf(uint256 tokenId) public view virtual returns (address) {
-    return _registry.boundContract(_emitter(tokenId), 0x00, block.chainid, address(this), tokenId);
+    return _registry.boundContract(defaultManagerImplementation(tokenId), 0x00, block.chainid, address(this), tokenId);
   }
 
   function isActive(uint256 tokenId) public view virtual returns (bool) {

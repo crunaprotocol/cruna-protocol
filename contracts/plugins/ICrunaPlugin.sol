@@ -2,10 +2,9 @@
 pragma solidity ^0.8.9;
 
 import {IBoundContractExtended} from "../utils/IBoundContractExtended.sol";
-import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
-import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
-
+import {IReference} from "../token/IReference.sol";
 import {IVault} from "../token/IVault.sol";
+import {INamed} from "../utils/INamed.sol";
 
 /**
  @title ICrunaPlugin.sol
@@ -13,7 +12,7 @@ import {IVault} from "../token/IVault.sol";
    Technically, plugins are secondary managers, pluggable in
    the primary manage, which is CrunaManager.sol.sol
 */
-interface ICrunaPlugin is IBoundContractExtended {
+interface ICrunaPlugin is IBoundContractExtended, INamed, IReference {
   // this is also used in the CrunaManager
   struct CrunaPlugin {
     address proxyAddress;
@@ -33,19 +32,15 @@ interface ICrunaPlugin is IBoundContractExtended {
   // Reset the plugin to the factory settings
   function reset() external;
 
-  function nameId() external view returns (bytes4);
-
-  function guardian() external view returns (ICrunaGuardian);
-
-  function emitter() external view returns (address);
-
-  function vault() external view returns (IVault);
-
   // @dev Upgrade the implementation of the manager/plugin
   //   Notice that the owner can upgrade active or disable plugins
   //   so that, if a plugin is compromised, the user can disable it,
   //   wait for a new trusted implementation and upgrade it.
   function upgrade(address implementation_) external;
 
-  function getImplementation() external view returns (address);
+  //  function getImplementation() external view returns (address);
+
+  function vault() external view returns (IVault);
+
+  function emitter() external view returns (address);
 }

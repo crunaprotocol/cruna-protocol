@@ -8,14 +8,14 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {Actor} from "./Actor.sol";
-import {IPluginExt, ICrunaManager} from "./ICrunaManager.sol";
+import {ICrunaPlugin} from "../plugins/ICrunaPlugin.sol";
 import {CrunaManagerBase} from "./CrunaManagerBase.sol";
 import {ICrunaManagerEmitter} from "./ICrunaManagerEmitter.sol";
 import {IControlled} from "../utils/IControlled.sol";
 
 //import {console} from "hardhat/console.sol";
 
-contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManagerBase, ReentrancyGuard {
+contract CrunaManager is ICrunaManagerEmitter, Actor, CrunaManagerBase, ReentrancyGuard {
   using ECDSA for bytes32;
   using Strings for uint256;
 
@@ -90,7 +90,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
       true,
       _msgSender()
     );
-    ICrunaManagerEmitter(emitter(tokenId())).emitProtectorChangeEvent(tokenId(), protector_, status);
+    ICrunaManagerEmitter(emitter()).emitProtectorChangeEvent(tokenId(), protector_, status);
     _emitLockeEvent(status);
   }
 
@@ -120,7 +120,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
       false,
       _msgSender()
     );
-    ICrunaManagerEmitter(emitter(tokenId())).emitSafeRecipientChangeEvent(tokenId(), recipient, status);
+    ICrunaManagerEmitter(emitter()).emitSafeRecipientChangeEvent(tokenId(), recipient, status);
   }
 
   // @dev see {ICrunaManager.sol-isSafeRecipient}
@@ -239,7 +239,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
       false
     );
     address _pluginAddress = registry().createBoundContract(pluginProxy, 0x00, block.chainid, address(this), tokenId());
-    IPluginExt _plugin = IPluginExt(_pluginAddress);
+    ICrunaPlugin _plugin = ICrunaPlugin(_pluginAddress);
     if (IControlled(pluginProxy).controller() != tokenAddress() || _plugin.nameId() != _nameId) revert InvalidImplementation();
     allPlugins.push(PluginStatus(name, true));
     pluginsById[_nameId] = CrunaPlugin(pluginProxy, canManageTransfer, _plugin.requiresResetOnTransfer(), true);
@@ -256,7 +256,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
     // It should never happen, but if it happens, we are
     // notified by the EmitEventFailed event, instead of reverting
     // the entire transaction.
-    ICrunaManagerEmitter(emitter(tokenId())).emitPluginStatusChangeEvent(tokenId(), name, pluginAddress_, status);
+    ICrunaManagerEmitter(emitter()).emitPluginStatusChangeEvent(tokenId(), name, pluginAddress_, status);
   }
 
   // @dev Id removing the authorization, it blocks a plugin for a maximum of 30 days from transferring
@@ -272,7 +272,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
     if (validFor > 999999) revert InvalidValidity();
     bytes4 _nameId = _stringToBytes4(name);
     if (pluginsById[_nameId].proxyAddress == address(0)) revert PluginNotFound();
-    IPluginExt _plugin = plugin(_nameId);
+    ICrunaPlugin _plugin = plugin(_nameId);
     if (!_plugin.requiresToManageTransfer()) revert NotATransferPlugin();
     _validateAndCheckSignature(
       this.authorizePluginToTransfer.selector,
@@ -293,7 +293,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
       timeLocks[_nameId] = block.timestamp + timeLock;
     }
     pluginsById[_nameId].canManageTransfer = authorized;
-    ICrunaManagerEmitter(emitter(tokenId())).emitPluginAuthorizationChangeEvent(
+    ICrunaManagerEmitter(emitter()).emitPluginAuthorizationChangeEvent(
       tokenId(),
       name,
       pluginAddress(_nameId),
@@ -324,8 +324,8 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
     return registry().boundContract(pluginsById[_nameId].proxyAddress, 0x00, block.chainid, address(this), tokenId());
   }
 
-  function plugin(bytes4 _nameId) public view virtual override returns (IPluginExt) {
-    return IPluginExt(pluginAddress(_nameId));
+  function plugin(bytes4 _nameId) public view virtual override returns (ICrunaPlugin) {
+    return ICrunaPlugin(pluginAddress(_nameId));
   }
 
   function countPlugins() public view virtual override returns (uint256, uint256) {
@@ -432,7 +432,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
   }
 
   function _resetPlugin(bytes4 _nameId) internal virtual {
-    IPluginExt _plugin = plugin(_nameId);
+    ICrunaPlugin _plugin = plugin(_nameId);
     _plugin.reset();
   }
 
@@ -476,7 +476,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
         if (pluginsById[_nameId].canBeReset) _resetPlugin(_nameId);
       }
     }
-    ICrunaManagerEmitter(emitter(tokenId())).emitResetEvent(tokenId());
+    ICrunaManagerEmitter(emitter()).emitResetEvent(tokenId());
   }
 
   function protectedTransfer(

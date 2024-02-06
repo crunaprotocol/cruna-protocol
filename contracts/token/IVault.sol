@@ -8,6 +8,7 @@ import {IReference} from "./IReference.sol";
 //import {console} from "hardhat/console.sol";
 
 interface IVault is IReference {
+  function vault() external view returns (IVault);
   function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external;
   function managerOf(uint256 tokenId) external view returns (address);
   function managerEmitter(uint256 _tokenId) external view returns (address);

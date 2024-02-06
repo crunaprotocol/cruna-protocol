@@ -245,24 +245,23 @@ File                                 |  % Stmts | % Branch |  % Funcs |  % Lines
  interfaces/                         |      100 |      100 |      100 |      100 
   IERC6454.sol                       |      100 |      100 |      100 |      100 
   IERC6982.sol                       |      100 |      100 |      100 |      100 
- manager/                            |    97.79 |    66.87 |    96.97 |     98.5 
+ manager/                            |    97.25 |    67.26 |    95.38 |    98.02 
   Actor.sol                          |      100 |       70 |      100 |      100 
-  CrunaManager.sol                   |    98.46 |    67.65 |    97.44 |    98.61 
-  CrunaManagerBase.sol               |    93.94 |       60 |    94.44 |    97.22 
+  CrunaManager.sol                   |    97.69 |    67.65 |    94.87 |    97.92 
+  CrunaManagerBase.sol               |    94.12 |    63.64 |    94.12 |    97.37 
   CrunaManagerProxy.sol              |      100 |      100 |      100 |      100 
   ICrunaManager.sol                  |      100 |      100 |      100 |      100 
-  ICrunaManagerBase.sol              |      100 |      100 |      100 |      100 
   ICrunaManagerEmitter.sol           |      100 |      100 |      100 |      100 
- plugins/                            |    96.43 |       75 |      100 |      100 
-  CrunaPluginBase.sol                |    96.43 |       75 |      100 |      100 
+ plugins/                            |    96.67 |    77.78 |      100 |      100 
+  CrunaPluginBase.sol                |    96.67 |    77.78 |      100 |      100 
   ICrunaPlugin.sol                   |      100 |      100 |      100 |      100 
  plugins/inheritance/                |      100 |     68.6 |     96.3 |    97.83 
   IInheritanceCrunaPlugin.sol        |      100 |      100 |      100 |      100 
   IInheritanceCrunaPluginEmitter.sol |      100 |      100 |      100 |      100 
   InheritanceCrunaPlugin.sol         |      100 |     68.6 |    96.15 |    97.83 
   InheritanceCrunaPluginProxy.sol    |      100 |      100 |      100 |      100 
- token/                              |    98.33 |    66.13 |      100 |    95.71 
-  CrunaManagedNFTBase.sol            |    98.18 |    64.81 |      100 |    95.45 
+ token/                              |    98.31 |    66.13 |      100 |    95.65 
+  CrunaManagedNFTBase.sol            |    98.15 |    64.81 |      100 |    95.38 
   CrunaManagedNFTOwnable.sol         |      100 |       50 |      100 |      100 
   CrunaManagedNFTTimeControlled.sol  |      100 |    83.33 |      100 |      100 
   ICrunaManagedNFT.sol               |      100 |      100 |      100 |      100 
@@ -279,11 +278,12 @@ File                                 |  % Stmts | % Branch |  % Funcs |  % Lines
   ICrunaGuardian.sol                 |      100 |      100 |      100 |      100 
   ICrunaRegistry.sol                 |      100 |      100 |      100 |      100 
   INamed.sol                         |      100 |      100 |      100 |      100 
+  INamedAndVersioned.sol             |      100 |      100 |      100 |      100 
   IVersioned.sol                     |      100 |      100 |      100 |      100 
   SignatureValidator.sol             |      100 |       75 |      100 |      100 
   WithDeployer.sol                   |      100 |      100 |      100 |      100 
 -------------------------------------|----------|----------|----------|----------
-All files                            |    98.09 |    66.67 |    98.04 |    97.47 
+All files                            |    97.83 |    67.03 |    97.35 |    97.27 
 -------------------------------------|----------|----------|----------|----------
 ```
 

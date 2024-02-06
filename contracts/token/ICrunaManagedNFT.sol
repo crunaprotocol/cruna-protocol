@@ -26,6 +26,8 @@ interface ICrunaManagedNFT {
   // @param managerProxy_ The address of the manager proxy.
   function init(address registry_, address guardian_, address managerProxy_) external;
 
+  function defaultManagerImplementation(uint256 _tokenId) external view returns (address);
+
   function upgradeDefaultManager(address payable newManagerProxy) external;
 
   function activate(uint256 tokenId) external;
@@ -35,7 +37,4 @@ interface ICrunaManagedNFT {
   function managerOf(uint256 tokenId) external view returns (address);
 
   function isActive(uint256 tokenId) external view returns (bool);
-
-  // manager Emitter
-  function managerEmitter(uint256 _tokenId) external view returns (address);
 }

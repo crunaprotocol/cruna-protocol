@@ -77,8 +77,16 @@ abstract contract CrunaPluginBase is Context, IBoundContract, IVersioned, ICruna
     return manager.vault();
   }
 
+  function registry() public view virtual override returns (ICrunaRegistry) {
+    return manager.registry();
+  }
+
   function emitter() public view virtual override returns (address) {
-    return manager.pluginEmitter(nameId());
+    address _emitter = StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value;
+    if (_emitter == address(0)) {
+      _emitter = ERC6551AccountLib.implementation();
+    }
+    return _emitter;
   }
 
   function token() public view virtual override returns (uint256, address, uint256) {
@@ -118,9 +126,9 @@ abstract contract CrunaPluginBase is Context, IBoundContract, IVersioned, ICruna
     manager.updateEmitterForPlugin(nameId(), implementation_);
   }
 
-  function getImplementation() external view override returns (address) {
-    return StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value;
-  }
+  //  function getImplementation() external view override returns (address) {
+  //    return StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value;
+  //  }
 
   // @dev This empty reserved space is put in place to allow future versions to add new
   // variables without shifting down storage in the inheritance chain.

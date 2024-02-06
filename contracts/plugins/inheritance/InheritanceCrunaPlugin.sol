@@ -10,6 +10,7 @@ import {CrunaManager} from "../../manager/CrunaManager.sol";
 import {IInheritanceCrunaPlugin} from "./IInheritanceCrunaPlugin.sol";
 import {IInheritanceCrunaPluginEmitter} from "./IInheritanceCrunaPluginEmitter.sol";
 import {ICrunaPlugin, CrunaPluginBase} from "../CrunaPluginBase.sol";
+import {INamed} from "../../utils/INamed.sol";
 import {Actor} from "../../manager/Actor.sol";
 import {SignatureValidator} from "../../utils/SignatureValidator.sol";
 
@@ -66,7 +67,7 @@ contract InheritanceCrunaPlugin is
     return true;
   }
 
-  function nameId() public pure virtual override(ICrunaPlugin, CrunaPluginBase) returns (bytes4) {
+  function nameId() public pure virtual override(INamed, CrunaPluginBase) returns (bytes4) {
     return bytes4(keccak256("InheritanceCrunaPlugin"));
   }
 
