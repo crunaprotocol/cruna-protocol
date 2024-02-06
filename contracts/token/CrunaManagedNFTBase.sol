@@ -208,7 +208,7 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
   // lock status.
   // This function MUST revert if the token does not exist.
   function locked(uint256 tokenId) external view virtual override returns (bool) {
-    return ICrunaManager(managerOf(tokenId)).hasProtectors();
+    return ICrunaManager(managerOf(tokenId)).locked();
   }
 
   // When a protector is set and the token becomes locked, this event must be emit

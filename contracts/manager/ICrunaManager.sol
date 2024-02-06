@@ -73,6 +73,8 @@ interface ICrunaManager is IBoundContractExtended, INamed, IReference {
 
   function isTransferable(address to) external view returns (bool);
 
+  function locked() external view returns (bool);
+
   // simulate ERC-721
 
   // @dev Return the protectors
