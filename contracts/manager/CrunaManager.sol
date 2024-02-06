@@ -71,8 +71,8 @@ contract CrunaManager is ICrunaManagerEmitter, Actor, CrunaManagerBase, Reentran
     return actorCount(PROTECTOR) > 0;
   }
 
-  function isTransferable() external view override returns (bool) {
-    return countActiveProtectors() == 0;
+  function isTransferable(address to) external view override returns (bool) {
+    return countActiveProtectors() == 0 || isSafeRecipient(to);
   }
 
   // @dev see {ICrunaManager.sol-setProtector}

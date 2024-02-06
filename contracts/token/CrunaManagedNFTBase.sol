@@ -192,7 +192,7 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
     else if (from == address(0)) return true;
     else {
       _requireOwned(tokenId);
-      return manager.isTransferable() || _approvedTransfers[tokenId] || manager.isSafeRecipient(to);
+      return manager.isTransferable(to) || _approvedTransfers[tokenId];
     }
   }
 

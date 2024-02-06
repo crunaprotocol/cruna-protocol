@@ -245,9 +245,9 @@ File                                 |  % Stmts | % Branch |  % Funcs |  % Lines
  interfaces/                         |      100 |      100 |      100 |      100 
   IERC6454.sol                       |      100 |      100 |      100 |      100 
   IERC6982.sol                       |      100 |      100 |      100 |      100 
- manager/                            |    97.27 |    67.26 |    95.45 |    98.03 
+ manager/                            |    97.27 |    67.65 |    95.45 |    98.03 
   Actor.sol                          |      100 |       70 |      100 |      100 
-  CrunaManager.sol                   |    97.71 |    67.65 |       95 |    97.93 
+  CrunaManager.sol                   |    97.71 |    68.12 |       95 |    97.93 
   CrunaManagerBase.sol               |    94.12 |    63.64 |    94.12 |    97.37 
   CrunaManagerProxy.sol              |      100 |      100 |      100 |      100 
   ICrunaManager.sol                  |      100 |      100 |      100 |      100 
@@ -260,8 +260,8 @@ File                                 |  % Stmts | % Branch |  % Funcs |  % Lines
   IInheritanceCrunaPluginEmitter.sol |      100 |      100 |      100 |      100 
   InheritanceCrunaPlugin.sol         |      100 |     68.6 |    96.15 |    97.83 
   InheritanceCrunaPluginProxy.sol    |      100 |      100 |      100 |      100 
- token/                              |    98.31 |    66.13 |      100 |    95.65 
-  CrunaManagedNFTBase.sol            |    98.15 |    64.81 |      100 |    95.38 
+ token/                              |    98.31 |    66.67 |      100 |    95.65 
+  CrunaManagedNFTBase.sol            |    98.15 |    65.38 |      100 |    95.38 
   CrunaManagedNFTOwnable.sol         |      100 |       50 |      100 |      100 
   CrunaManagedNFTTimeControlled.sol  |      100 |    83.33 |      100 |      100 
   ICrunaManagedNFT.sol               |      100 |      100 |      100 |      100 
@@ -283,7 +283,7 @@ File                                 |  % Stmts | % Branch |  % Funcs |  % Lines
   SignatureValidator.sol             |      100 |       75 |      100 |      100 
   WithDeployer.sol                   |      100 |      100 |      100 |      100 
 -------------------------------------|----------|----------|----------|----------
-All files                            |    97.84 |    67.03 |    97.37 |    97.27 
+All files                            |    97.84 |     67.3 |    97.37 |    97.27 
 -------------------------------------|----------|----------|----------|----------
 ```
 
