@@ -11,14 +11,16 @@ import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 import {IBoundContract} from "../utils/IBoundContract.sol";
 import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
 import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
+import {INamed} from "../utils/INamed.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
-import {INamedAndVersioned} from "../utils/INamedAndVersioned.sol";
 import {ICrunaManagerBase, IVault} from "./ICrunaManagerBase.sol";
 import {WithDeployer} from "../utils/WithDeployer.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {IControlled} from "../utils/IControlled.sol";
 
 //import {console} from "hardhat/console.sol";
+
+interface INamedAndVersioned is INamed, IVersioned {}
 
 /**
   @title CrunaManagerBase.sol

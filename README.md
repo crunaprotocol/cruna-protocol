@@ -279,7 +279,6 @@ File                                 |  % Stmts | % Branch |  % Funcs |  % Lines
   ICrunaGuardian.sol                 |      100 |      100 |      100 |      100 
   ICrunaRegistry.sol                 |      100 |      100 |      100 |      100 
   INamed.sol                         |      100 |      100 |      100 |      100 
-  INamedAndVersioned.sol             |      100 |      100 |      100 |      100 
   IVersioned.sol                     |      100 |      100 |      100 |      100 
   SignatureValidator.sol             |      100 |       75 |      100 |      100 
   WithDeployer.sol                   |      100 |      100 |      100 |      100 
