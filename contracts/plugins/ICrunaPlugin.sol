@@ -10,7 +10,7 @@ import {INamed} from "../utils/INamed.sol";
  @title ICrunaPlugin.sol
  @dev Interface for plugins
    Technically, plugins are secondary managers, pluggable in
-   the primary manage, which is CrunaManager.sol.sol
+   the primary manage, which is CrunaManager.sol
 */
 interface ICrunaPlugin is IBoundContractExtended, INamed, IReference {
   // this is also used in the CrunaManager

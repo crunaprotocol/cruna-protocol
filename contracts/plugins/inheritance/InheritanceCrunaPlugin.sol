@@ -54,7 +54,7 @@ contract InheritanceCrunaPlugin is
     _;
   }
 
-  // @dev see {IInheritanceCrunaPlugin.sol.sol-init}
+  // @dev see {IInheritanceCrunaPlugin.sol-init}
   // this must be executed immediately after the deployment
   function init() external virtual override {
     // Notice that the manager pretends to be an NFT
@@ -72,7 +72,7 @@ contract InheritanceCrunaPlugin is
   }
 
   // sentinels and beneficiaries
-  // @dev see {IInheritanceCrunaPlugin.sol.sol-setSentinel}
+  // @dev see {IInheritanceCrunaPlugin.sol-setSentinel}
   function setSentinel(
     address sentinel,
     bool status,
@@ -102,14 +102,14 @@ contract InheritanceCrunaPlugin is
     IInheritanceCrunaPluginEmitter(emitter()).emitSentinelUpdatedEvent(tokenId(), _msgSender(), sentinel, status);
   }
 
-  // @dev see {IInheritanceCrunaPlugin.sol.sol-setSentinels}
+  // @dev see {IInheritanceCrunaPlugin.sol-setSentinels}
   function setSentinels(address[] memory sentinels, bytes calldata emptySignature) external virtual override onlyTokenOwner {
     for (uint256 i = 0; i < sentinels.length; i++) {
       setSentinel(sentinels[i], true, 0, 0, emptySignature);
     }
   }
 
-  // @dev see {IInheritanceCrunaPlugin.sol.sol.sol-configureInheritance}
+  // @dev see {IInheritanceCrunaPlugin.sol-configureInheritance}
   // allow when protectors are active
   function configureInheritance(
     uint256 quorum,
@@ -168,7 +168,7 @@ contract InheritanceCrunaPlugin is
     return (getActors(SENTINEL), _inheritanceConf);
   }
 
-  // @dev see {IInheritanceCrunaPlugin.sol.sol-proofOfLife}
+  // @dev see {IInheritanceCrunaPlugin.sol-proofOfLife}
   function proofOfLife() external virtual override onlyTokenOwner {
     if (_inheritanceConf.proofOfLifeDurationInDays == 0) revert InheritanceNotConfigured();
     // solhint-disable-next-line not-rely-on-time
@@ -182,7 +182,7 @@ contract InheritanceCrunaPlugin is
     IInheritanceCrunaPluginEmitter(emitter()).emitProofOfLifeEvent(tokenId(), _msgSender());
   }
 
-  // @dev see {IInheritanceCrunaPlugin.sol.sol.sol-requestTransfer}
+  // @dev see {IInheritanceCrunaPlugin.sol-requestTransfer}
   function requestTransfer(address beneficiary) external virtual override {
     if (beneficiary == address(0)) revert ZeroAddress();
     if (_inheritanceConf.proofOfLifeDurationInDays == 0) revert InheritanceNotConfigured();

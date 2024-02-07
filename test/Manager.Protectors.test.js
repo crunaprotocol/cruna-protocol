@@ -119,7 +119,7 @@ describe("CrunaManager.sol : Protectors", function () {
     await expect(manager.bullish("0x12345678")).revertedWith("");
   });
 
-  it("should support the ICrunaManagedNFT.sol.sol interface", async function () {
+  it("should support the ICrunaManagedNFT.sol interface", async function () {
     const VaultMockSimple = await deployContract("VaultMockSimple", deployer.address);
     await VaultMockSimple.init(crunaRegistry.address, guardian.address, proxy.address);
     let interfaceId = await getInterfaceId("ICrunaManagedNFT");
