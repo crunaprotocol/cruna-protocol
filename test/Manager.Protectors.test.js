@@ -119,7 +119,7 @@ describe("CrunaManager.sol : Protectors", function () {
     await expect(manager.bullish("0x12345678")).revertedWith("");
   });
 
-  it("should support the ICrunaManagedNFT.sol.sol interface", async function () {
+  it("should support the ICrunaManagedNFT.sol interface", async function () {
     const VaultMockSimple = await deployContract("VaultMockSimple", deployer.address);
     await VaultMockSimple.init(crunaRegistry.address, guardian.address, proxy.address);
     let interfaceId = await getInterfaceId("ICrunaManagedNFT");
@@ -147,16 +147,6 @@ describe("CrunaManager.sol : Protectors", function () {
     expect(await vault.isTransferable(tokenId, bob.address, addr0)).to.be.false;
     expect(await vault.isTransferable(tokenId, bob.address, bob.address)).to.be.false;
     expect(await vault.isTransferable(tokenId, bob.address, fred.address)).to.be.true;
-  });
-
-  it("should verify that scope is correctly formed", async function () {
-    const tokenId = await buyAVault(bob);
-    const managerAddress = await vault.managerOf(tokenId);
-    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
-    const nameId = bytes4(keccak256("CrunaManager"));
-    const role = bytes4(keccak256("PROTECTOR"));
-    const scope = combineBytes4ToBytes32(nameId, role).toString();
-    expect(await manager.combineBytes4(nameId, role)).equal(scope);
   });
 
   it("should add the first protector and remove it", async function () {

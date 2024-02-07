@@ -8,25 +8,18 @@ import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
+import {CrunaManager} from "../manager/CrunaManager.sol";
 import {IBoundContract} from "../utils/IBoundContract.sol";
 import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
 import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
-import {INamed} from "../utils/INamed.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
-import {ICrunaManager, IVault} from "./ICrunaManager.sol";
+import {ICrunaPlugin, IVault} from "./ICrunaPlugin.sol";
 import {WithDeployer} from "../utils/WithDeployer.sol";
-import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {IControlled} from "../utils/IControlled.sol";
 
 //import {console} from "hardhat/console.sol";
 
-interface INamedAndVersioned is INamed, IVersioned {}
-
-/**
-  @title CrunaManagerBase.sol
-  @dev Base contract for managers and plugins
-*/
-abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, IControlled, ICrunaManager, SignatureValidator {
+abstract contract CrunaPluginBase is Context, IBoundContract, IVersioned, ICrunaPlugin, IControlled {
   error NotTheTokenOwner();
   error UntrustedImplementation();
   error InvalidVersion();
@@ -34,7 +27,6 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICont
   error ControllerAlreadySet();
   error NotTheDeployer();
   error Forbidden();
-  error NotAManager();
 
   /**
    * @dev Storage slot with the address of the current implementation.
@@ -43,31 +35,27 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICont
    */
   bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
+  address private _deployer;
   mapping(bytes32 => bool) public usedSignatures;
+  CrunaManager public manager;
 
   // the controller is the vault inside the manager proxy (i.e., the event emitter),
   // not inside the manager of the single tokenId
   IVault internal _controller;
-
-  address private _deployer;
 
   modifier onlyTokenOwner() {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     _;
   }
 
-  // used by the emitter only
-  modifier onlyManagerOf(uint256 tokenId_) virtual {
-    if (_controller.managerOf(tokenId_) != _msgSender()) revert Forbidden();
-    _;
+  constructor() {
+    //    currentVersion = version();
   }
 
   function controller() public view virtual override returns (address) {
     return address(_controller);
   }
 
-  // It must be called after deploying the proxy contract implementing this contract
-  // and cannot be called again.
   function setController(address controller_) external override {
     WithDeployer proxy = WithDeployer(address(this));
     if (proxy.deployer() != _msgSender()) revert NotTheDeployer();
@@ -79,12 +67,18 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICont
     return 1e6;
   }
 
+  function nameId() public view virtual override returns (bytes4);
+
   function guardian() public view virtual override returns (ICrunaGuardian) {
-    return vault().guardian();
+    return manager.guardian();
+  }
+
+  function vault() public view virtual override returns (IVault) {
+    return manager.vault();
   }
 
   function registry() public view virtual override returns (ICrunaRegistry) {
-    return vault().registry();
+    return manager.registry();
   }
 
   function emitter() public view virtual override returns (address) {
@@ -93,14 +87,6 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICont
       _emitter = ERC6551AccountLib.implementation();
     }
     return _emitter;
-  }
-
-  function vault() public view virtual override returns (IVault) {
-    return IVault(tokenAddress());
-  }
-
-  function nameId() public view virtual override returns (bytes4) {
-    return _stringToBytes4("CrunaManager");
   }
 
   function token() public view virtual override returns (uint256, address, uint256) {
@@ -113,10 +99,6 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICont
     return IERC721(tokenContract_).ownerOf(tokenId_);
   }
 
-  function ownerOf(uint256) external view virtual override returns (address) {
-    return owner();
-  }
-
   function tokenAddress() public view virtual override returns (address) {
     (, address tokenContract_, ) = token();
     return tokenContract_;
@@ -127,10 +109,6 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICont
     return tokenId_;
   }
 
-  function _stringToBytes4(string memory str) internal pure returns (bytes4) {
-    return bytes4(keccak256(abi.encodePacked(str)));
-  }
-
   // @dev Upgrade the implementation of the manager/plugin
   //   Notice that the owner can upgrade active or disable plugins
   //   so that, if a plugin is compromised, the user can disable it,
@@ -139,13 +117,13 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICont
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     uint256 requires = guardian().trustedImplementation(nameId(), implementation_);
     if (requires == 0) revert UntrustedImplementation();
-    INamedAndVersioned impl = INamedAndVersioned(implementation_);
+    CrunaManager impl = CrunaManager(implementation_);
     uint256 _version = impl.version();
     if (_version <= version()) revert InvalidVersion();
-    if (impl.nameId() != _stringToBytes4("CrunaManager")) revert NotAManager();
-    INamedAndVersioned manager = INamedAndVersioned(vault().managerOf(tokenId()));
-    if (manager.version() < requires) revert PluginRequiresUpdatedManager(requires);
+    CrunaManager _manager = CrunaManager(vault().managerOf(tokenId()));
+    if (_manager.version() < requires) revert PluginRequiresUpdatedManager(requires);
     StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
+    manager.updateEmitterForPlugin(nameId(), implementation_);
   }
 
   //  function getImplementation() external view override returns (address) {

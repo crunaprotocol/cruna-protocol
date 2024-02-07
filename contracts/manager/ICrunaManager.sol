@@ -5,12 +5,14 @@ pragma solidity ^0.8.20;
 
 import {ICrunaPlugin} from "../plugins/ICrunaPlugin.sol";
 
-interface IPluginExt is ICrunaPlugin {
-  function nameId() external returns (bytes4);
-}
+import {INamed} from "../utils/INamed.sol";
+import {IBoundContractExtended} from "../utils/IBoundContractExtended.sol";
+import {IReference} from "../token/IReference.sol";
+import {IVault} from "../token/IVault.sol";
 
-// erc165 interfaceId 0x8dca4bea
-interface ICrunaManager {
+//import {console} from "hardhat/console.sol";
+
+interface ICrunaManager is IBoundContractExtended, INamed, IReference {
   event EmitEventFailed(uint256 tokenId, EventAction action);
 
   enum EventAction {
@@ -32,6 +34,17 @@ interface ICrunaManager {
     // redundant to optimize gas usage
     bool active;
   }
+
+  function upgrade(address implementation_) external;
+
+  //  function getImplementation() external view returns (address);
+
+  // simulate ERC-721 to allow plugins to be deployed via ERC-6551 Registry
+  function ownerOf(uint256) external view returns (address);
+
+  function emitter() external view returns (address);
+
+  function vault() external view returns (IVault);
 
   function plug(
     string memory name,
@@ -58,9 +71,11 @@ interface ICrunaManager {
     bytes calldata signature
   ) external;
 
-  // simulate ERC-721
+  function isTransferable(address to) external view returns (bool);
 
-  function ownerOf(uint256) external view returns (address);
+  function locked() external view returns (bool);
+
+  // simulate ERC-721
 
   // @dev Return the protectors
   // @return The addresses of active protectors set for the tokensOwner
@@ -135,6 +150,8 @@ interface ICrunaManager {
     bytes calldata signature
   ) external;
 
+  function updateEmitterForPlugin(bytes4 pluginNameId, address newEmitter) external;
+
   function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external;
 
   // @dev blocks a plugin for a maximum of 30 days from transferring the NFT
@@ -150,7 +167,7 @@ interface ICrunaManager {
 
   function pluginAddress(bytes4 _nameId) external view returns (address);
 
-  function plugin(bytes4 _nameId) external view returns (IPluginExt);
+  function plugin(bytes4 _nameId) external view returns (ICrunaPlugin);
 
   function countPlugins() external view returns (uint256, uint256);
 

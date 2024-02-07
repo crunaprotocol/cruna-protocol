@@ -8,15 +8,14 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {Actor} from "./Actor.sol";
-import {IPluginExt, ICrunaManager} from "./ICrunaManager.sol";
+import {ICrunaPlugin} from "../plugins/ICrunaPlugin.sol";
 import {CrunaManagerBase} from "./CrunaManagerBase.sol";
 import {ICrunaManagerEmitter} from "./ICrunaManagerEmitter.sol";
-import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {IControlled} from "../utils/IControlled.sol";
 
 //import {console} from "hardhat/console.sol";
 
-contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManagerBase, ReentrancyGuard, SignatureValidator {
+contract CrunaManager is ICrunaManagerEmitter, Actor, CrunaManagerBase, ReentrancyGuard {
   using ECDSA for bytes32;
   using Strings for uint256;
 
@@ -40,32 +39,12 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
   error InvalidTimeLock();
   error InvalidValidity();
 
-  mapping(bytes32 => bool) public usedSignatures;
   bytes4 public constant PROTECTOR = bytes4(keccak256("PROTECTOR"));
   bytes4 public constant SAFE_RECIPIENT = bytes4(keccak256("SAFE_RECIPIENT"));
 
   mapping(bytes4 => CrunaPlugin) public pluginsById;
   PluginStatus[] public allPlugins;
   mapping(bytes4 => uint256) public timeLocks;
-
-  // used by the emitter only
-  modifier onlyManagerOf(uint256 tokenId_) virtual {
-    if (_controller.managerOf(tokenId_) != _msgSender()) revert Forbidden();
-    _;
-  }
-
-  function nameId() public virtual override returns (bytes4) {
-    return _getNameId("CrunaManager");
-  }
-
-  function _getNameId(string memory name) internal pure virtual returns (bytes4) {
-    return bytes4(keccak256(abi.encodePacked(name)));
-  }
-
-  // simulate ERC-721 to allow plugins to be deployed via ERC-6551 Registry
-  function ownerOf(uint256) external view virtual override returns (address) {
-    return owner();
-  }
 
   // @dev Counts the protectors.
   function countActiveProtectors() public view virtual override returns (uint256) {
@@ -90,6 +69,14 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
 
   function hasProtectors() public view virtual override returns (bool) {
     return actorCount(PROTECTOR) > 0;
+  }
+
+  function isTransferable(address to) external view override returns (bool) {
+    return !hasProtectors() || isSafeRecipient(to);
+  }
+
+  function locked() external view override returns (bool) {
+    return hasProtectors();
   }
 
   // @dev see {ICrunaManager.sol-setProtector}
@@ -260,7 +247,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
       false
     );
     address _pluginAddress = registry().createBoundContract(pluginProxy, 0x00, block.chainid, address(this), tokenId());
-    IPluginExt _plugin = IPluginExt(_pluginAddress);
+    ICrunaPlugin _plugin = ICrunaPlugin(_pluginAddress);
     if (IControlled(pluginProxy).controller() != tokenAddress() || _plugin.nameId() != _nameId) revert InvalidImplementation();
     allPlugins.push(PluginStatus(name, true));
     pluginsById[_nameId] = CrunaPlugin(pluginProxy, canManageTransfer, _plugin.requiresResetOnTransfer(), true);
@@ -293,7 +280,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
     if (validFor > 999999) revert InvalidValidity();
     bytes4 _nameId = _stringToBytes4(name);
     if (pluginsById[_nameId].proxyAddress == address(0)) revert PluginNotFound();
-    IPluginExt _plugin = plugin(_nameId);
+    ICrunaPlugin _plugin = plugin(_nameId);
     if (!_plugin.requiresToManageTransfer()) revert NotATransferPlugin();
     _validateAndCheckSignature(
       this.authorizePluginToTransfer.selector,
@@ -345,8 +332,8 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
     return registry().boundContract(pluginsById[_nameId].proxyAddress, 0x00, block.chainid, address(this), tokenId());
   }
 
-  function plugin(bytes4 _nameId) public view virtual override returns (IPluginExt) {
-    return IPluginExt(pluginAddress(_nameId));
+  function plugin(bytes4 _nameId) public view virtual override returns (ICrunaPlugin) {
+    return ICrunaPlugin(pluginAddress(_nameId));
   }
 
   function countPlugins() public view virtual override returns (uint256, uint256) {
@@ -453,7 +440,7 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
   }
 
   function _resetPlugin(bytes4 _nameId) internal virtual {
-    IPluginExt _plugin = plugin(_nameId);
+    ICrunaPlugin _plugin = plugin(_nameId);
     _plugin.reset();
   }
 
@@ -462,6 +449,11 @@ contract CrunaManager is ICrunaManager, ICrunaManagerEmitter, Actor, CrunaManage
       delete timeLocks[_nameId];
       pluginsById[_nameId].canManageTransfer = true;
     }
+  }
+
+  function updateEmitterForPlugin(bytes4 pluginNameId, address newEmitter) external virtual override {
+    if (pluginsById[pluginNameId].proxyAddress == address(0)) revert PluginNotFound();
+    pluginsById[pluginNameId].proxyAddress = newEmitter;
   }
 
   // @dev See {IProtected721-managedTransfer}.

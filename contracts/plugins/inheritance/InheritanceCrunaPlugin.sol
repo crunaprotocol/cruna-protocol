@@ -9,8 +9,8 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {CrunaManager} from "../../manager/CrunaManager.sol";
 import {IInheritanceCrunaPlugin} from "./IInheritanceCrunaPlugin.sol";
 import {IInheritanceCrunaPluginEmitter} from "./IInheritanceCrunaPluginEmitter.sol";
-import {ICrunaPlugin} from "../ICrunaPlugin.sol";
-import {IVault, CrunaManagerBase, ICrunaGuardian, ICrunaRegistry} from "../../manager/CrunaManagerBase.sol";
+import {ICrunaPlugin, CrunaPluginBase} from "../CrunaPluginBase.sol";
+import {INamed} from "../../utils/INamed.sol";
 import {Actor} from "../../manager/Actor.sol";
 import {SignatureValidator} from "../../utils/SignatureValidator.sol";
 
@@ -20,7 +20,7 @@ contract InheritanceCrunaPlugin is
   ICrunaPlugin,
   IInheritanceCrunaPlugin,
   IInheritanceCrunaPluginEmitter,
-  CrunaManagerBase,
+  CrunaPluginBase,
   Actor,
   SignatureValidator
 {
@@ -45,9 +45,7 @@ contract InheritanceCrunaPlugin is
   error SignatureAlreadyUsed();
   error InvalidValidity();
 
-  mapping(bytes32 => bool) public usedSignatures;
   bytes4 public constant SENTINEL = bytes4(keccak256(abi.encodePacked("SENTINEL")));
-  CrunaManager public manager;
   InheritanceConf internal _inheritanceConf;
 
   // used by the emitter only
@@ -56,7 +54,7 @@ contract InheritanceCrunaPlugin is
     _;
   }
 
-  // @dev see {IInheritanceCrunaPlugin.sol.sol-init}
+  // @dev see {IInheritanceCrunaPlugin.sol-init}
   // this must be executed immediately after the deployment
   function init() external virtual override {
     // Notice that the manager pretends to be an NFT
@@ -65,33 +63,16 @@ contract InheritanceCrunaPlugin is
     manager = CrunaManager(_msgSender());
   }
 
-  // for a plugin, the emitter is the manager proxy
-  function emitter() public view virtual override returns (address) {
-    return manager.pluginEmitter(nameId());
-  }
-
-  function guardian() public view virtual override returns (ICrunaGuardian) {
-    return manager.guardian();
-  }
-
-  function registry() public view virtual override returns (ICrunaRegistry) {
-    return manager.registry();
-  }
-
-  function vault() public view virtual override returns (IVault) {
-    return manager.vault();
-  }
-
   function requiresToManageTransfer() external pure override returns (bool) {
     return true;
   }
 
-  function nameId() public pure virtual override returns (bytes4) {
+  function nameId() public pure virtual override(INamed, CrunaPluginBase) returns (bytes4) {
     return bytes4(keccak256("InheritanceCrunaPlugin"));
   }
 
   // sentinels and beneficiaries
-  // @dev see {IInheritanceCrunaPlugin.sol.sol-setSentinel}
+  // @dev see {IInheritanceCrunaPlugin.sol-setSentinel}
   function setSentinel(
     address sentinel,
     bool status,
@@ -121,14 +102,14 @@ contract InheritanceCrunaPlugin is
     IInheritanceCrunaPluginEmitter(emitter()).emitSentinelUpdatedEvent(tokenId(), _msgSender(), sentinel, status);
   }
 
-  // @dev see {IInheritanceCrunaPlugin.sol.sol-setSentinels}
+  // @dev see {IInheritanceCrunaPlugin.sol-setSentinels}
   function setSentinels(address[] memory sentinels, bytes calldata emptySignature) external virtual override onlyTokenOwner {
     for (uint256 i = 0; i < sentinels.length; i++) {
       setSentinel(sentinels[i], true, 0, 0, emptySignature);
     }
   }
 
-  // @dev see {IInheritanceCrunaPlugin.sol.sol.sol-configureInheritance}
+  // @dev see {IInheritanceCrunaPlugin.sol-configureInheritance}
   // allow when protectors are active
   function configureInheritance(
     uint256 quorum,
@@ -187,7 +168,7 @@ contract InheritanceCrunaPlugin is
     return (getActors(SENTINEL), _inheritanceConf);
   }
 
-  // @dev see {IInheritanceCrunaPlugin.sol.sol-proofOfLife}
+  // @dev see {IInheritanceCrunaPlugin.sol-proofOfLife}
   function proofOfLife() external virtual override onlyTokenOwner {
     if (_inheritanceConf.proofOfLifeDurationInDays == 0) revert InheritanceNotConfigured();
     // solhint-disable-next-line not-rely-on-time
@@ -201,7 +182,7 @@ contract InheritanceCrunaPlugin is
     IInheritanceCrunaPluginEmitter(emitter()).emitProofOfLifeEvent(tokenId(), _msgSender());
   }
 
-  // @dev see {IInheritanceCrunaPlugin.sol.sol.sol-requestTransfer}
+  // @dev see {IInheritanceCrunaPlugin.sol-requestTransfer}
   function requestTransfer(address beneficiary) external virtual override {
     if (beneficiary == address(0)) revert ZeroAddress();
     if (_inheritanceConf.proofOfLifeDurationInDays == 0) revert InheritanceNotConfigured();

@@ -6,6 +6,12 @@ interface ICrunaManagedNFT {
   event ManagedTransfer(bytes4 indexed pluginNameId, uint256 indexed tokenId);
   event DefaultManagerUpgrade(address newManagerProxy);
 
+  struct ManagerHistory {
+    address managerAddress;
+    uint256 firstTokenId;
+    uint256 lastTokenId;
+  }
+
   // @dev Allow a plugin to transfer the token
   // @param pluginNameId The hash of the plugin name.
   // @param tokenId The id of the token.
@@ -19,6 +25,8 @@ interface ICrunaManagedNFT {
   // @param guardian_ The address of the CrunaManager.sol guardian.
   // @param managerProxy_ The address of the manager proxy.
   function init(address registry_, address guardian_, address managerProxy_) external;
+
+  function defaultManagerImplementation(uint256 _tokenId) external view returns (address);
 
   function upgradeDefaultManager(address payable newManagerProxy) external;
 
