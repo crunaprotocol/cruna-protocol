@@ -109,10 +109,10 @@ contract VaultFactoryMock is
     return price - discount;
   }
 
-  function buyVaults(address stableCoin, uint256 amount, bool alsoInit) external virtual override whenNotPaused nonReentrant {
+  function buyVaults(address stableCoin, uint256 amount) external virtual override whenNotPaused nonReentrant {
     uint256 payment = finalPrice(stableCoin) * amount;
     if (payment > ERC20(stableCoin).balanceOf(_msgSender())) revert InsufficientFunds();
-    vault.safeMintAndActivate(_msgSender(), alsoInit, amount);
+    vault.safeMintAndActivate(_msgSender(), amount);
     // we manage only trusted stable coins, so no risk of reentrancy
     if (!ERC20(stableCoin).transferFrom(_msgSender(), address(this), payment)) revert TransferFailed();
   }
@@ -120,8 +120,7 @@ contract VaultFactoryMock is
   function buyVaultsBatch(
     address stableCoin,
     address[] memory tos,
-    uint256[] memory amounts,
-    bool alsoInit
+    uint256[] memory amounts
   ) external virtual override whenNotPaused nonReentrant {
     if (tos.length != amounts.length) revert InvalidArguments();
     uint256 amount = 0;
@@ -135,7 +134,7 @@ contract VaultFactoryMock is
     if (payment > ERC20(stableCoin).balanceOf(_msgSender())) revert InsufficientFunds();
     for (uint256 i = 0; i < tos.length; i++) {
       if (amounts[i] > 0) {
-        vault.safeMintAndActivate(tos[i], alsoInit, amounts[i]);
+        vault.safeMintAndActivate(tos[i], amounts[i]);
       }
     }
     // we manage only trusted stable coins, so no risk of reentrancy

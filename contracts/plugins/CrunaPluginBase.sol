@@ -14,12 +14,10 @@ import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
 import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 import {ICrunaPlugin, IVault} from "./ICrunaPlugin.sol";
-import {WithDeployer} from "../utils/WithDeployer.sol";
-import {IControlled} from "../utils/IControlled.sol";
 
 //import {console} from "hardhat/console.sol";
 
-abstract contract CrunaPluginBase is Context, IBoundContract, IVersioned, ICrunaPlugin, IControlled {
+abstract contract CrunaPluginBase is Context, IBoundContract, IVersioned, ICrunaPlugin {
   error NotTheTokenOwner();
   error UntrustedImplementation();
   error InvalidVersion();
@@ -35,7 +33,6 @@ abstract contract CrunaPluginBase is Context, IBoundContract, IVersioned, ICruna
    */
   bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
-  address private _deployer;
   mapping(bytes32 => bool) public usedSignatures;
   CrunaManager public manager;
 
@@ -50,17 +47,6 @@ abstract contract CrunaPluginBase is Context, IBoundContract, IVersioned, ICruna
 
   constructor() {
     //    currentVersion = version();
-  }
-
-  function controller() public view virtual override returns (address) {
-    return address(_controller);
-  }
-
-  function setController(address controller_) external override {
-    WithDeployer proxy = WithDeployer(address(this));
-    if (proxy.deployer() != _msgSender()) revert NotTheDeployer();
-    if (address(_controller) != address(0)) revert ControllerAlreadySet();
-    _controller = IVault(controller_);
   }
 
   function version() public pure virtual override returns (uint256) {

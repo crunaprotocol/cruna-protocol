@@ -30,11 +30,7 @@ interface ICrunaManagedNFT {
 
   function upgradeDefaultManager(address payable newManagerProxy) external;
 
-  function activate(uint256 tokenId) external;
-
   // @dev This function will return the address of the manager for tokenId.
   // @param tokenId The id of the token.
   function managerOf(uint256 tokenId) external view returns (address);
-
-  function isActive(uint256 tokenId) external view returns (bool);
 }

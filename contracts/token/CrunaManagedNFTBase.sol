@@ -221,32 +221,17 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
 
   // @dev This function will mint a new token and initialize it.
   // @param to The address of the recipient.
-  function _mintAndActivate(address to, bool alsoInit, uint256 amount) internal virtual {
-    if (alsoInit && address(_registry) == address(0)) revert RegistryNotFound();
+  function _mintAndActivate(address to, uint256 amount) internal virtual {
+    if (address(_registry) == address(0)) revert RegistryNotFound();
     uint256 tokenId = nextTokenId;
     for (uint256 i = 0; i < amount; i++) {
       if (maxTokenId > 0 && tokenId > maxTokenId) revert MaxSupplyReached();
-      if (alsoInit) {
-        try
-          _registry.createBoundContract(defaultManagerImplementation(tokenId), 0x00, block.chainid, address(this), tokenId)
-        {} catch {
-          revert ErrorCreatingManager();
-        }
-      }
+      _registry.createBoundContract(defaultManagerImplementation(tokenId), 0x00, block.chainid, address(this), tokenId);
       _safeMint(to, tokenId++);
     }
     nextTokenId = tokenId;
   }
 
-  function activate(uint256 tokenId) external virtual {
-    if (_msgSender() != ownerOf(tokenId)) revert NotTheTokenOwner();
-    if (address(_registry) == address(0)) revert RegistryNotFound();
-    try
-      _registry.createBoundContract(defaultManagerImplementation(tokenId), 0x00, block.chainid, address(this), tokenId)
-    {} catch {
-      revert ErrorCreatingManager();
-    }
-  }
 
   // @dev This function will return the address of the manager for tokenId.
   // @param tokenId The id of the token.
@@ -254,14 +239,4 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
     return _registry.boundContract(defaultManagerImplementation(tokenId), 0x00, block.chainid, address(this), tokenId);
   }
 
-  function isActive(uint256 tokenId) public view virtual returns (bool) {
-    _requireOwned(tokenId);
-    address _addr = managerOf(tokenId);
-    uint32 size;
-    // solhint-disable-next-line no-inline-assembly
-    assembly {
-      size := extcodesize(_addr)
-    }
-    return (size > 0);
-  }
 }

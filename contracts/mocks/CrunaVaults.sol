@@ -59,7 +59,7 @@ contract CrunaVaults is CrunaManagedNFTTimeControlled {
 
   // @dev This function will mint a new token
   // @param to The address of the recipient
-  function safeMintAndActivate(address to, bool alsoInit, uint256 amount) public virtual onlyFactory {
-    _mintAndActivate(to, alsoInit, amount);
+  function safeMintAndActivate(address to, uint256 amount) public virtual onlyFactory {
+    _mintAndActivate(to, amount);
   }
 }
