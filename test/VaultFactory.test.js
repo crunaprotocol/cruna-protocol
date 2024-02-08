@@ -406,6 +406,5 @@ describe("VaultFactoryMock", function () {
       const expected = await expectedUsedGasNoActivation(account, amount);
       expect(gasUsed < expected + 10000).to.be.true;
     }
-
   });
 });

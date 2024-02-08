@@ -15,13 +15,7 @@ import {SignatureValidator} from "../../utils/SignatureValidator.sol";
 
 //import {console} from "hardhat/console.sol";
 
-contract InheritanceCrunaPlugin is
-  ICrunaPlugin,
-  IInheritanceCrunaPlugin,
-  CrunaPluginBase,
-  Actor,
-  SignatureValidator
-{
+contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaPluginBase, Actor, SignatureValidator {
   using ECDSA for bytes32;
   using Strings for uint256;
 
@@ -168,14 +162,7 @@ contract InheritanceCrunaPlugin is
       _inheritanceConf.waitForGracePeriod = true;
     }
     delete _inheritanceConf.approvers;
-    emit InheritanceConfigured(
-      tokenId(),
-      _msgSender(),
-      quorum,
-      proofOfLifeDurationInDays,
-      gracePeriod,
-      beneficiary
-    );
+    emit InheritanceConfigured(tokenId(), _msgSender(), quorum, proofOfLifeDurationInDays, gracePeriod, beneficiary);
   }
 
   // @dev see {IInheritanceCrunaPlugin.sol-getSentinelsAndInheritanceData}

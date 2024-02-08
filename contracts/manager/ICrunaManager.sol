@@ -196,5 +196,4 @@ interface ICrunaManager is IBoundContractExtended, INamed, IReference {
   function isPluginActive(string memory name) external view returns (bool);
 
   function listPlugins(bool active) external view returns (string[] memory);
-
 }

@@ -299,13 +299,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       timeLocks[_nameId] = block.timestamp + timeLock;
     }
     pluginsById[_nameId].canManageTransfer = authorized;
-    emit PluginAuthorizationChange(
-      tokenId(),
-      name,
-      pluginAddress(_nameId),
-      authorized,
-      timeLock
-    );
+    emit PluginAuthorizationChange(tokenId(), name, pluginAddress(_nameId), authorized, timeLock);
   }
 
   function _emitLockeEvent(bool status) internal virtual {

@@ -232,11 +232,9 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
     nextTokenId = tokenId;
   }
 
-
   // @dev This function will return the address of the manager for tokenId.
   // @param tokenId The id of the token.
   function managerOf(uint256 tokenId) public view virtual returns (address) {
     return _registry.boundContract(defaultManagerImplementation(tokenId), 0x00, block.chainid, address(this), tokenId);
   }
-
 }
