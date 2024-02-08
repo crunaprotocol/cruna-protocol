@@ -8,7 +8,6 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 import {CrunaManager} from "../../manager/CrunaManager.sol";
 import {IInheritanceCrunaPlugin} from "./IInheritanceCrunaPlugin.sol";
-import {IInheritanceCrunaPluginEmitter} from "./IInheritanceCrunaPluginEmitter.sol";
 import {ICrunaPlugin, CrunaPluginBase} from "../CrunaPluginBase.sol";
 import {INamed} from "../../utils/INamed.sol";
 import {Actor} from "../../manager/Actor.sol";
@@ -19,13 +18,29 @@ import {SignatureValidator} from "../../utils/SignatureValidator.sol";
 contract InheritanceCrunaPlugin is
   ICrunaPlugin,
   IInheritanceCrunaPlugin,
-  IInheritanceCrunaPluginEmitter,
   CrunaPluginBase,
   Actor,
   SignatureValidator
 {
   using ECDSA for bytes32;
   using Strings for uint256;
+
+  event SentinelUpdated(uint256 indexed tokenId_, address indexed owner, address indexed sentinel, bool status);
+
+  event InheritanceConfigured(
+    uint256 indexed tokenId_,
+    address indexed owner,
+    uint256 quorum,
+    uint256 proofOfLifeDurationInDays,
+    uint256 gracePeriod,
+    address beneficiary
+  );
+
+  event ProofOfLife(uint256 indexed tokenId_, address indexed owner);
+
+  event TransferRequested(uint256 indexed tokenId_, address indexed sentinel, address indexed beneficiary);
+
+  event TransferRequestApproved(uint256 indexed tokenId_, address indexed sentinel);
 
   error NotPermittedWhenProtectorsAreActive();
   error QuorumCannotBeZero();
@@ -99,7 +114,7 @@ contract InheritanceCrunaPlugin is
     } else {
       _addActor(sentinel, SENTINEL);
     }
-    IInheritanceCrunaPluginEmitter(emitter()).emitSentinelUpdatedEvent(tokenId(), _msgSender(), sentinel, status);
+    emit SentinelUpdated(tokenId(), _msgSender(), sentinel, status);
   }
 
   // @dev see {IInheritanceCrunaPlugin.sol-setSentinels}
@@ -153,7 +168,7 @@ contract InheritanceCrunaPlugin is
       _inheritanceConf.waitForGracePeriod = true;
     }
     delete _inheritanceConf.approvers;
-    IInheritanceCrunaPluginEmitter(emitter()).emitInheritanceConfiguredEvent(
+    emit InheritanceConfigured(
       tokenId(),
       _msgSender(),
       quorum,
@@ -179,7 +194,7 @@ contract InheritanceCrunaPlugin is
     }
     delete _inheritanceConf.approvers;
     delete _inheritanceConf.requestUpdatedAt;
-    IInheritanceCrunaPluginEmitter(emitter()).emitProofOfLifeEvent(tokenId(), _msgSender());
+    emit ProofOfLife(tokenId(), _msgSender());
   }
 
   // @dev see {IInheritanceCrunaPlugin.sol-requestTransfer}
@@ -206,9 +221,9 @@ contract InheritanceCrunaPlugin is
     if (_inheritanceConf.approvers.length == _inheritanceConf.quorum) revert QuorumAlreadyReached();
     if (_inheritanceConf.beneficiary == address(0)) {
       _inheritanceConf.beneficiary = beneficiary;
-      IInheritanceCrunaPluginEmitter(emitter()).emitTransferRequestedEvent(tokenId(), _msgSender(), beneficiary);
+      emit TransferRequested(tokenId(), _msgSender(), beneficiary);
     } else {
-      IInheritanceCrunaPluginEmitter(emitter()).emitTransferRequestApprovedEvent(tokenId(), _msgSender());
+      emit TransferRequestApproved(tokenId(), _msgSender());
     }
     _inheritanceConf.approvers.push(_msgSender());
     // updating all the time, gives more time to the beneficiary to inherit
@@ -311,54 +326,6 @@ contract InheritanceCrunaPlugin is
   function requiresResetOnTransfer() external pure returns (bool) {
     return true;
   }
-
-  // IInheritanceCrunaPluginEmitter
-
-  function emitSentinelUpdatedEvent(
-    uint256 tokenId_,
-    address owner,
-    address sentinel,
-    bool status
-  ) external override onlyCallerOf(tokenId_) {
-    emit SentinelUpdated(tokenId_, owner, sentinel, status);
-  }
-
-  function emitInheritanceConfiguredEvent(
-    uint256 tokenId_,
-    address owner,
-    uint256 quorum,
-    uint256 proofOfLifeDurationInDays,
-    uint256 gracePeriod,
-    address beneficiary
-  ) external override onlyCallerOf(tokenId_) {
-    emit InheritanceConfigured(tokenId_, owner, quorum, proofOfLifeDurationInDays, gracePeriod, beneficiary);
-  }
-
-  function emitProofOfLifeEvent(uint256 tokenId_, address owner) external override onlyCallerOf(tokenId_) {
-    emit ProofOfLife(tokenId_, owner);
-  }
-
-  function emitTransferRequestedEvent(
-    uint256 tokenId_,
-    address sentinel,
-    address beneficiary
-  ) external override onlyCallerOf(tokenId_) {
-    emit TransferRequested(tokenId_, sentinel, beneficiary);
-  }
-
-  function emitTransferRequestApprovedEvent(uint256 tokenId_, address sentinel) external override onlyCallerOf(tokenId_) {
-    emit TransferRequestApproved(tokenId_, sentinel);
-  }
-
-  // for the future
-  function emitFutureEvent(
-    uint256 tokenId_,
-    string memory eventName,
-    address actor,
-    bool status,
-    uint256 extraUint256,
-    bytes32 extraBytes32
-  ) external {}
 
   // @dev This empty reserved space is put in place to allow future versions to add new
   // variables without shifting down storage in the inheritance chain.

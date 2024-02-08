@@ -37,7 +37,7 @@ describe("Testing contract deployments", function () {
     managerImpl = await deployContract("CrunaManager");
     guardian = await deployContract("CrunaGuardian", delay, [proposer.address], [executor.address], deployer.address);
     expect(await guardian.version()).to.equal(1000000);
-    proxy = await deployContract("CrunaManagerProxy", managerImpl.address, deployer.address);
+    proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
     proxy = await deployUtils.attach("CrunaManager", proxy.address);
     // sent 2 ETH to proxy
     await expect(
@@ -83,7 +83,7 @@ describe("Testing contract deployments", function () {
     const nextTokenId = await vault.nextTokenId();
     const managerAddress = await vault.managerOf(nextTokenId);
     expect(await ethers.provider.getCode(managerAddress)).equal("0x");
-    await factory.connect(bob).buyVaults(usdc.address, 1, true);
+    await factory.connect(bob).buyVaults(usdc.address, 1);
     expect(await ethers.provider.getCode(managerAddress)).not.equal("0x");
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
     expect(await manager.tokenId()).to.equal(nextTokenId);

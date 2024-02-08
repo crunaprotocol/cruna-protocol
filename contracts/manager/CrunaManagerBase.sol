@@ -14,9 +14,7 @@ import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
 import {INamed} from "../utils/INamed.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 import {ICrunaManager, IVault} from "./ICrunaManager.sol";
-import {WithDeployer} from "../utils/WithDeployer.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
-import {IControlled} from "../utils/IControlled.sol";
 
 //import {console} from "hardhat/console.sol";
 
@@ -26,7 +24,7 @@ interface INamedAndVersioned is INamed, IVersioned {}
   @title CrunaManagerBase.sol
   @dev Base contract for managers and plugins
 */
-abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, IControlled, ICrunaManager, SignatureValidator {
+abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICrunaManager, SignatureValidator {
   error NotTheTokenOwner();
   error UntrustedImplementation();
   error InvalidVersion();
@@ -45,34 +43,9 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICont
 
   mapping(bytes32 => bool) public usedSignatures;
 
-  // the controller is the vault inside the manager proxy (i.e., the event emitter),
-  // not inside the manager of the single tokenId
-  IVault internal _controller;
-
-  address private _deployer;
-
   modifier onlyTokenOwner() {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     _;
-  }
-
-  // used by the emitter only
-  modifier onlyManagerOf(uint256 tokenId_) virtual {
-    if (_controller.managerOf(tokenId_) != _msgSender()) revert Forbidden();
-    _;
-  }
-
-  function controller() public view virtual override returns (address) {
-    return address(_controller);
-  }
-
-  // It must be called after deploying the proxy contract implementing this contract
-  // and cannot be called again.
-  function setController(address controller_) external override {
-    WithDeployer proxy = WithDeployer(address(this));
-    if (proxy.deployer() != _msgSender()) revert NotTheDeployer();
-    if (address(_controller) != address(0)) revert ControllerAlreadySet();
-    _controller = IVault(controller_);
   }
 
   function version() public pure virtual override returns (uint256) {
