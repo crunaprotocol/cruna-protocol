@@ -10,13 +10,13 @@ import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/Pau
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
 import {CrunaVaults} from "../CrunaVaults.sol";
-import {IVaultFactoryMock} from "./IVaultFactoryMock.sol";
+import {IVaultFactory} from "./IVaultFactory.sol";
 import {IVersioned} from "../../utils/IVersioned.sol";
 
 //import {console} from "hardhat/console.sol";
 
-contract VaultFactoryMock is
-  IVaultFactoryMock,
+contract VaultFactory is
+  IVaultFactory,
   IVersioned,
   Initializable,
   PausableUpgradeable,

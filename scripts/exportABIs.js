@@ -17,7 +17,7 @@ async function main() {
   abi("CrunaVaults", "contracts/mocks");
   // abi("SignatureValidator", "contracts/utils");
   abi("CrunaGuardian", "contracts/utils");
-  abi("VaultFactoryMock", "contracts/mocks/factory");
+  abi("VaultFactory", "contracts/mocks/factory");
 
   // for dev only
   // abi("USDCoin", "contracts/mocks/fake-tokens");

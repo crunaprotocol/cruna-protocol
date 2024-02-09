@@ -47,7 +47,7 @@ describe("Testing contract deployments", function () {
     vault = await deployContract("CrunaVaults", delay, [proposer.address], [executor.address], deployer.address);
     expect(await vault.version()).to.equal(1000000);
     await vault.init(crunaRegistry.address, guardian.address, proxy.address);
-    factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address, deployer.address]);
+    factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
     await vault.setFactory(factory.address);
     expect(await vault.supportsInterface(getInterfaceId("IAccessControl"))).to.equal(true);
 

@@ -47,7 +47,7 @@ describe("Sentinel and Inheritance", function () {
     proxy = await deployUtils.attach("CrunaManager", deployedProxy.address);
     vault = await deployContract("VaultMockSimple", deployer.address);
     await vault.init(crunaRegistry.address, guardian.address, proxy.address);
-    factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address, deployer.address]);
+    factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
 
     await vault.setFactory(factory.address);
 

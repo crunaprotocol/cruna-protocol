@@ -57,7 +57,7 @@ async function main() {
     // we are calling the script again
   }
 
-  const factory = await deployUtils.deployProxy("VaultFactoryMock", vault.address, deployer.address);
+  const factory = await deployUtils.deployProxy("VaultFactory", vault.address, deployer.address);
 
   const usdc = await deployUtils.attach("USDCoin");
   const usdt = await deployUtils.attach("TetherUSD");

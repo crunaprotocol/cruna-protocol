@@ -14,7 +14,7 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   const vault = await deployUtils.attach("CrunaVaults");
 
-  const factory = await deployUtils.deployProxy("VaultFactoryMock", vault.address, deployer.address);
+  const factory = await deployUtils.deployProxy("VaultFactory", vault.address, deployer.address);
 
   const usdc = await deployUtils.attach("USDCoin");
   // await usdc.mint("0xF61101A3c7988725369ba481084227971aa55fc2", 100000000000000000000000n);

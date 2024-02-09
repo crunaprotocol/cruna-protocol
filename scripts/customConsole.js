@@ -6,7 +6,7 @@ const EthDeployUtils = require("eth-deploy-utils");
 async function main() {
   const deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
   const vault = await deployUtils.attach("CrunaVaults");
-  const factory = await deployUtils.attach("VaultFactoryMock");
+  const factory = await deployUtils.attach("VaultFactory");
   const usdc = await deployUtils.attach("USDCoin");
   const usdt = await deployUtils.attach("TetherUSD");
 

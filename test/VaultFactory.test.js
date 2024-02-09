@@ -20,7 +20,7 @@ const {
   selectorId,
 } = require("./helpers");
 
-describe("VaultFactoryMock", function () {
+describe("VaultFactory", function () {
   let registry, proxy, guardian;
   let vault;
   let factory;
@@ -45,7 +45,7 @@ describe("VaultFactoryMock", function () {
 
     vault = await deployContract("VaultMockSimple", deployer.address);
     await vault.init(registry.address, guardian.address, proxy.address);
-    factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address, deployer.address]);
+    factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
 
     await vault.setFactory(factory.address);
 
