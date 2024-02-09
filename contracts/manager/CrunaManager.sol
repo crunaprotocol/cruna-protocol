@@ -96,7 +96,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       true,
       _msgSender()
     );
-    emit ProtectorChange(tokenId(), protector_, status);
+    emit ProtectorChange(protector_, status);
     _emitLockeEvent(status);
   }
 
@@ -126,7 +126,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       false,
       _msgSender()
     );
-    emit SafeRecipientChange(tokenId(), recipient, status);
+    emit SafeRecipientChange(recipient, status);
   }
 
   // @dev see {ICrunaManager.sol-isSafeRecipient}
@@ -262,7 +262,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     // It should never happen, but if it happens, we are
     // notified by the EmitEventFailed event, instead of reverting
     // the entire transaction.
-    emit PluginStatusChange(tokenId(), name, pluginAddress_, status);
+    emit PluginStatusChange(name, pluginAddress_, status);
   }
 
   // @dev Id removing the authorization, it blocks a plugin for a maximum of 30 days from transferring
@@ -299,7 +299,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       timeLocks[_nameId] = block.timestamp + timeLock;
     }
     pluginsById[_nameId].canManageTransfer = authorized;
-    emit PluginAuthorizationChange(tokenId(), name, pluginAddress(_nameId), authorized, timeLock);
+    emit PluginAuthorizationChange(name, pluginAddress(_nameId), authorized, timeLock);
   }
 
   function _emitLockeEvent(bool status) internal virtual {
@@ -315,7 +315,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       (bool success, ) = vaultAddress.call(data);
       if (!success) {
         // we emit a local event to alert. Not ideal, but better than reverting
-        emit EmitEventFailed(tokenId(), EventAction.PluginStatusChange);
+        emit EmitEventFailed(EventAction.PluginStatusChange);
       }
     }
   }
@@ -476,7 +476,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
         if (pluginsById[_nameId].canBeReset) _resetPlugin(_nameId);
       }
     }
-    emit Reset(tokenId());
+    emit Reset();
   }
 
   function protectedTransfer(

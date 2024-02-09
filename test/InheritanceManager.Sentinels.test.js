@@ -176,17 +176,17 @@ describe("Sentinel and Inheritance", function () {
     // console.log(inheritancePluginProxy.address);
     await expect(inheritancePlugin.connect(bob).setSentinel(alice.address, true, 0, 0, 0))
       .to.emit(inheritancePlugin, "SentinelUpdated")
-      .withArgs(tokenId, bob.address, alice.address, true);
+      .withArgs(bob.address, alice.address, true);
     await expect(inheritancePlugin.connect(bob).setSentinel(fred.address, true, 0, 0, 0))
       .to.emit(inheritancePlugin, "SentinelUpdated")
-      .withArgs(tokenId, bob.address, fred.address, true);
+      .withArgs(bob.address, fred.address, true);
     await expect(inheritancePlugin.connect(bob).setSentinel(mark.address, true, 0, 0, 0))
       .to.emit(inheritancePlugin, "SentinelUpdated")
-      .withArgs(tokenId, bob.address, mark.address, true);
+      .withArgs(bob.address, mark.address, true);
 
     await expect(inheritancePlugin.connect(bob).configureInheritance(1, 90, 30, addr0, 0, 0, 0))
       .to.emit(inheritancePlugin, "InheritanceConfigured")
-      .withArgs(tokenId, bob.address, 1, 90, 30, addr0);
+      .withArgs(bob.address, 1, 90, 30, addr0);
   });
 
   it("should set up sentinels/conf w/ or w/out protectors", async function () {
@@ -200,13 +200,13 @@ describe("Sentinel and Inheritance", function () {
     expect(await inheritancePlugin.requiresToManageTransfer()).to.be.true;
     await expect(inheritancePlugin.connect(bob).setSentinel(alice.address, true, 0, 0, 0))
       .to.emit(inheritancePlugin, "SentinelUpdated")
-      .withArgs(tokenId, bob.address, alice.address, true);
+      .withArgs(bob.address, alice.address, true);
     await expect(inheritancePlugin.connect(bob).setSentinel(fred.address, true, 0, 0, 0))
       .to.emit(inheritancePlugin, "SentinelUpdated")
-      .withArgs(tokenId, bob.address, fred.address, true);
+      .withArgs(bob.address, fred.address, true);
     await expect(inheritancePlugin.connect(bob).setSentinel(alice.address, false, 0, 0, 0))
       .to.emit(inheritancePlugin, "SentinelUpdated")
-      .withArgs(tokenId, bob.address, alice.address, false);
+      .withArgs(bob.address, alice.address, false);
 
     // add the protector after the initial set up
     let signature = (
@@ -251,7 +251,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(inheritancePlugin.connect(bob).setSentinel(mark.address, true, ts, 3600, signature))
       .to.emit(inheritancePlugin, "SentinelUpdated")
-      .withArgs(tokenId, bob.address, mark.address, true);
+      .withArgs(bob.address, mark.address, true);
 
     // remove Fred as a safe recipient
     await expect(inheritancePlugin.connect(bob).setSentinel(fred.address, false, 0, 0, 0)).revertedWith(
@@ -284,7 +284,7 @@ describe("Sentinel and Inheritance", function () {
     );
     await expect(inheritancePlugin.connect(bob).setSentinel(fred.address, false, ts, 3600, signature))
       .to.emit(inheritancePlugin, "SentinelUpdated")
-      .withArgs(tokenId, bob.address, fred.address, false);
+      .withArgs(bob.address, fred.address, false);
     expect(await inheritancePlugin.actorCount(SENTINEL)).equal(1);
 
     signature = (
@@ -329,7 +329,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(inheritancePlugin.connect(bob).configureInheritance(1, 90, 30, addr0, ts, 3600, signature))
       .to.emit(inheritancePlugin, "InheritanceConfigured")
-      .withArgs(tokenId, bob.address, 1, 90, 30, addr0);
+      .withArgs(bob.address, 1, 90, 30, addr0);
   });
 
   //
@@ -388,7 +388,7 @@ describe("Sentinel and Inheritance", function () {
     );
     await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, addr0, 0, 0, 0))
       .to.emit(inheritancePlugin, "InheritanceConfigured")
-      .withArgs(tokenId, bob.address, 3, 90, 30, addr0);
+      .withArgs(bob.address, 3, 90, 30, addr0);
 
     let lastTs = await getTimestamp();
 
@@ -398,9 +398,7 @@ describe("Sentinel and Inheritance", function () {
     expect(data[1].lastProofOfLife).to.equal(lastTs);
     await increaseBlockTimestampBy(89 * days);
 
-    await expect(inheritancePlugin.connect(bob).proofOfLife())
-      .to.emit(inheritancePlugin, "ProofOfLife")
-      .withArgs(tokenId, bob.address);
+    await expect(inheritancePlugin.connect(bob).proofOfLife()).to.emit(inheritancePlugin, "ProofOfLife").withArgs(bob.address);
 
     lastTs = await getTimestamp();
 
@@ -417,7 +415,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(inheritancePlugin.connect(mark).requestTransfer(beneficiary1.address))
       .to.emit(inheritancePlugin, "TransferRequested")
-      .withArgs(tokenId, mark.address, beneficiary1.address);
+      .withArgs(mark.address, beneficiary1.address);
     lastTs = await getTimestamp();
     data = await inheritancePlugin.getSentinelsAndInheritanceData();
     expect(data[1].beneficiary).to.equal(beneficiary1.address);
@@ -426,7 +424,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(inheritancePlugin.connect(fred).requestTransfer(beneficiary1.address))
       .to.emit(inheritancePlugin, "TransferRequestApproved")
-      .withArgs(tokenId, fred.address);
+      .withArgs(fred.address);
 
     data = await inheritancePlugin.getSentinelsAndInheritanceData();
     expect(data[1].approvers.length).to.equal(2);
@@ -478,7 +476,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(inheritancePlugin.connect(bob).configureInheritance(0, 90, 30, beneficiary1.address, 0, 0, 0))
       .to.emit(inheritancePlugin, "InheritanceConfigured")
-      .withArgs(tokenId, bob.address, 0, 90, 30, beneficiary1.address);
+      .withArgs(bob.address, 0, 90, 30, beneficiary1.address);
 
     let data = await inheritancePlugin.getSentinelsAndInheritanceData();
     expect(data[1].quorum).to.equal(0);
@@ -521,7 +519,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(inheritancePlugin.connect(bob).setSentinel(mark.address, true, ts, 3600, signature))
       .to.emit(inheritancePlugin, "SentinelUpdated")
-      .withArgs(tokenId, bob.address, mark.address, true);
+      .withArgs(bob.address, mark.address, true);
 
     expect((await manager.listPlugins(true)).length).to.equal(1);
     expect((await manager.listPlugins(true))[0]).to.equal("InheritanceCrunaPlugin");
@@ -552,7 +550,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(manager.connect(bob).disablePlugin("InheritanceCrunaPlugin", false, ts, 3600, signature))
       .to.emit(manager, "PluginStatusChange")
-      .withArgs(tokenId, "InheritanceCrunaPlugin", inheritancePlugin.address, false);
+      .withArgs("InheritanceCrunaPlugin", inheritancePlugin.address, false);
 
     expect((await manager.listPlugins(true)).length).to.equal(0);
 
@@ -580,7 +578,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(manager.connect(bob).reEnablePlugin("InheritanceCrunaPlugin", false, ts, 3600, signature))
       .to.emit(manager, "PluginStatusChange")
-      .withArgs(tokenId, "InheritanceCrunaPlugin", inheritancePlugin.address, true);
+      .withArgs("InheritanceCrunaPlugin", inheritancePlugin.address, true);
 
     await expect(manager.connect(bob).authorizePluginToTransfer("InheritanceCrunaPlugin", false, 0, 0, 0, 0)).revertedWith(
       "NotPermittedWhenProtectorsAreActive",
@@ -608,7 +606,7 @@ describe("Sentinel and Inheritance", function () {
       manager.connect(bob).authorizePluginToTransfer("InheritanceCrunaPlugin", false, 30 * days, ts, 3600, signature),
     )
       .emit(manager, "PluginAuthorizationChange")
-      .withArgs(tokenId, "InheritanceCrunaPlugin", inheritancePlugin.address, false, 30 * days);
+      .withArgs("InheritanceCrunaPlugin", inheritancePlugin.address, false, 30 * days);
   });
 
   it("should not allow to inherit if not authorized to make transfer", async function () {
@@ -622,7 +620,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(inheritancePlugin.connect(bob).configureInheritance(0, 90, 30, beneficiary1.address, 0, 0, 0))
       .to.emit(inheritancePlugin, "InheritanceConfigured")
-      .withArgs(tokenId, bob.address, 0, 90, 30, beneficiary1.address);
+      .withArgs(bob.address, 0, 90, 30, beneficiary1.address);
 
     let data = await inheritancePlugin.getSentinelsAndInheritanceData();
     expect(data[1].quorum).to.equal(0);
@@ -731,7 +729,7 @@ describe("Sentinel and Inheritance", function () {
     );
     await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, beneficiary1.address, 0, 0, 0))
       .to.emit(inheritancePlugin, "InheritanceConfigured")
-      .withArgs(tokenId, bob.address, 3, 90, 30, beneficiary1.address);
+      .withArgs(bob.address, 3, 90, 30, beneficiary1.address);
 
     let lastTs = await getTimestamp();
 
@@ -741,9 +739,7 @@ describe("Sentinel and Inheritance", function () {
     expect(data[1].lastProofOfLife).to.equal(lastTs);
     await increaseBlockTimestampBy(89 * days);
 
-    await expect(inheritancePlugin.connect(bob).proofOfLife())
-      .to.emit(inheritancePlugin, "ProofOfLife")
-      .withArgs(tokenId, bob.address);
+    await expect(inheritancePlugin.connect(bob).proofOfLife()).to.emit(inheritancePlugin, "ProofOfLife").withArgs(bob.address);
 
     lastTs = await getTimestamp();
 
@@ -754,7 +750,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(manager.connect(bob).disablePlugin("InheritanceCrunaPlugin", false, 0, 0, 0))
       .to.emit(manager, "PluginStatusChange")
-      .withArgs(tokenId, "InheritanceCrunaPlugin", inheritancePlugin.address, false);
+      .withArgs("InheritanceCrunaPlugin", inheritancePlugin.address, false);
 
     await increaseBlockTimestampBy(100 * days);
 
@@ -768,7 +764,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(inheritancePlugin.connect(mark).requestTransfer(beneficiary2.address))
       .to.emit(inheritancePlugin, "TransferRequested")
-      .withArgs(tokenId, mark.address, beneficiary2.address);
+      .withArgs(mark.address, beneficiary2.address);
     lastTs = await getTimestamp();
     data = await inheritancePlugin.getSentinelsAndInheritanceData();
     expect(data[1].beneficiary).to.equal(beneficiary2.address);
@@ -777,7 +773,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(inheritancePlugin.connect(fred).requestTransfer(beneficiary2.address))
       .to.emit(inheritancePlugin, "TransferRequestApproved")
-      .withArgs(tokenId, fred.address);
+      .withArgs(fred.address);
 
     data = await inheritancePlugin.getSentinelsAndInheritanceData();
     expect(data[1].approvers.length).to.equal(2);
@@ -804,7 +800,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(manager.connect(bob).reEnablePlugin("InheritanceCrunaPlugin", false, 0, 0, 0))
       .to.emit(manager, "PluginStatusChange")
-      .withArgs(tokenId, "InheritanceCrunaPlugin", inheritancePlugin.address, true);
+      .withArgs("InheritanceCrunaPlugin", inheritancePlugin.address, true);
 
     //
     await inheritancePlugin.connect(beneficiary2).inherit();
@@ -847,7 +843,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, beneficiary1.address, 0, 0, 0))
       .to.emit(inheritancePlugin, "InheritanceConfigured")
-      .withArgs(tokenId, bob.address, 3, 90, 30, beneficiary1.address);
+      .withArgs(bob.address, 3, 90, 30, beneficiary1.address);
 
     let lastTs = await getTimestamp();
 
@@ -857,9 +853,7 @@ describe("Sentinel and Inheritance", function () {
     expect(data[1].lastProofOfLife).to.equal(lastTs);
     await increaseBlockTimestampBy(89 * days);
 
-    await expect(inheritancePlugin.connect(bob).proofOfLife())
-      .to.emit(inheritancePlugin, "ProofOfLife")
-      .withArgs(tokenId, bob.address);
+    await expect(inheritancePlugin.connect(bob).proofOfLife()).to.emit(inheritancePlugin, "ProofOfLife").withArgs(bob.address);
 
     lastTs = await getTimestamp();
 
@@ -870,7 +864,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(manager.connect(bob).disablePlugin("InheritanceCrunaPlugin", true, 0, 0, 0))
       .to.emit(manager, "PluginStatusChange")
-      .withArgs(tokenId, "InheritanceCrunaPlugin", inheritancePlugin.address, false);
+      .withArgs("InheritanceCrunaPlugin", inheritancePlugin.address, false);
 
     data = await inheritancePlugin.getSentinelsAndInheritanceData();
     expect(data[0].length).to.equal(0);
@@ -917,7 +911,7 @@ describe("Sentinel and Inheritance", function () {
     );
     await expect(inheritancePlugin.connect(bob).configureInheritance(3, 90, 30, beneficiary1.address, 0, 0, 0))
       .to.emit(inheritancePlugin, "InheritanceConfigured")
-      .withArgs(tokenId, bob.address, 3, 90, 30, beneficiary1.address);
+      .withArgs(bob.address, 3, 90, 30, beneficiary1.address);
 
     let lastTs = await getTimestamp();
 
@@ -927,9 +921,7 @@ describe("Sentinel and Inheritance", function () {
     expect(data[1].lastProofOfLife).to.equal(lastTs);
     await increaseBlockTimestampBy(89 * days);
 
-    await expect(inheritancePlugin.connect(bob).proofOfLife())
-      .to.emit(inheritancePlugin, "ProofOfLife")
-      .withArgs(tokenId, bob.address);
+    await expect(inheritancePlugin.connect(bob).proofOfLife()).to.emit(inheritancePlugin, "ProofOfLife").withArgs(bob.address);
 
     lastTs = await getTimestamp();
 
@@ -940,7 +932,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(manager.connect(bob).disablePlugin("InheritanceCrunaPlugin", false, 0, 0, 0))
       .to.emit(manager, "PluginStatusChange")
-      .withArgs(tokenId, "InheritanceCrunaPlugin", inheritancePlugin.address, false);
+      .withArgs("InheritanceCrunaPlugin", inheritancePlugin.address, false);
 
     await increaseBlockTimestampBy(100 * days);
 
@@ -954,7 +946,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(inheritancePlugin.connect(mark).requestTransfer(beneficiary2.address))
       .to.emit(inheritancePlugin, "TransferRequested")
-      .withArgs(tokenId, mark.address, beneficiary2.address);
+      .withArgs(mark.address, beneficiary2.address);
     lastTs = await getTimestamp();
     data = await inheritancePlugin.getSentinelsAndInheritanceData();
     expect(data[1].beneficiary).to.equal(beneficiary2.address);
@@ -963,7 +955,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(inheritancePlugin.connect(fred).requestTransfer(beneficiary2.address))
       .to.emit(inheritancePlugin, "TransferRequestApproved")
-      .withArgs(tokenId, fred.address);
+      .withArgs(fred.address);
 
     data = await inheritancePlugin.getSentinelsAndInheritanceData();
     expect(data[1].approvers.length).to.equal(2);
@@ -990,7 +982,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(manager.connect(bob).reEnablePlugin("InheritanceCrunaPlugin", true, 0, 0, 0))
       .to.emit(manager, "PluginStatusChange")
-      .withArgs(tokenId, "InheritanceCrunaPlugin", inheritancePlugin.address, true);
+      .withArgs("InheritanceCrunaPlugin", inheritancePlugin.address, true);
 
     data = await inheritancePlugin.getSentinelsAndInheritanceData();
     expect(data[0].length).to.equal(0);

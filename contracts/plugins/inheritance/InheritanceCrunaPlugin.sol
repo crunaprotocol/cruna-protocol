@@ -19,23 +19,6 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   using ECDSA for bytes32;
   using Strings for uint256;
 
-  event SentinelUpdated(uint256 indexed tokenId_, address indexed owner, address indexed sentinel, bool status);
-
-  event InheritanceConfigured(
-    uint256 indexed tokenId_,
-    address indexed owner,
-    uint256 quorum,
-    uint256 proofOfLifeDurationInDays,
-    uint256 gracePeriod,
-    address beneficiary
-  );
-
-  event ProofOfLife(uint256 indexed tokenId_, address indexed owner);
-
-  event TransferRequested(uint256 indexed tokenId_, address indexed sentinel, address indexed beneficiary);
-
-  event TransferRequestApproved(uint256 indexed tokenId_, address indexed sentinel);
-
   error NotPermittedWhenProtectorsAreActive();
   error QuorumCannotBeZero();
   error QuorumCannotBeGreaterThanSentinels();
@@ -108,7 +91,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     } else {
       _addActor(sentinel, SENTINEL);
     }
-    emit SentinelUpdated(tokenId(), _msgSender(), sentinel, status);
+    emit SentinelUpdated(_msgSender(), sentinel, status);
   }
 
   // @dev see {IInheritanceCrunaPlugin.sol-setSentinels}
@@ -162,7 +145,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
       _inheritanceConf.waitForGracePeriod = true;
     }
     delete _inheritanceConf.approvers;
-    emit InheritanceConfigured(tokenId(), _msgSender(), quorum, proofOfLifeDurationInDays, gracePeriod, beneficiary);
+    emit InheritanceConfigured(_msgSender(), quorum, proofOfLifeDurationInDays, gracePeriod, beneficiary);
   }
 
   // @dev see {IInheritanceCrunaPlugin.sol-getSentinelsAndInheritanceData}
@@ -181,7 +164,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     }
     delete _inheritanceConf.approvers;
     delete _inheritanceConf.requestUpdatedAt;
-    emit ProofOfLife(tokenId(), _msgSender());
+    emit ProofOfLife(_msgSender());
   }
 
   // @dev see {IInheritanceCrunaPlugin.sol-requestTransfer}
@@ -208,9 +191,9 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     if (_inheritanceConf.approvers.length == _inheritanceConf.quorum) revert QuorumAlreadyReached();
     if (_inheritanceConf.beneficiary == address(0)) {
       _inheritanceConf.beneficiary = beneficiary;
-      emit TransferRequested(tokenId(), _msgSender(), beneficiary);
+      emit TransferRequested(_msgSender(), beneficiary);
     } else {
-      emit TransferRequestApproved(tokenId(), _msgSender());
+      emit TransferRequestApproved(_msgSender());
     }
     _inheritanceConf.approvers.push(_msgSender());
     // updating all the time, gives more time to the beneficiary to inherit

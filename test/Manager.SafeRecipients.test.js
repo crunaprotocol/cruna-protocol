@@ -75,16 +75,16 @@ describe("CrunaManager.sol : Safe Recipients", function () {
     // set Alice and Fred as a safe recipient
     await expect(manager.connect(bob).setSafeRecipient(alice.address, true, 0, 0, 0))
       .to.emit(manager, "SafeRecipientChange")
-      .withArgs(tokenId, alice.address, true);
+      .withArgs(alice.address, true);
     await expect(manager.connect(bob).setSafeRecipient(fred.address, true, 0, 0, 0))
       .to.emit(manager, "SafeRecipientChange")
-      .withArgs(tokenId, fred.address, true);
+      .withArgs(fred.address, true);
 
     expect(await manager.getSafeRecipients()).deep.equal([alice.address, fred.address]);
 
     await expect(manager.connect(bob).setSafeRecipient(alice.address, false, 0, 0, 0))
       .to.emit(manager, "SafeRecipientChange")
-      .withArgs(tokenId, alice.address, false);
+      .withArgs(alice.address, false);
 
     let signature = (
       await signRequest(
@@ -129,7 +129,7 @@ describe("CrunaManager.sol : Safe Recipients", function () {
     )[0];
     await expect(manager.connect(bob).setSafeRecipient(mark.address, true, ts, 3600, signature))
       .to.emit(manager, "SafeRecipientChange")
-      .withArgs(tokenId, mark.address, true);
+      .withArgs(mark.address, true);
 
     expect(await vault.isTransferable(tokenId, bob.address, mark.address)).to.be.true;
 
@@ -158,6 +158,6 @@ describe("CrunaManager.sol : Safe Recipients", function () {
 
     await expect(manager.connect(bob).setSafeRecipient(fred.address, false, ts, 3600, signature))
       .to.emit(manager, "SafeRecipientChange")
-      .withArgs(tokenId, fred.address, false);
+      .withArgs(fred.address, false);
   });
 });

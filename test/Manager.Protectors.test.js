@@ -176,7 +176,7 @@ describe("CrunaManager.sol : Protectors", function () {
     // set Alice as first Bob's protector
     await expect(manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature))
       .to.emit(manager, "ProtectorChange")
-      .withArgs(tokenId, alice.address, true)
+      .withArgs(alice.address, true)
       .to.emit(vault, "Locked")
       .withArgs(tokenId, true);
 
@@ -208,7 +208,7 @@ describe("CrunaManager.sol : Protectors", function () {
 
     await expect(manager.connect(bob).setProtector(alice.address, false, ts, 3600, signature))
       .to.emit(manager, "ProtectorChange")
-      .withArgs(tokenId, alice.address, false)
+      .withArgs(alice.address, false)
       .to.emit(vault, "Locked")
       .withArgs(tokenId, false);
   });
@@ -276,7 +276,7 @@ describe("CrunaManager.sol : Protectors", function () {
 
     await expect(manager.connect(bob).setProtector(fred.address, true, ts, 3600, signature))
       .to.emit(manager, "ProtectorChange")
-      .withArgs(tokenId, fred.address, true);
+      .withArgs(fred.address, true);
 
     allProtectors = await manager.getProtectors();
     expect(allProtectors[1]).equal(fred.address);
@@ -311,7 +311,7 @@ describe("CrunaManager.sol : Protectors", function () {
 
     await expect(manager.connect(bob).setProtector(alice.address, false, ts, 3600, signature))
       .to.emit(manager, "ProtectorChange")
-      .withArgs(tokenId, alice.address, false);
+      .withArgs(alice.address, false);
 
     expect(await manager.findProtectorIndex(fred.address)).to.equal(0);
   });
