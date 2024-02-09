@@ -60,6 +60,11 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     return _isActiveActor(protector_, PROTECTOR);
   }
 
+  // from SignatureValidator
+  function _canPreApprove(address signer) internal view virtual override returns (bool) {
+    return _isActiveActor(signer, PROTECTOR);
+  }
+
   // @dev Returns the list of protectors.
   function listProtectors() public view virtual override returns (address[] memory) {
     return getActors(PROTECTOR);

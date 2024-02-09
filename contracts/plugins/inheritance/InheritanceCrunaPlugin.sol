@@ -46,6 +46,10 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     _;
   }
 
+  function _canPreApprove(address signer) internal view virtual override returns (bool) {
+    return manager.isAProtector(signer);
+  }
+
   // @dev see {IInheritanceCrunaPlugin.sol-init}
   // this must be executed immediately after the deployment
   function init() external virtual override {
