@@ -10,12 +10,10 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 import {Actor} from "./Actor.sol";
 import {ICrunaPlugin} from "../plugins/ICrunaPlugin.sol";
 import {CrunaManagerBase} from "./CrunaManagerBase.sol";
-import {ICrunaManagerEmitter} from "./ICrunaManagerEmitter.sol";
-import {IControlled} from "../utils/IControlled.sol";
 
 //import {console} from "hardhat/console.sol";
 
-contract CrunaManager is ICrunaManagerEmitter, Actor, CrunaManagerBase, ReentrancyGuard {
+contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   using ECDSA for bytes32;
   using Strings for uint256;
 
@@ -98,7 +96,7 @@ contract CrunaManager is ICrunaManagerEmitter, Actor, CrunaManagerBase, Reentran
       true,
       _msgSender()
     );
-    ICrunaManagerEmitter(emitter()).emitProtectorChangeEvent(tokenId(), protector_, status);
+    emit ProtectorChange(tokenId(), protector_, status);
     _emitLockeEvent(status);
   }
 
@@ -128,7 +126,7 @@ contract CrunaManager is ICrunaManagerEmitter, Actor, CrunaManagerBase, Reentran
       false,
       _msgSender()
     );
-    ICrunaManagerEmitter(emitter()).emitSafeRecipientChangeEvent(tokenId(), recipient, status);
+    emit SafeRecipientChange(tokenId(), recipient, status);
   }
 
   // @dev see {ICrunaManager.sol-isSafeRecipient}
@@ -248,7 +246,7 @@ contract CrunaManager is ICrunaManagerEmitter, Actor, CrunaManagerBase, Reentran
     );
     address _pluginAddress = registry().createBoundContract(pluginProxy, 0x00, block.chainid, address(this), tokenId());
     ICrunaPlugin _plugin = ICrunaPlugin(_pluginAddress);
-    if (IControlled(pluginProxy).controller() != tokenAddress() || _plugin.nameId() != _nameId) revert InvalidImplementation();
+    if (_plugin.nameId() != _nameId) revert InvalidImplementation();
     allPlugins.push(PluginStatus(name, true));
     pluginsById[_nameId] = CrunaPlugin(pluginProxy, canManageTransfer, _plugin.requiresResetOnTransfer(), true);
     _plugin.init();
@@ -264,7 +262,7 @@ contract CrunaManager is ICrunaManagerEmitter, Actor, CrunaManagerBase, Reentran
     // It should never happen, but if it happens, we are
     // notified by the EmitEventFailed event, instead of reverting
     // the entire transaction.
-    ICrunaManagerEmitter(emitter()).emitPluginStatusChangeEvent(tokenId(), name, pluginAddress_, status);
+    emit PluginStatusChange(tokenId(), name, pluginAddress_, status);
   }
 
   // @dev Id removing the authorization, it blocks a plugin for a maximum of 30 days from transferring
@@ -301,13 +299,7 @@ contract CrunaManager is ICrunaManagerEmitter, Actor, CrunaManagerBase, Reentran
       timeLocks[_nameId] = block.timestamp + timeLock;
     }
     pluginsById[_nameId].canManageTransfer = authorized;
-    ICrunaManagerEmitter(emitter()).emitPluginAuthorizationChangeEvent(
-      tokenId(),
-      name,
-      pluginAddress(_nameId),
-      authorized,
-      timeLock
-    );
+    emit PluginAuthorizationChange(tokenId(), name, pluginAddress(_nameId), authorized, timeLock);
   }
 
   function _emitLockeEvent(bool status) internal virtual {
@@ -484,7 +476,7 @@ contract CrunaManager is ICrunaManagerEmitter, Actor, CrunaManagerBase, Reentran
         if (pluginsById[_nameId].canBeReset) _resetPlugin(_nameId);
       }
     }
-    ICrunaManagerEmitter(emitter()).emitResetEvent(tokenId());
+    emit Reset(tokenId());
   }
 
   function protectedTransfer(
@@ -498,61 +490,6 @@ contract CrunaManager is ICrunaManagerEmitter, Actor, CrunaManagerBase, Reentran
     _validateAndCheckSignature(this.protectedTransfer.selector, to, false, 0, timestamp * 1e6 + validFor, signature, false);
     _resetActorsAndDisablePlugins();
     vault().managedTransfer(nameId(), tokenId, to);
-  }
-
-  // ICrunaManagerEmitter
-  // Those functions are executed by the CrunaManager implementation, not by the single manager
-  // So, they can only be called by the manager of the involved tokenId
-
-  function emitProtectorChangeEvent(
-    uint256 tokenId_,
-    address protector,
-    bool status
-  ) external override onlyManagerOf(tokenId_) {
-    emit ProtectorChange(tokenId_, protector, status);
-  }
-
-  function emitSafeRecipientChangeEvent(
-    uint256 tokenId_,
-    address recipient,
-    bool status
-  ) external override onlyManagerOf(tokenId_) {
-    emit SafeRecipientChange(tokenId_, recipient, status);
-  }
-
-  function emitPluginStatusChangeEvent(
-    uint256 tokenId_,
-    string memory name,
-    address plugin_,
-    bool status
-  ) external override onlyManagerOf(tokenId_) {
-    emit PluginStatusChange(tokenId_, name, plugin_, status);
-  }
-
-  function emitPluginAuthorizationChangeEvent(
-    uint256 tokenId_,
-    string memory name,
-    address plugin_,
-    bool status,
-    uint256 lockTime
-  ) external override onlyManagerOf(tokenId_) {
-    emit PluginAuthorizationChange(tokenId_, name, plugin_, status, lockTime);
-  }
-
-  function emitResetEvent(uint256 tokenId_) external override onlyManagerOf(tokenId_) {
-    emit Reset(tokenId_);
-  }
-
-  // this is not used right now, but may be used in future versions
-  function emitFutureEvent(
-    uint256 tokenId_,
-    string memory eventName,
-    address actor,
-    bool status,
-    uint256 extraUint256,
-    bytes32 extraBytes32
-  ) external override onlyManagerOf(tokenId_) {
-    //    emit FutureEvent(tokenId_, name, actor, status, extraUint256, extraBytes32);
   }
 
   // @dev This empty reserved space is put in place to allow future versions to add new

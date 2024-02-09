@@ -45,11 +45,10 @@ describe("CrunaManager.sol : Protectors", function () {
     crunaRegistry = await deployContract("CrunaRegistry");
     managerImpl = await deployContract("CrunaManager");
     guardian = await deployContract("CrunaGuardian", delay, [proposer.address], [executor.address], deployer.address);
-    proxy = await deployContract("CrunaManagerProxy", managerImpl.address, deployer.address);
+    proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
     proxy = await deployUtils.attach("CrunaManager", proxy.address);
 
     vault = await deployContract("VaultMockSimple", deployer.address);
-    await proxy.setController(vault.address);
     await vault.init(crunaRegistry.address, guardian.address, proxy.address);
     factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address, deployer.address]);
 
@@ -75,7 +74,7 @@ describe("CrunaManager.sol : Protectors", function () {
 
     // console.log(keccak256("BoundContractCreated(address,address,bytes32,uint256,address,uint256)"))
 
-    await expect(factory.connect(bob).buyVaults(usdc.address, 1, true))
+    await expect(factory.connect(bob).buyVaults(usdc.address, 1))
       .to.emit(crunaRegistry, "BoundContractCreated")
       .withArgs(
         precalculatedAddress,
@@ -176,7 +175,7 @@ describe("CrunaManager.sol : Protectors", function () {
 
     // set Alice as first Bob's protector
     await expect(manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature))
-      .to.emit(proxy, "ProtectorChange")
+      .to.emit(manager, "ProtectorChange")
       .withArgs(tokenId, alice.address, true)
       .to.emit(vault, "Locked")
       .withArgs(tokenId, true);
@@ -208,7 +207,7 @@ describe("CrunaManager.sol : Protectors", function () {
     );
 
     await expect(manager.connect(bob).setProtector(alice.address, false, ts, 3600, signature))
-      .to.emit(proxy, "ProtectorChange")
+      .to.emit(manager, "ProtectorChange")
       .withArgs(tokenId, alice.address, false)
       .to.emit(vault, "Locked")
       .withArgs(tokenId, false);
@@ -276,7 +275,7 @@ describe("CrunaManager.sol : Protectors", function () {
     )[0];
 
     await expect(manager.connect(bob).setProtector(fred.address, true, ts, 3600, signature))
-      .to.emit(proxy, "ProtectorChange")
+      .to.emit(manager, "ProtectorChange")
       .withArgs(tokenId, fred.address, true);
 
     allProtectors = await manager.getProtectors();
@@ -311,7 +310,7 @@ describe("CrunaManager.sol : Protectors", function () {
     )[0];
 
     await expect(manager.connect(bob).setProtector(alice.address, false, ts, 3600, signature))
-      .to.emit(proxy, "ProtectorChange")
+      .to.emit(manager, "ProtectorChange")
       .withArgs(tokenId, alice.address, false);
 
     expect(await manager.findProtectorIndex(fred.address)).to.equal(0);
@@ -365,7 +364,7 @@ describe("CrunaManager.sol : Protectors", function () {
       )
     )[0];
     await expect(manager.connect(bob).protectedTransfer(tokenId, fred.address, ts, 3600, signature))
-      .to.emit(proxy, "Reset")
+      .to.emit(manager, "Reset")
       .withArgs(tokenId)
       .to.emit(vault, "Transfer")
       .withArgs(bob.address, fred.address, tokenId);

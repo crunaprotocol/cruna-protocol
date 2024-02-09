@@ -15,6 +15,24 @@ import {IVault} from "../token/IVault.sol";
 interface ICrunaManager is IBoundContractExtended, INamed, IReference {
   event EmitEventFailed(uint256 tokenId, EventAction action);
 
+  event ProtectorChange(uint256 indexed tokenId_, address indexed protector, bool status);
+
+  event SafeRecipientChange(uint256 indexed tokenId_, address indexed recipient, bool status);
+
+  event PluginStatusChange(uint256 indexed tokenId_, string indexed name, address plugin_, bool status);
+
+  event PluginAuthorizationChange(
+    uint256 indexed tokenId_,
+    string indexed name,
+    address plugin_,
+    bool status,
+    uint256 lockTime
+  );
+
+  // Emitted when  protectors and safe recipients are removed and all plugins are disabled (if they require it)
+  // This event overrides any specific ProtectorChange, SafeRecipientChange and PluginStatusChange event
+  event Reset(uint256 indexed tokenId_);
+
   enum EventAction {
     ProtectorChange,
     SafeRecipientChange,

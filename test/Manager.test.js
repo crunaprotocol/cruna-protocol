@@ -44,11 +44,10 @@ describe("CrunaManager.sol : Protectors", function () {
     crunaRegistry = await deployContract("CrunaRegistry");
     managerImpl = await deployContract("CrunaManager");
     guardian = await deployContract("CrunaGuardian", delay, [proposer.address], [executor.address], deployer.address);
-    proxy = await deployContract("CrunaManagerProxy", managerImpl.address, deployer.address);
+    proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
     proxy = await deployUtils.attach("CrunaManager", proxy.address);
 
     vault = await deployContract("VaultMockSimple", deployer.address);
-    await proxy.setController(vault.address);
     await vault.init(crunaRegistry.address, guardian.address, proxy.address);
     factory = await deployContractUpgradeable("VaultFactoryMock", [vault.address, deployer.address]);
 
@@ -74,7 +73,7 @@ describe("CrunaManager.sol : Protectors", function () {
 
     // console.log(keccak256("BoundContractCreated(address,address,bytes32,uint256,address,uint256)"))
 
-    await expect(factory.connect(bob).buyVaults(usdc.address, 1, true))
+    await expect(factory.connect(bob).buyVaults(usdc.address, 1))
       .to.emit(crunaRegistry, "BoundContractCreated")
       .withArgs(
         precalculatedAddress,
@@ -146,7 +145,7 @@ describe("CrunaManager.sol : Protectors", function () {
   it("should allow deployer to upgrade the default manager", async function () {
     let tokenId = await buyAVault(bob);
     const managerV2Impl = await deployContract("ManagerV2Mock");
-    const proxyV2 = await deployContract("ManagerProxyV2Mock", managerV2Impl.address, deployer.address);
+    const proxyV2 = await deployContract("ManagerProxyV2Mock", managerV2Impl.address);
     expect(await proxyV2.getImplementation()).to.equal(managerV2Impl.address);
     let history = await vault.managerHistory(0);
     const initialManager = await ethers.getContractAt("CrunaManager", history.managerAddress);
