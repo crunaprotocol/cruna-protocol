@@ -154,6 +154,9 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**1.0.0-rc.1**
+- Add support for multi-sig and ERC4337 wallets as protectors. Since they cannot sign a valid typed_v4 signature, they must pre-approve the operation
+
 **1.0.0-beta.10**
 - After extensive testing we verified that the global emitters were requiring too much gas because of the many external calls with many parameters across contracts
 - Removed activation after minting in favor of activation only during the minting process. Still, any implementer can extend the contract to allow for activation after minting, if needed
