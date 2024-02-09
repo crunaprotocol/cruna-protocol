@@ -23,7 +23,7 @@ const {
 
 describe("Sentinel and Inheritance", function () {
   let crunaRegistry, proxy, managerImpl, guardian;
-  let vault, inheritancePluginProxy, inheritancePluginImpl;
+  let vault, inheritancePluginProxy, inheritancePluginImpl, validatorMock;
   let factory;
   let usdc, usdt;
   let deployer, bob, alice, fred, mark, otto, jerry, beneficiary1, beneficiary2, proposer, executor;
@@ -49,8 +49,9 @@ describe("Sentinel and Inheritance", function () {
     vault = await deployContract("VaultMockSimple", deployer.address);
     await vault.init(crunaRegistry.address, guardian.address, proxy.address);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
-
     await vault.setFactory(factory.address);
+
+    validatorMock = await deployContract("ValidatorMock");
 
     usdc = await deployContract("USDCoin", deployer.address);
     usdt = await deployContract("TetherUSD", deployer.address);
@@ -512,7 +513,7 @@ describe("Sentinel and Inheritance", function () {
       timeValidation,
     ];
 
-    let hash = await manager.hashData(...params);
+    let hash = await validatorMock.hashData(...params);
 
     await expect(inheritancePlugin.connect(alice).preApprove(...params))
       .to.emit(inheritancePlugin, "PreApproved")

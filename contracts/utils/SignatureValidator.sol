@@ -57,7 +57,7 @@ abstract contract SignatureValidator is EIP712, Context {
     bytes calldata signature
   ) public view returns (address, bytes32) {
     _validate(timeValidation);
-    bytes32 hash = hashData(selector, owner, actor, tokenAddress, tokenId, extra, extra2, extra3, timeValidation);
+    bytes32 hash = _hashData(selector, owner, actor, tokenAddress, tokenId, extra, extra2, extra3, timeValidation);
     if (signature.length == 65) {
       return (_hashTypedDataV4(hash).recover(signature), hash);
     } else {
@@ -77,12 +77,12 @@ abstract contract SignatureValidator is EIP712, Context {
     uint256 timeValidation
   ) external {
     if (!_canPreApprove(selector, actor, _msgSender())) revert NotAuthorized();
-    bytes32 hash = hashData(selector, owner, actor, tokenAddress, tokenId, extra, extra2, extra3, timeValidation);
+    bytes32 hash = _hashData(selector, owner, actor, tokenAddress, tokenId, extra, extra2, extra3, timeValidation);
     preApprovals[hash] = _msgSender();
     emit PreApproved(hash, _msgSender());
   }
 
-  function hashData(
+  function _hashData(
     bytes4 selector,
     address owner,
     address actor,
@@ -92,7 +92,7 @@ abstract contract SignatureValidator is EIP712, Context {
     uint256 extra2,
     uint256 extra3,
     uint256 timeValidation
-  ) public pure returns (bytes32) {
+  ) internal pure returns (bytes32) {
     return
       keccak256(
         abi.encode(

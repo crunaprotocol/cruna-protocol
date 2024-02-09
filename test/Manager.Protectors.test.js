@@ -25,7 +25,7 @@ const {
 } = require("./helpers");
 
 describe("CrunaManager : Protectors", function () {
-  let crunaRegistry, proxy, managerImpl, guardian;
+  let crunaRegistry, proxy, managerImpl, guardian, validatorMock;
   let vault;
   let factory;
   let usdc, usdt;
@@ -52,8 +52,8 @@ describe("CrunaManager : Protectors", function () {
     vault = await deployContract("VaultMockSimple", deployer.address);
     await vault.init(crunaRegistry.address, guardian.address, proxy.address);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
-
     await vault.setFactory(factory.address);
+    validatorMock = await deployContract("ValidatorMock");
 
     usdc = await deployContract("USDCoin", deployer.address);
     usdt = await deployContract("TetherUSD", deployer.address);
@@ -243,7 +243,7 @@ describe("CrunaManager : Protectors", function () {
 
     let params = [selector, bob.address, alice.address, vault.address, tokenId, 1, 0, 0, timeValidation];
 
-    let hash = await manager.hashData(...params);
+    let hash = await validatorMock.hashData(...params);
 
     await expect(manager.connect(fred).preApprove(...params))
       .to.emit(manager, "PreApproved")
@@ -266,7 +266,7 @@ describe("CrunaManager : Protectors", function () {
     let params = [selector, bob.address, alice.address, vault.address, tokenId, 1, 0, 0, timeValidation];
     await expect(manager.connect(bob).preApprove(...params)).revertedWith("NotAuthorized");
 
-    let hash = await manager.hashData(...params);
+    let hash = await validatorMock.hashData(...params);
 
     await expect(manager.connect(alice).preApprove(...params))
       .to.emit(manager, "PreApproved")
