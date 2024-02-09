@@ -20,10 +20,11 @@ const {
   combineBytes4ToBytes32,
   getInterfaceId,
   selectorId,
+  combineTimestampAndValidFor,
   trustImplementation,
 } = require("./helpers");
 
-describe("CrunaManager.sol : Protectors", function () {
+describe("CrunaManager : Protectors", function () {
   let crunaRegistry, proxy, managerImpl, guardian;
   let vault;
   let factory;
@@ -118,14 +119,14 @@ describe("CrunaManager.sol : Protectors", function () {
     await expect(manager.bullish("0x12345678")).revertedWith("");
   });
 
-  it("should support the ICrunaManagedNFT.sol interface", async function () {
+  it("should support the ICrunaManagedNFT interface", async function () {
     const VaultMockSimple = await deployContract("VaultMockSimple", deployer.address);
     await VaultMockSimple.init(crunaRegistry.address, guardian.address, proxy.address);
     let interfaceId = await getInterfaceId("ICrunaManagedNFT");
     expect(await vault.supportsInterface(interfaceId)).to.be.true;
   });
 
-  it("should verify CrunaManagerBase.sol parameters", async function () {
+  it("should verify CrunaManagerBase parameters", async function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
@@ -184,6 +185,32 @@ describe("CrunaManager.sol : Protectors", function () {
       "SignatureAlreadyUsed",
     );
 
+    // set a second protector
+
+    signature = (
+      await signRequest(
+        selector,
+        bob.address,
+        fred.address,
+        vault.address,
+        tokenId,
+        1,
+        0,
+        0,
+        ts,
+        3600,
+        chainId,
+        alice.address,
+        manager,
+      )
+    )[0];
+
+    await expect(manager.connect(bob).setProtector(fred.address, true, ts, 3600, signature))
+      .to.emit(manager, "ProtectorChange")
+      .withArgs(fred.address, true);
+
+    // Alice removes herself as protector
+
     signature = (
       await signRequest(
         selector,
@@ -208,9 +235,48 @@ describe("CrunaManager.sol : Protectors", function () {
 
     await expect(manager.connect(bob).setProtector(alice.address, false, ts, 3600, signature))
       .to.emit(manager, "ProtectorChange")
-      .withArgs(alice.address, false)
+      .withArgs(alice.address, false);
+
+    // set again alice with a preApproval
+
+    const timeValidation = combineTimestampAndValidFor(ts, 3600).toString();
+
+    let params = [selector, bob.address, alice.address, vault.address, tokenId, 1, 0, 0, timeValidation];
+
+    let hash = await manager.hashData(...params);
+
+    await expect(manager.connect(fred).preApprove(...params))
+      .to.emit(manager, "PreApproved")
+      .withArgs(hash, fred.address);
+
+    await expect(manager.connect(bob).setProtector(alice.address, true, ts, 3600, 0))
+      .to.emit(manager, "ProtectorChange")
+      .withArgs(alice.address, true);
+  });
+
+  it("should add the first protector via preApproval and remove it", async function () {
+    const tokenId = await buyAVault(bob);
+    const managerAddress = await vault.managerOf(tokenId);
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+
+    expect(await vault.supportsInterface("0x80ac58cd")).to.equal(true);
+
+    const timeValidation = combineTimestampAndValidFor(ts, 3600).toString();
+
+    let params = [selector, bob.address, alice.address, vault.address, tokenId, 1, 0, 0, timeValidation];
+    await expect(manager.connect(bob).preApprove(...params)).revertedWith("NotAuthorized");
+
+    let hash = await manager.hashData(...params);
+
+    await expect(manager.connect(alice).preApprove(...params))
+      .to.emit(manager, "PreApproved")
+      .withArgs(hash, alice.address);
+
+    await expect(manager.connect(bob).setProtector(alice.address, true, ts, 3600, 0))
+      .to.emit(manager, "ProtectorChange")
+      .withArgs(alice.address, true)
       .to.emit(vault, "Locked")
-      .withArgs(tokenId, false);
+      .withArgs(tokenId, true);
   });
 
   it("should throw is wrong data for first protector", async function () {

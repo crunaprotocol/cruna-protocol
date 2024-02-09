@@ -323,7 +323,7 @@ const Helpers = {
   },
 
   combineTimestampAndValidFor(timestamp, validFor) {
-    return ethers.BigNumber.from(timestamp.toString()).mul(1e6).add(validFor);
+    return ethers.BigNumber.from(timestamp.toString()).mul(1e7).add(validFor);
   },
 
   async signRequest(

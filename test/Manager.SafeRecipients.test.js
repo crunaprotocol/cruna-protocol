@@ -19,7 +19,7 @@ const {
   keccak256,
 } = require("./helpers");
 
-describe("CrunaManager.sol : Safe Recipients", function () {
+describe("CrunaManager : Safe Recipients", function () {
   let crunaRegistry, proxy, managerImpl, guardian;
   let vault;
   let factory;

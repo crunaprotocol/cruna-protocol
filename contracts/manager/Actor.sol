@@ -13,7 +13,7 @@ contract Actor {
 
   uint256 public constant MAX_ACTORS = 16;
 
-  mapping(bytes4 => address[]) private _actors;
+  mapping(bytes4 => address[]) internal _actors;
 
   function getActors(bytes4 role) public view returns (address[] memory) {
     return _actors[role];

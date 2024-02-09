@@ -23,7 +23,7 @@ const {
   trustImplementation,
 } = require("./helpers");
 
-describe("CrunaManager.sol : Protectors", function () {
+describe("CrunaManager : Protectors", function () {
   let crunaRegistry, proxy, managerImpl, guardian;
   let vault;
   let factory;

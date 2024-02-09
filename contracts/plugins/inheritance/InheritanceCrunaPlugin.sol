@@ -40,13 +40,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   bytes4 public constant SENTINEL = bytes4(keccak256(abi.encodePacked("SENTINEL")));
   InheritanceConf internal _inheritanceConf;
 
-  // used by the emitter only
-  modifier onlyCallerOf(uint256 tokenId_) {
-    if (CrunaManager(_controller.managerOf(tokenId_)).pluginAddress(nameId()) != _msgSender()) revert Forbidden();
-    _;
-  }
-
-  function _canPreApprove(address signer) internal view virtual override returns (bool) {
+  function _canPreApprove(bytes4, address, address signer) internal view virtual override returns (bool) {
     return manager.isAProtector(signer);
   }
 
@@ -76,14 +70,14 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     uint256 validFor,
     bytes calldata signature
   ) public virtual override onlyTokenOwner {
-    if (validFor > 999999) revert InvalidValidity();
+    if (validFor > 9999999) revert InvalidValidity();
     _validateAndCheckSignature(
       this.setSentinel.selector,
       sentinel,
       status ? 1 : 0,
       0,
       0,
-      timestamp * 1e6 + validFor,
+      timestamp * 1e7 + validFor,
       signature
     );
     if (!status) {
@@ -116,14 +110,14 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
-    if (validFor > 999999) revert InvalidValidity();
+    if (validFor > 9999999) revert InvalidValidity();
     _validateAndCheckSignature(
       this.configureInheritance.selector,
       beneficiary,
       quorum,
       proofOfLifeDurationInDays,
       gracePeriod,
-      timestamp * 1e6 + validFor,
+      timestamp * 1e7 + validFor,
       signature
     );
     _configureInheritance(uint16(quorum), uint16(proofOfLifeDurationInDays), uint16(gracePeriod), beneficiary);
@@ -276,12 +270,12 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     uint256 timeValidation,
     bytes calldata signature
   ) internal virtual {
-    if (timeValidation < 1e6) {
+    if (timeValidation < 1e7) {
       if (manager.countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
     } else {
       if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
       usedSignatures[keccak256(signature)] = true;
-      address signer = recoverSigner(
+      (address signer, bytes32 hash) = recoverSigner(
         _functionSelector,
         owner(),
         target,
@@ -294,6 +288,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
         signature
       );
       if (!manager.isAProtector(signer)) revert WrongDataOrNotSignedByProtector();
+      delete preApprovals[hash];
     }
   }
 
