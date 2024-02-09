@@ -22,7 +22,7 @@ Protectors are like personal guardians for your NFT. As an NFT owner, you can ap
 
 Once you set up your first Protector, adding or removing others requires approval too, ensuring no single person can make unilateral changes. This setup is ideal for those who value robust security in managing their digital assets.
 
-_It is advisable to assign multiple Protectors to maintain access to the vault even if one Protector becomes inaccessible. Reasonably, if there is a need for more than two Protectors, it may make sense to transfer the ownership of the vault to a multisig wallet._
+_It is advisable to assign multiple Protectors to maintain access to the vault even if one Protector becomes inaccessible. Reasonably, someone may use their hot wallet to buy the NFT and one or more hard wallets as protectors. A company, most likely, would use a multisig wallet as protector._
 
 ### Sentinels and Asset Recovery
 
