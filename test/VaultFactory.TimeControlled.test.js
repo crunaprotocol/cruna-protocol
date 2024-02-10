@@ -4,27 +4,13 @@ const { toChecksumAddress } = require("ethereumjs-util");
 const EthDeployUtils = require("eth-deploy-utils");
 const deployUtils = new EthDeployUtils();
 
-const {
-  cl,
-  amount,
-  normalize,
-  deployContractUpgradeable,
-  addr0,
-  getChainId,
-  deployContract,
-  getTimestamp,
-  deployAll,
-  upgradeProxy,
-  executeAndReturnGasCost,
-  signRequest,
-  selectorId,
-} = require("./helpers");
+const { normalize, deployContractUpgradeable, addr0, getChainId, deployContract } = require("./helpers");
 
-describe.only("VaultFactory w/ time controlled vault", function () {
+describe("VaultFactory w/ time controlled vault", function () {
   let registry, proxy, guardian;
   let vault;
   let factory;
-  let usdc, usdt;
+  let usdc;
   let deployer, bob, alice, fred, mike, proposer, executor;
   const delay = 10;
 
