@@ -5,12 +5,12 @@ async function main() {
   const ABIs = {};
 
   function abi(name, folder, rename) {
-    let source = path.resolve(__dirname, `../artifacts/${folder ? folder + "/" : ""}${name}/${name}.json`);
+    let source = path.resolve(__dirname, `../artifacts/${folder ? folder + "/" : ""}${name}.sol/${name}.json`);
     let json = require(source);
     ABIs[rename || name] = json.abi;
   }
-  abi("CrunaRegistry", "contracts/utils");
   abi("CrunaManager", "contracts/manager");
+  abi("CrunaRegistry", "contracts/utils");
   // abi("CrunaProxy", "contracts/utils");
   abi("InheritanceCrunaPlugin", "contracts/plugins/inheritance");
   // abi("InheritanceCrunaPluginProxy", "contracts/plugins/inheritance");
