@@ -20,7 +20,7 @@ const {
   selectorId,
 } = require("./helpers");
 
-describe.only("VaultFactory w/ time controlled vault", function () {
+describe("VaultFactory w/ time controlled vault", function () {
   let registry, proxy, guardian;
   let vault;
   let factory;
