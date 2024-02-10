@@ -13,9 +13,15 @@ async function main() {
   const chainId = await deployUtils.currentChainId();
   const [deployer] = await ethers.getSigners();
 
+  let proposer, executor;
   if (chainId === 1337) {
     // on localhost, we deploy the factory if not deployed yet
     await deployUtils.deployNickSFactory(deployer);
+    proposer = deployer.address;
+    executor = deployer.address;
+  } else {
+    proposer = process.env.PROPOSER;
+    executor = process.env.EXECUTOR;
   }
 
   let salt = deployUtils.keccak256("Cruna");
@@ -26,7 +32,7 @@ async function main() {
     deployer,
     "CrunaGuardian",
     ["uint256", "address[]", "address[]", "address"],
-    [process.env.DELAY, [process.env.PROPOSER], [process.env.EXECUTOR], deployer.address],
+    [process.env.DELAY, [proposer], [executor], deployer.address],
     salt,
   );
 
