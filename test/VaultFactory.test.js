@@ -52,6 +52,7 @@ describe("VaultFactory", function () {
     usdc = await deployContract("USDCoin", deployer.address);
     usdt = await deployContract("TetherUSD", deployer.address);
 
+    await usdc.mint(deployer.address, normalize("900"));
     await usdc.mint(bob.address, normalize("900"));
     await usdc.mint(fred.address, normalize("900"));
     await usdc.mint(alice.address, normalize("900"));
@@ -72,12 +73,12 @@ describe("VaultFactory", function () {
 
     it("should buy a vault", async function () {
       let price = await factory.finalPrice(usdc.address);
-      await usdc.connect(bob).approve(factory.address, price);
+      await usdc.approve(factory.address, price);
       const nextTokenId = await vault.nextTokenId();
       const precalculatedAddress = await vault.managerOf(nextTokenId);
-      await expect(factory.connect(bob).buyVaults(usdc.address, 1))
+      await expect(factory.buyVaults(usdc.address, 1))
         .to.emit(vault, "Transfer")
-        .withArgs(addr0, bob.address, nextTokenId)
+        .withArgs(addr0, deployer.address, nextTokenId)
         .to.emit(registry, "BoundContractCreated")
         .withArgs(
           precalculatedAddress,
