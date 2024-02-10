@@ -156,6 +156,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 **1.0.0-rc.1**
 - Add support for multi-sig and ERC4337 wallets as protectors. Since they cannot sign a valid typed_v4 signature, they must pre-approve the operation
+- Add firstTokenId to the init function of a CrunaManagedNFT to allow the owner to set the first tokenId (essential to define cross/multi-chain strategies)
 
 **1.0.0-beta.10**
 - After extensive testing we verified that the global emitters were requiring too much gas because of the many external calls with many parameters across contracts
@@ -265,8 +266,8 @@ File                                |  % Stmts | % Branch |  % Funcs |  % Lines
   IInheritanceCrunaPlugin.sol       |      100 |      100 |      100 |      100 
   InheritanceCrunaPlugin.sol        |      100 |    71.62 |      100 |     97.7 
   InheritanceCrunaPluginProxy.sol   |      100 |      100 |      100 |      100 
- token/                             |    98.04 |    66.67 |      100 |    98.28 
-  CrunaManagedNFTBase.sol           |    97.83 |    65.22 |      100 |    98.15 
+ token/                             |    98.08 |    66.07 |      100 |    98.31 
+  CrunaManagedNFTBase.sol           |    97.87 |    64.58 |      100 |    98.18 
   CrunaManagedNFTOwnable.sol        |      100 |       50 |      100 |      100 
   CrunaManagedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaManagedNFT.sol              |      100 |      100 |      100 |      100 
@@ -286,7 +287,7 @@ File                                |  % Stmts | % Branch |  % Funcs |  % Lines
   IVersioned.sol                    |      100 |      100 |      100 |      100 
   SignatureValidator.sol            |      100 |     87.5 |      100 |      100 
 ------------------------------------|----------|----------|----------|----------
-All files                           |     98.3 |    69.76 |      100 |    98.08 
+All files                           |     98.3 |    69.64 |      100 |    98.08 
 ------------------------------------|----------|----------|----------|----------
 ```
 

@@ -48,6 +48,7 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
   error NotTheTokenOwner();
   error CannotUpgradeToAnOlderVersion();
   error UntrustedImplementation();
+  error InvalidNextTokenId();
 
   mapping(bytes32 => bool) public usedSignatures;
   ICrunaGuardian private _guardian;
@@ -81,7 +82,6 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
   // @param symbol_ The symbol of the token.
   // @param owner The address of the owner.
   constructor(string memory name_, string memory symbol_) ERC721(name_, symbol_) {
-    nextTokenId = 1;
     emit DefaultLocked(false);
   }
 
@@ -110,7 +110,11 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
   // @param registry_ The address of the registry contract.
   // @param guardian_ The address of the CrunaManager.sol guardian.
   // @param managerProxy_ The address of the manager proxy.
-  function init(address registry_, address guardian_, address managerProxy_) external virtual {
+  // @param firstTokenId_ The first tokenId to be used. Notice that in multi-chain scenarios,
+  //   the same tokenId can be used on different chains, so it's important to avoid collisions.
+  //   A good practice is to use the chainId as a prefix. For example, the first token on Polygon
+  //   could be 137000001, while the first token on BSC could be 56000001.
+  function init(address registry_, address guardian_, address managerProxy_, uint256 firstTokenId_) external virtual {
     _canManage(true);
     // must be called immediately after deployment
     if (address(_registry) != address(0)) revert AlreadyInitiated();
@@ -119,6 +123,8 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
     _registry = ICrunaRegistry(registry_);
     managerHistory[0] = ManagerHistory({managerAddress: managerProxy_, firstTokenId: nextTokenId, lastTokenId: 0});
     managerHistoryLength = 1;
+    if (firstTokenId_ == 0) revert InvalidNextTokenId();
+    nextTokenId = firstTokenId_;
   }
 
   function defaultManagerImplementation(uint256 _tokenId) public view virtual override returns (address) {

@@ -24,7 +24,7 @@ interface ICrunaManagedNFT {
   // @param registry_ The address of the registry contract.
   // @param guardian_ The address of the CrunaManager.sol guardian.
   // @param managerProxy_ The address of the manager proxy.
-  function init(address registry_, address guardian_, address managerProxy_) external;
+  function init(address registry_, address guardian_, address managerProxy_, uint256 firstTokenId_) external;
 
   function defaultManagerImplementation(uint256 _tokenId) external view returns (address);
 

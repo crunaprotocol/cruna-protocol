@@ -48,7 +48,7 @@ describe("CrunaManager : Protectors", function () {
     proxy = await deployUtils.attach("CrunaManager", proxy.address);
 
     vault = await deployContract("VaultMockSimple", deployer.address);
-    await vault.init(crunaRegistry.address, guardian.address, proxy.address);
+    await vault.init(crunaRegistry.address, guardian.address, proxy.address, 1);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
 
     await vault.setFactory(factory.address);

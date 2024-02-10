@@ -56,7 +56,7 @@ async function main() {
 
   try {
     await deployUtils.Tx(
-      vault.init(registry.address, guardian.address, managerProxy.address, { gasLimit: 120000 }),
+      vault.init(registry.address, guardian.address, managerProxy.address, 1, { gasLimit: 120000 }),
       "Init vault",
     );
   } catch (e) {
