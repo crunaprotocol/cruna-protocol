@@ -111,11 +111,11 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
     // must be called immediately after deployment
     if (address(_registry) != address(0)) revert AlreadyInitiated();
     if (registry_ == address(0) || guardian_ == address(0) || managerProxy_ == address(0)) revert ZeroAddress();
+    if (firstTokenId_ == 0) revert InvalidNextTokenId();
     _guardian = ICrunaGuardian(guardian_);
     _registry = ICrunaRegistry(registry_);
-    managerHistory[0] = ManagerHistory({managerAddress: managerProxy_, firstTokenId: nextTokenId, lastTokenId: 0});
+    managerHistory[0] = ManagerHistory({managerAddress: managerProxy_, firstTokenId: firstTokenId_, lastTokenId: 0});
     managerHistoryLength = 1;
-    if (firstTokenId_ == 0) revert InvalidNextTokenId();
     nextTokenId = firstTokenId_;
   }
 

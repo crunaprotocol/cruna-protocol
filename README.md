@@ -154,6 +154,9 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**1.0.0-rc.2**
+- Fix bug in CrunaManagedNFTBase#init
+
 **1.0.0-rc.1**
 - Add support for multi-sig and ERC4337 wallets as protectors. Since they cannot sign a valid typed_v4 signature, they must pre-approve the operation
 - Add firstTokenId to the init function of a CrunaManagedNFT to allow the owner to set the first tokenId (essential to define cross/multi-chain strategies)
@@ -245,7 +248,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  43 passing
+  44 passing
 
 ------------------------------------|----------|----------|----------|----------
 File                                |  % Stmts | % Branch |  % Funcs |  % Lines 

@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 
 const deployed = require("../export/deployed.json");
 const path = require("path");

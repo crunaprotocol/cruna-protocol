@@ -54,14 +54,10 @@ async function main() {
     salt,
   );
 
-  try {
-    await deployUtils.Tx(
-      vault.init(registry.address, guardian.address, managerProxy.address, 1, { gasLimit: 120000 }),
-      "Init vault",
-    );
-  } catch (e) {
-    // we are calling the script again
-  }
+  await deployUtils.Tx(
+    vault.init(registry.address, guardian.address, managerProxy.address, 1, { gasLimit: 160000 }),
+    "Init vault",
+  );
 
   const factory = await deployUtils.deployProxy("VaultFactory", vault.address, deployer.address);
 
