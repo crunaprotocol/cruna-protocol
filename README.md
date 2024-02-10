@@ -154,6 +154,10 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**1.0.0-rc.1**
+- Add support for multi-sig and ERC4337 wallets as protectors. Since they cannot sign a valid typed_v4 signature, they must pre-approve the operation
+- Add firstTokenId to the init function of a CrunaManagedNFT to allow the owner to set the first tokenId (essential to define cross/multi-chain strategies)
+
 **1.0.0-beta.10**
 - After extensive testing we verified that the global emitters were requiring too much gas because of the many external calls with many parameters across contracts
 - Removed activation after minting in favor of activation only during the minting process. Still, any implementer can extend the contract to allow for activation after minting, if needed
@@ -241,7 +245,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  42 passing
+  43 passing
 
 ------------------------------------|----------|----------|----------|----------
 File                                |  % Stmts | % Branch |  % Funcs |  % Lines 
@@ -249,27 +253,27 @@ File                                |  % Stmts | % Branch |  % Funcs |  % Lines
  interfaces/                        |      100 |      100 |      100 |      100 
   IERC6454.sol                      |      100 |      100 |      100 |      100 
   IERC6982.sol                      |      100 |      100 |      100 |      100 
- manager/                           |     97.7 |    71.33 |    98.28 |    98.44 
-  Actor.sol                         |      100 |       70 |      100 |      100 
-  CrunaManager.sol                  |    97.64 |    71.77 |    97.14 |    97.87 
+ manager/                           |     98.3 |    70.39 |      100 |    98.97 
+  Actor.sol                         |      100 |       60 |      100 |      100 
+  CrunaManager.sol                  |    98.45 |    71.43 |      100 |     98.6 
   CrunaManagerBase.sol              |    96.55 |    68.75 |      100 |      100 
   CrunaManagerProxy.sol             |      100 |      100 |      100 |      100 
   ICrunaManager.sol                 |      100 |      100 |      100 |      100 
  plugins/                           |    96.15 |    85.71 |      100 |      100 
   CrunaPluginBase.sol               |    96.15 |    85.71 |      100 |      100 
   ICrunaPlugin.sol                  |      100 |      100 |      100 |      100 
- plugins/inheritance/               |    98.44 |    69.74 |    95.24 |     95.4 
+ plugins/inheritance/               |      100 |    71.62 |      100 |     97.7 
   IInheritanceCrunaPlugin.sol       |      100 |      100 |      100 |      100 
-  InheritanceCrunaPlugin.sol        |    98.44 |    69.74 |       95 |     95.4 
+  InheritanceCrunaPlugin.sol        |      100 |    71.62 |      100 |     97.7 
   InheritanceCrunaPluginProxy.sol   |      100 |      100 |      100 |      100 
- token/                             |    98.04 |    66.67 |      100 |    98.28 
-  CrunaManagedNFTBase.sol           |    97.83 |    65.22 |      100 |    98.15 
+ token/                             |    98.08 |    66.07 |      100 |    98.31 
+  CrunaManagedNFTBase.sol           |    97.87 |    64.58 |      100 |    98.18 
   CrunaManagedNFTOwnable.sol        |      100 |       50 |      100 |      100 
   CrunaManagedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaManagedNFT.sol              |      100 |      100 |      100 |      100 
   IReference.sol                    |      100 |      100 |      100 |      100 
   IVault.sol                        |      100 |      100 |      100 |      100 
- utils/                             |    96.43 |    58.33 |      100 |    92.68 
+ utils/                             |    97.14 |     62.5 |      100 |    93.88 
   CrunaGuardian.sol                 |      100 |       50 |      100 |       75 
   CrunaRegistry.sol                 |      100 |      100 |      100 |      100 
   ERC6551AccountProxy.sol           |       90 |       75 |      100 |    90.91 
@@ -281,9 +285,9 @@ File                                |  % Stmts | % Branch |  % Funcs |  % Lines
   INamed.sol                        |      100 |      100 |      100 |      100 
   INamedAndVersioned.sol            |      100 |      100 |      100 |      100 
   IVersioned.sol                    |      100 |      100 |      100 |      100 
-  SignatureValidator.sol            |      100 |       75 |      100 |      100 
+  SignatureValidator.sol            |      100 |     87.5 |      100 |      100 
 ------------------------------------|----------|----------|----------|----------
-All files                           |    97.67 |    69.39 |    98.48 |    97.29 
+All files                           |     98.3 |    69.64 |      100 |    98.08 
 ------------------------------------|----------|----------|----------|----------
 ```
 

@@ -6,6 +6,13 @@ const ethSigUtil = require("eth-sig-util");
 const { artifacts } = hre;
 
 const { domainType } = require("./eip712");
+
+function debug(...params) {
+  if (process.env.NODE_ENV !== "test") {
+    console.log(...params);
+  }
+}
+
 let count = 9000;
 
 const Helpers = {
@@ -306,10 +313,16 @@ const Helpers = {
     const data = contract.interface.encodeFunctionData(funcName, [...params]);
     const predecessor = ethers.utils.formatBytes32String("");
     const salt = ethers.utils.formatBytes32String("");
-    await contract.connect(proposer).schedule(contract.address, 0, data, predecessor, salt, delay);
-    await ethers.provider.send("evm_increaseTime", [delay + 1]);
-    await ethers.provider.send("evm_mine");
-    return contract.connect(executor).execute(contract.address, 0, data, predecessor, salt);
+    debug("Proposing", funcName, "with data", data);
+    await contract.connect(proposer).schedule(contract.address, 0, data, predecessor, salt, delay, { gasLimit: 100000 });
+    if (process.env.NODE_ENV === "test") {
+      await ethers.provider.send("evm_increaseTime", [delay + 1]);
+      await ethers.provider.send("evm_mine");
+    } else {
+      await thiz.sleep(1000 * delay);
+    }
+    debug("Executing", funcName, "with data", data);
+    return contract.connect(executor).execute(contract.address, 0, data, predecessor, salt, { gasLimit: 100000 });
   },
 
   async sleep(millis) {
@@ -323,7 +336,7 @@ const Helpers = {
   },
 
   combineTimestampAndValidFor(timestamp, validFor) {
-    return ethers.BigNumber.from(timestamp.toString()).mul(1e6).add(validFor);
+    return ethers.BigNumber.from(timestamp.toString()).mul(1e7).add(validFor);
   },
 
   async signRequest(

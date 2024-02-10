@@ -48,6 +48,7 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
   error NotTheTokenOwner();
   error CannotUpgradeToAnOlderVersion();
   error UntrustedImplementation();
+  error InvalidNextTokenId();
 
   mapping(bytes32 => bool) public usedSignatures;
   ICrunaGuardian private _guardian;
@@ -81,7 +82,6 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
   // @param symbol_ The symbol of the token.
   // @param owner The address of the owner.
   constructor(string memory name_, string memory symbol_) ERC721(name_, symbol_) {
-    nextTokenId = 1;
     emit DefaultLocked(false);
   }
 
@@ -106,11 +106,7 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
     maxTokenId = maxTokenId_;
   }
 
-  // @dev This function will initialize the contract.
-  // @param registry_ The address of the registry contract.
-  // @param guardian_ The address of the CrunaManager.sol guardian.
-  // @param managerProxy_ The address of the manager proxy.
-  function init(address registry_, address guardian_, address managerProxy_) external virtual {
+  function init(address registry_, address guardian_, address managerProxy_, uint256 firstTokenId_) external virtual {
     _canManage(true);
     // must be called immediately after deployment
     if (address(_registry) != address(0)) revert AlreadyInitiated();
@@ -119,6 +115,8 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
     _registry = ICrunaRegistry(registry_);
     managerHistory[0] = ManagerHistory({managerAddress: managerProxy_, firstTokenId: nextTokenId, lastTokenId: 0});
     managerHistoryLength = 1;
+    if (firstTokenId_ == 0) revert InvalidNextTokenId();
+    nextTokenId = firstTokenId_;
   }
 
   function defaultManagerImplementation(uint256 _tokenId) public view virtual override returns (address) {

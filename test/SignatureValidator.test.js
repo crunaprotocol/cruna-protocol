@@ -70,18 +70,20 @@ describe("SignatureValidator", function () {
     );
 
     expect(
-      await validator.recoverSigner(
-        message.selector,
-        message.owner,
-        message.actor,
-        message.tokenAddress,
-        message.tokenId,
-        message.extra,
-        message.extra2,
-        message.extra3,
-        message.timeValidation,
-        signature,
-      ),
+      (
+        await validator.recoverSigner(
+          message.selector,
+          message.owner,
+          message.actor,
+          message.tokenAddress,
+          message.tokenId,
+          message.extra,
+          message.extra2,
+          message.extra3,
+          message.timeValidation,
+          signature,
+        )
+      )[0],
     ).equal(fred.address);
   });
 
@@ -106,18 +108,20 @@ describe("SignatureValidator", function () {
     );
 
     expect(
-      await validator.recoverSigner(
-        message.selector,
-        message.owner,
-        message.actor,
-        message.tokenAddress,
-        message.tokenId,
-        message.extra,
-        message.extra2,
-        message.extra3,
-        message.timeValidation,
-        signature,
-      ),
+      (
+        await validator.recoverSigner(
+          message.selector,
+          message.owner,
+          message.actor,
+          message.tokenAddress,
+          message.tokenId,
+          message.extra,
+          message.extra2,
+          message.extra3,
+          message.timeValidation,
+          signature,
+        )
+      )[0],
     ).equal(bob.address);
   });
 });

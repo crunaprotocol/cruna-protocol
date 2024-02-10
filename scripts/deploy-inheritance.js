@@ -4,7 +4,7 @@ const ethers = hre.ethers;
 const path = require("path");
 const EthDeployUtils = require("eth-deploy-utils");
 let deployUtils;
-
+const { trustImplementation, bytes4, keccak256 } = require("../test/helpers");
 const { expect } = require("chai");
 
 async function main() {
@@ -38,15 +38,9 @@ async function main() {
   );
 
   const guardian = await deployUtils.attach("CrunaGuardian");
-  await deployUtils.Tx(
-    guardian.setTrustedImplementation(
-      deployUtils.bytes4(deployUtils.keccak256("InheritanceCrunaPlugin")),
-      proxy.address,
-      true,
-      1,
-    ),
-    "Setting trusted implementation for InheritanceCrunaPlugin",
-  );
+  let PLUGIN_ID = bytes4(keccak256("InheritanceCrunaPlugin"));
+
+  await trustImplementation(guardian, deployer, deployer, process.env.DELAY, PLUGIN_ID, proxy.address, true, 1);
 }
 
 main()

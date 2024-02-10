@@ -18,11 +18,12 @@ const {
   bytes4,
   selectorId,
   trustImplementation,
+  combineTimestampAndValidFor,
 } = require("./helpers");
 
 describe("Sentinel and Inheritance", function () {
   let crunaRegistry, proxy, managerImpl, guardian;
-  let vault, inheritancePluginProxy, inheritancePluginImpl;
+  let vault, inheritancePluginProxy, inheritancePluginImpl, validatorMock;
   let factory;
   let usdc, usdt;
   let deployer, bob, alice, fred, mark, otto, jerry, beneficiary1, beneficiary2, proposer, executor;
@@ -46,10 +47,11 @@ describe("Sentinel and Inheritance", function () {
     const deployedProxy = await deployContract("CrunaManagerProxy", managerImpl.address);
     proxy = await deployUtils.attach("CrunaManager", deployedProxy.address);
     vault = await deployContract("VaultMockSimple", deployer.address);
-    await vault.init(crunaRegistry.address, guardian.address, proxy.address);
+    await vault.init(crunaRegistry.address, guardian.address, proxy.address, 1);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
-
     await vault.setFactory(factory.address);
+
+    validatorMock = await deployContract("ValidatorMock");
 
     usdc = await deployContract("USDCoin", deployer.address);
     usdt = await deployContract("TetherUSD", deployer.address);
@@ -332,8 +334,6 @@ describe("Sentinel and Inheritance", function () {
       .withArgs(bob.address, 1, 90, 30, addr0);
   });
 
-  //
-
   it("should set up 5 sentinels and an inheritance with a quorum 3", async function () {
     const tokenId = await buyAVaultAndPlug(bob);
     const managerAddress = await vault.managerOf(tokenId);
@@ -366,8 +366,8 @@ describe("Sentinel and Inheritance", function () {
     );
 
     await expect(
-      inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, addr0, (await getTimestamp()) - 10, 36, 0),
-    ).revertedWith("ECDSAInvalidSignatureLength");
+      inheritancePlugin.connect(bob).configureInheritance(8, 90, 30, addr0, (await getTimestamp()) - 10, 36, 0x9372),
+    ).revertedWith("WrongDataOrNotSignedByProtector");
 
     await expect(
       inheritancePlugin
@@ -499,25 +499,27 @@ describe("Sentinel and Inheritance", function () {
 
     const inheritancePlugin = await ethers.getContractAt("InheritanceCrunaPlugin", inheritancePluginAddress);
 
-    let signature = (
-      await signRequest(
-        await selectorId("IInheritanceCrunaPlugin", "setSentinel"),
-        bob.address,
-        mark.address,
-        vault.address,
-        tokenId,
-        1,
-        0,
-        0,
-        ts,
-        3600,
-        chainId,
-        alice.address,
-        inheritancePlugin,
-      )
-    )[0];
+    const timeValidation = combineTimestampAndValidFor(ts, 3600).toString();
 
-    await expect(inheritancePlugin.connect(bob).setSentinel(mark.address, true, ts, 3600, signature))
+    let params = [
+      await selectorId("IInheritanceCrunaPlugin", "setSentinel"),
+      bob.address,
+      mark.address,
+      vault.address,
+      tokenId,
+      1,
+      0,
+      0,
+      timeValidation,
+    ];
+
+    let hash = await validatorMock.hashData(...params);
+
+    await expect(inheritancePlugin.connect(alice).preApprove(...params))
+      .to.emit(inheritancePlugin, "PreApproved")
+      .withArgs(hash, alice.address);
+
+    await expect(inheritancePlugin.connect(bob).setSentinel(mark.address, true, ts, 3600, 0))
       .to.emit(inheritancePlugin, "SentinelUpdated")
       .withArgs(bob.address, mark.address, true);
 
@@ -530,7 +532,7 @@ describe("Sentinel and Inheritance", function () {
 
     let nameAddress = await manager.pseudoAddress("InheritanceCrunaPlugin");
 
-    signature = (
+    let signature = (
       await signRequest(
         await selectorId("ICrunaManager", "disablePlugin"),
         bob.address,

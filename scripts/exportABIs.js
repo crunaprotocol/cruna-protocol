@@ -5,7 +5,7 @@ async function main() {
   const ABIs = {};
 
   function abi(name, folder, rename) {
-    let source = path.resolve(__dirname, `../artifacts/${folder ? folder + "/" : ""}${name}.sol/${name}.json`);
+    let source = path.resolve(__dirname, `../artifacts/${folder ? folder + "/" : ""}${name}/${name}.json`);
     let json = require(source);
     ABIs[rename || name] = json.abi;
   }

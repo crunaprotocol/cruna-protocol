@@ -36,10 +36,6 @@ abstract contract CrunaPluginBase is Context, IBoundContract, IVersioned, ICruna
   mapping(bytes32 => bool) public usedSignatures;
   CrunaManager public manager;
 
-  // the controller is the vault inside the manager proxy (i.e., the event emitter),
-  // not inside the manager of the single tokenId
-  IVault internal _controller;
-
   modifier onlyTokenOwner() {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     _;
