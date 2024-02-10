@@ -106,14 +106,6 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
     maxTokenId = maxTokenId_;
   }
 
-  // @dev This function will initialize the contract.
-  // @param registry_ The address of the registry contract.
-  // @param guardian_ The address of the CrunaManager.sol guardian.
-  // @param managerProxy_ The address of the manager proxy.
-  // @param firstTokenId_ The first tokenId to be used. Notice that in multi-chain scenarios,
-  //   the same tokenId can be used on different chains, so it's important to avoid collisions.
-  //   A good practice is to use the chainId as a prefix. For example, the first token on Polygon
-  //   could be 137000001, while the first token on BSC could be 56000001.
   function init(address registry_, address guardian_, address managerProxy_, uint256 firstTokenId_) external virtual {
     _canManage(true);
     // must be called immediately after deployment
