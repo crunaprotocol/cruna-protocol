@@ -91,7 +91,7 @@ abstract contract CrunaPluginBase is Context, IBoundContract, IVersioned, ICruna
     return tokenId_;
   }
 
-  // @dev Upgrade the implementation of the manager/plugin
+  // @dev Upgrade the implementation of the plugin
   //   Notice that the owner can upgrade active or disable plugins
   //   so that, if a plugin is compromised, the user can disable it,
   //   wait for a new trusted implementation and upgrade it.
@@ -107,10 +107,6 @@ abstract contract CrunaPluginBase is Context, IBoundContract, IVersioned, ICruna
     StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
     manager.updateEmitterForPlugin(nameId(), implementation_);
   }
-
-  //  function getImplementation() external view override returns (address) {
-  //    return StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value;
-  //  }
 
   // @dev This empty reserved space is put in place to allow future versions to add new
   // variables without shifting down storage in the inheritance chain.

@@ -104,10 +104,7 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICrun
     return bytes4(keccak256(abi.encodePacked(str)));
   }
 
-  // @dev Upgrade the implementation of the manager/plugin
-  //   Notice that the owner can upgrade active or disable plugins
-  //   so that, if a plugin is compromised, the user can disable it,
-  //   wait for a new trusted implementation and upgrade it.
+  // @dev Upgrade the implementation of the manager
   function upgrade(address implementation_) external virtual override {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     uint256 requires = guardian().trustedImplementation(nameId(), implementation_);
@@ -120,10 +117,6 @@ abstract contract CrunaManagerBase is Context, IBoundContract, IVersioned, ICrun
     if (manager.version() < requires) revert PluginRequiresUpdatedManager(requires);
     StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
   }
-
-  //  function getImplementation() external view override returns (address) {
-  //    return StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value;
-  //  }
 
   // @dev This empty reserved space is put in place to allow future versions to add new
   // variables without shifting down storage in the inheritance chain.
