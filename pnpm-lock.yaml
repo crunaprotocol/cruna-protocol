@@ -81,7 +81,7 @@ devDependencies:
     version: 2.10.0(hardhat@2.19.4)
   hardhat-gas-reporter:
     specifier: ^1.0.9
-    version: 1.0.9(hardhat@2.19.4)
+    version: 1.0.10(hardhat@2.19.4)
   husky:
     specifier: ^9.0.10
     version: 9.0.10
@@ -1827,7 +1827,7 @@ packages:
     dev: true
 
   /@types/form-data@0.0.33:
-    resolution: {integrity: sha1-yayFsqX9GENbjIXZ7LUObWyJP/g=}
+    resolution: {integrity: sha512-8BSvG1kGm83cyJITQMZSulnl6QV8jqAGreJsc5tPu1Jq0vTSOiY/k24Wx82JRpWwZSqrala6sd5rWi6aNXvqcw==}
     dependencies:
       '@types/node': 20.9.3
     dev: true
@@ -3970,6 +3970,7 @@ packages:
       is-hex-prefixed: 1.0.0
       strip-hex-prefix: 1.0.0
     dev: true
+    bundledDependencies: false
 
   /eventemitter3@4.0.4:
     resolution: {integrity: sha512-rlaVLnVxtxvoyLsQQFBx53YmXHDxRIzzTLbdfxqi4yocpSjAxXwkU0cScM5JgSKMqEhrZpnvQ2D9gjylR0AimQ==}
@@ -4679,8 +4680,8 @@ packages:
       strip-ansi: 6.0.1
     dev: true
 
-  /hardhat-gas-reporter@1.0.9(hardhat@2.19.4):
-    resolution: {integrity: sha512-INN26G3EW43adGKBNzYWOlI3+rlLnasXTwW79YNnUhXPDa+yHESgt639dJEs37gCjhkbNKcRRJnomXEuMFBXJg==}
+  /hardhat-gas-reporter@1.0.10(hardhat@2.19.4):
+    resolution: {integrity: sha512-02N4+So/fZrzJ88ci54GqwVA3Zrf0C9duuTyGt0CFRIh/CdNwbnTgkXkRfojOMLBQ+6t+lBIkgbsOtqMvNwikA==}
     peerDependencies:
       hardhat: ^2.0.2
     dependencies:
