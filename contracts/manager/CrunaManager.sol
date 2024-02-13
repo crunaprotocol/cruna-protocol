@@ -253,7 +253,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       signature,
       false
     );
-    address _pluginAddress = registry().createBoundContract(pluginProxy, 0x00, block.chainid, address(this), tokenId());
+    address _pluginAddress = registry().createTokenLinkedContract(pluginProxy, 0x00, block.chainid, address(this), tokenId());
     ICrunaPlugin _plugin = ICrunaPlugin(_pluginAddress);
     if (_plugin.nameId() != _nameId) revert InvalidImplementation();
     allPlugins.push(PluginStatus(name, true));
@@ -326,7 +326,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   }
 
   function pluginAddress(bytes4 _nameId) public view virtual override returns (address) {
-    return registry().boundContract(pluginsById[_nameId].proxyAddress, 0x00, block.chainid, address(this), tokenId());
+    return registry().tokenLinkedContract(pluginsById[_nameId].proxyAddress, 0x00, block.chainid, address(this), tokenId());
   }
 
   function plugin(bytes4 _nameId) public view virtual override returns (ICrunaPlugin) {

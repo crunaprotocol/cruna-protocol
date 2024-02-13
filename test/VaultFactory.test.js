@@ -79,7 +79,7 @@ describe("VaultFactory", function () {
       await expect(factory.buyVaults(usdc.address, 1))
         .to.emit(vault, "Transfer")
         .withArgs(addr0, deployer.address, nextTokenId)
-        .to.emit(registry, "BoundContractCreated")
+        .to.emit(registry, "TokenLinkedContractCreated")
         .withArgs(
           precalculatedAddress,
           toChecksumAddress(proxy.address),
@@ -199,7 +199,7 @@ describe("VaultFactory", function () {
       await vault.setMaxTokenId(0);
       expect(await vault.maxTokenId()).equal(2);
 
-      await expect(buyVault(usdt, 2, alice)).revertedWith("MaxSupplyReached");
+      await expect(buyVault(usdt, 2, alice)).revertedWith("SupplyOverflow");
     });
 
     it("should remove a stableCoin when active is false", async function () {

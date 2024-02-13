@@ -6,13 +6,13 @@ pragma solidity ^0.8.20;
 import {ICrunaPlugin} from "../plugins/ICrunaPlugin.sol";
 
 import {INamed} from "../utils/INamed.sol";
-import {IBoundContractExtended} from "../utils/IBoundContractExtended.sol";
+import {ILinkedContractExtended} from "../utils/ILinkedContractExtended.sol";
 import {IReference} from "../token/IReference.sol";
 import {IVault} from "../token/IVault.sol";
 
 //import {console} from "hardhat/console.sol";
 
-interface ICrunaManager is IBoundContractExtended, INamed, IReference {
+interface ICrunaManager is ILinkedContractExtended, INamed, IReference {
   event EmitEventFailed(EventAction action);
 
   event ProtectorChange(address indexed protector, bool status);

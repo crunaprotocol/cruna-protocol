@@ -73,10 +73,10 @@ describe("CrunaManager : Protectors", function () {
     const nextTokenId = await vault.nextTokenId();
     const precalculatedAddress = await vault.managerOf(nextTokenId);
 
-    // console.log(keccak256("BoundContractCreated(address,address,bytes32,uint256,address,uint256)"))
+    // console.log(keccak256("TokenLinkedContractCreated(address,address,bytes32,uint256,address,uint256)"))
 
     await expect(factory.connect(bob).buyVaults(usdc.address, 1))
-      .to.emit(crunaRegistry, "BoundContractCreated")
+      .to.emit(crunaRegistry, "TokenLinkedContractCreated")
       .withArgs(
         precalculatedAddress,
         toChecksumAddress(proxy.address),

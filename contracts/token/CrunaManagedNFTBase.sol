@@ -7,6 +7,8 @@ import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
+
 import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
 import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
 import {ICrunaManagedNFT} from "./ICrunaManagedNFT.sol";
@@ -16,7 +18,7 @@ import {ICrunaManager} from "../manager/ICrunaManager.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 import {IReference} from "./IReference.sol";
 
-//import {console} from "hardhat/console.sol";
+import {console} from "hardhat/console.sol";
 
 interface IVersionedManager {
   function version() external pure returns (uint256);
@@ -43,7 +45,7 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
   error ZeroAddress();
   error RegistryNotFound();
   error AlreadyInitiated();
-  error MaxSupplyReached();
+  error SupplyOverflow();
   error ErrorCreatingManager();
   error NotTheTokenOwner();
   error CannotUpgradeToAnOlderVersion();
@@ -223,8 +225,8 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
     if (address(_registry) == address(0)) revert RegistryNotFound();
     uint256 tokenId = nextTokenId;
     for (uint256 i = 0; i < amount; i++) {
-      if (maxTokenId > 0 && tokenId > maxTokenId) revert MaxSupplyReached();
-      _registry.createBoundContract(defaultManagerImplementation(tokenId), 0x00, block.chainid, address(this), tokenId);
+      if (maxTokenId > 0 && tokenId > maxTokenId) revert SupplyOverflow();
+      _registry.createTokenLinkedContract(defaultManagerImplementation(tokenId), 0x00, block.chainid, address(this), tokenId);
       _safeMint(to, tokenId++);
     }
     nextTokenId = tokenId;
@@ -233,6 +235,7 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
   // @dev This function will return the address of the manager for tokenId.
   // @param tokenId The id of the token.
   function managerOf(uint256 tokenId) public view virtual returns (address) {
-    return _registry.boundContract(defaultManagerImplementation(tokenId), 0x00, block.chainid, address(this), tokenId);
+    return ERC6551AccountLib.computeAddress(address(_registry), defaultManagerImplementation(tokenId), 0x00, block.chainid, address(this), tokenId);
+//    return _registry.tokenLinkedContract(defaultManagerImplementation(tokenId), 0x00, block.chainid, address(this), tokenId);
   }
 }

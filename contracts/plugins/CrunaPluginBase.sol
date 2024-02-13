@@ -4,12 +4,12 @@ pragma solidity ^0.8.20;
 // Author: Francesco Sullo <francesco@sullo.co>
 
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
+import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 import {CrunaManager} from "../manager/CrunaManager.sol";
-import {IBoundContract} from "../utils/IBoundContract.sol";
+import {ILinkedContract} from "../utils/ILinkedContract.sol";
 import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
 import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
@@ -17,7 +17,7 @@ import {ICrunaPlugin, IVault} from "./ICrunaPlugin.sol";
 
 //import {console} from "hardhat/console.sol";
 
-abstract contract CrunaPluginBase is Context, IBoundContract, IVersioned, ICrunaPlugin {
+abstract contract CrunaPluginBase is Context, ILinkedContract, IVersioned, ICrunaPlugin {
   error NotTheTokenOwner();
   error UntrustedImplementation();
   error InvalidVersion();

@@ -281,8 +281,8 @@ File                                |  % Stmts | % Branch |  % Funcs |  % Lines
   CrunaRegistry.sol                 |      100 |      100 |      100 |      100 
   ERC6551AccountProxy.sol           |       90 |       75 |      100 |    90.91 
   FlexiTimelockController.sol       |      100 |       50 |      100 |      100 
-  IBoundContract.sol                |      100 |      100 |      100 |      100 
-  IBoundContractExtended.sol        |      100 |      100 |      100 |      100 
+  ILinkedContract.sol                |      100 |      100 |      100 |      100 
+  ILinkedContractExtended.sol        |      100 |      100 |      100 |      100 
   ICrunaGuardian.sol                |      100 |      100 |      100 |      100 
   ICrunaRegistry.sol                |      100 |      100 |      100 |      100 
   INamed.sol                        |      100 |      100 |      100 |      100 

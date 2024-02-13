@@ -58,7 +58,7 @@ describe("VaultFactory w/ time controlled vault", function () {
     await expect(factory.buyVaults(usdc.address, 1))
       .to.emit(vault, "Transfer")
       .withArgs(addr0, deployer.address, nextTokenId)
-      .to.emit(registry, "BoundContractCreated")
+      .to.emit(registry, "TokenLinkedContractCreated")
       .withArgs(
         precalculatedAddress,
         toChecksumAddress(proxy.address),

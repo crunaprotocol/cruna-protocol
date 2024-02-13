@@ -13,7 +13,7 @@ interface ICrunaRegistry {
   /**
    * @dev The registry MUST emit the ERC6551AccountCreated event upon successful account creation.
    */
-  event BoundContractCreated(
+  event TokenLinkedContractCreated(
     address contractAddress,
     address indexed implementation,
     bytes32 salt,
@@ -31,7 +31,7 @@ interface ICrunaRegistry {
    *
    * @return account The address of the token bound account
    */
-  function createBoundContract(
+  function createTokenLinkedContract(
     address implementation,
     bytes32 salt,
     uint256 chainId,
@@ -44,7 +44,7 @@ interface ICrunaRegistry {
    *
    * @return account The address of the token bound account
    */
-  function boundContract(
+  function tokenLinkedContract(
     address implementation,
     bytes32 salt,
     uint256 chainId,
