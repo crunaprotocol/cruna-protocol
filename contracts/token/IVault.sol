@@ -12,4 +12,10 @@ interface IVault is IReference {
   function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external;
   function managerOf(uint256 tokenId) external view returns (address);
   function managerEmitter(uint256 _tokenId) external view returns (address);
+  function deployPlugin(
+    address pluginImplementation,
+    bytes32 salt,
+    uint256 tokenId,
+    bool isERC6551Account
+  ) external returns (address);
 }

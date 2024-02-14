@@ -41,8 +41,15 @@ abstract contract CrunaPluginBase is Context, ILinkedContract, IVersioned, ICrun
     _;
   }
 
-  constructor() {
-    //    currentVersion = version();
+  // Inits the manager. It should be executed immediately after the deployment
+  function initManager() external virtual override {
+    if (address(manager) != address(0)) revert Forbidden();
+    manager = CrunaManager(IVault(tokenAddress()).managerOf(tokenId()));
+  }
+
+  function isERC6551Account() external pure virtual returns (bool) {
+    // override if an account
+    return false;
   }
 
   function version() public pure virtual override returns (uint256) {
@@ -56,19 +63,11 @@ abstract contract CrunaPluginBase is Context, ILinkedContract, IVersioned, ICrun
   }
 
   function vault() public view virtual override returns (IVault) {
-    return manager.vault();
+    return IVault(tokenAddress());
   }
 
   function registry() public view virtual override returns (ICrunaRegistry) {
     return manager.registry();
-  }
-
-  function emitter() public view virtual override returns (address) {
-    address _emitter = StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value;
-    if (_emitter == address(0)) {
-      _emitter = ERC6551AccountLib.implementation();
-    }
-    return _emitter;
   }
 
   function token() public view virtual override returns (uint256, address, uint256) {
@@ -99,7 +98,7 @@ abstract contract CrunaPluginBase is Context, ILinkedContract, IVersioned, ICrun
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     uint256 requires = guardian().trustedImplementation(nameId(), implementation_);
     if (requires == 0) revert UntrustedImplementation();
-    CrunaManager impl = CrunaManager(implementation_);
+    IVersioned impl = IVersioned(implementation_);
     uint256 _version = impl.version();
     if (_version <= version()) revert InvalidVersion();
     CrunaManager _manager = CrunaManager(vault().managerOf(tokenId()));

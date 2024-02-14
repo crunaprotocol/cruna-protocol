@@ -37,4 +37,12 @@ interface ICrunaManagedNFT {
   // @dev This function will return the address of the manager for tokenId.
   // @param tokenId The id of the token.
   function managerOf(uint256 tokenId) external view returns (address);
+
+  // called by the manager only
+  function deployPlugin(
+    address pluginImplementation,
+    bytes32 salt,
+    uint256 tokenId,
+    bool isERC6551Account
+  ) external returns (address);
 }

@@ -6,7 +6,6 @@ pragma solidity ^0.8.20;
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
-import {CrunaManager} from "../../manager/CrunaManager.sol";
 import {IInheritanceCrunaPlugin} from "./IInheritanceCrunaPlugin.sol";
 import {ICrunaPlugin, CrunaPluginBase} from "../CrunaPluginBase.sol";
 import {INamed} from "../../utils/INamed.sol";
@@ -42,15 +41,6 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
 
   function _canPreApprove(bytes4, address, address signer) internal view virtual override returns (bool) {
     return manager.isAProtector(signer);
-  }
-
-  // @dev see {IInheritanceCrunaPlugin.sol-init}
-  // this must be executed immediately after the deployment
-  function init() external virtual override {
-    // Notice that the manager pretends to be an NFT
-    // so tokenAddress() returns the manager address
-    if (_msgSender() != tokenAddress()) revert Forbidden();
-    manager = CrunaManager(_msgSender());
   }
 
   function requiresToManageTransfer() external pure override returns (bool) {

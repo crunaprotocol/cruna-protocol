@@ -54,14 +54,13 @@ interface ICrunaManager is ILinkedContractExtended, INamed, IReference {
   // simulate ERC-721 to allow plugins to be deployed via ERC-6551 Registry
   function ownerOf(uint256) external view returns (address);
 
-  function emitter() external view returns (address);
-
   function vault() external view returns (IVault);
 
   function plug(
     string memory name,
     address pluginProxy,
     bool canManageTransfer,
+    bool isERC6551Account,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature

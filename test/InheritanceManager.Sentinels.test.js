@@ -76,7 +76,7 @@ describe("Sentinel and Inheritance", function () {
     inheritancePluginProxy = await deployContract("InheritanceCrunaPluginProxy", inheritancePluginImpl.address);
     inheritancePluginProxy = await deployUtils.attach("InheritanceCrunaPlugin", inheritancePluginProxy.address);
     await expect(
-      manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, 0, 0, 0),
+      manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, 0, 0, 0),
     ).to.be.revertedWith("UntrustedImplementation");
     await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true, 1);
     expect((await manager.pluginsById(PLUGIN_ID)).proxyAddress).to.equal(addr0);
@@ -127,13 +127,12 @@ describe("Sentinel and Inheritance", function () {
         )
       )[0];
       await expect(
-        manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, ts, 3600, signature),
+        manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, ts, 3600, signature),
       ).to.emit(manager, "PluginStatusChange");
     } else {
-      await expect(manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, 0, 0, 0)).to.emit(
-        manager,
-        "PluginStatusChange",
-      );
+      await expect(
+        manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, 0, 0, 0),
+      ).to.emit(manager, "PluginStatusChange");
     }
 
     expect((await manager.pluginsById(PLUGIN_ID)).proxyAddress).not.equal(addr0);
@@ -170,7 +169,6 @@ describe("Sentinel and Inheritance", function () {
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
     const nameId = bytes4(keccak256("InheritanceCrunaPlugin"));
     const inheritancePluginAddress = await manager.pluginAddress(nameId);
-
     const inheritancePlugin = await ethers.getContractAt("InheritanceCrunaPlugin", inheritancePluginAddress);
     expect(await inheritancePlugin.requiresToManageTransfer()).to.be.true;
     expect(await inheritancePlugin.registry()).to.equal(crunaRegistry.address);
@@ -1031,10 +1029,7 @@ describe("Sentinel and Inheritance", function () {
     await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginV2Impl.address, true, 1);
     await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginV3Impl.address, true, 1);
 
-    expect(await inheritancePlugin.emitter()).to.equal(inheritancePluginProxy.address);
-
     await inheritancePlugin.connect(bob).upgrade(inheritancePluginV3Impl.address);
-    expect(await inheritancePlugin.emitter()).to.equal(inheritancePluginV3Impl.address);
 
     const newInheritancePlugin = await ethers.getContractAt("InheritancePluginV3Mock", inheritancePluginAddress);
 

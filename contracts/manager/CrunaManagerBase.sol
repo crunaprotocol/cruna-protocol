@@ -60,14 +60,6 @@ abstract contract CrunaManagerBase is Context, ILinkedContract, IVersioned, ICru
     return vault().registry();
   }
 
-  function emitter() public view virtual override returns (address) {
-    address _emitter = StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value;
-    if (_emitter == address(0)) {
-      _emitter = ERC6551AccountLib.implementation();
-    }
-    return _emitter;
-  }
-
   function vault() public view virtual override returns (IVault) {
     return IVault(tokenAddress());
   }

@@ -7,13 +7,13 @@ pragma solidity ^0.8.4;
 // We deploy our own registry to avoid misleading observers that may believe
 // that managers and plugins are accounts.
 
- import "hardhat/console.sol";
+//import {console} from "hardhat/console.sol";
 
 import {ICrunaRegistry} from "./ICrunaRegistry.sol";
 
 contract CrunaRegistry is ICrunaRegistry {
   /**
-   * @dev The registry MUST revert with AccountCreationFailed error if the create2 operation fails.
+   * @dev The registry MUST revert with TokenLinkedContractCreationFailed error if the create2 operation fails.
    */
   error TokenLinkedContractCreationFailed();
 

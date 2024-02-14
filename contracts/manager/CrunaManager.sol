@@ -36,6 +36,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   error InvalidImplementation();
   error InvalidTimeLock();
   error InvalidValidity();
+  error InvalidAccountStatus();
 
   bytes4 public constant PROTECTOR = bytes4(keccak256("PROTECTOR"));
   bytes4 public constant SAFE_RECIPIENT = bytes4(keccak256("SAFE_RECIPIENT"));
@@ -229,11 +230,12 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   // TODO require a protector signature if protectors are active
   //   actor = pluginProxy
   //   extra = canManageTransfer ? 1 : 0;
-  //   extra2 = uint256(bytes32(bytes(name)));
+  //   extra2 = isAccount ? 1 : 0;
   function plug(
     string memory name,
     address pluginProxy,
     bool canManageTransfer,
+    bool isERC6551Account,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
@@ -248,17 +250,17 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       this.plug.selector,
       pluginProxy,
       canManageTransfer,
-      0,
+      isERC6551Account ? 1 : 0,
       timestamp * 1e7 + validFor,
       signature,
       false
     );
-    address _pluginAddress = registry().createTokenLinkedContract(pluginProxy, 0x00, block.chainid, address(this), tokenId());
+    address _pluginAddress = vault().deployPlugin(pluginProxy, 0x00, tokenId(), isERC6551Account);
     ICrunaPlugin _plugin = ICrunaPlugin(_pluginAddress);
     if (_plugin.nameId() != _nameId) revert InvalidImplementation();
+    if (_plugin.isERC6551Account() != isERC6551Account) revert InvalidAccountStatus();
     allPlugins.push(PluginStatus(name, true));
     pluginsById[_nameId] = CrunaPlugin(pluginProxy, canManageTransfer, _plugin.requiresResetOnTransfer(), true);
-    _plugin.init();
     _emitPluginStatusChange(name, address(_plugin), true);
   }
 
@@ -326,7 +328,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   }
 
   function pluginAddress(bytes4 _nameId) public view virtual override returns (address) {
-    return registry().tokenLinkedContract(pluginsById[_nameId].proxyAddress, 0x00, block.chainid, address(this), tokenId());
+    return registry().tokenLinkedContract(pluginsById[_nameId].proxyAddress, 0x00, block.chainid, tokenAddress(), tokenId());
   }
 
   function plugin(bytes4 _nameId) public view virtual override returns (ICrunaPlugin) {

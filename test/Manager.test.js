@@ -129,10 +129,8 @@ describe("CrunaManager : Protectors", function () {
       true,
       1,
     );
-    expect(await manager.emitter()).to.equal(proxy.address);
 
     await manager.connect(bob).upgrade(managerV2Impl.address);
-    expect(await manager.emitter()).to.equal(managerV2Impl.address);
 
     expect(await manager.version()).to.equal(1e6 + 2e3);
     expect(await manager.hasProtectors()).to.equal(true);
