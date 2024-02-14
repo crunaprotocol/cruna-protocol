@@ -71,12 +71,43 @@ const Helpers = {
     }
   },
 
+  async deployConstants(deployer, proposer, executor, delay) {
+
+    // using Nick's factory
+    await Helpers.deployNickSFactory(deployer);
+
+    const _CRUNA_GUARDIAN = "0x3C0F933a1Ca14De02D01f19Cd9f52a4Db0b6e425";
+    const _CRUNA_REGISTRY = "0x44ee88e0b817bb7e95e7702fDCD4887A0bA94219";
+    const _ERC6551_REGISTRY = "0x000000006551c19487814612e58FE06813775758";
+
+    expect(await Helpers.deployContractViaNickSFactory(
+      deployer,
+      "CrunaRegistry"
+    )).to.be.equal(_CRUNA_REGISTRY);
+
+    expect( await Helpers.deployContractViaNickSFactory(
+      deployer,
+      "IERC6551Registry",
+      undefined,
+      undefined,
+      '0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31'
+    )).to.be.equal(_ERC6551_REGISTRY);
+
+    expect( await Helpers.deployContractViaNickSFactory(
+        deployer,
+        "CrunaGuardian",
+        ["uint256", "address[]", "address[]", "address"],
+        [delay, [proposer.address], [executor.address], deployer.address]
+    )).to.be.equal(_CRUNA_GUARDIAN);
+
+  },
+
   async deployContractViaNickSFactory(
     deployer,
     contractName,
     constructorTypes,
     constructorArgs,
-    salt = thiz.keccak256("Cruna"),
+    salt = ethers.constants.HashZero,
   ) {
     const json = await artifacts.readArtifact(contractName);
     let contractBytecode = json.bytecode;
@@ -191,6 +222,7 @@ const Helpers = {
 
     return [crunaRegistry, proxy, guardian];
   },
+
 
   async getAddressViaNickSFactory(deployer, contractName, constructorTypes, constructorArgs, salt = thiz.keccak256("Cruna")) {
     const json = await artifacts.readArtifact(contractName);

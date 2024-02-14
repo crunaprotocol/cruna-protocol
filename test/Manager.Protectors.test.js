@@ -21,10 +21,11 @@ const {
   getInterfaceId,
   selectorId,
   combineTimestampAndValidFor,
+  deployConstants,
   trustImplementation,
 } = require("./helpers");
 
-describe("CrunaManager : Protectors", function () {
+describe.only("CrunaManager : Protectors", function () {
   let crunaRegistry, proxy, managerImpl, guardian, validatorMock;
   let vault;
   let factory;
@@ -40,6 +41,7 @@ describe("CrunaManager : Protectors", function () {
     [deployer, bob, alice, fred, mark, otto, proposer, executor] = await ethers.getSigners();
     chainId = await getChainId();
     selector = await selectorId("ICrunaManager", "setProtector");
+    await deployConstants(deployer, proposer, executor, delay);
   });
 
   beforeEach(async function () {
