@@ -1,4 +1,3 @@
-
 const deployed = require("../export/deployed.json");
 const path = require("path");
 const fs = require("fs-extra");

@@ -105,6 +105,18 @@ const Helpers = {
     return ethers.utils.hexDataSlice(bytes32value, 0, 4);
   },
 
+  pseudoAddress(name) {
+    // Step 1: Hash the name with keccak256
+    const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(name));
+
+    // Step 2: Convert the hash (hex string) to a BigNumber
+    const hashAsNumber = ethers.BigNumber.from(hash);
+
+    // Step 3: Take the lower 160 bits of the hash to get an address
+    // This is equivalent to taking the last 20 bytes of the hash
+    return ethers.utils.getAddress(hashAsNumber.mask(160).toHexString());
+  },
+
   combineBytes4ToBytes32(bytes4value1, bytes4value2) {
     // Convert bytes4 values to BigNumber
     let bigNumberValue1 = ethers.BigNumber.from(bytes4value1);
