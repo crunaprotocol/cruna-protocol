@@ -3,6 +3,7 @@ const hre = require("hardhat");
 const ethers = hre.ethers;
 const path = require("path");
 const EthDeployUtils = require("eth-deploy-utils");
+
 let deployUtils;
 
 const { expect } = require("chai");
@@ -13,27 +14,20 @@ async function main() {
   const chainId = await deployUtils.currentChainId();
   const [deployer] = await ethers.getSigners();
 
-  let proposer, executor;
+  process.env.CHAIN_ID = chainId;
+  require("./set-canonical");
+
   if (chainId === 1337) {
     // on localhost, we deploy the factory if not deployed yet
     await deployUtils.deployNickSFactory(deployer);
-    proposer = deployer.address;
-    executor = deployer.address;
-  } else {
-    proposer = process.env.PROPOSER;
-    executor = process.env.EXECUTOR;
   }
 
-  let salt = deployUtils.keccak256("Cruna");
+  let salt = ethers.constants.HashZero;
 
-  const registry = await deployUtils.deployContractViaNickSFactory(deployer, "CrunaRegistry", undefined, undefined, salt);
+  const registry = await deployUtils.attach("CrunaRegistry");
 
-  const guardian = await deployUtils.deployContractViaNickSFactory(
-    deployer,
-    "CrunaGuardian",
-    ["uint256", "address[]", "address[]", "address"],
-    [process.env.DELAY, [proposer], [executor], deployer.address],
-    salt,
+  const guardian = await deployUtils.attach(
+    "CrunaGuardian"
   );
 
   const manager = await deployUtils.deployContractViaNickSFactory(deployer, "CrunaManager", salt);

@@ -18,15 +18,7 @@ async function main() {
   // abi("SignatureValidator", "contracts/utils");
   abi("CrunaGuardian", "contracts/utils");
   abi("VaultFactory", "contracts/mocks/factory");
-
-  // for dev only
-  // abi("USDCoin", "contracts/mocks/fake-tokens");
-  // abi("TetherUSD", "contracts/mocks/fake-tokens");
-  //
-  // abi("ERC20", "@openzeppelin/contracts/token/ERC20");
-  // abi("ERC721", "@openzeppelin/contracts/token/ERC721");
-  // abi("ERC1155", "@openzeppelin/contracts/token/ERC1155");
-  // abi("ERC721Enumerable", "@openzeppelin/contracts/token/ERC721/extensions");
+  abi("ERC6551Registry", "erc6551/");
 
   await fs.writeFile(path.resolve(__dirname, "../export/Cruna.json"), JSON.stringify(ABIs, null, 2));
 }
