@@ -14,11 +14,11 @@ import {ICrunaRegistry} from "./CrunaRegistry.sol";
 
 contract CanonicalAddresses {
 
-  ICrunaRegistry internal constant _CRUNA_REGISTRY = ICrunaRegistry(0x3EC43ed4511c34d7E5a1902A2d5138347E318622);
+  ICrunaRegistry internal constant _CRUNA_REGISTRY = ICrunaRegistry(0x47736647413bC6AC9Da48532AABdebDf498Cb774);
 
   IERC6551Registry internal constant _ERC6551_REGISTRY = IERC6551Registry(0x0e97Ee6f0D32b477a133bd98CA8e0d25B9b532CA);
 
-  ICrunaGuardian internal constant _CRUNA_GUARDIAN = ICrunaGuardian(0x5CC9c60FF2666ee00C283d21c931a28c20783648);
+  ICrunaGuardian internal constant _CRUNA_GUARDIAN = ICrunaGuardian(0x51C91Fa76d2Ae8eE2aa43B274aF530cAcb214A76);
 
   function crunaRegistry() external pure returns (ICrunaRegistry) {
     return _CRUNA_REGISTRY;

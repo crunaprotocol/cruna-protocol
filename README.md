@@ -261,9 +261,9 @@ File                                |  % Stmts | % Branch |  % Funcs |  % Lines
  interfaces/                        |      100 |      100 |      100 |      100 
   IERC6454.sol                      |      100 |      100 |      100 |      100 
   IERC6982.sol                      |      100 |      100 |      100 |      100 
- manager/                           |    98.25 |    68.38 |    98.18 |     98.4 
+ manager/                           |    98.24 |    68.38 |    98.18 |     98.4 
   Actor.sol                         |      100 |       60 |      100 |      100 
-  CrunaManager.sol                  |    98.55 |     69.3 |      100 |    98.68 
+  CrunaManager.sol                  |    98.54 |     69.3 |      100 |    98.67 
   CrunaManagerBase.sol              |    93.33 |    66.67 |    85.71 |    94.12 
   CrunaManagerProxy.sol             |      100 |      100 |      100 |      100 
   ICrunaManager.sol                 |      100 |      100 |      100 |      100 
@@ -296,7 +296,7 @@ File                                |  % Stmts | % Branch |  % Funcs |  % Lines
   SignatureValidator.sol            |      100 |       90 |      100 |      100 
   TokenLinkedContract.sol           |       80 |       50 |       80 |    88.89 
 ------------------------------------|----------|----------|----------|----------
-All files                           |    97.46 |    69.69 |    97.78 |     97.1 
+All files                           |    97.46 |    69.69 |    97.78 |    97.09 
 ------------------------------------|----------|----------|----------|----------
 ```
 

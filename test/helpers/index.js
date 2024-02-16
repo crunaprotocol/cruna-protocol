@@ -116,7 +116,6 @@ const Helpers = {
     if (!process.env.IS_COVERAGE) {
       expect(crunaGuardianAddress).to.be.equal(_CRUNA_GUARDIAN);
     }
-
     return [crunaRegistryAddress, erc6551RegistryAddress, crunaGuardianAddress];
   },
 
@@ -152,6 +151,14 @@ const Helpers = {
 
   bytes4(bytes32value) {
     return ethers.utils.hexDataSlice(bytes32value, 0, 4);
+  },
+
+  pseudoAddress(name, salt) {
+    const nameBytes = ethers.utils.toUtf8Bytes(name);
+    const saltBytes = ethers.utils.arrayify(salt);
+    const packed = ethers.utils.concat([nameBytes, saltBytes]);
+    const hash = ethers.utils.keccak256(packed);
+    return ethers.utils.getAddress("0x" + hash.substring(hash.length - 40));
   },
 
   combineBytes4ToBytes32(bytes4value1, bytes4value2) {

@@ -21,6 +21,7 @@ const {
   combineTimestampAndValidFor,
   getCanonical,
   deployCanonical,
+  pseudoAddress,
 } = require("./helpers");
 
 describe("Sentinel and Inheritance", function () {
@@ -89,7 +90,6 @@ describe("Sentinel and Inheritance", function () {
 
     if (withProtectors) {
       ts = (await getTimestamp()) - 100;
-      // let sele = await manager.pseudoAddress("
       let signature = (
         await signRequest(
           await selectorId("ICrunaManager", "setProtector"),
@@ -524,7 +524,6 @@ describe("Sentinel and Inheritance", function () {
     await expect(inheritancePlugin.connect(bob).setSentinel(mark.address, true, ts, 3600, 0))
       .to.emit(inheritancePlugin, "SentinelUpdated")
       .withArgs(bob.address, mark.address, true);
-
     expect((await manager.listPlugins(true)).length).to.equal(1);
     expect((await manager.listPlugins(true))[0]).to.equal("InheritanceCrunaPlugin");
 
@@ -533,7 +532,7 @@ describe("Sentinel and Inheritance", function () {
     );
 
     let nameAddress = await manager.pseudoAddress("InheritanceCrunaPlugin", "0x00000000");
-
+    expect(nameAddress).to.equal(pseudoAddress("InheritanceCrunaPlugin", "0x00000000"));
     let signature = (
       await signRequest(
         await selectorId("ICrunaManager", "disablePlugin"),

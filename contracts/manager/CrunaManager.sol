@@ -368,8 +368,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     return _plugins;
   }
 
-  function pseudoAddress(string memory name, bytes4) public view virtual returns (address) {
-    bytes32 _salt = bytes32(0x00000000);
+  function pseudoAddress(string memory name, bytes4 _salt) public view virtual returns (address) {
     return address(uint160(uint256(keccak256(abi.encodePacked(name, _salt)))));
   }
 

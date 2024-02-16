@@ -31,7 +31,7 @@ describe("VaultFactory", function () {
   const delay = 10;
 
   before(async function () {
-    [deployer, proposer, executor, bob, alice, fred, mike, proposer, executor] = await ethers.getSigners();
+    [deployer, proposer, executor, bob, alice, fred, mike] = await ethers.getSigners();
     const [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
     crunaRegistry = await ethers.getContractAt("CrunaRegistry", CRUNA_REGISTRY);
     guardian = await ethers.getContractAt("CrunaGuardian", CRUNA_GUARDIAN);
