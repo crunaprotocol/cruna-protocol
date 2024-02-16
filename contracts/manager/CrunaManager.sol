@@ -195,7 +195,6 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
    *
    */
 
-  // TODO require a protector signature if protectors are active
   //   actor = pluginProxy
   //   extra = canManageTransfer ? 1 : 0;
   //   extra2 = isAccount ? 1 : 0;
@@ -213,7 +212,6 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     bytes4 _nameId = _stringToBytes4(name);
     if (pluginsById[_nameId][0x00000000].proxyAddress != address(0)) revert PluginAlreadyPlugged();
     uint256 requires = _CRUNA_GUARDIAN.trustedImplementation(_nameId, pluginProxy);
-    if (requires == 0) revert UntrustedImplementation();
     if (requires > version()) revert PluginRequiresUpdatedManager(requires);
     _preValidateAndCheckSignature(
       this.plug.selector,
@@ -234,6 +232,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       canManageTransfer: canManageTransfer,
       canBeReset: _plugin.requiresResetOnTransfer(),
       active: true,
+      trusted: requires > 0,
       isERC6551Account: isERC6551Account,
       salt: 0x00000000
     });

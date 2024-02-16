@@ -80,9 +80,7 @@ describe("Sentinel and Inheritance", function () {
     inheritancePluginImpl = await deployContract("InheritanceCrunaPlugin");
     inheritancePluginProxy = await deployContract("InheritanceCrunaPluginProxy", inheritancePluginImpl.address);
     inheritancePluginProxy = await deployUtils.attach("InheritanceCrunaPlugin", inheritancePluginProxy.address);
-    await expect(
-      manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, "0x00000000", 0, 0, 0),
-    ).to.be.revertedWith("UntrustedImplementation");
+
     await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true, 1);
     expect((await manager.pluginsById(PLUGIN_ID, "0x00000000")).proxyAddress).to.equal(addr0);
     expect((await manager.pluginsById(PLUGIN_ID, "0x00000000")).proxyAddress).equal(addr0);

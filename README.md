@@ -257,14 +257,14 @@ File                                |  % Stmts | % Branch |  % Funcs |  % Lines
  interfaces/                        |      100 |      100 |      100 |      100 
   IERC6454.sol                      |      100 |      100 |      100 |      100 
   IERC6982.sol                      |      100 |      100 |      100 |      100 
- manager/                           |    98.24 |    68.38 |    98.18 |     98.4 
+ manager/                           |    98.22 |    67.91 |    98.18 |    98.39 
   Actor.sol                         |      100 |       60 |      100 |      100 
-  CrunaManager.sol                  |    98.54 |     69.3 |      100 |    98.67 
+  CrunaManager.sol                  |    98.53 |    68.75 |      100 |    98.66 
   CrunaManagerBase.sol              |    93.33 |    66.67 |    85.71 |    94.12 
   CrunaManagerProxy.sol             |      100 |      100 |      100 |      100 
   ICrunaManager.sol                 |      100 |      100 |      100 |      100 
- plugins/                           |      100 |    83.33 |      100 |      100 
-  CrunaPluginBase.sol               |      100 |    83.33 |      100 |      100 
+ plugins/                           |      100 |    78.57 |      100 |      100 
+  CrunaPluginBase.sol               |      100 |    78.57 |      100 |      100 
   ICrunaPlugin.sol                  |      100 |      100 |      100 |      100 
  plugins/inheritance/               |      100 |    70.31 |      100 |     97.5 
   IInheritanceCrunaPlugin.sol       |      100 |      100 |      100 |      100 
@@ -276,7 +276,7 @@ File                                |  % Stmts | % Branch |  % Funcs |  % Lines
   CrunaManagedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaManagedNFT.sol              |      100 |      100 |      100 |      100 
   IVault.sol                        |      100 |      100 |      100 |      100 
- utils/                             |    94.55 |    68.52 |    96.55 |     94.2 
+ utils/                             |    96.36 |    68.52 |      100 |    95.65 
   CanonicalAddresses.sol            |      100 |      100 |      100 |      100 
   CrunaGuardian.sol                 |      100 |       50 |      100 |       75 
   CrunaRegistry.sol                 |      100 |      100 |      100 |      100 
@@ -290,9 +290,9 @@ File                                |  % Stmts | % Branch |  % Funcs |  % Lines
   ITokenLinkedContract.sol          |      100 |      100 |      100 |      100 
   IVersioned.sol                    |      100 |      100 |      100 |      100 
   SignatureValidator.sol            |      100 |       90 |      100 |      100 
-  TokenLinkedContract.sol           |       80 |       50 |       80 |    88.89 
+  TokenLinkedContract.sol           |       90 |       50 |      100 |      100 
 ------------------------------------|----------|----------|----------|----------
-All files                           |    97.46 |    69.69 |    97.78 |    97.09 
+All files                           |    97.74 |    69.38 |    98.52 |    97.34 
 ------------------------------------|----------|----------|----------|----------
 ```
 
