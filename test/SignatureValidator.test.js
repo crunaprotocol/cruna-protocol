@@ -14,7 +14,9 @@ const {
   combineTimestampAndValidFor,
   getTimestamp,
   signRequest,
-} = helpers;
+  getCanonical,
+  deployCanonical,
+} = require("./helpers");
 
 describe("SignatureValidator", function () {
   let chainId;
@@ -23,7 +25,8 @@ describe("SignatureValidator", function () {
   let deployer, bob, alice, fred, mark, vault;
 
   before(async function () {
-    [deployer, bob, alice, fred, mark, vault] = await ethers.getSigners();
+    [deployer, proposer, executor, bob, alice, fred, mark, vault] = await ethers.getSigners();
+
     chainId = await getChainId();
   });
 

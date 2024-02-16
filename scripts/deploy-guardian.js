@@ -19,7 +19,7 @@ async function main() {
     await deployUtils.deployNickSFactory(deployer);
   }
 
-  let salt = deployUtils.keccak256("Cruna");
+  let salt = ethers.constants.HashZero;
   // if (!(await deployUtils.isContractDeployedViaNickSFactory(deployer, "CrunaRegistry", salt))) {
   //   console.error("Registry not deployed on this chain");
   //   process.exit(1);

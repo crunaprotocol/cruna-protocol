@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.9;
 
-import {IBoundContractExtended} from "../utils/IBoundContractExtended.sol";
-import {IReference} from "../token/IReference.sol";
+import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
 import {IVault} from "../token/IVault.sol";
 import {INamed} from "../utils/INamed.sol";
 
@@ -12,7 +11,7 @@ import {INamed} from "../utils/INamed.sol";
    Technically, plugins are secondary managers, pluggable in
    the primary manage, which is CrunaManager.sol
 */
-interface ICrunaPlugin is IBoundContractExtended, INamed, IReference {
+interface ICrunaPlugin is ITokenLinkedContract, INamed {
   // this is also used in the CrunaManager
   struct CrunaPlugin {
     address proxyAddress;
@@ -21,13 +20,15 @@ interface ICrunaPlugin is IBoundContractExtended, INamed, IReference {
     bool active;
   }
 
-  function init() external;
+  function initManager() external;
 
   // function called in the dashboard to know if the plugin is asking the
   // right to make a managed transfer of the vault
   function requiresToManageTransfer() external pure returns (bool);
 
   function requiresResetOnTransfer() external pure returns (bool);
+
+  function isERC6551Account() external pure returns (bool);
 
   // Reset the plugin to the factory settings
   function reset() external;
@@ -38,9 +39,5 @@ interface ICrunaPlugin is IBoundContractExtended, INamed, IReference {
   //   wait for a new trusted implementation and upgrade it.
   function upgrade(address implementation_) external;
 
-  //  function getImplementation() external view returns (address);
-
   function vault() external view returns (IVault);
-
-  function emitter() external view returns (address);
 }

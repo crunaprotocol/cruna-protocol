@@ -21,10 +21,13 @@ const {
   getInterfaceId,
   selectorId,
   trustImplementation,
+  getCanonical,
+  deployCanonical,
 } = require("./helpers");
 
 describe("CrunaManager : Protectors", function () {
-  let crunaRegistry, proxy, managerImpl, guardian;
+  let crunaRegistry, proxy, managerImpl, guardian, erc6551Registry;
+
   let vault;
   let factory;
   let usdc, usdt;
@@ -35,20 +38,22 @@ describe("CrunaManager : Protectors", function () {
   let chainId;
 
   before(async function () {
-    [deployer, bob, alice, fred, mark, otto, proposer, executor] = await ethers.getSigners();
+    [deployer, proposer, executor, bob, alice, fred, mark, otto] = await ethers.getSigners();
     chainId = await getChainId();
     selector = await selectorId("ICrunaManager", "setProtector");
+    const [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
+    crunaRegistry = await ethers.getContractAt("CrunaRegistry", CRUNA_REGISTRY);
+    guardian = await ethers.getContractAt("CrunaGuardian", CRUNA_GUARDIAN);
+    erc6551Registry = await ethers.getContractAt("ERC6551Registry", ERC6551_REGISTRY);
   });
 
   beforeEach(async function () {
-    crunaRegistry = await deployContract("CrunaRegistry");
     managerImpl = await deployContract("CrunaManager");
-    guardian = await deployContract("CrunaGuardian", delay, [proposer.address], [executor.address], deployer.address);
     proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
     proxy = await deployUtils.attach("CrunaManager", proxy.address);
 
     vault = await deployContract("VaultMockSimple", deployer.address);
-    await vault.init(crunaRegistry.address, guardian.address, proxy.address, 1);
+    await vault.init(proxy.address, 1);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
 
     await vault.setFactory(factory.address);
@@ -71,10 +76,10 @@ describe("CrunaManager : Protectors", function () {
     const nextTokenId = await vault.nextTokenId();
     const precalculatedAddress = await vault.managerOf(nextTokenId);
 
-    // console.log(keccak256("BoundContractCreated(address,address,bytes32,uint256,address,uint256)"))
+    // console.log(keccak256("TokenLinkedContractCreated(address,address,bytes32,uint256,address,uint256)"))
 
     await expect(factory.connect(bob).buyVaults(usdc.address, 1))
-      .to.emit(crunaRegistry, "BoundContractCreated")
+      .to.emit(crunaRegistry, "TokenLinkedContractCreated")
       .withArgs(
         precalculatedAddress,
         toChecksumAddress(managerProxy.address),
@@ -129,10 +134,8 @@ describe("CrunaManager : Protectors", function () {
       true,
       1,
     );
-    expect(await manager.emitter()).to.equal(proxy.address);
 
     await manager.connect(bob).upgrade(managerV2Impl.address);
-    expect(await manager.emitter()).to.equal(managerV2Impl.address);
 
     expect(await manager.version()).to.equal(1e6 + 2e3);
     expect(await manager.hasProtectors()).to.equal(true);

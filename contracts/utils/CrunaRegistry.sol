@@ -7,17 +7,17 @@ pragma solidity ^0.8.4;
 // We deploy our own registry to avoid misleading observers that may believe
 // that managers and plugins are accounts.
 
-// import "hardhat/console.sol";
+//import {console} from "hardhat/console.sol";
 
 import {ICrunaRegistry} from "./ICrunaRegistry.sol";
 
 contract CrunaRegistry is ICrunaRegistry {
   /**
-   * @dev The registry MUST revert with AccountCreationFailed error if the create2 operation fails.
+   * @dev The registry MUST revert with TokenLinkedContractCreationFailed error if the create2 operation fails.
    */
-  error BoundContractCreationFailed();
+  error TokenLinkedContractCreationFailed();
 
-  function createBoundContract(
+  function createTokenLinkedContract(
     address implementation,
     bytes32 salt,
     uint256 chainId,
@@ -66,18 +66,18 @@ contract CrunaRegistry is ICrunaRegistry {
 
         // Revert if the deployment fails
         if iszero(deployed) {
-          mstore(0x00, 0xbe697d1a) // `BoundContractCreationFailed()`
+          mstore(0x00, 0x019134ac) // `TokenLinkedContractCreationFailed()`
           revert(0x1c, 0x04)
         }
 
         // Store account address in memory before salt and chainId
         mstore(0x6c, deployed)
 
-        // Emit the BoundContractCreated event
+        // Emit the TokenLinkedContractCreated event
         log4(
           0x6c,
           0x60,
-          0x1f0e50ba751c22f20c414b4c1d531bced4cc983fe16d3a8ed9a167c0cdd674d3,
+          0x91dfd55a37c344f31d03488cf913823191690b82681081685733c259c25ace15,
           implementation,
           tokenContract,
           tokenId
@@ -93,7 +93,7 @@ contract CrunaRegistry is ICrunaRegistry {
     }
   }
 
-  function boundContract(
+  function tokenLinkedContract(
     address implementation,
     bytes32 salt,
     uint256 chainId,

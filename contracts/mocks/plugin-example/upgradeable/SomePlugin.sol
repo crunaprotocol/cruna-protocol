@@ -3,7 +3,6 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {CrunaManager} from "../../../manager/CrunaManager.sol";
 import {CrunaPluginBase} from "../../../plugins/CrunaPluginBase.sol";
 
 contract SomePlugin is CrunaPluginBase {
@@ -16,12 +15,6 @@ contract SomePlugin is CrunaPluginBase {
 
   function requiresToManageTransfer() external pure override returns (bool) {
     return false;
-  }
-
-  function init() external virtual {
-    // replace with the name of your plugin
-    if (_msgSender() != tokenAddress()) revert Forbidden();
-    manager = CrunaManager(_msgSender());
   }
 
   function doSomething() external {
