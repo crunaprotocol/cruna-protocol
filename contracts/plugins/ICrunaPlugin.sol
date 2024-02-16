@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.9;
 
-import {ILinkedContractExtended} from "../utils/ILinkedContractExtended.sol";
-import {IReference} from "../token/IReference.sol";
+import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
 import {IVault} from "../token/IVault.sol";
 import {INamed} from "../utils/INamed.sol";
 
@@ -12,7 +11,7 @@ import {INamed} from "../utils/INamed.sol";
    Technically, plugins are secondary managers, pluggable in
    the primary manage, which is CrunaManager.sol
 */
-interface ICrunaPlugin is ILinkedContractExtended, INamed, IReference {
+interface ICrunaPlugin is ITokenLinkedContract, INamed {
   // this is also used in the CrunaManager
   struct CrunaPlugin {
     address proxyAddress;

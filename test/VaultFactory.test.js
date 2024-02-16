@@ -18,10 +18,12 @@ const {
   executeAndReturnGasCost,
   signRequest,
   selectorId,
+  getCanonical,
+  deployCanonical,
 } = require("./helpers");
 
 describe("VaultFactory", function () {
-  let registry, proxy, guardian;
+  let crunaRegistry, proxy, guardian, erc6551Registry;
   let vault;
   let factory;
   let usdc, usdt;
@@ -29,22 +31,20 @@ describe("VaultFactory", function () {
   const delay = 10;
 
   before(async function () {
-    [deployer, bob, alice, fred, mike, proposer, executor] = await ethers.getSigners();
-    // we test the deploying using Nick's factory only here because if not it would create conflicts, since any contract has already been deployed and would not change its storage
-    // [registry, proxy, guardian] = await deployAll(deployer, proposer, executor, delay);
+    [deployer, proposer, executor, bob, alice, fred, mike, proposer, executor] = await ethers.getSigners();
+    const [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
+    crunaRegistry = await ethers.getContractAt("CrunaRegistry", CRUNA_REGISTRY);
+    guardian = await ethers.getContractAt("CrunaGuardian", CRUNA_GUARDIAN);
+    erc6551Registry = await ethers.getContractAt("ERC6551Registry", ERC6551_REGISTRY);
   });
 
   async function initAndDeploy() {
-    // process.exit();
-
-    registry = await deployContract("CrunaRegistry");
     const managerImpl = await deployContract("CrunaManager");
-    guardian = await deployContract("CrunaGuardian", delay, [proposer.address], [executor.address], deployer.address);
     proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
     proxy = await deployUtils.attach("CrunaManager", proxy.address);
 
     vault = await deployContract("VaultMockSimple", deployer.address);
-    await vault.init(registry.address, guardian.address, proxy.address, 1);
+    await vault.init(proxy.address, 1);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
 
     await vault.setFactory(factory.address);
@@ -79,7 +79,7 @@ describe("VaultFactory", function () {
       await expect(factory.buyVaults(usdc.address, 1))
         .to.emit(vault, "Transfer")
         .withArgs(addr0, deployer.address, nextTokenId)
-        .to.emit(registry, "TokenLinkedContractCreated")
+        .to.emit(crunaRegistry, "TokenLinkedContractCreated")
         .withArgs(
           precalculatedAddress,
           toChecksumAddress(proxy.address),

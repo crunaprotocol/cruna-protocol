@@ -18,7 +18,6 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   using ECDSA for bytes32;
   using Strings for uint256;
 
-  error NotPermittedWhenProtectorsAreActive();
   error QuorumCannotBeZero();
   error QuorumCannotBeGreaterThanSentinels();
   error InheritanceNotConfigured();
@@ -32,8 +31,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   error WaitingForBeneficiary();
   error NotExpiredYet();
   error QuorumAlreadyReached();
-  error WrongDataOrNotSignedByProtector();
-  error SignatureAlreadyUsed();
+
   error InvalidValidity();
 
   bytes4 public constant SENTINEL = bytes4(keccak256(abi.encodePacked("SENTINEL")));
@@ -51,6 +49,14 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     return bytes4(keccak256("InheritanceCrunaPlugin"));
   }
 
+  function _isProtected() internal view virtual override returns (bool) {
+    return manager.hasProtectors();
+  }
+
+  function _isProtector(address protector) internal view virtual override returns (bool) {
+    return manager.isAProtector(protector);
+  }
+
   // sentinels and beneficiaries
   // @dev see {IInheritanceCrunaPlugin.sol-setSentinel}
   function setSentinel(
@@ -63,7 +69,10 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     if (validFor > 9999999) revert InvalidValidity();
     _validateAndCheckSignature(
       this.setSentinel.selector,
+      owner(),
       sentinel,
+      tokenAddress(),
+      tokenId(),
       status ? 1 : 0,
       0,
       0,
@@ -103,7 +112,10 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     if (validFor > 9999999) revert InvalidValidity();
     _validateAndCheckSignature(
       this.configureInheritance.selector,
+      owner(),
       beneficiary,
+      tokenAddress(),
+      tokenId(),
       quorum,
       proofOfLifeDurationInDays,
       gracePeriod,
@@ -241,45 +253,6 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   function _reset() internal {
     _deleteActors(SENTINEL);
     delete _inheritanceConf;
-  }
-
-  // @dev Validates the request.
-  // @param _functionSelector The function selector of the request.
-  // @param target The target of the request.
-  // @param extra The first extra param
-  // @param extra2 The second extra param
-  // @param extra3 The third extra param
-  // @param timeValidation A combination of timestamp and validity of the signature.
-  // @param signature The signature of the request.
-  function _validateAndCheckSignature(
-    bytes4 _functionSelector,
-    address target,
-    uint256 extra,
-    uint256 extra2,
-    uint256 extra3,
-    uint256 timeValidation,
-    bytes calldata signature
-  ) internal virtual {
-    if (timeValidation < 1e7) {
-      if (manager.countActiveProtectors() > 0) revert NotPermittedWhenProtectorsAreActive();
-    } else {
-      if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
-      usedSignatures[keccak256(signature)] = true;
-      (address signer, bytes32 hash) = recoverSigner(
-        _functionSelector,
-        owner(),
-        target,
-        manager.tokenAddress(),
-        manager.tokenId(),
-        extra,
-        extra2,
-        extra3,
-        timeValidation,
-        signature
-      );
-      if (!manager.isAProtector(signer)) revert WrongDataOrNotSignedByProtector();
-      delete preApprovals[hash];
-    }
   }
 
   function requiresResetOnTransfer() external pure returns (bool) {

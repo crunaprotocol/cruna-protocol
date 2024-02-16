@@ -26,9 +26,7 @@ async function main() {
 
   const registry = await deployUtils.attach("CrunaRegistry");
 
-  const guardian = await deployUtils.attach(
-    "CrunaGuardian"
-  );
+  const guardian = await deployUtils.attach("CrunaGuardian");
 
   const manager = await deployUtils.deployContractViaNickSFactory(deployer, "CrunaManager", salt);
 

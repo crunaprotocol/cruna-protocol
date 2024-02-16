@@ -22,8 +22,18 @@ async function main() {
     // on localhost, we deploy the factory if not deployed yet
     await deployUtils.deployNickSFactory(deployer);
     // we also deploy the ERC6551Registry if not deployed yet
-    await deployUtils.deployContractViaNickSFactory(deployer, "ERC6551Registry", undefined, undefined, "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31");
+    await deployUtils.deployContractViaNickSFactory(
+      deployer,
+      "ERC6551Registry",
+      undefined,
+      undefined,
+      "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31",
+    );
     [deployer, proposer, executor] = await ethers.getSigners();
+    console.log("deployer", deployer.address);
+    console.log("proposer", proposer.address);
+    console.log("executor", executor.address);
+
     proposerAddress = proposer.address;
     executorAddress = executor.address;
   }
@@ -44,7 +54,6 @@ async function main() {
     [delay, [proposerAddress], [executorAddress], deployer.address],
     salt,
   );
-
 }
 
 main()

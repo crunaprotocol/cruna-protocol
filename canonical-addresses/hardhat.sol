@@ -7,15 +7,17 @@ import {ICrunaGuardian} from "./ICrunaGuardian.sol";
 import {ICrunaRegistry} from "./CrunaRegistry.sol";
 
 /**
-  Canonical addresses for testnet.
+  Canonical addresses for testing and deployment to localhost (using hardhat mnemonic).
+  The equivalents for testnet and mainnet are in the /canonical-addresses folder and managed
+  by scripts/set-canonical.js before tests and before deployments
 */
 
 contract CanonicalAddresses {
-  ICrunaGuardian internal constant _CRUNA_GUARDIAN = ICrunaGuardian(0xd9752Ce184Ce6E0A81BEB477779CC8E38Cf966EF);
+  ICrunaRegistry internal constant _CRUNA_REGISTRY = ICrunaRegistry(0xFe4F407dee99B8B5660454613b79A2bC9e628750);
 
-  ICrunaRegistry internal constant _CRUNA_REGISTRY = ICrunaRegistry(0x5E825D6e792088E59F545af20fB3DB13cCf6cFe5);
+  IERC6551Registry internal constant _ERC6551_REGISTRY = IERC6551Registry(0x15cc2b0c5891aB996A2BA64FF9B4B685cdE762cB);
 
-  IERC6551Registry internal constant _ERC6551_REGISTRY = IERC6551Registry(0x000000006551c19487814612e58FE06813775758);
+  ICrunaGuardian internal constant _CRUNA_GUARDIAN = ICrunaGuardian(0xF3385DF79ef342Ba67445f1b474426A94884bAB8);
 
   function crunaRegistry() external pure returns (ICrunaRegistry) {
     return _CRUNA_REGISTRY;

@@ -16,8 +16,12 @@ abstract contract SignatureValidator is EIP712, Context {
 
   error TimestampInvalidOrExpired();
   error NotAuthorized();
+  error NotPermittedWhenProtectorsAreActive();
+  error WrongDataOrNotSignedByProtector();
+  error SignatureAlreadyUsed();
 
   mapping(bytes32 => address) public preApprovals;
+  mapping(bytes32 => bool) public usedSignatures;
 
   constructor() EIP712("Cruna", "1") {}
 
@@ -27,6 +31,47 @@ abstract contract SignatureValidator is EIP712, Context {
   function _validate(uint256 timeValidation) internal view {
     uint256 timestamp = timeValidation / 1e7;
     if (timestamp > block.timestamp || timestamp < block.timestamp - (timeValidation % 1e7)) revert TimestampInvalidOrExpired();
+  }
+
+  function _isProtected() internal view virtual returns (bool);
+
+  function _isProtector(address protector) internal view virtual returns (bool);
+
+  function _validateAndCheckSignature(
+    bytes4 selector,
+    address owner,
+    address actor,
+    address tokenAddress,
+    uint256 tokenId,
+    uint256 extra,
+    uint256 extra2,
+    uint256 extra3,
+    // we encode here the isProtector to avoid too many variables
+    uint256 timeValidationAndSetProtector,
+    bytes calldata signature
+  ) internal virtual {
+    if (timeValidationAndSetProtector < 1e17 && timeValidationAndSetProtector % 1e17 < 1e7) {
+      if (_isProtected()) revert NotPermittedWhenProtectorsAreActive();
+    } else {
+      if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
+      usedSignatures[keccak256(signature)] = true;
+      (address signer, bytes32 hash) = recoverSigner(
+        selector,
+        owner,
+        actor,
+        tokenAddress,
+        tokenId,
+        extra,
+        extra2,
+        extra3,
+        timeValidationAndSetProtector % 1e17,
+        signature
+      );
+      if (timeValidationAndSetProtector > 1e17 && !_isProtected()) {
+        if (signer != actor) revert WrongDataOrNotSignedByProtector();
+      } else if (!_isProtector(signer)) revert WrongDataOrNotSignedByProtector();
+      delete preApprovals[hash];
+    }
   }
 
   // @dev This function validates a signature trying to be as flexible as possible.
