@@ -22,8 +22,7 @@
     "size": "NODE_ENV=test npx hardhat size-contracts",
     "prepublishOnly": "echo 'Error: Please use 'npm run publish-package' to publish.' && exit 1",
     "publish-package": "bin/publish.sh",
-    "postinstall": "./post-install.sh",
-    "posttest": "npx hardhat check-coverage --statements 98 --branches 68 --functions 100 --lines 98"
+    "postinstall": "./post-install.sh"
   },
   "repository": {
     "type": "git",

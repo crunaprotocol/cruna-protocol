@@ -19,6 +19,7 @@ const {
   selectorId,
   trustImplementation,
   combineTimestampAndValidFor,
+  pseudoAddress,
 } = require("./helpers");
 
 describe("Sentinel and Inheritance", function () {
@@ -87,7 +88,6 @@ describe("Sentinel and Inheritance", function () {
 
     if (withProtectors) {
       ts = (await getTimestamp()) - 100;
-      // let sele = await manager.pseudoAddress("
       let signature = (
         await signRequest(
           await selectorId("ICrunaManager", "setProtector"),
@@ -531,6 +531,7 @@ describe("Sentinel and Inheritance", function () {
     );
 
     let nameAddress = await manager.pseudoAddress("InheritanceCrunaPlugin");
+    expect(nameAddress).to.equal(pseudoAddress("InheritanceCrunaPlugin"));
 
     let signature = (
       await signRequest(
