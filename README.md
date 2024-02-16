@@ -12,7 +12,7 @@ Join us as we explore the forefront of NFT innovation, where security meets scal
 
 ERC-6551 defines a system which assigns EVM-compatible accounts to all non-fungible tokens. These token bound accounts allow NFTs to own assets and interact with applications, without requiring changes to existing smart contracts or infrastructure.
 
-While the ERC-6551 standard is a significant step forward in the evolution of NFTs, it lacks a critical component: security. The standard does not specify any security requirements for the NFT to whom the account is bound. This omission leaves the NFT vulnerable to unauthorized access and misuse, undermining the security of the entire system.
+While the ERC-6551 standard represents a groundbreaking advancement in the functionality of NFTs, enabling them to own assets and engage with applications directly, it focuses on interoperability and functionality rather than specifying security protocols. This focus on broadening the capabilities of NFTs opens up discussions on enhancing security measures to ensure that these token-bound accounts are safeguarded against unauthorized access, complementing the ERC-6551's innovative approach with robust security solutions.
 
 Cruna Vault is specially designed to work with ERC-6551 wallets, a new way for NFTs to manage digital assets seamlessly.
 
