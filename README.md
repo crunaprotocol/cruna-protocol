@@ -133,7 +133,7 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 Cruna is in beta stage, and to use it you must specify the version you want to install. Install it with, for example
 
 ```sh
-npm install @cruna/protocol@1.0.0-beta.7 @openzeppelin/contracts erc6551
+npm install @cruna/protocol@1.0.0-rc.3 @openzeppelin/contracts erc6551
 ```
 or similar commands using Yarn or Pnpm, and use in your Solidity smart contracts, for example, as
 
@@ -142,11 +142,9 @@ import {CrunaManagedNFTOwnable} from "@cruna/protocol/contracts/manager/CrunaMan
 
 contract MySuperToken is CrunaManagedNFTOwnable {
    
-    constructor(
-    address registry_,
-    address guardian_,
-    address managerProxy_
-  ) CrunaManagedOwnable("My Super Token", "MST", registry_, guardian_, managerProxy_) {}
+    constructor() CrunaManagedOwnable("My Super Token", "MST") {}
+    
+    // add your special features here
 }
 ```
 
