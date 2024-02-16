@@ -19,7 +19,7 @@ async function main() {
     await deployUtils.deployNickSFactory(deployer);
   }
 
-  let salt = deployUtils.keccak256("Cruna");
+  let salt = ethers.constants.HashZero;
 
   // deploy the manager
   const manager = await deployUtils.deployContractViaNickSFactory(deployer, "CrunaManager", salt);

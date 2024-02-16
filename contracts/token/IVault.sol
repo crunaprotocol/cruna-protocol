@@ -3,11 +3,11 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {IReference} from "./IReference.sol";
+import {ICanonicalAddresses} from "../utils/ICanonicalAddresses.sol";
 
 //import {console} from "hardhat/console.sol";
 
-interface IVault is IReference {
+interface IVault is ICanonicalAddresses {
   function vault() external view returns (IVault);
   function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external;
   function managerOf(uint256 tokenId) external view returns (address);

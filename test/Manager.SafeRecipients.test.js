@@ -17,10 +17,13 @@ const {
   selectorId,
   bytes4,
   keccak256,
+  getCanonical,
+  deployCanonical,
 } = require("./helpers");
 
 describe("CrunaManager : Safe Recipients", function () {
-  let crunaRegistry, proxy, managerImpl, guardian;
+  let crunaRegistry, proxy, managerImpl, guardian, erc6551Registry;
+
   let vault;
   let factory;
   let usdc, usdt;
@@ -29,20 +32,21 @@ describe("CrunaManager : Safe Recipients", function () {
   const delay = 10;
 
   before(async function () {
-    [deployer, bob, alice, fred, mark, otto, proposer, executor] = await ethers.getSigners();
-
+    [deployer, proposer, executor, bob, alice, fred, mark, otto] = await ethers.getSigners();
     chainId = await getChainId();
+    const [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
+    crunaRegistry = await ethers.getContractAt("CrunaRegistry", CRUNA_REGISTRY);
+    guardian = await ethers.getContractAt("CrunaGuardian", CRUNA_GUARDIAN);
+    erc6551Registry = await ethers.getContractAt("ERC6551Registry", ERC6551_REGISTRY);
   });
 
   beforeEach(async function () {
-    crunaRegistry = await deployContract("CrunaRegistry");
     managerImpl = await deployContract("CrunaManager");
-    guardian = await deployContract("CrunaGuardian", delay, [proposer.address], [executor.address], deployer.address);
     proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
     proxy = await deployUtils.attach("CrunaManager", proxy.address);
 
     vault = await deployContract("VaultMockSimple", deployer.address);
-    await vault.init(crunaRegistry.address, guardian.address, proxy.address, 1);
+    await vault.init(proxy.address, 1);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
 
     await vault.setFactory(factory.address);

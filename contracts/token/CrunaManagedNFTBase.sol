@@ -8,17 +8,14 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
-import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
 
-import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
 import {ICrunaPlugin} from "../plugins/ICrunaPlugin.sol";
-import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
 import {ICrunaManagedNFT} from "./ICrunaManagedNFT.sol";
 import {IERC6454} from "../interfaces/IERC6454.sol";
 import {IERC6982} from "../interfaces/IERC6982.sol";
 import {ICrunaManager} from "../manager/ICrunaManager.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
-import {IReference} from "./IReference.sol";
+import {CanonicalAddresses} from "../utils/CanonicalAddresses.sol";
 
 //import {console} from "hardhat/console.sol";
 
@@ -37,7 +34,7 @@ interface IVersionedManager {
  *   a governance aligned with best practices. The second is simpler, and can be used in
  *   less critical scenarios. If none of them fits your needs, you can implement your own policy.
  */
-abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReference, IERC6454, IERC6982, ERC721 {
+abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, CanonicalAddresses, IVersioned, IERC6454, IERC6982, ERC721 {
   using ECDSA for bytes32;
   using Strings for uint256;
   using Address for address;
@@ -53,11 +50,6 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
   error CannotUpgradeToAnOlderVersion();
   error UntrustedImplementation();
   error InvalidNextTokenId();
-
-  mapping(bytes32 => bool) public usedSignatures;
-  ICrunaGuardian private _guardian;
-  ICrunaRegistry private _registry;
-  IERC6551Registry private constant _ERC6551_REGISTRY = IERC6551Registry(0x000000006551c19487814612e58FE06813775758);
 
   // this is supposed to be a small array, ideally with a single element
   mapping(uint256 => ManagerHistory) public managerHistory;
@@ -90,14 +82,6 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
     emit DefaultLocked(false);
   }
 
-  function guardian() external view virtual override returns (ICrunaGuardian) {
-    return _guardian;
-  }
-
-  function registry() external view virtual override returns (ICrunaRegistry) {
-    return _registry;
-  }
-
   // Must be overridden to specify who can manage changes in the contract states
   // It should revert it the caller is not allowed to manage
   // @param isInitializing True if the contract is being initialized, false otherwise
@@ -111,14 +95,12 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
     maxTokenId = maxTokenId_;
   }
 
-  function init(address registry_, address guardian_, address managerProxy_, uint256 firstTokenId_) external virtual {
+  function init(address managerProxy_, uint256 firstTokenId_) external virtual {
     _canManage(true);
     // must be called immediately after deployment
-    if (address(_registry) != address(0)) revert AlreadyInitiated();
-    if (registry_ == address(0) || guardian_ == address(0) || managerProxy_ == address(0)) revert ZeroAddress();
+    if (managerHistoryLength > 0) revert AlreadyInitiated();
+    if (managerProxy_ == address(0)) revert ZeroAddress();
     if (firstTokenId_ == 0) revert InvalidNextTokenId();
-    _guardian = ICrunaGuardian(guardian_);
-    _registry = ICrunaRegistry(registry_);
     managerHistory[0] = ManagerHistory({managerAddress: managerProxy_, firstTokenId: firstTokenId_, lastTokenId: 0});
     managerHistoryLength = 1;
     nextTokenId = firstTokenId_;
@@ -141,7 +123,7 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
   function upgradeDefaultManager(address payable newManagerProxy) external virtual {
     _canManage(false);
     IVersionedManager newManager = IVersionedManager(newManagerProxy);
-    if (_guardian.trustedImplementation(newManager.nameId(), newManager.DEFAULT_IMPLEMENTATION()) == 0)
+    if (_CRUNA_GUARDIAN.trustedImplementation(newManager.nameId(), newManager.DEFAULT_IMPLEMENTATION()) == 0)
       revert UntrustedImplementation();
     address lastEmitter = managerHistory[managerHistoryLength - 1].managerAddress;
     if (newManager.version() <= IVersionedManager(lastEmitter).version()) revert CannotUpgradeToAnOlderVersion();
@@ -225,7 +207,6 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
   // @dev This function will mint a new token and initialize it.
   // @param to The address of the recipient.
   function _mintAndActivate(address to, uint256 amount) internal virtual {
-    if (address(_registry) == address(0)) revert RegistryNotFound();
     uint256 tokenId = nextTokenId;
     for (uint256 i = 0; i < amount; i++) {
       if (maxTokenId > 0 && tokenId > maxTokenId) revert SupplyOverflow();
@@ -244,7 +225,7 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
     if (isERC6551Account) {
       return _ERC6551_REGISTRY.createAccount(implementation, salt, block.chainid, address(this), tokenId);
     } else {
-      return _registry.createTokenLinkedContract(implementation, salt, block.chainid, address(this), tokenId);
+      return _CRUNA_REGISTRY.createTokenLinkedContract(implementation, salt, block.chainid, address(this), tokenId);
     }
   }
 
@@ -275,7 +256,7 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
   function managerOf(uint256 tokenId) public view virtual returns (address) {
     return
       ERC6551AccountLib.computeAddress(
-        address(_registry),
+        address(_CRUNA_REGISTRY),
         defaultManagerImplementation(tokenId),
         0x00,
         block.chainid,
@@ -292,7 +273,7 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, IVersioned, IReferenc
   ) internal view virtual returns (address) {
     return
       ERC6551AccountLib.computeAddress(
-        isERC6551Account ? address(_ERC6551_REGISTRY) : address(_registry),
+        isERC6551Account ? address(_ERC6551_REGISTRY) : address(_CRUNA_REGISTRY),
         implementation,
         salt,
         block.chainid,

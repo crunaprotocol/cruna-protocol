@@ -3,6 +3,7 @@ const ethers = hre.ethers;
 const { assert, expect } = require("chai");
 const BN = require("bn.js");
 const ethSigUtil = require("eth-sig-util");
+const deployUtils = new (require("eth-deploy-utils"))();
 const { artifacts } = hre;
 
 const { domainType } = require("./eip712");
@@ -71,12 +72,60 @@ const Helpers = {
     }
   },
 
+  getCanonical() {
+    return {
+      CRUNA_REGISTRY: "0xFe4F407dee99B8B5660454613b79A2bC9e628750",
+      ERC6551_REGISTRY: "0x15cc2b0c5891aB996A2BA64FF9B4B685cdE762cB",
+      CRUNA_GUARDIAN: "0xF3385DF79ef342Ba67445f1b474426A94884bAB8",
+    };
+  },
+
+  async deployCanonical(deployer, proposer, executor, delay) {
+    await Helpers.deployNickSFactory(deployer);
+
+    const _ERC6551_REGISTRY = "0x15cc2b0c5891aB996A2BA64FF9B4B685cdE762cB";
+    const _CRUNA_REGISTRY = "0xFe4F407dee99B8B5660454613b79A2bC9e628750";
+    const _CRUNA_GUARDIAN = "0xF3385DF79ef342Ba67445f1b474426A94884bAB8";
+
+    let erc6551RegistryAddress = (
+      await deployUtils.deployContractViaNickSFactory(
+        deployer,
+        "ERC6551Registry",
+        undefined,
+        undefined,
+        "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31",
+      )
+    ).address;
+
+    if (!process.env.IS_COVERAGE) {
+      expect(erc6551RegistryAddress).to.be.equal(_ERC6551_REGISTRY);
+    }
+    let crunaRegistryAddress = (await deployUtils.deployContractViaNickSFactory(deployer, "CrunaRegistry")).address;
+    if (!process.env.IS_COVERAGE) {
+      expect(crunaRegistryAddress).to.be.equal(_CRUNA_REGISTRY);
+    }
+
+    let crunaGuardianAddress = (
+      await deployUtils.deployContractViaNickSFactory(
+        deployer,
+        "CrunaGuardian",
+        ["uint256", "address[]", "address[]", "address"],
+        [10, [proposer.address], [executor.address], deployer.address],
+      )
+    ).address;
+    if (!process.env.IS_COVERAGE) {
+      expect(crunaGuardianAddress).to.be.equal(_CRUNA_GUARDIAN);
+    }
+
+    return [crunaRegistryAddress, erc6551RegistryAddress, crunaGuardianAddress];
+  },
+
   async deployContractViaNickSFactory(
     deployer,
     contractName,
     constructorTypes,
     constructorArgs,
-    salt = thiz.keccak256("Cruna"),
+    salt = ethers.constants.HashZero,
   ) {
     const json = await artifacts.readArtifact(contractName);
     let contractBytecode = json.bytecode;

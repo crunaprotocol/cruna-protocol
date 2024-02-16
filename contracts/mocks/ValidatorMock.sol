@@ -8,6 +8,14 @@ contract ValidatorMock is SignatureValidator {
     return true;
   }
 
+  function _isProtected() internal view virtual override returns (bool) {
+    return false;
+  }
+
+  function _isProtector(address) internal view virtual override returns (bool) {
+    return false;
+  }
+
   function hashData(
     bytes4 selector,
     address owner,

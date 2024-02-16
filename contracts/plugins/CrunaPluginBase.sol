@@ -3,21 +3,18 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {IERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
-import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 import {CrunaManager} from "../manager/CrunaManager.sol";
-import {ILinkedContract} from "../utils/ILinkedContract.sol";
-import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
-import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
+import {TokenLinkedContract} from "../utils/TokenLinkedContract.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 import {ICrunaPlugin, IVault} from "./ICrunaPlugin.sol";
+import {CanonicalAddresses} from "../utils/CanonicalAddresses.sol";
 
 //import {console} from "hardhat/console.sol";
 
-abstract contract CrunaPluginBase is Context, ILinkedContract, IVersioned, ICrunaPlugin {
+abstract contract CrunaPluginBase is Context, CanonicalAddresses, TokenLinkedContract, IVersioned, ICrunaPlugin {
   error NotTheTokenOwner();
   error UntrustedImplementation();
   error InvalidVersion();
@@ -33,7 +30,6 @@ abstract contract CrunaPluginBase is Context, ILinkedContract, IVersioned, ICrun
    */
   bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
-  mapping(bytes32 => bool) public usedSignatures;
   CrunaManager public manager;
 
   modifier onlyTokenOwner() {
@@ -58,36 +54,8 @@ abstract contract CrunaPluginBase is Context, ILinkedContract, IVersioned, ICrun
 
   function nameId() public view virtual override returns (bytes4);
 
-  function guardian() public view virtual override returns (ICrunaGuardian) {
-    return manager.guardian();
-  }
-
   function vault() public view virtual override returns (IVault) {
     return IVault(tokenAddress());
-  }
-
-  function registry() public view virtual override returns (ICrunaRegistry) {
-    return manager.registry();
-  }
-
-  function token() public view virtual override returns (uint256, address, uint256) {
-    return ERC6551AccountLib.token();
-  }
-
-  function owner() public view virtual override returns (address) {
-    (uint256 chainId, address tokenContract_, uint256 tokenId_) = token();
-    if (chainId != block.chainid) return address(0);
-    return IERC721(tokenContract_).ownerOf(tokenId_);
-  }
-
-  function tokenAddress() public view virtual override returns (address) {
-    (, address tokenContract_, ) = token();
-    return tokenContract_;
-  }
-
-  function tokenId() public view virtual override returns (uint256) {
-    (, , uint256 tokenId_) = token();
-    return tokenId_;
   }
 
   // @dev Upgrade the implementation of the plugin
@@ -96,7 +64,7 @@ abstract contract CrunaPluginBase is Context, ILinkedContract, IVersioned, ICrun
   //   wait for a new trusted implementation and upgrade it.
   function upgrade(address implementation_) external virtual override {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
-    uint256 requires = guardian().trustedImplementation(nameId(), implementation_);
+    uint256 requires = _CRUNA_GUARDIAN.trustedImplementation(nameId(), implementation_);
     if (requires == 0) revert UntrustedImplementation();
     IVersioned impl = IVersioned(implementation_);
     uint256 _version = impl.version();
@@ -104,7 +72,6 @@ abstract contract CrunaPluginBase is Context, ILinkedContract, IVersioned, ICrun
     CrunaManager _manager = CrunaManager(vault().managerOf(tokenId()));
     if (_manager.version() < requires) revert PluginRequiresUpdatedManager(requires);
     StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
-    manager.updateEmitterForPlugin(nameId(), implementation_);
   }
 
   // @dev This empty reserved space is put in place to allow future versions to add new

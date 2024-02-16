@@ -6,13 +6,12 @@ pragma solidity ^0.8.20;
 import {ICrunaPlugin} from "../plugins/ICrunaPlugin.sol";
 
 import {INamed} from "../utils/INamed.sol";
-import {ILinkedContractExtended} from "../utils/ILinkedContractExtended.sol";
-import {IReference} from "../token/IReference.sol";
+import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
 import {IVault} from "../token/IVault.sol";
 
 //import {console} from "hardhat/console.sol";
 
-interface ICrunaManager is ILinkedContractExtended, INamed, IReference {
+interface ICrunaManager is ITokenLinkedContract, INamed {
   event EmitEventFailed(EventAction action);
 
   event ProtectorChange(address indexed protector, bool status);
@@ -39,10 +38,13 @@ interface ICrunaManager is ILinkedContractExtended, INamed, IReference {
     bool canManageTransfer;
     bool canBeReset;
     bool active;
+    bool isERC6551Account;
+    bytes4 salt;
   }
 
   struct PluginStatus {
     string name;
+    bytes4 salt;
     // redundant to optimize gas usage
     bool active;
   }
@@ -61,6 +63,7 @@ interface ICrunaManager is ILinkedContractExtended, INamed, IReference {
     address pluginProxy,
     bool canManageTransfer,
     bool isERC6551Account,
+    bytes4 salt,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
@@ -68,6 +71,7 @@ interface ICrunaManager is ILinkedContractExtended, INamed, IReference {
 
   function disablePlugin(
     string memory name,
+    bytes4 salt,
     bool resetPlugin,
     uint256 timestamp,
     uint256 validFor,
@@ -76,6 +80,7 @@ interface ICrunaManager is ILinkedContractExtended, INamed, IReference {
 
   function reEnablePlugin(
     string memory name,
+    bytes4 salt,
     bool resetPlugin,
     uint256 timestamp,
     uint256 validFor,
@@ -161,14 +166,13 @@ interface ICrunaManager is ILinkedContractExtended, INamed, IReference {
     bytes calldata signature
   ) external;
 
-  function updateEmitterForPlugin(bytes4 pluginNameId, address newEmitter) external;
-
   function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external;
 
   // @dev blocks a plugin for a maximum of 30 days from transferring the NFT
   //   If the plugins must be blocked for more time, disable it
   function authorizePluginToTransfer(
     string memory name,
+    bytes4 salt,
     bool authorized,
     uint256 timeLock,
     uint256 timestamp,
@@ -176,17 +180,17 @@ interface ICrunaManager is ILinkedContractExtended, INamed, IReference {
     bytes calldata signature
   ) external;
 
-  function pluginAddress(bytes4 _nameId) external view returns (address);
+  function pluginAddress(bytes4 _nameId, bytes4 salt) external view returns (address);
 
-  function plugin(bytes4 _nameId) external view returns (ICrunaPlugin);
+  function plugin(bytes4 _nameId, bytes4 salt) external view returns (ICrunaPlugin);
 
   function countPlugins() external view returns (uint256, uint256);
 
-  function plugged(string memory name) external view returns (bool);
+  function plugged(string memory name, bytes4 salt) external view returns (bool);
 
-  function pluginIndex(string memory name) external view returns (bool, uint256);
+  function pluginIndex(string memory name, bytes4 salt) external view returns (bool, uint256);
 
-  function isPluginActive(string memory name) external view returns (bool);
+  function isPluginActive(string memory name, bytes4 salt) external view returns (bool);
 
   function listPlugins(bool active) external view returns (string[] memory);
 }

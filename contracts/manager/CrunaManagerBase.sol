@@ -3,18 +3,15 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {IERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
-import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
-import {ILinkedContract} from "../utils/ILinkedContract.sol";
-import {ICrunaRegistry} from "../utils/CrunaRegistry.sol";
-import {ICrunaGuardian} from "../utils/ICrunaGuardian.sol";
+import {TokenLinkedContract} from "../utils/TokenLinkedContract.sol";
 import {INamed} from "../utils/INamed.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 import {ICrunaManager, IVault} from "./ICrunaManager.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
+import {CanonicalAddresses} from "../utils/CanonicalAddresses.sol";
 
 //import {console} from "hardhat/console.sol";
 
@@ -24,7 +21,14 @@ interface INamedAndVersioned is INamed, IVersioned {}
   @title CrunaManagerBase.sol
   @dev Base contract for managers and plugins
 */
-abstract contract CrunaManagerBase is Context, ILinkedContract, IVersioned, ICrunaManager, SignatureValidator {
+abstract contract CrunaManagerBase is
+  Context,
+  CanonicalAddresses,
+  TokenLinkedContract,
+  IVersioned,
+  ICrunaManager,
+  SignatureValidator
+{
   error NotTheTokenOwner();
   error UntrustedImplementation();
   error InvalidVersion();
@@ -41,8 +45,6 @@ abstract contract CrunaManagerBase is Context, ILinkedContract, IVersioned, ICru
    */
   bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
-  mapping(bytes32 => bool) public usedSignatures;
-
   modifier onlyTokenOwner() {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     _;
@@ -50,14 +52,6 @@ abstract contract CrunaManagerBase is Context, ILinkedContract, IVersioned, ICru
 
   function version() public pure virtual override returns (uint256) {
     return 1e6;
-  }
-
-  function guardian() public view virtual override returns (ICrunaGuardian) {
-    return vault().guardian();
-  }
-
-  function registry() public view virtual override returns (ICrunaRegistry) {
-    return vault().registry();
   }
 
   function vault() public view virtual override returns (IVault) {
@@ -68,28 +62,8 @@ abstract contract CrunaManagerBase is Context, ILinkedContract, IVersioned, ICru
     return _stringToBytes4("CrunaManager");
   }
 
-  function token() public view virtual override returns (uint256, address, uint256) {
-    return ERC6551AccountLib.token();
-  }
-
-  function owner() public view virtual override returns (address) {
-    (uint256 chainId, address tokenContract_, uint256 tokenId_) = token();
-    if (chainId != block.chainid) return address(0);
-    return IERC721(tokenContract_).ownerOf(tokenId_);
-  }
-
   function ownerOf(uint256) external view virtual override returns (address) {
     return owner();
-  }
-
-  function tokenAddress() public view virtual override returns (address) {
-    (, address tokenContract_, ) = token();
-    return tokenContract_;
-  }
-
-  function tokenId() public view virtual override returns (uint256) {
-    (, , uint256 tokenId_) = token();
-    return tokenId_;
   }
 
   function _stringToBytes4(string memory str) internal pure returns (bytes4) {
@@ -99,7 +73,7 @@ abstract contract CrunaManagerBase is Context, ILinkedContract, IVersioned, ICru
   // @dev Upgrade the implementation of the manager
   function upgrade(address implementation_) external virtual override {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
-    uint256 requires = guardian().trustedImplementation(nameId(), implementation_);
+    uint256 requires = _CRUNA_GUARDIAN.trustedImplementation(nameId(), implementation_);
     if (requires == 0) revert UntrustedImplementation();
     INamedAndVersioned impl = INamedAndVersioned(implementation_);
     uint256 _version = impl.version();
