@@ -418,7 +418,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       this.disablePlugin.selector,
       pseudoAddress(name, salt),
       resetPlugin ? 1 : 0,
-      0,
+      0, // in v2 we will user extra2 for the salt. For now, since the salt is defaulted to 0x00000000, we can ignore it.
       0,
       timestamp * 1e7 + validFor,
       signature
