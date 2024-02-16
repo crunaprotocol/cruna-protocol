@@ -4,17 +4,15 @@ Dive into the realm of Cruna Protocol, a revolutionary advancement reshaping the
 
 Our protocol is adeptly designed to synergize with ERC-6551 smart wallets, setting a new standard for asset security. Cruna Vaults, working alongside ERC-6551, create a dynamic ecosystem where NFTs not only hold value but also actively secure and manage it with unparalleled efficiency.
 
-Through the Cruna Protocol, NFTs evolve beyond static assets, transforming into expandable, secure entities capable of owning and interacting with a wide range of digital assets and applications. This shift marks a groundbreaking leap in NFT technology, opening doors to endless possibilities in the digital asset space.
+Through the Cruna Protocol, NFTs evolve beyond static assets, transforming into expandable, secure entities capable of owning and interacting with a wide range of digital assets and applications. This shift marks a remarkable leap in NFT technology, opening doors to endless possibilities in the digital asset space.
 
 Join us as we explore the forefront of NFT innovation, where security meets scalability, and every digital asset gains the power to be more than just a token – a safeguarded, expandable asset in the ever-evolving digital world.
 
 ## Cruna Vault + ERC-6551: A Game-Changer in Asset Security
 
-ERC-6551 defines a system which assigns EVM-compatible accounts to all non-fungible tokens. These token bound accounts allow NFTs to own assets and interact with applications, without requiring changes to existing smart contracts or infrastructure.
+ERC-6551 creates accounts bound to NFTs, allowing any NFT to own assets and interact with applications without necessitating changes to existing smart contracts or infrastructure.
 
-While the ERC-6551 standard represents a groundbreaking advancement in the functionality of NFTs, enabling them to own assets and engage with applications directly, it focuses on interoperability and functionality rather than specifying security protocols. This focus on broadening the capabilities of NFTs opens up discussions on enhancing security measures to ensure that these token-bound accounts are safeguarded against unauthorized access, complementing the ERC-6551's innovative approach with robust security solutions.
-
-Cruna Vault is specially designed to work with ERC-6551 wallets, a new way for NFTs to manage digital assets seamlessly.
+While the ERC-6551 standard heralds a groundbreaking advancement in NFT functionality, focusing on interoperability and utility, it does not specifically address security protocols. Therefore, if the NFT that owns the token-bound account is compromised, the entire wallet could be at risk. Cruna aims to enhance the capabilities of NFTs by ensuring that token-bound accounts are protected against unauthorized access, thereby complementing ERC-6551’s innovative framework with robust security solutions.
 
 ### Meet the Protectors
 
