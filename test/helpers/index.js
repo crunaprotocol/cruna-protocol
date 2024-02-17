@@ -80,7 +80,9 @@ const Helpers = {
     const _CRUNA_GUARDIAN = "0x82AfcB8c199498264D3aB716CA2f17D73e417ebd";
 
     let erc6551RegistryAddress = (
-      await deployUtils.deployBytecodeViaNickSFactory(deployer, "ERC6551Registry", bytecodes.ERC6551Registry)
+      await deployUtils.deployBytecodeViaNickSFactory(deployer, "ERC6551Registry", bytecodes.ERC6551Registry,
+          "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31"
+          )
     ).address;
     expect(erc6551RegistryAddress).to.be.equal(_ERC6551_REGISTRY);
 
