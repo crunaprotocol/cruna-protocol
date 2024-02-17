@@ -28,9 +28,9 @@ async function main() {
       "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31",
     );
     [deployer, proposer, executor] = await ethers.getSigners();
-    console.log("deployer", deployer.address);
-    console.log("proposer", proposer.address);
-    console.log("executor", executor.address);
+    // console.log("deployer", deployer.address);
+    // console.log("proposer", proposer.address);
+    // console.log("executor", executor.address);
 
     proposerAddress = proposer.address;
     executorAddress = executor.address;
