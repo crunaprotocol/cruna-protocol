@@ -71,5 +71,4 @@ contract FlexiTimelockController is TimelockController {
     _revokeRole(EXECUTOR_ROLE, executor);
     totalExecutors--;
   }
-
 }

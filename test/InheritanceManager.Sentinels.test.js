@@ -162,7 +162,6 @@ describe("Sentinel and Inheritance", function () {
   it("should verify before/beforeEach works", async function () {});
 
   it("should test the guardian", async function () {
-
     inheritancePluginImpl = await deployContract("InheritanceCrunaPlugin");
     inheritancePluginProxy = await deployContract("InheritanceCrunaPluginProxy", inheritancePluginImpl.address);
     inheritancePluginProxy = await deployUtils.attach("InheritanceCrunaPlugin", inheritancePluginProxy.address);
@@ -170,7 +169,6 @@ describe("Sentinel and Inheritance", function () {
     const newGuardian = await deployContract("CrunaGuardian", delay, [proposer.address], [executor.address], deployer.address);
 
     await trustImplementation(newGuardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true, 10);
-
   });
 
   it("should plug the plugin", async function () {

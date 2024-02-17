@@ -150,10 +150,10 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
-**1.0.0-rc.4**~~~~
+**1.0.0-rc.4**
 - Add flag to specify that a vault has been deployed to a main network since it is not possible to know that on chain
-- Allow developers to plug untrusted plugins. This is useful for testing and for plugins that are not meant to be used in production
-- Transfers by untrusted plugins can be executed only if the vault has not been deployed on a main network
+- Allow developers to plug untrusted plugins. This is essential for testing, and useful to test plugins on testnets before deploying them on mainnet
+- To avoid security issues, transfers by untrusted plugins can be executed only on testnets
 
 **1.0.0-rc.3**
 - Plugins are now deployed by the NFT, not by the manager. This avoids issues when deploying plugins that supports IERC6551Account 

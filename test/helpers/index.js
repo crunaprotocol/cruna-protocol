@@ -80,21 +80,22 @@ const Helpers = {
     const _CRUNA_GUARDIAN = "0x82AfcB8c199498264D3aB716CA2f17D73e417ebd";
 
     let erc6551RegistryAddress = (
-      await thiz.deployBytecodeViaNickSFactory(deployer, "ERC6551Registry", bytecodes.ERC6551Registry,
-          "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31"
-          )
+      await thiz.deployBytecodeViaNickSFactory(
+        deployer,
+        "ERC6551Registry",
+        bytecodes.ERC6551Registry,
+        "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31",
+      )
     ).address;
     expect(erc6551RegistryAddress).to.be.equal(_ERC6551_REGISTRY);
 
-    let crunaRegistryAddress = (
-      await thiz.deployBytecodeViaNickSFactory(deployer, "CrunaRegistry", bytecodes.CrunaRegistry)
-    ).address;
+    let crunaRegistryAddress = (await thiz.deployBytecodeViaNickSFactory(deployer, "CrunaRegistry", bytecodes.CrunaRegistry))
+      .address;
 
     expect(crunaRegistryAddress).to.be.equal(_CRUNA_REGISTRY);
 
-    let crunaGuardianAddress = (
-      await thiz.deployBytecodeViaNickSFactory(deployer, "CrunaGuardian", bytecodes.CrunaGuardian)
-    ).address;
+    let crunaGuardianAddress = (await thiz.deployBytecodeViaNickSFactory(deployer, "CrunaGuardian", bytecodes.CrunaGuardian))
+      .address;
     expect(crunaGuardianAddress).to.be.equal(_CRUNA_GUARDIAN);
     // console.log(crunaRegistryAddress, erc6551RegistryAddress, crunaGuardianAddress);
     return [crunaRegistryAddress, erc6551RegistryAddress, crunaGuardianAddress];
@@ -130,10 +131,13 @@ const Helpers = {
     const code = await ethers.provider.getCode(address);
     if (code === "0x") {
       const data = salt + contractBytecode.substring(2);
-      const tx = Object.assign({
-        to: this.nickSFactoryAddress(),
-        data,
-      }, extraParams);
+      const tx = Object.assign(
+        {
+          to: this.nickSFactoryAddress(),
+          data,
+        },
+        extraParams,
+      );
 
       const transaction = await deployer.sendTransaction(tx);
       await transaction.wait();
@@ -150,10 +154,13 @@ const Helpers = {
     const code = await ethers.provider.getCode(address);
     if (code === "0x") {
       const data = salt + contractBytecode.substring(2);
-      const tx = Object.assign({
-        to: thiz.nickSFactoryAddress,
-        data,
-      }, extraParams);
+      const tx = Object.assign(
+        {
+          to: thiz.nickSFactoryAddress,
+          data,
+        },
+        extraParams,
+      );
 
       const transaction = await deployer.sendTransaction(tx);
       await transaction.wait();
