@@ -15,7 +15,7 @@ import {ICrunaRegistry} from "./CrunaRegistry.sol";
 contract CanonicalAddresses {
   ICrunaRegistry private constant _CRUNA_REGISTRY = ICrunaRegistry(0xFe4F407dee99B8B5660454613b79A2bC9e628750);
 
-  IERC6551Registry private constant _ERC6551_REGISTRY = IERC6551Registry(0xDe037EE2FeE275E3398Bd434a7b35D940e6263A1);
+  IERC6551Registry private constant _ERC6551_REGISTRY = IERC6551Registry(0x000000006551c19487814612e58FE06813775758);
 
   ICrunaGuardian private constant _CRUNA_GUARDIAN = ICrunaGuardian(0x82AfcB8c199498264D3aB716CA2f17D73e417ebd);
 

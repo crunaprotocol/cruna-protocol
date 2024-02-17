@@ -29,8 +29,7 @@ fi
 cp README.md contracts/README.md
 cd contracts
 
-# mainnets and testnets
-cp ../canonical-addresses/mainnet.sol utils/CanonicalAddresses.sol
+cp ../canonical-addresses/mainnet.sol canonical/CanonicalAddresses.sol
 
 if [[ $version =~ -([a-zA-Z]+) ]]; then
   tag=${BASH_REMATCH[1]}
@@ -40,25 +39,6 @@ else
   echo "Publishing stable version $version"
   npm publish
 fi
-
-# development
-
-../scripts/rename-package-for-dev.js
-
-cp ../canonical-addresses/hardhat.sol utils/CanonicalAddresses.sol
-
-if [[ $version =~ -([a-zA-Z]+) ]]; then
-  tag=${BASH_REMATCH[1]}
-  echo "Publishing $tag version $version"
-  npm publish --tag $tag
-else
-  echo "Publishing stable version $version"
-  npm publish
-fi
-
-# revert package name
-
-../scripts/rename-package-for-mainnet.js
 
 rm README.md
 cd ..

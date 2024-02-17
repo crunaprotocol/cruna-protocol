@@ -1,5 +1,5 @@
 {
-  "name": "@cruna/cruna-protocol",
+  "name": "@cruna/protocol",
   "version": "1.0.0-rc.4",
   "description": "The Cruna protocol",
   "publishConfig": {

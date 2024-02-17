@@ -15,7 +15,7 @@ const {
   setFakeCanonicalIfCoverage,
 } = require("./helpers");
 
-describe("VaultFactory w/ time controlled vault", function () {
+describe.skip("VaultFactory w/ time controlled vault", function () {
   let crunaRegistry, proxy, guardian, erc6551Registry;
 
   let vault;

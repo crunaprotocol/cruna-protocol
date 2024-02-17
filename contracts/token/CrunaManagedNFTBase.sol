@@ -15,7 +15,7 @@ import {IERC6454} from "../interfaces/IERC6454.sol";
 import {IERC6982} from "../interfaces/IERC6982.sol";
 import {ICrunaManager} from "../manager/ICrunaManager.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
-import {CanonicalAddresses} from "../utils/CanonicalAddresses.sol";
+import {CanonicalAddresses} from "../canonical/CanonicalAddresses.sol";
 
 //import {console} from "hardhat/console.sol";
 

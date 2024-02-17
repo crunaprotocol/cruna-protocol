@@ -76,24 +76,24 @@ const Helpers = {
     await Helpers.deployNickSFactory(deployer);
 
     const _CRUNA_REGISTRY = "0xFe4F407dee99B8B5660454613b79A2bC9e628750";
-    const _ERC6551_REGISTRY = "0xDe037EE2FeE275E3398Bd434a7b35D940e6263A1";
+    const _ERC6551_REGISTRY = "0x000000006551c19487814612e58FE06813775758";
     const _CRUNA_GUARDIAN = "0x82AfcB8c199498264D3aB716CA2f17D73e417ebd";
 
     let erc6551RegistryAddress = (
-      await deployUtils.deployBytecodeViaNickSFactory(deployer, "ERC6551Registry", bytecodes.ERC6551Registry,
+      await thiz.deployBytecodeViaNickSFactory(deployer, "ERC6551Registry", bytecodes.ERC6551Registry,
           "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31"
           )
     ).address;
     expect(erc6551RegistryAddress).to.be.equal(_ERC6551_REGISTRY);
 
     let crunaRegistryAddress = (
-      await deployUtils.deployBytecodeViaNickSFactory(deployer, "CrunaRegistry", bytecodes.CrunaRegistry)
+      await thiz.deployBytecodeViaNickSFactory(deployer, "CrunaRegistry", bytecodes.CrunaRegistry)
     ).address;
 
     expect(crunaRegistryAddress).to.be.equal(_CRUNA_REGISTRY);
 
     let crunaGuardianAddress = (
-      await deployUtils.deployBytecodeViaNickSFactory(deployer, "CrunaGuardian", bytecodes.CrunaGuardian)
+      await thiz.deployBytecodeViaNickSFactory(deployer, "CrunaGuardian", bytecodes.CrunaGuardian)
     ).address;
     expect(crunaGuardianAddress).to.be.equal(_CRUNA_GUARDIAN);
     // console.log(crunaRegistryAddress, erc6551RegistryAddress, crunaGuardianAddress);
@@ -111,34 +111,54 @@ const Helpers = {
     return contractBytecode;
   },
 
-  async deployContractViaNickSFactory(
-    deployer,
-    contractName,
-    constructorTypes,
-    constructorArgs,
-    salt = ethers.constants.HashZero,
-  ) {
+  async deployContractViaNickSFactory(deployer, contractName, constructorTypes, constructorArgs, salt, extraParams = {}) {
+    if (!salt && !Array.isArray(constructorTypes)) {
+      salt = constructorTypes;
+      constructorTypes = undefined;
+      constructorArgs = undefined;
+    }
+    if (!salt) {
+      salt = ethers.constants.HashZero;
+    }
     const json = await artifacts.readArtifact(contractName);
     let contractBytecode = json.bytecode;
-
-    // examples:
-    // const constructorArgs = [arg1, arg2, arg3];
-    // const constructorTypes = ["type1", "type2", "type3"];
-
     if (constructorTypes) {
-      // ABI-encode the constructor arguments
       const encodedArgs = ethers.utils.defaultAbiCoder.encode(constructorTypes, constructorArgs);
-      contractBytecode = contractBytecode + encodedArgs.substring(2); // Remove '0x' from encoded args
+      contractBytecode = contractBytecode + encodedArgs.substring(2);
     }
+    const address = ethers.utils.getCreate2Address(this.nickSFactoryAddress(), salt, ethers.utils.keccak256(contractBytecode));
+    const code = await ethers.provider.getCode(address);
+    if (code === "0x") {
+      const data = salt + contractBytecode.substring(2);
+      const tx = Object.assign({
+        to: this.nickSFactoryAddress(),
+        data,
+      }, extraParams);
 
-    const data = salt + contractBytecode.substring(2);
-    const tx = {
-      to: thiz.nickSFactoryAddress,
-      data,
-    };
-    const transaction = await deployer.sendTransaction(tx);
-    await transaction.wait();
-    return ethers.utils.getCreate2Address(thiz.nickSFactoryAddress, salt, ethers.utils.keccak256(contractBytecode));
+      const transaction = await deployer.sendTransaction(tx);
+      await transaction.wait();
+    }
+    return await ethers.getContractAt(contractName, address);
+  },
+
+  async deployBytecodeViaNickSFactory(deployer, contractName, contractBytecode, salt, extraParams = {}) {
+    if (!salt) {
+      salt = ethers.constants.HashZero;
+    }
+    const address = ethers.utils.getCreate2Address(thiz.nickSFactoryAddress, salt, ethers.utils.keccak256(contractBytecode));
+
+    const code = await ethers.provider.getCode(address);
+    if (code === "0x") {
+      const data = salt + contractBytecode.substring(2);
+      const tx = Object.assign({
+        to: thiz.nickSFactoryAddress,
+        data,
+      }, extraParams);
+
+      const transaction = await deployer.sendTransaction(tx);
+      await transaction.wait();
+    }
+    return await ethers.getContractAt(contractName, address);
   },
 
   bytes4(bytes32value) {
@@ -198,46 +218,6 @@ const Helpers = {
     // check if the contract has been deployed
     const code = await ethers.provider.getCode(address);
     return code !== "0x";
-  },
-
-  async deployAll(deployer, proposer, executor, delay) {
-    // using Nick's factory
-    await Helpers.deployNickSFactory(deployer);
-    const params = [
-      deployer,
-      "CrunaRegistry",
-      undefined,
-      undefined,
-      "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31",
-    ];
-
-    expect(await Helpers.isDeployedViaNickSFactory(...params)).to.be.false;
-
-    const crunaRegistryAddress = await Helpers.deployContractViaNickSFactory(...params);
-
-    expect(await Helpers.isDeployedViaNickSFactory(...params)).to.be.true;
-
-    const crunaRegistry = await ethers.getContractAt("CrunaRegistry", crunaRegistryAddress);
-
-    const managerAddress = await Helpers.deployContractViaNickSFactory(deployer, "CrunaManager");
-
-    const proxyAddress = await Helpers.deployContractViaNickSFactory(
-      deployer,
-      "CrunaManagerProxy",
-      ["address", "address"],
-      [managerAddress, deployer.address],
-    );
-    const proxy = await ethers.getContractAt("CrunaManagerProxy", proxyAddress);
-
-    const guardianAddress = await Helpers.deployContractViaNickSFactory(
-      deployer,
-      "CrunaGuardian",
-      ["uint256", "address[]", "address[]", "address"],
-      [delay, [proposer.address], [executor.address], deployer.address],
-    );
-    const guardian = await ethers.getContractAt("CrunaGuardian", guardianAddress);
-
-    return [crunaRegistry, proxy, guardian];
   },
 
   async getAddressViaNickSFactory(deployer, contractName, constructorTypes, constructorArgs, salt = thiz.keccak256("Cruna")) {

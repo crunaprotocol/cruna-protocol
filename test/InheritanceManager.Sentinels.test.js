@@ -25,7 +25,7 @@ const {
   setFakeCanonicalIfCoverage,
 } = require("./helpers");
 
-describe.only("Sentinel and Inheritance", function () {
+describe("Sentinel and Inheritance", function () {
   let crunaRegistry, proxy, managerImpl, guardian, erc6551Registry;
 
   let vault, inheritancePluginProxy, inheritancePluginImpl, validatorMock;
@@ -84,7 +84,8 @@ describe.only("Sentinel and Inheritance", function () {
     inheritancePluginProxy = await deployContract("InheritanceCrunaPluginProxy", inheritancePluginImpl.address);
     inheritancePluginProxy = await deployUtils.attach("InheritanceCrunaPlugin", inheritancePluginProxy.address);
 
-    await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true, 1);
+    await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true, 10);
+
     expect((await manager.pluginsById(PLUGIN_ID, "0x00000000")).proxyAddress).to.equal(addr0);
     expect((await manager.pluginsById(PLUGIN_ID, "0x00000000")).proxyAddress).equal(addr0);
     await expect(manager.allPlugins(0)).revertedWith("");
@@ -159,6 +160,18 @@ describe.only("Sentinel and Inheritance", function () {
   };
 
   it("should verify before/beforeEach works", async function () {});
+
+  it("should test the guardian", async function () {
+
+    inheritancePluginImpl = await deployContract("InheritanceCrunaPlugin");
+    inheritancePluginProxy = await deployContract("InheritanceCrunaPluginProxy", inheritancePluginImpl.address);
+    inheritancePluginProxy = await deployUtils.attach("InheritanceCrunaPlugin", inheritancePluginProxy.address);
+
+    const newGuardian = await deployContract("CrunaGuardian", delay, [proposer.address], [executor.address], deployer.address);
+
+    await trustImplementation(newGuardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true, 10);
+
+  });
 
   it("should plug the plugin", async function () {
     await buyAVaultAndPlug(bob);
