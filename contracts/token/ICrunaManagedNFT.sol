@@ -26,7 +26,7 @@ interface ICrunaManagedNFT {
   //   the same tokenId can be used on different chains, so it's important to avoid collisions.
   //   A good practice is to use the chainId as a prefix. For example, the first token on Polygon
   //   could be 137000001, while the first token on BSC could be 56000001.
-  function init(address managerProxy_, uint256 firstTokenId_) external;
+  function init(address managerProxy_, uint256 firstTokenId_, bool deployedOnProduction_) external;
 
   function defaultManagerImplementation(uint256 _tokenId) external view returns (address);
 

@@ -17,6 +17,7 @@ const {
   proposeAndExecute,
   getCanonical,
   deployCanonical,
+  setFakeCanonicalIfCoverage,
 } = require("./helpers");
 
 describe("Testing contract deployments", function () {
@@ -28,29 +29,33 @@ describe("Testing contract deployments", function () {
   let deployer, bob, alice, fred, mark, otto, proposer, executor, proposer2, executor2;
   let chainId, ts;
   const delay = 10;
+  let CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN;
+  let crunaManagerContract = process.env.IS_COVERAGE ? "ManagerCoverageMock" : "CrunaManager";
+  let crunaVaultContract = process.env.IS_COVERAGE ? "CrunaVaultsCoverageMock" : "CrunaVaults";
 
   before(async function () {
     [deployer, proposer, executor, bob, alice, fred, mark, otto, proposer2, executor2] = await ethers.getSigners();
     chainId = await getChainId();
-    const [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
+    [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
     crunaRegistry = await ethers.getContractAt("CrunaRegistry", CRUNA_REGISTRY);
     guardian = await ethers.getContractAt("CrunaGuardian", CRUNA_GUARDIAN);
     erc6551Registry = await ethers.getContractAt("ERC6551Registry", ERC6551_REGISTRY);
   });
 
   beforeEach(async function () {
-    managerImpl = await deployContract("CrunaManager");
+    managerImpl = await deployContract(crunaManagerContract);
     expect(await guardian.version()).to.equal(1000000);
     proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
-    proxy = await deployUtils.attach("CrunaManager", proxy.address);
+    proxy = await deployUtils.attach(crunaManagerContract, proxy.address);
     // sent 2 ETH to proxy
     await expect(
       deployer.sendTransaction({ to: proxy.address, value: amount("2"), gasLimit: ethers.utils.hexlify(100000) }),
     ).revertedWith("ERC1967NonPayable");
 
-    vault = await deployContract("CrunaVaults", delay, [proposer.address], [executor.address], deployer.address);
+    vault = await deployContract(crunaVaultContract, delay, [proposer.address], [executor.address], deployer.address);
+    await setFakeCanonicalIfCoverage(vault, CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN);
     expect(await vault.version()).to.equal(1000000);
-    await vault.init(proxy.address, 1);
+    await vault.init(proxy.address, 1, true);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
     await vault.setFactory(factory.address);
     expect(await vault.supportsInterface(getInterfaceId("IAccessControl"))).to.equal(true);
@@ -89,7 +94,8 @@ describe("Testing contract deployments", function () {
     expect(await ethers.provider.getCode(managerAddress)).equal("0x");
     await factory.connect(bob).buyVaults(usdc.address, 1);
     expect(await ethers.provider.getCode(managerAddress)).not.equal("0x");
-    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+    const manager = await ethers.getContractAt(crunaManagerContract, managerAddress);
+    await setFakeCanonicalIfCoverage(manager, CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN);
     expect(await manager.tokenId()).to.equal(nextTokenId);
     expect(await manager.vault()).to.equal(vault.address);
     expect(await manager.owner()).to.equal(bob.address);

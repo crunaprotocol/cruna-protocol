@@ -64,11 +64,11 @@ abstract contract CrunaPluginBase is Context, CanonicalAddresses, TokenLinkedCon
   //   wait for a new trusted implementation and upgrade it.
   function upgrade(address implementation_) external virtual override {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
-    uint256 requires = _CRUNA_GUARDIAN.trustedImplementation(nameId(), implementation_);
+    uint256 requires = _crunaGuardian().trustedImplementation(nameId(), implementation_);
     if (requires == 0) {
       // The new implementation is not trusted.
       // If current implementation is trusted, the new implementation must be trusted too
-      if (_CRUNA_GUARDIAN.trustedImplementation(nameId(), implementation()) > 0) revert UntrustedImplementation();
+      if (_crunaGuardian().trustedImplementation(nameId(), implementation()) > 0) revert UntrustedImplementation();
     }
     IVersioned impl = IVersioned(implementation_);
     uint256 _version = impl.version();

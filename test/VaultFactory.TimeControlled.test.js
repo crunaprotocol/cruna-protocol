@@ -12,6 +12,7 @@ const {
   deployContract,
   getCanonical,
   deployCanonical,
+  setFakeCanonicalIfCoverage,
 } = require("./helpers");
 
 describe("VaultFactory w/ time controlled vault", function () {
@@ -22,24 +23,28 @@ describe("VaultFactory w/ time controlled vault", function () {
   let usdc;
   let deployer, bob, alice, fred, mike, proposer, executor;
   const delay = 10;
+  let CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN;
+  let crunaManagerContract = process.env.IS_COVERAGE ? "ManagerCoverageMock" : "CrunaManager";
+  let crunaVaultContract = process.env.IS_COVERAGE ? "CrunaVaultsCoverageMock" : "CrunaVaults";
 
   before(async function () {
     [deployer, proposer, executor, bob, alice, fred, mike] = await ethers.getSigners();
-    const [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
+    [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
     crunaRegistry = await ethers.getContractAt("CrunaRegistry", CRUNA_REGISTRY);
     guardian = await ethers.getContractAt("CrunaGuardian", CRUNA_GUARDIAN);
     erc6551Registry = await ethers.getContractAt("ERC6551Registry", ERC6551_REGISTRY);
   });
 
   async function initAndDeploy() {
-    const managerImpl = await deployContract("CrunaManager");
+    const managerImpl = await deployContract(crunaManagerContract);
     proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
-    proxy = await deployUtils.attach("CrunaManager", proxy.address);
+    proxy = await deployUtils.attach(crunaManagerContract, proxy.address);
 
     const minDelay = 100;
 
-    vault = await deployContract("CrunaVaults", minDelay, [proposer.address], [executor.address], deployer.address);
-    await vault.init(proxy.address, 1);
+    vault = await deployContract(crunaVaultContract, minDelay, [proposer.address], [executor.address], deployer.address);
+    await setFakeCanonicalIfCoverage(vault, CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN);
+    await vault.init(proxy.address, 1, true);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
 
     await vault.setFactory(factory.address);

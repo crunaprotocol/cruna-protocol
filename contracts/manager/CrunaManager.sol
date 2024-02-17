@@ -36,6 +36,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   error InvalidTimeLock();
   error InvalidValidity();
   error InvalidAccountStatus();
+  error UntrustedImplementationsCanMakeTransfersOnlyOnTestnet();
 
   bytes4 public constant PROTECTOR = bytes4(keccak256("PROTECTOR"));
   bytes4 public constant SAFE_RECIPIENT = bytes4(keccak256("SAFE_RECIPIENT"));
@@ -211,7 +212,14 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     if (validFor > 9999999) revert InvalidValidity();
     bytes4 _nameId = _stringToBytes4(name);
     if (pluginsById[_nameId][0x00000000].proxyAddress != address(0)) revert PluginAlreadyPlugged();
-    uint256 requires = _CRUNA_GUARDIAN.trustedImplementation(_nameId, pluginProxy);
+    uint256 requires = _crunaGuardian().trustedImplementation(_nameId, pluginProxy);
+    if (requires == 0 && canManageTransfer && vault().deployedOnProduction()) {
+      // If requires == 0 the plugin is not trusted, for example during development.
+      // If later it is upgraded with a trusted implementation, it won't be possible anymore
+      // to upgrade it with a not-trusted version. However, a plugin that starts with an
+      // untrusted version can never manage the transfer.
+      revert UntrustedImplementationsCanMakeTransfersOnlyOnTestnet();
+    }
     if (requires > version()) revert PluginRequiresUpdatedManager(requires);
     _preValidateAndCheckSignature(
       this.plug.selector,
@@ -249,6 +257,8 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
 
   function _isPluginAuthorizable(bytes4 _nameId, bytes4 salt) internal view virtual {
     if (pluginsById[_nameId][salt].proxyAddress == address(0)) revert PluginNotFound();
+    if (!pluginsById[_nameId][salt].trusted && vault().deployedOnProduction())
+      revert UntrustedImplementationsCanMakeTransfersOnlyOnTestnet();
     ICrunaPlugin _plugin = plugin(_nameId, salt);
     if (!_plugin.requiresToManageTransfer()) revert NotATransferPlugin();
   }
@@ -311,7 +321,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   function pluginAddress(bytes4 _nameId, bytes4) public view virtual override returns (address) {
     bytes4 salt = 0x00000000;
     return
-      _CRUNA_REGISTRY.tokenLinkedContract(
+      _crunaRegistry().tokenLinkedContract(
         pluginsById[_nameId][salt].proxyAddress,
         salt,
         block.chainid,
@@ -489,9 +499,9 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     // In v2, we will find the plugin, instead of defaulting to 0x00000000
     if (pluginsById[pluginNameId][salt].proxyAddress == address(0) || !pluginsById[pluginNameId][salt].active)
       revert PluginNotFoundOrDisabled();
+    if (pluginAddress(pluginNameId, salt) != _msgSender()) revert NotTheAuthorizedPlugin();
     _removeLockIfExpired(pluginNameId, salt);
     if (!pluginsById[pluginNameId][salt].canManageTransfer) revert PluginNotAuthorizedToManageTransfer();
-    if (pluginAddress(pluginNameId, salt) != _msgSender()) revert NotTheAuthorizedPlugin();
     _resetActorsAndDisablePlugins();
     // In theory, the vault may revert, blocking the entire process
     // We allow it, assuming that the vault implementation has the

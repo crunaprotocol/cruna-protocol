@@ -116,7 +116,14 @@ const Helpers = {
     if (!process.env.IS_COVERAGE) {
       expect(crunaGuardianAddress).to.be.equal(_CRUNA_GUARDIAN);
     }
+    // console.log(crunaRegistryAddress, erc6551RegistryAddress, crunaGuardianAddress);
     return [crunaRegistryAddress, erc6551RegistryAddress, crunaGuardianAddress];
+  },
+
+  async setFakeCanonicalIfCoverage(contract, registry, erc6551registry, guardian) {
+    if (process.env.IS_COVERAGE) {
+      await contract.setFakeConstants(registry, erc6551registry, guardian);
+    }
   },
 
   async deployContractViaNickSFactory(

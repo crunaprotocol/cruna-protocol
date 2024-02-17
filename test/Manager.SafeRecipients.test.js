@@ -19,6 +19,7 @@ const {
   keccak256,
   getCanonical,
   deployCanonical,
+  setFakeCanonicalIfCoverage,
 } = require("./helpers");
 
 describe("CrunaManager : Safe Recipients", function () {
@@ -30,23 +31,27 @@ describe("CrunaManager : Safe Recipients", function () {
   let deployer, bob, alice, fred, mark, otto, proposer, executor;
   let chainId, ts;
   const delay = 10;
+  let CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN;
+  let crunaManagerContract = process.env.IS_COVERAGE ? "ManagerCoverageMock" : "CrunaManager";
+  let crunaVaultsContract = process.env.IS_COVERAGE ? "VaultCoverageMockSimple" : "VaultMockSimple";
 
   before(async function () {
     [deployer, proposer, executor, bob, alice, fred, mark, otto] = await ethers.getSigners();
     chainId = await getChainId();
-    const [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
+    [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
     crunaRegistry = await ethers.getContractAt("CrunaRegistry", CRUNA_REGISTRY);
     guardian = await ethers.getContractAt("CrunaGuardian", CRUNA_GUARDIAN);
     erc6551Registry = await ethers.getContractAt("ERC6551Registry", ERC6551_REGISTRY);
   });
 
   beforeEach(async function () {
-    managerImpl = await deployContract("CrunaManager");
+    managerImpl = await deployContract(crunaManagerContract);
     proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
-    proxy = await deployUtils.attach("CrunaManager", proxy.address);
+    proxy = await deployUtils.attach(crunaManagerContract, proxy.address);
 
-    vault = await deployContract("VaultMockSimple", deployer.address);
-    await vault.init(proxy.address, 1);
+    vault = await deployContract(crunaVaultsContract, deployer.address);
+    await setFakeCanonicalIfCoverage(vault, CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN);
+    await vault.init(proxy.address, 1, true);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
 
     await vault.setFactory(factory.address);
@@ -68,6 +73,12 @@ describe("CrunaManager : Safe Recipients", function () {
     await usdc.connect(bob).approve(factory.address, price);
     const nextTokenId = await vault.nextTokenId();
     await factory.connect(bob).buyVaults(usdc.address, 1);
+
+    const managerAddress = await vault.managerOf(nextTokenId);
+    const manager = await ethers.getContractAt(crunaManagerContract, managerAddress);
+
+    await setFakeCanonicalIfCoverage(manager, CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN);
+
     return nextTokenId;
   };
 
@@ -75,7 +86,8 @@ describe("CrunaManager : Safe Recipients", function () {
     // cl(true)
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
-    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+    const manager = await ethers.getContractAt(crunaManagerContract, managerAddress);
+    await setFakeCanonicalIfCoverage(manager, CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN);
     // set Alice and Fred as a safe recipient
     await expect(manager.connect(bob).setSafeRecipient(alice.address, true, 0, 0, 0))
       .to.emit(manager, "SafeRecipientChange")

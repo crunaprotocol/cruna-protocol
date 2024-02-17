@@ -131,7 +131,7 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 Cruna is in beta stage, and to use it you must specify the version you want to install. Install it with, for example
 
 ```sh
-npm install @cruna/protocol@1.0.0-rc.3 @openzeppelin/contracts erc6551
+npm install @cruna/protocol@1.0.0-rc.4 @openzeppelin/contracts erc6551
 ```
 or similar commands using Yarn or Pnpm, and use in your Solidity smart contracts, for example, as
 
@@ -149,6 +149,11 @@ contract MySuperToken is CrunaManagedNFTOwnable {
 If your goal is to build a plugin, look at the contracts in [contracts/mocks/plugin-example](./contracts/mocks/plugin-example) to start from.
 
 ## History
+
+**1.0.0-rc.4**
+- Add flag to specify that a vault has been deployed to a main network since it is not possible to know that on chain
+- Allow developers to plug untrusted plugins. This is useful for testing and for plugins that are not meant to be used in production
+- Transfers by untrusted plugins can be executed only if the vault has not been deployed on a main network
 
 **1.0.0-rc.3**
 - Plugins are now deployed by the NFT, not by the manager. This avoids issues when deploying plugins that supports IERC6551Account 

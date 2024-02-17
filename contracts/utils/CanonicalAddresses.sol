@@ -7,29 +7,41 @@ import {ICrunaGuardian} from "./ICrunaGuardian.sol";
 import {ICrunaRegistry} from "./CrunaRegistry.sol";
 
 /**
-  Canonical addresses for coverage.
+  Canonical addresses for testing and deployment to localhost (using hardhat mnemonic).
   The equivalents for testnet and mainnet are in the /canonical-addresses folder and managed
   by scripts/set-canonical.js before tests and before deployments
 */
 
 contract CanonicalAddresses {
+  ICrunaRegistry private constant _CRUNA_REGISTRY = ICrunaRegistry(0xFe4F407dee99B8B5660454613b79A2bC9e628750);
 
-  ICrunaRegistry internal constant _CRUNA_REGISTRY = ICrunaRegistry(0x47736647413bC6AC9Da48532AABdebDf498Cb774);
+  IERC6551Registry private constant _ERC6551_REGISTRY = IERC6551Registry(0x15cc2b0c5891aB996A2BA64FF9B4B685cdE762cB);
 
-  IERC6551Registry internal constant _ERC6551_REGISTRY = IERC6551Registry(0x0e97Ee6f0D32b477a133bd98CA8e0d25B9b532CA);
+  ICrunaGuardian private constant _CRUNA_GUARDIAN = ICrunaGuardian(0xF3385DF79ef342Ba67445f1b474426A94884bAB8);
 
-  ICrunaGuardian internal constant _CRUNA_GUARDIAN = ICrunaGuardian(0x51C91Fa76d2Ae8eE2aa43B274aF530cAcb214A76);
-
-  function crunaRegistry() external pure returns (ICrunaRegistry) {
+  // we override this during test coverage, because the instrumentation of the smart contracts makes it different over time
+  function _crunaRegistry() internal view virtual returns (ICrunaRegistry) {
     return _CRUNA_REGISTRY;
   }
 
-  function erc6551Registry() external pure returns (IERC6551Registry) {
+  function _erc6551Registry() internal view virtual returns (IERC6551Registry) {
     return _ERC6551_REGISTRY;
   }
 
-  function crunaGuardian() external pure returns (ICrunaGuardian) {
+  function _crunaGuardian() internal view virtual returns (ICrunaGuardian) {
     return _CRUNA_GUARDIAN;
+  }
+
+  function crunaRegistry() external view returns (ICrunaRegistry) {
+    return _crunaRegistry();
+  }
+
+  function erc6551Registry() external view returns (IERC6551Registry) {
+    return _erc6551Registry();
+  }
+
+  function crunaGuardian() external view returns (ICrunaGuardian) {
+    return _crunaGuardian();
   }
 
 }

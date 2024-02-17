@@ -16,6 +16,7 @@ const {
   signRequest,
   getCanonical,
   deployCanonical,
+  setFakeCanonicalIfCoverage,
 } = require("./helpers");
 
 describe("SignatureValidator", function () {

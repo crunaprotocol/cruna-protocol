@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+rm -rf contracts/mocks/coverage
+
 root_dir=$(dirname $(realpath $(dirname "$0")))
 # if not run from the root, we cd into the root
 cd $root_dir
@@ -29,6 +31,9 @@ fi
 cp README.md contracts/README.md
 cd contracts
 
+# mainnet
+cp ../canonical-addresses/mainnet.sol utils/CanonicalAddresses.sol
+
 if [[ $version =~ -([a-zA-Z]+) ]]; then
   tag=${BASH_REMATCH[1]}
   echo "Publishing $tag version $version"
@@ -37,6 +42,25 @@ else
   echo "Publishing stable version $version"
   npm publish
 fi
+
+# testnet
+
+../scripts/rename-package-for-testnet.js
+
+cp ../canonical-addresses/testnet.sol utils/CanonicalAddresses.sol
+
+if [[ $version =~ -([a-zA-Z]+) ]]; then
+  tag=${BASH_REMATCH[1]}
+  echo "Publishing $tag version $version"
+  npm publish --tag $tag
+else
+  echo "Publishing stable version $version"
+  npm publish
+fi
+
+# revert package name
+
+../scripts/rename-package-for-mainnet.js
 
 rm README.md
 cd ..

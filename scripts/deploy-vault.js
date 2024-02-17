@@ -34,12 +34,9 @@ async function main() {
     salt,
   );
 
-  await deployUtils.Tx(
-    vault.init(registry.address, guardian.address, managerProxy.address, 1, { gasLimit: 160000 }),
-    "Init vault",
-  );
+  await deployUtils.Tx(vault.init(managerProxy.address, 1, deployUtils.isMainnet(chainId), { gasLimit: 160000 }), "Init vault");
 
-  await expect(vault.init(registry.address, guardian.address, managerProxy.address, 1, { gasLimit: 160000 })).revertedWith(
+  await expect(vault.init(managerProxy.address, 1, deployUtils.isMainnet(chainId), { gasLimit: 160000 })).revertedWith(
     "Vault: already initialized",
   );
 }
