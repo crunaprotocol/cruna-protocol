@@ -39,10 +39,10 @@ async function main() {
     console.log("address", address);
 
     const data = salt + contractBytecode.substring(2);
-    return {
+    return Object.assign({
       to: "0x4e59b44847b379578588920ca78fbf26c0b4956c",
-      data,
-    };
+      data},
+        extraParams);
   }
 
   deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
@@ -55,37 +55,20 @@ async function main() {
   let executorAddress = process.env.EXECUTOR;
   let delay = process.env.DELAY;
 
-  // if (chainId === 1337) {
-  //   // on localhost, we deploy the factory if not deployed yet
-  //   await deployUtils.deployNickSFactory(deployer);
-  //   // we also deploy the ERC6551Registry if not deployed yet
-  //   await deployUtils.deployContractViaNickSFactory(
-  //     deployer,
-  //     "ERC6551Registry",
-  //     undefined,
-  //     undefined,
-  //     "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31",
-  //   );
-  //   [deployer, proposer, executor] = await ethers.getSigners();
-  //   console.log("deployer", deployer.address);
-  //   console.log("proposer", proposer.address);
-  //   console.log("executor", executor.address);
-  //
-  //   proposerAddress = proposer.address;
-  //   executorAddress = executor.address;
-  // }
-
   let salt = ethers.constants.HashZero;
 
-  let rawTx = await simulateDeployContractViaNickSFactory(deployer, "CrunaRegistry", undefined, undefined, salt);
+  let rawTx = await simulateDeployContractViaNickSFactory(deployer, "CrunaRegistry", undefined, undefined, salt, {gasLimit: 200000, gasPrice: 100n * 10n ** 9n});
 
   console.log("tx", rawTx);
 
-  const wallet = new ethers.Wallet(process.env.FOR_TESTNET, ethers.provider);
+  const wallet = new ethers.Wallet(process.env.DEPLOYER, ethers.provider);
 
-  const signedTx = await wallet.signTransaction(rawTx);
+  const serializedTx = await wallet.signTransaction(rawTx);
 
-  console.log("signedTx", signedTx);
+  console.log("signedTx", serializedTx);
+
+  let txResponse = await ethers.provider.sendTransaction(serializedTx);
+  await txResponse.wait();
 
   // await deployUtils.deployContractViaNickSFactory(
   //   deployer,

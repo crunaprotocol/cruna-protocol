@@ -18,6 +18,9 @@ const {
   getCanonical,
   deployCanonical,
   setFakeCanonicalIfCoverage,
+  deployNickSFactory,
+  deployCrunaRegistry,
+  getBytecodeForNickSFactory
 } = require("./helpers");
 
 describe("Testing contract deployments", function () {
@@ -82,7 +85,7 @@ describe("Testing contract deployments", function () {
     expect(await vault.maxTokenId()).to.equal(20000);
   });
 
-  it("should deploy everything as expected", async function () {
+  it.only("should deploy everything as expected", async function () {
     // test the beforeEach
   });
 
