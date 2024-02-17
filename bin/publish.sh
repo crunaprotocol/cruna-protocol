@@ -60,7 +60,7 @@ fi
 
 # testing
 
-../scripts/rename-package-for-testing.js
+../scripts/rename-package-for-dev.js
 
 cp ../canonical-addresses/hardhat.sol utils/CanonicalAddresses.sol
 

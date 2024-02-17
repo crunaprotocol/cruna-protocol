@@ -20,10 +20,6 @@ async function main() {
   }
 
   let salt = ethers.constants.HashZero;
-  // if (!(await deployUtils.isContractDeployedViaNickSFactory(deployer, "CrunaRegistry", salt))) {
-  //   console.error("Registry not deployed on this chain");
-  //   process.exit(1);
-  // }
 
   // deploy the plugin
   const plugin = await deployUtils.deployContractViaNickSFactory(deployer, "InheritanceCrunaPlugin", salt);
@@ -40,6 +36,7 @@ async function main() {
   const guardian = await deployUtils.attach("CrunaGuardian");
   let PLUGIN_ID = bytes4(keccak256("InheritanceCrunaPlugin"));
 
+  // only on testnet
   await trustImplementation(guardian, deployer, deployer, process.env.DELAY, PLUGIN_ID, proxy.address, true, 1);
 }
 

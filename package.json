@@ -17,7 +17,7 @@
     "lint": "npm run lint:sol && npm run lint:js",
     "lint:sol": "prettier --write 'contracts/**/*.sol' && solhint 'contracts/**/*.sol' && node scripts/find-unused-custom-errors.js",
     "lint:js": "npx prettier --write ./test/**/*.js ./**/*.js",
-    "coverage": "rimraf coverage coverage.json && IS_COVERAGE=1 scripts/set-canonical.js && NODE_ENV=test IS_COVERAGE=1 npx hardhat coverage",
+    "coverage": "rimraf coverage coverage.json && NODE_ENV=test IS_COVERAGE=1 scripts/set-canonical.js && IS_COVERAGE=1 NODE_ENV=test npx hardhat coverage",
     "prepare": "husky install",
     "size": "NODE_ENV=test npx hardhat size-contracts",
     "prepublishOnly": "echo 'Error: Please use 'npm run publish-package' to publish.' && exit 1",

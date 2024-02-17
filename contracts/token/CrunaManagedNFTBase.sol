@@ -61,7 +61,7 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, CanonicalAddresses, I
   uint256 public maxTokenId;
 
   // used by the manager to approve transfers during development
-  bool public deployedOnProduction;
+  bool public deployedToProduction;
 
   mapping(uint256 => bool) internal _approvedTransfers;
 
@@ -98,7 +98,7 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, CanonicalAddresses, I
     maxTokenId = maxTokenId_;
   }
 
-  function init(address managerProxy_, uint256 firstTokenId_, bool deployedOnProduction_) external virtual {
+  function init(address managerProxy_, uint256 firstTokenId_, bool deployedToProduction_) external virtual {
     _canManage(true);
     // must be called immediately after deployment
     if (managerHistoryLength > 0) revert AlreadyInitiated();
@@ -109,7 +109,7 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, CanonicalAddresses, I
     nextTokenId = firstTokenId_;
     // Since there is no way to know if a chain is a testnet, it is the deployer responsibility to set this flag correctly.
     // Be careful. Setting a mainnet token as a testnet token introduces severe security issues
-    deployedOnProduction = deployedOnProduction_;
+    deployedToProduction = deployedToProduction_;
   }
 
   function defaultManagerImplementation(uint256 _tokenId) public view virtual override returns (address) {

@@ -213,7 +213,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     bytes4 _nameId = _stringToBytes4(name);
     if (pluginsById[_nameId][0x00000000].proxyAddress != address(0)) revert PluginAlreadyPlugged();
     uint256 requires = _crunaGuardian().trustedImplementation(_nameId, pluginProxy);
-    if (requires == 0 && canManageTransfer && vault().deployedOnProduction()) {
+    if (requires == 0 && canManageTransfer && vault().deployedToProduction()) {
       // If requires == 0 the plugin is not trusted, for example during development.
       // If later it is upgraded with a trusted implementation, it won't be possible anymore
       // to upgrade it with a not-trusted version. However, a plugin that starts with an
@@ -257,7 +257,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
 
   function _isPluginAuthorizable(bytes4 _nameId, bytes4 salt) internal view virtual {
     if (pluginsById[_nameId][salt].proxyAddress == address(0)) revert PluginNotFound();
-    if (!pluginsById[_nameId][salt].trusted && vault().deployedOnProduction())
+    if (!pluginsById[_nameId][salt].trusted && vault().deployedToProduction())
       revert UntrustedImplementationsCanMakeTransfersOnlyOnTestnet();
     ICrunaPlugin _plugin = plugin(_nameId, salt);
     if (!_plugin.requiresToManageTransfer()) revert NotATransferPlugin();

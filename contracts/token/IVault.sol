@@ -18,5 +18,5 @@ interface IVault is ICanonicalAddresses {
     uint256 tokenId,
     bool isERC6551Account
   ) external returns (address);
-  function deployedOnProduction() external view returns (bool);
+  function deployedToProduction() external view returns (bool);
 }
