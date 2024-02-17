@@ -43,8 +43,12 @@ describe("Sentinel and Inheritance", function () {
   let crunaVaultsContract = process.env.IS_COVERAGE ? "VaultCoverageMockSimple" : "VaultMockSimple";
   let inheritanceCrunaPluginContract = process.env.IS_COVERAGE ? "InheritancePluginCoverageMock" : "InheritanceCrunaPlugin";
 
-  let inheritancePluginV2MockContract = process.env.IS_COVERAGE ? "InheritanceManagerCoverageV2Mock" : "InheritancePluginV2Mock";
-  let inheritancePluginV3MockContract = process.env.IS_COVERAGE ? "InheritanceManagerCoverageV3Mock" : "InheritancePluginV3Mock";
+  let inheritancePluginV2MockContract = process.env.IS_COVERAGE
+    ? "InheritanceManagerCoverageV2Mock"
+    : "InheritancePluginV2Mock";
+  let inheritancePluginV3MockContract = process.env.IS_COVERAGE
+    ? "InheritanceManagerCoverageV3Mock"
+    : "InheritancePluginV3Mock";
 
   before(async function () {
     [deployer, proposer, executor, bob, alice, fred, mark, otto, jerry, beneficiary1, beneficiary2] = await ethers.getSigners();
