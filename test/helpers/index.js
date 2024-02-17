@@ -2,8 +2,7 @@ const hre = require("hardhat");
 const ethers = hre.ethers;
 const { assert, expect } = require("chai");
 const BN = require("bn.js");
-// const ethSigUtil = require("eth-sig-util");
-const ethSigUtil = require("../../../../Personal/deploy-utils");
+const ethSigUtil = require("eth-sig-util");
 const deployUtils = new (require("eth-deploy-utils"))();
 const { artifacts } = hre;
 const bytecodes = require("./bytecodes.json");
@@ -73,100 +72,33 @@ const Helpers = {
     }
   },
 
-  // async deployCrunaRegistry(deployer) {
-  //   // if ((await ethers.provider.getCode(thiz.nickSFactoryAddress)) === `0x`) {
-  //     const json = await artifacts.readArtifact("CrunaRegistry");
-  //     let contractBytecode = json.bytecode;
-  //     // if (constructorTypes) {
-  //     //   // ABI-encode the constructor arguments
-  //     //   const encodedArgs = ethers.utils.defaultAbiCoder.encode(constructorTypes, constructorArgs);
-  //     //   contractBytecode = contractBytecode + encodedArgs.substring(2); // Remove '0x' from encoded args
-  //     // }
-  //
-  //     // Fund account of signer of transaction that deploys Arachnid's factory.
-  //     const addressOfSignerToDeployArachnidsFactory = `0x02622b87d56c4211d0be5A50F093E86d17807B76`;
-  //     let txResponse = await deployer.sendTransaction({
-  //       to: addressOfSignerToDeployArachnidsFactory,
-  //       value: ethers.utils.parseUnits(`0.1`, `ether`),
-  //       gasLimit: 100000,
-  //     });
-  //     const salt = ethers.constants.HashZero;
-  //     await txResponse.wait();
-  //     const address = ethers.utils.getCreate2Address(thiz.nickSFactoryAddress, salt, ethers.utils.keccak256(contractBytecode));
-  //
-  //     console.log(address);
-  //
-  //     const code = await ethers.provider.getCode(address);
-  //     if (code === "0x") {
-  //       console.log("Deploying...");
-  //       const serializedTx =
-  //           "0xf902da808080944e59b44847b379578588920ca78fbf26c0b4956c80b9027b0000000000000000000000000000000000000000000000000000000000000000608060405234801561001057600080fd5b5061023b806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c806331635b131461003b578063fc0a4b401461006a575b600080fd5b61004e6100493660046101b7565b61007d565b6040516001600160a01b03909116815260200160405180910390f35b61004e6100783660046101b7565b610137565b600060806024608c376e5af43d82803e903d91602b57fd5bf3606c5285605d52733d60ad80600a3d3981f3363d3d373d3d3d363d7360495260ff60005360b76055206035523060601b600152846015526055600020803b610127578560b760556000f5806100f35763019134ac6000526004601cfd5b80606c52508284887f91dfd55a37c344f31d03488cf913823191690b82681081685733c259c25ace156060606ca46020606cf35b8060601b60601c60005260206000f35b600060806024608c376e5af43d82803e903d91602b57fd5bf3606c5285605d52733d60ad80600a3d3981f3363d3d373d3d3d363d7360495260ff60005360b76055206035523060601b60015284601552605560002060601b60601c60005260206000f35b80356001600160a01b03811681146101b257600080fd5b919050565b600080600080600060a086880312156101cf57600080fd5b6101d88661019b565b945060208601359350604086013592506101f46060870161019b565b94979396509194608001359291505056fea2646970667358221220c6757ed7c86c22ee3c2ab458fbece96d7b56bb654da97c33634494f7571b23e064736f6c634300081600331ca00ed85b3b06ed94ca51d00d0ace703bd7c8f17be2eab5aad049cded52b33ffac0a06fca6a334648f8c5e2a245d74a1701bc041e453adcea64f19f24deff044cc40e";
-  //
-  //       txResponse = await ethers.provider.sendTransaction(serializedTx);
-  //       await txResponse.wait();
-  //     }
-  //     return address; //"0xFe4F407dee99B8B5660454613b79A2bC9e628750";
-  //   // }
-  // },
-
-  getCanonical() {
-    return {
-      CRUNA_REGISTRY: "0xFe4F407dee99B8B5660454613b79A2bC9e628750",
-      ERC6551_REGISTRY: "0x15cc2b0c5891aB996A2BA64FF9B4B685cdE762cB",
-      CRUNA_GUARDIAN: "0xF3385DF79ef342Ba67445f1b474426A94884bAB8",
-    };
-  },
-
   async deployCanonical(deployer, proposer, executor, delay) {
     await Helpers.deployNickSFactory(deployer);
 
-    // ICrunaRegistry private constant _CRUNA_REGISTRY = ICrunaRegistry(0xFe4F407dee99B8B5660454613b79A2bC9e628750);
-    //
-    // IERC6551Registry private constant _ERC6551_REGISTRY = IERC6551Registry(0x15cc2b0c5891aB996A2BA64FF9B4B685cdE762cB);
-    //
-    // ICrunaGuardian private constant _CRUNA_GUARDIAN = ICrunaGuardian(0xF3385DF79ef342Ba67445f1b474426A94884bAB8);
-
-console.log("deploying with", deployer.address);
-    const _ERC6551_REGISTRY = "0xDe037EE2FeE275E3398Bd434a7b35D940e6263A1";
     const _CRUNA_REGISTRY = "0xFe4F407dee99B8B5660454613b79A2bC9e628750";
+    const _ERC6551_REGISTRY = "0xDe037EE2FeE275E3398Bd434a7b35D940e6263A1";
     const _CRUNA_GUARDIAN = "0x82AfcB8c199498264D3aB716CA2f17D73e417ebd";
 
     let erc6551RegistryAddress = (
-      await deployUtils.deployBytecodeViaNickSFactory(
-        deployer,
-        "ERC6551Registry",
-        bytecodes.ERC6551Registry,
-      )
+      await deployUtils.deployBytecodeViaNickSFactory(deployer, "ERC6551Registry", bytecodes.ERC6551Registry)
     ).address;
     expect(erc6551RegistryAddress).to.be.equal(_ERC6551_REGISTRY);
 
-    let crunaRegistryAddress = (await deployUtils.deployBytecodeViaNickSFactory(deployer, "CrunaRegistry", bytecodes.CrunaRegistry)).address;
+    let crunaRegistryAddress = (
+      await deployUtils.deployBytecodeViaNickSFactory(deployer, "CrunaRegistry", bytecodes.CrunaRegistry)
+    ).address;
 
-      expect(crunaRegistryAddress).to.be.equal(_CRUNA_REGISTRY);
+    expect(crunaRegistryAddress).to.be.equal(_CRUNA_REGISTRY);
 
     let crunaGuardianAddress = (
-      await deployUtils.deployBytecodeViaNickSFactory(
-        deployer,
-        "CrunaGuardian",
-        bytecodes.CrunaGuardian,
-      )
+      await deployUtils.deployBytecodeViaNickSFactory(deployer, "CrunaGuardian", bytecodes.CrunaGuardian)
     ).address;
-      expect(crunaGuardianAddress).to.be.equal(_CRUNA_GUARDIAN);
+    expect(crunaGuardianAddress).to.be.equal(_CRUNA_GUARDIAN);
     // console.log(crunaRegistryAddress, erc6551RegistryAddress, crunaGuardianAddress);
     return [crunaRegistryAddress, erc6551RegistryAddress, crunaGuardianAddress];
   },
 
-  async setFakeCanonicalIfCoverage(contract, registry, erc6551registry, guardian) {
-    if (process.env.IS_COVERAGE) {
-      await contract.setFakeConstants(registry, erc6551registry, guardian);
-    }
-  },
-
-  async getBytecodeForNickSFactory(
-    contractName,
-    constructorTypes,
-    constructorArgs
-  ) {
+  async getBytecodeForNickSFactory(contractName, constructorTypes, constructorArgs) {
     const json = await artifacts.readArtifact(contractName);
     let contractBytecode = json.bytecode;
     if (constructorTypes) {

@@ -14,7 +14,7 @@ const {
   combineTimestampAndValidFor,
   getTimestamp,
   signRequest,
-  getCanonical,
+
   deployCanonical,
   setFakeCanonicalIfCoverage,
 } = require("./helpers");

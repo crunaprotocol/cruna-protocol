@@ -29,9 +29,7 @@ fi
 cp README.md contracts/README.md
 cd contracts
 
-rm -rf mocks/coverage
-
-# mainnet
+# mainnets and testnets
 cp ../canonical-addresses/mainnet.sol utils/CanonicalAddresses.sol
 
 if [[ $version =~ -([a-zA-Z]+) ]]; then
@@ -43,22 +41,7 @@ else
   npm publish
 fi
 
-# testnet
-
-../scripts/rename-package-for-testnet.js
-
-cp ../canonical-addresses/testnet.sol utils/CanonicalAddresses.sol
-
-if [[ $version =~ -([a-zA-Z]+) ]]; then
-  tag=${BASH_REMATCH[1]}
-  echo "Publishing $tag version $version"
-  npm publish --tag $tag
-else
-  echo "Publishing stable version $version"
-  npm publish
-fi
-
-# testing
+# development
 
 ../scripts/rename-package-for-dev.js
 

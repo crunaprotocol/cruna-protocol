@@ -17,7 +17,7 @@ contract CanonicalAddresses {
 
   IERC6551Registry private constant _ERC6551_REGISTRY = IERC6551Registry(0xDe037EE2FeE275E3398Bd434a7b35D940e6263A1);
 
-  ICrunaGuardian private constant _CRUNA_GUARDIAN = ICrunaGuardian(0xF3385DF79ef342Ba67445f1b474426A94884bAB8);
+  ICrunaGuardian private constant _CRUNA_GUARDIAN = ICrunaGuardian(0x82AfcB8c199498264D3aB716CA2f17D73e417ebd);
 
   // we override this during test coverage, because the instrumentation of the smart contracts makes it different over time
   function _crunaRegistry() internal view virtual returns (ICrunaRegistry) {

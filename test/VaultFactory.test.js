@@ -18,7 +18,7 @@ const {
   executeAndReturnGasCost,
   signRequest,
   selectorId,
-  getCanonical,
+
   deployCanonical,
   setFakeCanonicalIfCoverage,
 } = require("./helpers");
@@ -31,8 +31,6 @@ describe("VaultFactory", function () {
   let deployer, bob, alice, fred, mike, proposer, executor;
   const delay = 10;
   let CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN;
-  let crunaManagerContract = process.env.IS_COVERAGE ? "ManagerCoverageMock" : "CrunaManager";
-  let crunaVaultsContract = process.env.IS_COVERAGE ? "VaultCoverageMockSimple" : "VaultMockSimple";
 
   before(async function () {
     [deployer, proposer, executor, bob, alice, fred, mike] = await ethers.getSigners();
@@ -43,16 +41,15 @@ describe("VaultFactory", function () {
   });
 
   async function initAndDeploy() {
-    const managerImpl = await deployContract(crunaManagerContract);
+    const managerImpl = await deployContract("CrunaManager");
     proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
-    proxy = await deployUtils.attach(crunaManagerContract, proxy.address);
-    vault = await deployContract(crunaVaultsContract, deployer.address);
-    await setFakeCanonicalIfCoverage(vault, CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN);
+    proxy = await deployUtils.attach("CrunaManager", proxy.address);
+    vault = await deployContract("VaultMockSimple", deployer.address);
+
     await vault.init(proxy.address, 1, true);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
 
     await vault.setFactory(factory.address);
-    await setFakeCanonicalIfCoverage(vault, CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN);
 
     usdc = await deployContract("USDCoin", deployer.address);
     usdt = await deployContract("TetherUSD", deployer.address);
@@ -152,8 +149,8 @@ describe("VaultFactory", function () {
         .withArgs(factory.address, fred.address, amount("9.8"));
 
       const managerAddress = await vault.managerOf(nextTokenId);
-      const manager = await ethers.getContractAt(crunaManagerContract, managerAddress);
-      await setFakeCanonicalIfCoverage(manager, CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN);
+      const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+
       const selector = await selectorId("ICrunaManager", "setProtector");
       const chainId = await getChainId();
       const ts = (await getTimestamp()) - 100;

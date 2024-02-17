@@ -39,10 +39,13 @@ async function main() {
     console.log("address", address);
 
     const data = salt + contractBytecode.substring(2);
-    return Object.assign({
-      to: "0x4e59b44847b379578588920ca78fbf26c0b4956c",
-      data},
-        extraParams);
+    return Object.assign(
+      {
+        to: "0x4e59b44847b379578588920ca78fbf26c0b4956c",
+        data,
+      },
+      extraParams,
+    );
   }
 
   deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
@@ -57,7 +60,10 @@ async function main() {
 
   let salt = ethers.constants.HashZero;
 
-  let rawTx = await simulateDeployContractViaNickSFactory(deployer, "CrunaRegistry", undefined, undefined, salt, {gasLimit: 200000, gasPrice: 100n * 10n ** 9n});
+  let rawTx = await simulateDeployContractViaNickSFactory(deployer, "CrunaRegistry", undefined, undefined, salt, {
+    gasLimit: 200000,
+    gasPrice: 100n * 10n ** 9n,
+  });
 
   console.log("tx", rawTx);
 
