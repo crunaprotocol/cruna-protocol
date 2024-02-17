@@ -281,12 +281,12 @@ File                                |  % Stmts | % Branch |  % Funcs |  % Lines
   CrunaManagedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaManagedNFT.sol              |      100 |      100 |      100 |      100 
   IVault.sol                        |      100 |      100 |      100 |      100 
- utils/                             |    91.38 |    68.52 |    90.63 |    91.67 
+ utils/                             |    88.33 |    66.07 |    87.88 |    89.19 
   CanonicalAddresses.sol            |       50 |      100 |       50 |       50 
   CrunaGuardian.sol                 |      100 |       50 |      100 |       75 
   CrunaRegistry.sol                 |      100 |      100 |      100 |      100 
   ERC6551AccountProxy.sol           |       90 |       75 |      100 |    90.91 
-  FlexiTimelockController.sol       |      100 |       50 |      100 |      100 
+  FlexiTimelockController.sol       |    81.82 |       45 |    85.71 |    88.89 
   ICanonicalAddresses.sol           |      100 |      100 |      100 |      100 
   ICrunaGuardian.sol                |      100 |      100 |      100 |      100 
   ICrunaRegistry.sol                |      100 |      100 |      100 |      100 
@@ -297,7 +297,7 @@ File                                |  % Stmts | % Branch |  % Funcs |  % Lines
   SignatureValidator.sol            |      100 |       90 |      100 |      100 
   TokenLinkedContract.sol           |       90 |       50 |      100 |      100 
 ------------------------------------|----------|----------|----------|----------
-All files                           |    96.94 |    68.83 |    96.38 |     96.2 
+All files                           |     96.4 |     68.4 |    95.68 |    95.74 
 ------------------------------------|----------|----------|----------|----------
 ```
 
