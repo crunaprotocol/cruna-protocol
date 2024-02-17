@@ -9,6 +9,7 @@ contract FlexiTimelockController is TimelockController {
   error ProposerDoesNotExist();
   error ExecutorAlreadyExists();
   error ExecutorDoesNotExist();
+  error OnlyAdminCallUpdateDelayForTestnets();
 
   uint256 public totalProposers;
   uint256 public totalExecutors;
@@ -70,5 +71,14 @@ contract FlexiTimelockController is TimelockController {
     if (!hasRole(EXECUTOR_ROLE, executor)) revert ExecutorDoesNotExist();
     _revokeRole(EXECUTOR_ROLE, executor);
     totalExecutors--;
+  }
+
+  /**
+   * @dev Updates the delay for testnets.
+   *      On Mainnet, the admin should not set itself or renounce to its role.
+   */
+  function updateDelayForTestnets(uint256 newDelay) external {
+    if (!hasRole(DEFAULT_ADMIN_ROLE, msg.sender)) revert OnlyAdminCallUpdateDelayForTestnets();
+    TimelockController(payable(address(this))).updateDelay(newDelay);
   }
 }

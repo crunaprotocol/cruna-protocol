@@ -5,8 +5,6 @@ const path = require("path");
 const EthDeployUtils = require("eth-deploy-utils");
 let deployUtils;
 
-const { expect } = require("chai");
-
 async function main() {
   deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
 
