@@ -10,7 +10,7 @@ import {CrunaManager} from "../manager/CrunaManager.sol";
 import {TokenLinkedContract} from "../utils/TokenLinkedContract.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 import {ICrunaPlugin, IVault} from "./ICrunaPlugin.sol";
-import {CanonicalAddresses} from "../utils/CanonicalAddresses.sol";
+import {CanonicalAddresses} from "../canonical/CanonicalAddresses.sol";
 
 //import {console} from "hardhat/console.sol";
 

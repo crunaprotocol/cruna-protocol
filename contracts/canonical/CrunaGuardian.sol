@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import {FlexiTimelockController} from "./FlexiTimelockController.sol";
+import {FlexiTimelockController} from "../utils/FlexiTimelockController.sol";
 
-import {IVersioned} from "./IVersioned.sol";
+import {IVersioned} from "../utils/IVersioned.sol";
 import {ICrunaGuardian} from "./ICrunaGuardian.sol";
 
 //import "hardhat/console.sol";

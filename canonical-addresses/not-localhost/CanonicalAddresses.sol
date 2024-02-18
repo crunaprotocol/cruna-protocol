@@ -7,15 +7,15 @@ import {ICrunaGuardian} from "./ICrunaGuardian.sol";
 import {ICrunaRegistry} from "./CrunaRegistry.sol";
 
 /**
-  Canonical addresses for testnet.
+  Canonical addresses for mainnet.
 */
 
 contract CanonicalAddresses {
-  ICrunaGuardian private constant _CRUNA_GUARDIAN = ICrunaGuardian(0xd9752Ce184Ce6E0A81BEB477779CC8E38Cf966EF);
-
-  ICrunaRegistry private constant _CRUNA_REGISTRY = ICrunaRegistry(0x5E825D6e792088E59F545af20fB3DB13cCf6cFe5);
+  ICrunaRegistry private constant _CRUNA_REGISTRY = ICrunaRegistry(0xFe4F407dee99B8B5660454613b79A2bC9e628750);
 
   IERC6551Registry private constant _ERC6551_REGISTRY = IERC6551Registry(0x000000006551c19487814612e58FE06813775758);
+
+  ICrunaGuardian private constant _CRUNA_GUARDIAN = ICrunaGuardian(0x98512ad557723EAb1773E727e23259ce46910f61);
 
   // we override this during test coverage, because the instrumentation of the smart contracts makes it different over time
   function _crunaRegistry() internal pure  returns (ICrunaRegistry) {

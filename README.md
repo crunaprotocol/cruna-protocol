@@ -131,7 +131,7 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 Cruna is in beta stage, and to use it you must specify the version you want to install. Install it with, for example
 
 ```sh
-npm install @cruna/protocol@1.0.0-rc.4 @openzeppelin/contracts erc6551
+npm install @cruna/protocol@1.0.0-rc.4
 ```
 or similar commands using Yarn or Pnpm, and use in your Solidity smart contracts, for example, as
 
@@ -146,14 +146,14 @@ contract MySuperToken is CrunaManagedNFTOwnable {
 }
 ```
 
-If your goal is to build a plugin, look at the contracts in [contracts/mocks/plugin-example](./contracts/mocks/plugin-example) to start from.
+If your goal is to build a plugin, look at the contracts in [contracts/mocks/plugin-example](contracts/mocks/plugins/plugin-example) to start from.
 
 ## History
 
 **1.0.0-rc.4**
 - Add flag to specify that a vault has been deployed to a main network since it is not possible to know that on chain
-- Allow developers to plug untrusted plugins. This is useful for testing and for plugins that are not meant to be used in production
-- Transfers by untrusted plugins can be executed only if the vault has not been deployed on a main network
+- Allow developers to plug untrusted plugins. This is essential for testing, and useful to test plugins on testnets before deploying them on mainnet
+- To avoid security issues, transfers by untrusted plugins can be executed only on testnets
 
 **1.0.0-rc.3**
 - Plugins are now deployed by the NFT, not by the manager. This avoids issues when deploying plugins that supports IERC6551Account 
@@ -192,7 +192,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 - Renaming contracts to better distinguish them
 - Add a function to allow a CrunaManaged NFT to upgrade the default implementation of the CrunaManager to a new version
 - Simplify proxies
-- Split ManagedERC721 in a basic contract, CrunaManagedBase, and two implementations based on Ownable and TimeControlled. The second is used by CrunaVaults, but the other can be chosen by less critical projects.
+- Split ManagedERC721 in a basic contract, CrunaManagedBase, and two implementations based on Ownable and TimeControlled. The second is used by TimeControlledNFT, but the other can be chosen by less critical projects.
 - Extend TimeControlled also in the Guardian, to guarantee the fairness of the trusted implementations 
 
 **1.0.0-beta.3**
@@ -281,12 +281,12 @@ File                                |  % Stmts | % Branch |  % Funcs |  % Lines
   CrunaManagedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaManagedNFT.sol              |      100 |      100 |      100 |      100 
   IVault.sol                        |      100 |      100 |      100 |      100 
- utils/                             |    91.38 |    68.52 |    90.63 |    91.67 
+ utils/                             |    88.33 |    66.07 |    87.88 |    89.19 
   CanonicalAddresses.sol            |       50 |      100 |       50 |       50 
   CrunaGuardian.sol                 |      100 |       50 |      100 |       75 
   CrunaRegistry.sol                 |      100 |      100 |      100 |      100 
   ERC6551AccountProxy.sol           |       90 |       75 |      100 |    90.91 
-  FlexiTimelockController.sol       |      100 |       50 |      100 |      100 
+  FlexiTimelockController.sol       |    81.82 |       45 |    85.71 |    88.89 
   ICanonicalAddresses.sol           |      100 |      100 |      100 |      100 
   ICrunaGuardian.sol                |      100 |      100 |      100 |      100 
   ICrunaRegistry.sol                |      100 |      100 |      100 |      100 
@@ -297,7 +297,7 @@ File                                |  % Stmts | % Branch |  % Funcs |  % Lines
   SignatureValidator.sol            |      100 |       90 |      100 |      100 
   TokenLinkedContract.sol           |       90 |       50 |      100 |      100 
 ------------------------------------|----------|----------|----------|----------
-All files                           |    96.94 |    68.83 |    96.38 |     96.2 
+All files                           |     96.4 |     68.4 |    95.68 |    95.74 
 ------------------------------------|----------|----------|----------|----------
 ```
 

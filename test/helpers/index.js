@@ -5,7 +5,7 @@ const BN = require("bn.js");
 const ethSigUtil = require("eth-sig-util");
 const deployUtils = new (require("eth-deploy-utils"))();
 const { artifacts } = hre;
-
+const bytecodes = require("./bytecodes.json");
 const { domainType } = require("./eip712");
 
 function debug(...params) {
@@ -72,88 +72,100 @@ const Helpers = {
     }
   },
 
-  getCanonical() {
-    return {
-      CRUNA_REGISTRY: "0xFe4F407dee99B8B5660454613b79A2bC9e628750",
-      ERC6551_REGISTRY: "0x15cc2b0c5891aB996A2BA64FF9B4B685cdE762cB",
-      CRUNA_GUARDIAN: "0xF3385DF79ef342Ba67445f1b474426A94884bAB8",
-    };
-  },
-
   async deployCanonical(deployer, proposer, executor, delay) {
     await Helpers.deployNickSFactory(deployer);
 
-    const _ERC6551_REGISTRY = "0x15cc2b0c5891aB996A2BA64FF9B4B685cdE762cB";
     const _CRUNA_REGISTRY = "0xFe4F407dee99B8B5660454613b79A2bC9e628750";
-    const _CRUNA_GUARDIAN = "0xF3385DF79ef342Ba67445f1b474426A94884bAB8";
+    const _ERC6551_REGISTRY = "0x000000006551c19487814612e58FE06813775758";
+    const _CRUNA_GUARDIAN = "0x82AfcB8c199498264D3aB716CA2f17D73e417ebd";
 
     let erc6551RegistryAddress = (
-      await deployUtils.deployContractViaNickSFactory(
+      await thiz.deployBytecodeViaNickSFactory(
         deployer,
         "ERC6551Registry",
-        undefined,
-        undefined,
+        bytecodes.ERC6551Registry,
         "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31",
       )
     ).address;
+    expect(erc6551RegistryAddress).to.be.equal(_ERC6551_REGISTRY);
 
-    if (!process.env.IS_COVERAGE) {
-      expect(erc6551RegistryAddress).to.be.equal(_ERC6551_REGISTRY);
-    }
-    let crunaRegistryAddress = (await deployUtils.deployContractViaNickSFactory(deployer, "CrunaRegistry")).address;
-    if (!process.env.IS_COVERAGE) {
-      expect(crunaRegistryAddress).to.be.equal(_CRUNA_REGISTRY);
-    }
+    let crunaRegistryAddress = (await thiz.deployBytecodeViaNickSFactory(deployer, "CrunaRegistry", bytecodes.CrunaRegistry))
+      .address;
 
-    let crunaGuardianAddress = (
-      await deployUtils.deployContractViaNickSFactory(
-        deployer,
-        "CrunaGuardian",
-        ["uint256", "address[]", "address[]", "address"],
-        [10, [proposer.address], [executor.address], deployer.address],
-      )
-    ).address;
-    if (!process.env.IS_COVERAGE) {
-      expect(crunaGuardianAddress).to.be.equal(_CRUNA_GUARDIAN);
-    }
+    expect(crunaRegistryAddress).to.be.equal(_CRUNA_REGISTRY);
+
+    let crunaGuardianAddress = (await thiz.deployBytecodeViaNickSFactory(deployer, "CrunaGuardian", bytecodes.CrunaGuardian))
+      .address;
+    expect(crunaGuardianAddress).to.be.equal(_CRUNA_GUARDIAN);
     // console.log(crunaRegistryAddress, erc6551RegistryAddress, crunaGuardianAddress);
     return [crunaRegistryAddress, erc6551RegistryAddress, crunaGuardianAddress];
   },
 
-  async setFakeCanonicalIfCoverage(contract, registry, erc6551registry, guardian) {
-    if (process.env.IS_COVERAGE) {
-      await contract.setFakeConstants(registry, erc6551registry, guardian);
-    }
-  },
-
-  async deployContractViaNickSFactory(
-    deployer,
-    contractName,
-    constructorTypes,
-    constructorArgs,
-    salt = ethers.constants.HashZero,
-  ) {
+  async getBytecodeForNickSFactory(contractName, constructorTypes, constructorArgs) {
     const json = await artifacts.readArtifact(contractName);
     let contractBytecode = json.bytecode;
-
-    // examples:
-    // const constructorArgs = [arg1, arg2, arg3];
-    // const constructorTypes = ["type1", "type2", "type3"];
-
     if (constructorTypes) {
       // ABI-encode the constructor arguments
       const encodedArgs = ethers.utils.defaultAbiCoder.encode(constructorTypes, constructorArgs);
       contractBytecode = contractBytecode + encodedArgs.substring(2); // Remove '0x' from encoded args
     }
+    return contractBytecode;
+  },
 
-    const data = salt + contractBytecode.substring(2);
-    const tx = {
-      to: thiz.nickSFactoryAddress,
-      data,
-    };
-    const transaction = await deployer.sendTransaction(tx);
-    await transaction.wait();
-    return ethers.utils.getCreate2Address(thiz.nickSFactoryAddress, salt, ethers.utils.keccak256(contractBytecode));
+  async deployContractViaNickSFactory(deployer, contractName, constructorTypes, constructorArgs, salt, extraParams = {}) {
+    if (!salt && !Array.isArray(constructorTypes)) {
+      salt = constructorTypes;
+      constructorTypes = undefined;
+      constructorArgs = undefined;
+    }
+    if (!salt) {
+      salt = ethers.constants.HashZero;
+    }
+    const json = await artifacts.readArtifact(contractName);
+    let contractBytecode = json.bytecode;
+    if (constructorTypes) {
+      const encodedArgs = ethers.utils.defaultAbiCoder.encode(constructorTypes, constructorArgs);
+      contractBytecode = contractBytecode + encodedArgs.substring(2);
+    }
+    const address = ethers.utils.getCreate2Address(this.nickSFactoryAddress(), salt, ethers.utils.keccak256(contractBytecode));
+    const code = await ethers.provider.getCode(address);
+    if (code === "0x") {
+      const data = salt + contractBytecode.substring(2);
+      const tx = Object.assign(
+        {
+          to: this.nickSFactoryAddress(),
+          data,
+        },
+        extraParams,
+      );
+
+      const transaction = await deployer.sendTransaction(tx);
+      await transaction.wait();
+    }
+    return await ethers.getContractAt(contractName, address);
+  },
+
+  async deployBytecodeViaNickSFactory(deployer, contractName, contractBytecode, salt, extraParams = {}) {
+    if (!salt) {
+      salt = ethers.constants.HashZero;
+    }
+    const address = ethers.utils.getCreate2Address(thiz.nickSFactoryAddress, salt, ethers.utils.keccak256(contractBytecode));
+
+    const code = await ethers.provider.getCode(address);
+    if (code === "0x") {
+      const data = salt + contractBytecode.substring(2);
+      const tx = Object.assign(
+        {
+          to: thiz.nickSFactoryAddress,
+          data,
+        },
+        extraParams,
+      );
+
+      const transaction = await deployer.sendTransaction(tx);
+      await transaction.wait();
+    }
+    return await ethers.getContractAt(contractName, address);
   },
 
   bytes4(bytes32value) {
@@ -213,46 +225,6 @@ const Helpers = {
     // check if the contract has been deployed
     const code = await ethers.provider.getCode(address);
     return code !== "0x";
-  },
-
-  async deployAll(deployer, proposer, executor, delay) {
-    // using Nick's factory
-    await Helpers.deployNickSFactory(deployer);
-    const params = [
-      deployer,
-      "CrunaRegistry",
-      undefined,
-      undefined,
-      "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31",
-    ];
-
-    expect(await Helpers.isDeployedViaNickSFactory(...params)).to.be.false;
-
-    const crunaRegistryAddress = await Helpers.deployContractViaNickSFactory(...params);
-
-    expect(await Helpers.isDeployedViaNickSFactory(...params)).to.be.true;
-
-    const crunaRegistry = await ethers.getContractAt("CrunaRegistry", crunaRegistryAddress);
-
-    const managerAddress = await Helpers.deployContractViaNickSFactory(deployer, "CrunaManager");
-
-    const proxyAddress = await Helpers.deployContractViaNickSFactory(
-      deployer,
-      "CrunaManagerProxy",
-      ["address", "address"],
-      [managerAddress, deployer.address],
-    );
-    const proxy = await ethers.getContractAt("CrunaManagerProxy", proxyAddress);
-
-    const guardianAddress = await Helpers.deployContractViaNickSFactory(
-      deployer,
-      "CrunaGuardian",
-      ["uint256", "address[]", "address[]", "address"],
-      [delay, [proposer.address], [executor.address], deployer.address],
-    );
-    const guardian = await ethers.getContractAt("CrunaGuardian", guardianAddress);
-
-    return [crunaRegistry, proxy, guardian];
   },
 
   async getAddressViaNickSFactory(deployer, contractName, constructorTypes, constructorArgs, salt = thiz.keccak256("Cruna")) {
@@ -372,20 +344,37 @@ const Helpers = {
   },
 
   async proposeAndExecute(contract, proposer, executor, delay, funcName, ...params) {
-    // const { cl } = thiz;
     const data = contract.interface.encodeFunctionData(funcName, [...params]);
     const predecessor = ethers.utils.formatBytes32String("");
     const salt = ethers.utils.formatBytes32String("");
     debug("Proposing", funcName, "with data", data);
-    await contract.connect(proposer).schedule(contract.address, 0, data, predecessor, salt, delay, { gasLimit: 100000 });
     if (process.env.NODE_ENV === "test") {
+      await contract.connect(proposer).schedule(contract.address, 0, data, predecessor, salt, delay, { gasLimit: 100000 });
       await ethers.provider.send("evm_increaseTime", [delay + 1]);
       await ethers.provider.send("evm_mine");
+      debug("Executing", funcName, "with data", data);
+      return await thiz.executeProposal(contract, executor, delay, funcName, ...params);
     } else {
-      await thiz.sleep(1000 * delay);
+      let tx = await contract.connect(proposer).schedule(contract.address, 0, data, predecessor, salt, delay, { gasLimit: 100000 });
+      debug("Tx", tx.hash);
+      await tx.wait();
+      debug("Mined");
     }
+  },
+
+  async executeProposal(contract, executor, delay, funcName, ...params) {
+    const data = contract.interface.encodeFunctionData(funcName, [...params]);
+    const predecessor = ethers.utils.formatBytes32String("");
+    const salt = ethers.utils.formatBytes32String("");
     debug("Executing", funcName, "with data", data);
-    return contract.connect(executor).execute(contract.address, 0, data, predecessor, salt, { gasLimit: 100000 });
+    if (process.env.NODE_ENV === "test") {
+      return contract.connect(executor).execute(contract.address, 0, data, predecessor, salt, {gasLimit: 120000});
+    } else {
+        let tx = await contract.connect(executor).execute(contract.address, 0, data, predecessor, salt, {gasLimit: 120000});
+        debug("Tx", tx.hash);
+        await tx.wait();
+        debug("Mined");
+    }
   },
 
   async sleep(millis) {

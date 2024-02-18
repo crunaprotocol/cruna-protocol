@@ -7,7 +7,7 @@ const { expect } = require("chai");
 async function main() {
   const deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
   const [deployer] = await ethers.getSigners();
-  const vault = await deployUtils.attach("CrunaVaults");
+  const vault = await deployUtils.attach("TimeControlledNFT");
   const factory = await deployUtils.attach("VaultFactory");
   const usdc = await deployUtils.attach("USDCoin");
   const usdt = await deployUtils.attach("TetherUSD");

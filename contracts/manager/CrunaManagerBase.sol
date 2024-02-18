@@ -11,7 +11,7 @@ import {INamed} from "../utils/INamed.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 import {ICrunaManager, IVault} from "./ICrunaManager.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
-import {CanonicalAddresses} from "../utils/CanonicalAddresses.sol";
+import {CanonicalAddresses} from "../canonical/CanonicalAddresses.sol";
 
 //import {console} from "hardhat/console.sol";
 

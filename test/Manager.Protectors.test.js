@@ -23,7 +23,7 @@ const {
   combineTimestampAndValidFor,
   deployCanonical,
   trustImplementation,
-  getCanonical,
+
   setFakeCanonicalIfCoverage,
 } = require("./helpers");
 
@@ -41,8 +41,6 @@ describe("CrunaManager : Protectors", function () {
   let chainId;
 
   let CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN;
-  let crunaManagerContract = process.env.IS_COVERAGE ? "ManagerCoverageMock" : "CrunaManager";
-  let crunaVaultsContract = process.env.IS_COVERAGE ? "VaultCoverageMockSimple" : "VaultMockSimple";
 
   before(async function () {
     [deployer, proposer, executor, bob, alice, fred, mark, otto] = await ethers.getSigners();
@@ -55,17 +53,17 @@ describe("CrunaManager : Protectors", function () {
   });
 
   beforeEach(async function () {
-    managerImpl = await deployContract(crunaManagerContract);
+    managerImpl = await deployContract("CrunaManager");
     proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
-    proxy = await deployUtils.attach(crunaManagerContract, proxy.address);
+    proxy = await deployUtils.attach("CrunaManager", proxy.address);
 
-    vault = await deployContract(crunaVaultsContract, deployer.address);
-    await setFakeCanonicalIfCoverage(vault, CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN);
+    vault = await deployContract("OwnableNFT", deployer.address);
+
     await vault.init(proxy.address, 1, true);
 
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
     await vault.setFactory(factory.address);
-    validatorMock = await deployContract("ValidatorMock");
+    validatorMock = await deployContract("SignatureValidatorMock");
 
     usdc = await deployContract("USDCoin", deployer.address);
     usdt = await deployContract("TetherUSD", deployer.address);
@@ -99,9 +97,7 @@ describe("CrunaManager : Protectors", function () {
       );
 
     const managerAddress = await vault.managerOf(nextTokenId);
-    const manager = await ethers.getContractAt(crunaManagerContract, managerAddress);
-
-    await setFakeCanonicalIfCoverage(manager, CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN);
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
 
     return nextTokenId;
   };
@@ -139,9 +135,7 @@ describe("CrunaManager : Protectors", function () {
   it("should verify CrunaManagerBase parameters", async function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
-    const manager = await ethers.getContractAt(crunaManagerContract, managerAddress);
-
-    await setFakeCanonicalIfCoverage(manager, CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN);
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
 
     expect(await manager.version()).to.equal(1e6);
     expect(await manager.tokenId()).to.equal(tokenId);
@@ -164,8 +158,8 @@ describe("CrunaManager : Protectors", function () {
   it("should add the first protector and remove it", async function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
-    const manager = await ethers.getContractAt(crunaManagerContract, managerAddress);
-    await setFakeCanonicalIfCoverage(manager, CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN);
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+
     expect(await vault.supportsInterface("0x80ac58cd")).to.equal(true);
 
     let signature = (
@@ -269,8 +263,8 @@ describe("CrunaManager : Protectors", function () {
   it("should add the first protector via preApproval and remove it", async function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
-    const manager = await ethers.getContractAt(crunaManagerContract, managerAddress);
-    await setFakeCanonicalIfCoverage(manager, CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN);
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+
     expect(await vault.supportsInterface("0x80ac58cd")).to.equal(true);
 
     const timeValidation = combineTimestampAndValidFor(ts, 3600).toString();
@@ -294,8 +288,8 @@ describe("CrunaManager : Protectors", function () {
   it("should throw is wrong data for first protector", async function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
-    const manager = await ethers.getContractAt(crunaManagerContract, managerAddress);
-    await setFakeCanonicalIfCoverage(manager, CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN);
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+
     // set Alice as first Bob's protector
     await expect(manager.connect(bob).setProtector(addr0, true, 0, 0, 0)).revertedWith("ZeroAddress");
     await expect(manager.connect(bob).setProtector(bob.address, true, 0, 0, 0)).revertedWith("CannotBeYourself");
@@ -304,8 +298,8 @@ describe("CrunaManager : Protectors", function () {
   it("should add many protectors", async function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
-    const manager = await ethers.getContractAt(crunaManagerContract, managerAddress);
-    await setFakeCanonicalIfCoverage(manager, CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN);
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+
     expect(await manager.hasProtectors()).to.equal(false);
 
     let signature = (
@@ -398,8 +392,8 @@ describe("CrunaManager : Protectors", function () {
   it("should add a protector and transfer a vault", async function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
-    const manager = await ethers.getContractAt(crunaManagerContract, managerAddress);
-    await setFakeCanonicalIfCoverage(manager, CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN);
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+
     let signature = (
       await signRequest(
         selector,
