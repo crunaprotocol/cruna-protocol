@@ -344,20 +344,37 @@ const Helpers = {
   },
 
   async proposeAndExecute(contract, proposer, executor, delay, funcName, ...params) {
-    // const { cl } = thiz;
     const data = contract.interface.encodeFunctionData(funcName, [...params]);
     const predecessor = ethers.utils.formatBytes32String("");
     const salt = ethers.utils.formatBytes32String("");
     debug("Proposing", funcName, "with data", data);
-    await contract.connect(proposer).schedule(contract.address, 0, data, predecessor, salt, delay, { gasLimit: 100000 });
     if (process.env.NODE_ENV === "test") {
+      await contract.connect(proposer).schedule(contract.address, 0, data, predecessor, salt, delay, { gasLimit: 100000 });
       await ethers.provider.send("evm_increaseTime", [delay + 1]);
       await ethers.provider.send("evm_mine");
+      debug("Executing", funcName, "with data", data);
+      return await thiz.executeProposal(contract, executor, delay, funcName, ...params);
     } else {
-      await thiz.sleep(1000 * delay);
+      let tx = await contract.connect(proposer).schedule(contract.address, 0, data, predecessor, salt, delay, { gasLimit: 100000 });
+      debug("Tx", tx.hash);
+      await tx.wait();
+      debug("Mined");
     }
+  },
+
+  async executeProposal(contract, executor, delay, funcName, ...params) {
+    const data = contract.interface.encodeFunctionData(funcName, [...params]);
+    const predecessor = ethers.utils.formatBytes32String("");
+    const salt = ethers.utils.formatBytes32String("");
     debug("Executing", funcName, "with data", data);
-    return contract.connect(executor).execute(contract.address, 0, data, predecessor, salt, { gasLimit: 100000 });
+    if (process.env.NODE_ENV === "test") {
+      return contract.connect(executor).execute(contract.address, 0, data, predecessor, salt, {gasLimit: 120000});
+    } else {
+        let tx = await contract.connect(executor).execute(contract.address, 0, data, predecessor, salt, {gasLimit: 120000});
+        debug("Tx", tx.hash);
+        await tx.wait();
+        debug("Mined");
+    }
   },
 
   async sleep(millis) {

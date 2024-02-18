@@ -14,8 +14,8 @@ async function main() {
   const chainId = await deployUtils.currentChainId();
   [deployer] = await ethers.getSigners();
 
-  let proposerAddress = process.env.PROPOSER;
-  let executorAddress = process.env.EXECUTOR;
+  let proposerAddress = process.env.PROPOSER_ADDRESS;
+  let executorAddress = process.env.EXECUTOR_ADDRESS;
   let delay = process.env.DELAY;
 
   if (chainId === 1337) {

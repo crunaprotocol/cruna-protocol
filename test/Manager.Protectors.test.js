@@ -57,13 +57,13 @@ describe("CrunaManager : Protectors", function () {
     proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
     proxy = await deployUtils.attach("CrunaManager", proxy.address);
 
-    vault = await deployContract("VaultMockSimple", deployer.address);
+    vault = await deployContract("OwnableNFT", deployer.address);
 
     await vault.init(proxy.address, 1, true);
 
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
     await vault.setFactory(factory.address);
-    validatorMock = await deployContract("ValidatorMock");
+    validatorMock = await deployContract("SignatureValidatorMock");
 
     usdc = await deployContract("USDCoin", deployer.address);
     usdt = await deployContract("TetherUSD", deployer.address);

@@ -146,7 +146,7 @@ contract MySuperToken is CrunaManagedNFTOwnable {
 }
 ```
 
-If your goal is to build a plugin, look at the contracts in [contracts/mocks/plugin-example](./contracts/mocks/plugin-example) to start from.
+If your goal is to build a plugin, look at the contracts in [contracts/mocks/plugin-example](contracts/mocks/plugins/plugin-example) to start from.
 
 ## History
 
@@ -192,7 +192,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 - Renaming contracts to better distinguish them
 - Add a function to allow a CrunaManaged NFT to upgrade the default implementation of the CrunaManager to a new version
 - Simplify proxies
-- Split ManagedERC721 in a basic contract, CrunaManagedBase, and two implementations based on Ownable and TimeControlled. The second is used by CrunaVaults, but the other can be chosen by less critical projects.
+- Split ManagedERC721 in a basic contract, CrunaManagedBase, and two implementations based on Ownable and TimeControlled. The second is used by TimeControlledNFT, but the other can be chosen by less critical projects.
 - Extend TimeControlled also in the Guardian, to guarantee the fairness of the trusted implementations 
 
 **1.0.0-beta.3**

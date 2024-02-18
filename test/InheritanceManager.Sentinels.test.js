@@ -53,13 +53,13 @@ describe("Sentinel and Inheritance", function () {
     managerImpl = await deployContract("CrunaManager");
     const deployedProxy = await deployContract("CrunaManagerProxy", managerImpl.address);
     proxy = await deployUtils.attach("CrunaManager", deployedProxy.address);
-    vault = await deployContract("VaultMockSimple", deployer.address);
+    vault = await deployContract("OwnableNFT", deployer.address);
 
     await vault.init(proxy.address, 1, true);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
     await vault.setFactory(factory.address);
 
-    validatorMock = await deployContract("ValidatorMock");
+    validatorMock = await deployContract("SignatureValidatorMock");
 
     usdc = await deployContract("USDCoin", deployer.address);
     usdt = await deployContract("TetherUSD", deployer.address);
@@ -169,6 +169,9 @@ describe("Sentinel and Inheritance", function () {
     const newGuardian = await deployContract("CrunaGuardian", delay, [proposer.address], [executor.address], deployer.address);
 
     await trustImplementation(newGuardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true, 10);
+
+    expect(await newGuardian.trustedImplementation(PLUGIN_ID, inheritancePluginProxy.address)).to.equal(10);
+    expect(await newGuardian.version()).to.equal(1e6);
   });
 
   it("should plug the plugin", async function () {
@@ -1044,9 +1047,9 @@ describe("Sentinel and Inheritance", function () {
     let data = await inheritancePlugin.getSentinelsAndInheritanceData();
     expect(data[0].length).to.equal(2);
 
-    const inheritancePluginV2Impl = await deployContract("InheritancePluginV2Mock");
+    const inheritancePluginV2Impl = await deployContract("InheritanceCrunaPluginV2");
 
-    const inheritancePluginV3Impl = await deployContract("InheritancePluginV3Mock");
+    const inheritancePluginV3Impl = await deployContract("InheritanceCrunaPluginV3");
 
     await expect(inheritancePlugin.upgrade(inheritancePluginV3Impl.address)).to.be.revertedWith("NotTheTokenOwner");
     await expect(inheritancePlugin.connect(bob).upgrade(inheritancePluginV3Impl.address)).to.be.revertedWith(
@@ -1057,7 +1060,7 @@ describe("Sentinel and Inheritance", function () {
     expect(bytes4(keccak256("CrunaManager"))).to.equal("0x6fd352cb");
 
     const iVaultAddress = await inheritancePlugin.vault();
-    const iVault = await ethers.getContractAt("VaultMockSimple", iVaultAddress);
+    const iVault = await ethers.getContractAt("OwnableNFT", iVaultAddress);
 
     expect(toChecksumAddress(iVault.address)).equal(toChecksumAddress(vault.address));
 
@@ -1066,7 +1069,7 @@ describe("Sentinel and Inheritance", function () {
 
     await inheritancePlugin.connect(bob).upgrade(inheritancePluginV3Impl.address);
 
-    const newInheritancePlugin = await ethers.getContractAt("InheritancePluginV3Mock", inheritancePluginAddress);
+    const newInheritancePlugin = await ethers.getContractAt("InheritanceCrunaPluginV3", inheritancePluginAddress);
 
     expect(await newInheritancePlugin.isMock()).to.be.true;
     expect(await newInheritancePlugin.version()).to.equal(1e6 + 3);
@@ -1094,7 +1097,7 @@ describe("Sentinel and Inheritance", function () {
     let data = await inheritancePlugin.getSentinelsAndInheritanceData();
     expect(data[0].length).to.equal(2);
 
-    const inheritancePluginV2Impl = await deployContract("InheritancePluginV2Mock");
+    const inheritancePluginV2Impl = await deployContract("InheritanceCrunaPluginV2");
 
     await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginV2Impl.address, true, 1e6 + 2e3);
     await expect(inheritancePlugin.connect(bob).upgrade(inheritancePluginV2Impl.address))

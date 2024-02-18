@@ -53,7 +53,7 @@ describe("Testing contract deployments", function () {
       deployer.sendTransaction({ to: proxy.address, value: amount("2"), gasLimit: ethers.utils.hexlify(100000) }),
     ).revertedWith("ERC1967NonPayable");
 
-    vault = await deployContract("CrunaVaults", delay, [proposer.address], [executor.address], deployer.address);
+    vault = await deployContract("TimeControlledNFT", delay, [proposer.address], [executor.address], deployer.address);
 
     expect(await vault.version()).to.equal(1000000);
     await vault.init(proxy.address, 1, true);

@@ -47,7 +47,7 @@ describe("CrunaManager : Safe Recipients", function () {
     proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
     proxy = await deployUtils.attach("CrunaManager", proxy.address);
 
-    vault = await deployContract("VaultMockSimple", deployer.address);
+    vault = await deployContract("OwnableNFT", deployer.address);
 
     await vault.init(proxy.address, 1, true);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);

@@ -4,8 +4,6 @@ const ethers = hre.ethers;
 const path = require("path");
 const EthDeployUtils = require("eth-deploy-utils");
 let deployUtils;
-const { trustImplementation, bytes4, keccak256 } = require("../test/helpers");
-const { expect } = require("chai");
 
 async function main() {
   deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
@@ -19,25 +17,13 @@ async function main() {
     await deployUtils.deployNickSFactory(deployer);
   }
 
-  let salt = ethers.constants.HashZero;
+  const salt = ethers.constants.HashZero;
 
   // deploy the plugin
   const plugin = await deployUtils.deployContractViaNickSFactory(deployer, "InheritanceCrunaPlugin", salt);
 
   // deploy the plugin's proxy
-  const proxy = await deployUtils.deployContractViaNickSFactory(
-    deployer,
-    "InheritanceCrunaPluginProxy",
-    ["address"],
-    [plugin.address],
-    salt,
-  );
-
-  const guardian = await deployUtils.attach("CrunaGuardian");
-  let PLUGIN_ID = bytes4(keccak256("InheritanceCrunaPlugin"));
-
-  // only on testnet
-  await trustImplementation(guardian, deployer, deployer, process.env.DELAY, PLUGIN_ID, proxy.address, true, 1);
+  await deployUtils.deployContractViaNickSFactory(deployer, "InheritanceCrunaPluginProxy", ["address"], [plugin.address], salt);
 }
 
 main()

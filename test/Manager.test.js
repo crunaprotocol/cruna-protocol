@@ -54,7 +54,7 @@ describe("CrunaManager : Upgrades", function () {
     proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
     proxy = await deployUtils.attach("CrunaManager", proxy.address);
 
-    vault = await deployContract("VaultMockSimple", deployer.address);
+    vault = await deployContract("OwnableNFT", deployer.address);
 
     await vault.init(proxy.address, 1, true);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
@@ -100,7 +100,7 @@ describe("CrunaManager : Upgrades", function () {
 
   it("should allow bob to upgrade the manager", async function () {
     const tokenId = await buyAVault(bob);
-    const managerV2Impl = await deployContract("ManagerV2Mock");
+    const managerV2Impl = await deployContract("CrunaManagerV2");
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
 
@@ -148,15 +148,15 @@ describe("CrunaManager : Upgrades", function () {
     expect(await manager.version()).to.equal(1e6 + 2e3);
     expect(await manager.hasProtectors()).to.equal(true);
 
-    const managerV2 = await ethers.getContractAt("ManagerV2Mock", managerAddress);
+    const managerV2 = await ethers.getContractAt("CrunaManagerV2", managerAddress);
     const b4 = "0xaabbccdd";
     expect(await managerV2.bytes4ToHexString(b4)).equal(b4);
   });
 
   it("should allow deployer to upgrade the default manager", async function () {
     let tokenId = await buyAVault(bob);
-    const managerV2Impl = await deployContract("ManagerV2Mock");
-    const proxyV2 = await deployContract("ManagerProxyV2Mock", managerV2Impl.address);
+    const managerV2Impl = await deployContract("CrunaManagerV2");
+    const proxyV2 = await deployContract("CrunaManagerProxyV2", managerV2Impl.address);
     expect(await proxyV2.getImplementation()).to.equal(managerV2Impl.address);
     let history = await vault.managerHistory(0);
     const initialManager = await ethers.getContractAt("CrunaManager", history.managerAddress);
@@ -183,7 +183,7 @@ describe("CrunaManager : Upgrades", function () {
     let secondTokenId = await buyAVault(bob, proxyV2);
     history = await vault.managerHistory(1);
     const newManagerAddress = await vault.defaultManagerImplementation(secondTokenId);
-    const newManager = await ethers.getContractAt("ManagerV2Mock", newManagerAddress);
+    const newManager = await ethers.getContractAt("CrunaManagerV2", newManagerAddress);
 
     expect(await newManager.version()).to.equal(1e6 + 2e3);
 

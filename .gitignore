@@ -69,3 +69,4 @@ db
 tmp
 !tmp/.gitkeep
 /scripts/deploy-debug*
+/skipped
