@@ -3,6 +3,7 @@ const hre = require("hardhat");
 const ethers = hre.ethers;
 const path = require("path");
 const EthDeployUtils = require("eth-deploy-utils");
+
 let deployUtils;
 
 const { expect } = require("chai");
@@ -11,20 +12,20 @@ async function main() {
   deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
 
   const chainId = await deployUtils.currentChainId();
-
   const [deployer] = await ethers.getSigners();
 
+  process.env.CHAIN_ID = chainId;
+  require("./set-canonical");
+
   if (chainId === 1337) {
-    // on localhost, we deploy the factory
+    // on localhost, we deploy the factory if not deployed yet
     await deployUtils.deployNickSFactory(deployer);
   }
 
   let salt = ethers.constants.HashZero;
 
-  // deploy the manager
   const manager = await deployUtils.deployContractViaNickSFactory(deployer, "CrunaManager", salt);
 
-  // deploy the manager's proxy
   await deployUtils.deployContractViaNickSFactory(deployer, "CrunaManagerProxy", ["address"], [manager.address], salt);
 }
 

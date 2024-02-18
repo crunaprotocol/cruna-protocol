@@ -9,7 +9,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
-import {CrunaVaults} from "../CrunaVaults.sol";
+import {TimeControlledNFT} from "../token/TimeControlledNFT.sol";
 import {IVaultFactory} from "./IVaultFactory.sol";
 import {IVersioned} from "../../utils/IVersioned.sol";
 
@@ -31,7 +31,7 @@ contract VaultFactory is
   error InvalidArguments();
   error InvalidDiscount();
 
-  CrunaVaults public vault;
+  TimeControlledNFT public vault;
   uint256 public price;
   mapping(address => bool) public stableCoins;
   uint256 public discount;
@@ -45,7 +45,7 @@ contract VaultFactory is
   function initialize(address payable vault_, address owner_) public initializer {
     __Ownable_init(owner_);
     __UUPSUpgradeable_init();
-    vault = CrunaVaults(vault_);
+    vault = TimeControlledNFT(vault_);
   }
 
   function version() public pure virtual returns (uint256) {

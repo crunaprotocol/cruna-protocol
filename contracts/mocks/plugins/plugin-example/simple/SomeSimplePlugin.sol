@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {CrunaPluginBase} from "../../../plugins/CrunaPluginBase.sol";
+import {CrunaPluginBase} from "../../../../plugins/CrunaPluginBase.sol";
 
 contract SomeSimplePlugin is CrunaPluginBase {
   error NotUpgradeable();

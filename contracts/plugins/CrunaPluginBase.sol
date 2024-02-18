@@ -10,7 +10,7 @@ import {CrunaManager} from "../manager/CrunaManager.sol";
 import {TokenLinkedContract} from "../utils/TokenLinkedContract.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 import {ICrunaPlugin, IVault} from "./ICrunaPlugin.sol";
-import {CanonicalAddresses} from "../utils/CanonicalAddresses.sol";
+import {CanonicalAddresses} from "../canonical/CanonicalAddresses.sol";
 
 //import {console} from "hardhat/console.sol";
 
@@ -64,8 +64,12 @@ abstract contract CrunaPluginBase is Context, CanonicalAddresses, TokenLinkedCon
   //   wait for a new trusted implementation and upgrade it.
   function upgrade(address implementation_) external virtual override {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
-    uint256 requires = _CRUNA_GUARDIAN.trustedImplementation(nameId(), implementation_);
-    if (requires == 0) revert UntrustedImplementation();
+    uint256 requires = _crunaGuardian().trustedImplementation(nameId(), implementation_);
+    if (requires == 0) {
+      // The new implementation is not trusted.
+      // If current implementation is trusted, the new implementation must be trusted too
+      if (_crunaGuardian().trustedImplementation(nameId(), implementation()) > 0) revert UntrustedImplementation();
+    }
     IVersioned impl = IVersioned(implementation_);
     uint256 _version = impl.version();
     if (_version <= version()) revert InvalidVersion();

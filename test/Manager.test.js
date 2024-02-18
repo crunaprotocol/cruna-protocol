@@ -21,11 +21,12 @@ const {
   getInterfaceId,
   selectorId,
   trustImplementation,
-  getCanonical,
+
   deployCanonical,
+  setFakeCanonicalIfCoverage,
 } = require("./helpers");
 
-describe("CrunaManager : Protectors", function () {
+describe("CrunaManager : Upgrades", function () {
   let crunaRegistry, proxy, managerImpl, guardian, erc6551Registry;
 
   let vault;
@@ -36,12 +37,13 @@ describe("CrunaManager : Protectors", function () {
   // we put it very short for convenience (test-only)
   const delay = 10;
   let chainId;
+  let CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN;
 
   before(async function () {
     [deployer, proposer, executor, bob, alice, fred, mark, otto] = await ethers.getSigners();
     chainId = await getChainId();
     selector = await selectorId("ICrunaManager", "setProtector");
-    const [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
+    [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
     crunaRegistry = await ethers.getContractAt("CrunaRegistry", CRUNA_REGISTRY);
     guardian = await ethers.getContractAt("CrunaGuardian", CRUNA_GUARDIAN);
     erc6551Registry = await ethers.getContractAt("ERC6551Registry", ERC6551_REGISTRY);
@@ -52,8 +54,9 @@ describe("CrunaManager : Protectors", function () {
     proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
     proxy = await deployUtils.attach("CrunaManager", proxy.address);
 
-    vault = await deployContract("VaultMockSimple", deployer.address);
-    await vault.init(proxy.address, 1);
+    vault = await deployContract("OwnableNFT", deployer.address);
+
+    await vault.init(proxy.address, 1, true);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
 
     await vault.setFactory(factory.address);
@@ -89,14 +92,18 @@ describe("CrunaManager : Protectors", function () {
         nextTokenId,
       );
 
+    const managerAddress = await vault.managerOf(nextTokenId);
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+
     return nextTokenId;
   };
 
   it("should allow bob to upgrade the manager", async function () {
     const tokenId = await buyAVault(bob);
-    const managerV2Impl = await deployContract("ManagerV2Mock");
+    const managerV2Impl = await deployContract("CrunaManagerV2");
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+
     expect(await manager.version()).to.equal(1e6);
     let signature = (
       await signRequest(
@@ -124,6 +131,7 @@ describe("CrunaManager : Protectors", function () {
     await expect(manager.upgrade(managerV2Impl.address)).to.be.revertedWith("NotTheTokenOwner");
 
     await expect(manager.connect(bob).upgrade(managerV2Impl.address)).to.be.revertedWith("UntrustedImplementation");
+
     await trustImplementation(
       guardian,
       proposer,
@@ -140,18 +148,19 @@ describe("CrunaManager : Protectors", function () {
     expect(await manager.version()).to.equal(1e6 + 2e3);
     expect(await manager.hasProtectors()).to.equal(true);
 
-    const managerV2 = await ethers.getContractAt("ManagerV2Mock", managerAddress);
+    const managerV2 = await ethers.getContractAt("CrunaManagerV2", managerAddress);
     const b4 = "0xaabbccdd";
     expect(await managerV2.bytes4ToHexString(b4)).equal(b4);
   });
 
   it("should allow deployer to upgrade the default manager", async function () {
     let tokenId = await buyAVault(bob);
-    const managerV2Impl = await deployContract("ManagerV2Mock");
-    const proxyV2 = await deployContract("ManagerProxyV2Mock", managerV2Impl.address);
+    const managerV2Impl = await deployContract("CrunaManagerV2");
+    const proxyV2 = await deployContract("CrunaManagerProxyV2", managerV2Impl.address);
     expect(await proxyV2.getImplementation()).to.equal(managerV2Impl.address);
     let history = await vault.managerHistory(0);
     const initialManager = await ethers.getContractAt("CrunaManager", history.managerAddress);
+
     expect(await initialManager.version()).to.equal(1e6);
 
     await expect(vault.upgradeDefaultManager(proxyV2.address)).to.be.revertedWith("UntrustedImplementation");
@@ -174,7 +183,7 @@ describe("CrunaManager : Protectors", function () {
     let secondTokenId = await buyAVault(bob, proxyV2);
     history = await vault.managerHistory(1);
     const newManagerAddress = await vault.defaultManagerImplementation(secondTokenId);
-    const newManager = await ethers.getContractAt("CrunaManager", newManagerAddress);
+    const newManager = await ethers.getContractAt("CrunaManagerV2", newManagerAddress);
 
     expect(await newManager.version()).to.equal(1e6 + 2e3);
 

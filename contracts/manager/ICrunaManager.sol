@@ -39,6 +39,7 @@ interface ICrunaManager is ITokenLinkedContract, INamed {
     bool canBeReset;
     bool active;
     bool isERC6551Account;
+    bool trusted;
     bytes4 salt;
   }
 

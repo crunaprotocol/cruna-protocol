@@ -11,7 +11,7 @@ import {INamed} from "../utils/INamed.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 import {ICrunaManager, IVault} from "./ICrunaManager.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
-import {CanonicalAddresses} from "../utils/CanonicalAddresses.sol";
+import {CanonicalAddresses} from "../canonical/CanonicalAddresses.sol";
 
 //import {console} from "hardhat/console.sol";
 
@@ -73,7 +73,7 @@ abstract contract CrunaManagerBase is
   // @dev Upgrade the implementation of the manager
   function upgrade(address implementation_) external virtual override {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
-    uint256 requires = _CRUNA_GUARDIAN.trustedImplementation(nameId(), implementation_);
+    uint256 requires = _crunaGuardian().trustedImplementation(nameId(), implementation_);
     if (requires == 0) revert UntrustedImplementation();
     INamedAndVersioned impl = INamedAndVersioned(implementation_);
     uint256 _version = impl.version();

@@ -13,7 +13,7 @@ allFiredEvents
 scTopics
 
 # Coverage directory used by tools like istanbul
-coverage
+/coverage
 coverage.json
 coverageEnv
 
@@ -69,3 +69,4 @@ db
 tmp
 !tmp/.gitkeep
 /scripts/deploy-debug*
+/skipped

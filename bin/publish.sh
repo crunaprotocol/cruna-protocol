@@ -29,6 +29,8 @@ fi
 cp README.md contracts/README.md
 cd contracts
 
+cp ../canonical-addresses/mainnet.sol canonical/CanonicalAddresses.sol
+
 if [[ $version =~ -([a-zA-Z]+) ]]; then
   tag=${BASH_REMATCH[1]}
   echo "Publishing $tag version $version"

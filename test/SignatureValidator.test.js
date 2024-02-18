@@ -14,8 +14,9 @@ const {
   combineTimestampAndValidFor,
   getTimestamp,
   signRequest,
-  getCanonical,
+
   deployCanonical,
+  setFakeCanonicalIfCoverage,
 } = require("./helpers");
 
 describe("SignatureValidator", function () {
@@ -31,7 +32,7 @@ describe("SignatureValidator", function () {
   });
 
   beforeEach(async function () {
-    validator = await deployContract("ValidatorMock");
+    validator = await deployContract("SignatureValidatorMock");
   });
 
   it("should recover the signer of a recoverSigner", async function () {

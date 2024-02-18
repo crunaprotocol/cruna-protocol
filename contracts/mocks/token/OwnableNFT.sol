@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import {CrunaManagedNFTOwnable} from "../token/CrunaManagedNFTOwnable.sol";
+import {CrunaManagedNFTOwnable} from "../../token/CrunaManagedNFTOwnable.sol";
 
 //import "hardhat/console.sol";
 
@@ -10,7 +10,7 @@ import {CrunaManagedNFTOwnable} from "../token/CrunaManagedNFTOwnable.sol";
 // We put it in mocks because it should not be used loading the package.
 
 // @dev This contract is a simple example of a protected NFT.
-contract VaultMockSimple is CrunaManagedNFTOwnable {
+contract OwnableNFT is CrunaManagedNFTOwnable {
   using Strings for uint256;
 
   error NotTheFactory();

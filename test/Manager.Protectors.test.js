@@ -23,7 +23,8 @@ const {
   combineTimestampAndValidFor,
   deployCanonical,
   trustImplementation,
-  getCanonical,
+
+  setFakeCanonicalIfCoverage,
 } = require("./helpers");
 
 describe("CrunaManager : Protectors", function () {
@@ -39,11 +40,13 @@ describe("CrunaManager : Protectors", function () {
   const delay = 10;
   let chainId;
 
+  let CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN;
+
   before(async function () {
     [deployer, proposer, executor, bob, alice, fred, mark, otto] = await ethers.getSigners();
     chainId = await getChainId();
     selector = await selectorId("ICrunaManager", "setProtector");
-    const [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
+    [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
     crunaRegistry = await ethers.getContractAt("CrunaRegistry", CRUNA_REGISTRY);
     guardian = await ethers.getContractAt("CrunaGuardian", CRUNA_GUARDIAN);
     erc6551Registry = await ethers.getContractAt("ERC6551Registry", ERC6551_REGISTRY);
@@ -54,11 +57,13 @@ describe("CrunaManager : Protectors", function () {
     proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
     proxy = await deployUtils.attach("CrunaManager", proxy.address);
 
-    vault = await deployContract("VaultMockSimple", deployer.address);
-    await vault.init(proxy.address, 1);
+    vault = await deployContract("OwnableNFT", deployer.address);
+
+    await vault.init(proxy.address, 1, true);
+
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
     await vault.setFactory(factory.address);
-    validatorMock = await deployContract("ValidatorMock");
+    validatorMock = await deployContract("SignatureValidatorMock");
 
     usdc = await deployContract("USDCoin", deployer.address);
     usdt = await deployContract("TetherUSD", deployer.address);
@@ -91,6 +96,9 @@ describe("CrunaManager : Protectors", function () {
         nextTokenId,
       );
 
+    const managerAddress = await vault.managerOf(nextTokenId);
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+
     return nextTokenId;
   };
 
@@ -122,13 +130,6 @@ describe("CrunaManager : Protectors", function () {
     const manager = new Contract(managerAddress, fakeAbi, ethers.provider);
 
     await expect(manager.bullish("0x12345678")).revertedWith("");
-  });
-
-  it("should support the ICrunaManagedNFT interface", async function () {
-    const VaultMockSimple = await deployContract("VaultMockSimple", deployer.address);
-    await VaultMockSimple.init(proxy.address, 1);
-    let interfaceId = await getInterfaceId("ICrunaManagedNFT");
-    expect(await vault.supportsInterface(interfaceId)).to.be.true;
   });
 
   it("should verify CrunaManagerBase parameters", async function () {
@@ -288,6 +289,7 @@ describe("CrunaManager : Protectors", function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+
     // set Alice as first Bob's protector
     await expect(manager.connect(bob).setProtector(addr0, true, 0, 0, 0)).revertedWith("ZeroAddress");
     await expect(manager.connect(bob).setProtector(bob.address, true, 0, 0, 0)).revertedWith("CannotBeYourself");

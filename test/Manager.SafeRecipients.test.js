@@ -17,8 +17,9 @@ const {
   selectorId,
   bytes4,
   keccak256,
-  getCanonical,
+
   deployCanonical,
+  setFakeCanonicalIfCoverage,
 } = require("./helpers");
 
 describe("CrunaManager : Safe Recipients", function () {
@@ -30,11 +31,12 @@ describe("CrunaManager : Safe Recipients", function () {
   let deployer, bob, alice, fred, mark, otto, proposer, executor;
   let chainId, ts;
   const delay = 10;
+  let CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN;
 
   before(async function () {
     [deployer, proposer, executor, bob, alice, fred, mark, otto] = await ethers.getSigners();
     chainId = await getChainId();
-    const [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
+    [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
     crunaRegistry = await ethers.getContractAt("CrunaRegistry", CRUNA_REGISTRY);
     guardian = await ethers.getContractAt("CrunaGuardian", CRUNA_GUARDIAN);
     erc6551Registry = await ethers.getContractAt("ERC6551Registry", ERC6551_REGISTRY);
@@ -45,8 +47,9 @@ describe("CrunaManager : Safe Recipients", function () {
     proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
     proxy = await deployUtils.attach("CrunaManager", proxy.address);
 
-    vault = await deployContract("VaultMockSimple", deployer.address);
-    await vault.init(proxy.address, 1);
+    vault = await deployContract("OwnableNFT", deployer.address);
+
+    await vault.init(proxy.address, 1, true);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
 
     await vault.setFactory(factory.address);
@@ -68,6 +71,10 @@ describe("CrunaManager : Safe Recipients", function () {
     await usdc.connect(bob).approve(factory.address, price);
     const nextTokenId = await vault.nextTokenId();
     await factory.connect(bob).buyVaults(usdc.address, 1);
+
+    const managerAddress = await vault.managerOf(nextTokenId);
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+
     return nextTokenId;
   };
 
@@ -76,6 +83,7 @@ describe("CrunaManager : Safe Recipients", function () {
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+
     // set Alice and Fred as a safe recipient
     await expect(manager.connect(bob).setSafeRecipient(alice.address, true, 0, 0, 0))
       .to.emit(manager, "SafeRecipientChange")
