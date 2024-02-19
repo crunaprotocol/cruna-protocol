@@ -81,7 +81,7 @@ devDependencies:
     version: 2.10.0(hardhat@2.20.1)
   hardhat-gas-reporter:
     specifier: ^1.0.9
-    version: 1.0.9(hardhat@2.20.1)
+    version: 1.0.10(hardhat@2.20.1)
   husky:
     specifier: ^9.0.10
     version: 9.0.10
@@ -4642,8 +4642,8 @@ packages:
       strip-ansi: 6.0.1
     dev: true
 
-  /hardhat-gas-reporter@1.0.9(hardhat@2.20.1):
-    resolution: {integrity: sha512-INN26G3EW43adGKBNzYWOlI3+rlLnasXTwW79YNnUhXPDa+yHESgt639dJEs37gCjhkbNKcRRJnomXEuMFBXJg==}
+  /hardhat-gas-reporter@1.0.10(hardhat@2.20.1):
+    resolution: {integrity: sha512-02N4+So/fZrzJ88ci54GqwVA3Zrf0C9duuTyGt0CFRIh/CdNwbnTgkXkRfojOMLBQ+6t+lBIkgbsOtqMvNwikA==}
     peerDependencies:
       hardhat: ^2.0.2
     dependencies:
