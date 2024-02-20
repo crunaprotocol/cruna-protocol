@@ -17,21 +17,12 @@ async function main() {
   let PLUGIN_ID = bytes4(keccak256("InheritanceCrunaPlugin"));
 
   // start the process of trusting the plugin
-  await executeProposal(
-      guardian,
-      executor,
-      process.env.DELAY,
-      "setTrustedImplementation",
-      PLUGIN_ID,
-      plugin.address,
-      true,
-      1,
-  );
+  await executeProposal(guardian, executor, process.env.DELAY, "setTrustedImplementation", PLUGIN_ID, plugin.address, true, 1);
 }
 
 main()
-    .then(() => process.exit(0))
-    .catch((error) => {
-      console.error(error);
-      process.exit(1);
-    });
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });

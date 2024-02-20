@@ -355,7 +355,9 @@ const Helpers = {
       debug("Executing", funcName, "with data", data);
       return await thiz.executeProposal(contract, executor, delay, funcName, ...params);
     } else {
-      let tx = await contract.connect(proposer).schedule(contract.address, 0, data, predecessor, salt, delay, { gasLimit: 100000 });
+      let tx = await contract
+        .connect(proposer)
+        .schedule(contract.address, 0, data, predecessor, salt, delay, { gasLimit: 100000 });
       debug("Tx", tx.hash);
       await tx.wait();
       debug("Mined");
@@ -368,12 +370,12 @@ const Helpers = {
     const salt = ethers.utils.formatBytes32String("");
     debug("Executing", funcName, "with data", data);
     if (process.env.NODE_ENV === "test") {
-      return contract.connect(executor).execute(contract.address, 0, data, predecessor, salt, {gasLimit: 120000});
+      return contract.connect(executor).execute(contract.address, 0, data, predecessor, salt, { gasLimit: 120000 });
     } else {
-        let tx = await contract.connect(executor).execute(contract.address, 0, data, predecessor, salt, {gasLimit: 120000});
-        debug("Tx", tx.hash);
-        await tx.wait();
-        debug("Mined");
+      let tx = await contract.connect(executor).execute(contract.address, 0, data, predecessor, salt, { gasLimit: 120000 });
+      debug("Tx", tx.hash);
+      await tx.wait();
+      debug("Mined");
     }
   },
 
