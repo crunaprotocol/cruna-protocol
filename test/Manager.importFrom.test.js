@@ -22,7 +22,7 @@ const {
   setFakeCanonicalIfCoverage,
 } = require("./helpers");
 
-describe("CrunaManager : Safe Recipients", function () {
+describe("CrunaManager : importFrom ", function () {
   let crunaRegistry, proxy, managerImpl, guardian, erc6551Registry;
 
   let vault;
@@ -58,7 +58,7 @@ describe("CrunaManager : Safe Recipients", function () {
     usdt = await deployContract("TetherUSD", deployer.address);
 
     await usdc.mint(bob.address, normalize("900"));
-    await usdt.mint(alice.address, normalize("600", 6));
+    await usdc.mint(alice.address, normalize("900"));
 
     await expect(factory.setPrice(990)).to.emit(factory, "PriceSet").withArgs(990);
     await expect(factory.setStableCoin(usdc.address, true)).to.emit(factory, "StableCoinSet").withArgs(usdc.address, true);
@@ -73,12 +73,12 @@ describe("CrunaManager : Safe Recipients", function () {
     await factory.connect(bob).buyVaults(usdc.address, 1);
 
     const managerAddress = await vault.managerOf(nextTokenId);
-    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+    await ethers.getContractAt("CrunaManager", managerAddress);
 
     return nextTokenId;
   };
 
-  it("should set up safe recipients", async function () {
+  it("should import from another tokenId", async function () {
     // cl(true)
     const tokenId = await buyAVault(bob);
     const managerAddress = await vault.managerOf(tokenId);
@@ -94,83 +94,37 @@ describe("CrunaManager : Safe Recipients", function () {
 
     expect(await manager.getSafeRecipients()).deep.equal([alice.address, fred.address]);
 
-    await expect(manager.connect(bob).setSafeRecipient(alice.address, false, 0, 0, 0))
-      .to.emit(manager, "SafeRecipientChange")
-      .withArgs(alice.address, false);
+    await expect(manager.connect(bob).setProtectors([mark.address, mark.address, otto.address])).revertedWith("ActorAlreadyAdded");
 
-    let signature = (
-      await signRequest(
-        await selectorId("ICrunaManager", "setProtector"),
-        bob.address,
-        alice.address,
-        vault.address,
-        tokenId,
-        1,
-        0,
-        0,
-        ts,
-        3600,
-        chainId,
-        alice.address,
-        manager,
-      )
-    )[0];
+    await manager.connect(bob).setProtectors([mark.address, otto.address]);
 
-    // set Alice as first Bob's protector
-    await manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature);
+    // new token
 
-    const selector = await selectorId("ICrunaManager", "setSafeRecipient");
+    const tokenId2 = await buyAVault(alice);
+    const managerAddress2 = await vault.managerOf(tokenId2);
+    const manager2 = await ethers.getContractAt("CrunaManager", managerAddress2);
 
-    // Set Mark as a safe recipient
-    signature = (
-      await signRequest(
-        selector,
-        bob.address,
-        mark.address,
-        vault.address,
-        tokenId,
-        1,
-        0,
-        0,
-        ts,
-        3600,
-        chainId,
-        alice.address,
-        manager,
-      )
-    )[0];
-    await expect(manager.connect(bob).setSafeRecipient(mark.address, true, ts, 3600, signature))
-      .to.emit(manager, "SafeRecipientChange")
-      .withArgs(mark.address, true);
+    await expect(manager2.connect(alice).importFrom(tokenId))
+        .revertedWith("NotTheSameOwner");
 
-    expect(await vault.isTransferable(tokenId, bob.address, mark.address)).to.be.true;
+    const tokenId3 = await buyAVault(bob);
+    const managerAddress3 = await vault.managerOf(tokenId3);
+    const manager3 = await ethers.getContractAt("CrunaManager", managerAddress3);
 
-    // // remove Fred as a safe recipient
-    signature = (
-      await signRequest(
-        selector,
-        bob.address,
-        fred.address,
-        vault.address,
-        tokenId,
-        0,
-        0,
-        0,
-        ts,
-        3600,
-        chainId,
-        alice.address,
-        manager,
-      )
-    )[0];
+    await expect(manager3.connect(bob).importFrom(tokenId3))
+        .revertedWith("CannotImportFromYourself");
 
-    await expect(manager.connect(bob).setSafeRecipient(fred.address, false, 0, 0, 0)).revertedWith(
-      "NotPermittedWhenProtectorsAreActive",
-    );
-
-    await expect(manager.connect(bob).setSafeRecipient(fred.address, false, ts, 3600, signature))
-      .to.emit(manager, "SafeRecipientChange")
-      .withArgs(fred.address, false);
+    await expect(manager3.connect(bob).importFrom(tokenId))
+        .emit(manager3, "ProtectorChange")
+        .withArgs(mark.address, true)
+        .emit(manager3, "ProtectorChange")
+        .withArgs(otto.address, true)
+        .emit(manager3, "SafeRecipientChange")
+        .withArgs(alice.address, true)
+        .emit(manager3, "SafeRecipientChange")
+        .withArgs(fred.address, true)
+        .emit(vault, "Locked")
+        .withArgs(tokenId3, true);
   });
 
 });

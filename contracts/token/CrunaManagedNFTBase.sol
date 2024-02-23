@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 //
-import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {IERC165, ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
@@ -160,7 +160,7 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, CanonicalAddresses, I
   }
 
   // @dev See {ERC165-supportsInterface}.
-  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721) returns (bool) {
+  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, IERC165) returns (bool) {
     return
       interfaceId == type(ICrunaManagedNFT).interfaceId ||
       interfaceId == type(IERC6454).interfaceId ||

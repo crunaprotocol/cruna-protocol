@@ -38,6 +38,9 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   error InvalidValidity();
   error InvalidAccountStatus();
   error UntrustedImplementationsCanMakeTransfersOnlyOnTestnet();
+  error CannotImportFromYourself();
+  error NotTheSameOwner();
+  error NoProtectorsToImport();
 
   bytes4 public constant PROTECTOR = bytes4(keccak256("PROTECTOR"));
   bytes4 public constant SAFE_RECIPIENT = bytes4(keccak256("SAFE_RECIPIENT"));
@@ -126,13 +129,33 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   // only to set up many protectors at the same time as first protectors
   function setProtectors(address[] memory protectors_) external virtual override onlyTokenOwner {
     if (actorCount(PROTECTOR) > 0) revert ProtectorsAlreadySet();
+    _setProtectors(protectors_);
+  }
+
+ function _setProtectors(address[] memory protectors_) internal virtual {
     for (uint256 i = 0; i < protectors_.length; i++) {
       if (protectors_[i] == address(0)) revert ZeroAddress();
       if (protectors_[i] == _msgSender()) revert CannotBeYourself();
       _addActor(protectors_[i], PROTECTOR);
       emit ProtectorChange(protectors_[i], true);
+      if (i == 0) _emitLockeEvent(true);
     }
-    _emitLockeEvent(true);
+  }
+
+  function importFrom(uint256 otherTokenId) external virtual override onlyTokenOwner {
+    if (actorCount(PROTECTOR) > 0) revert ProtectorsAlreadySet();
+    if (otherTokenId == tokenId()) revert CannotImportFromYourself();
+    if (vault().ownerOf(otherTokenId) != owner()) revert NotTheSameOwner();
+    CrunaManager otherManager = CrunaManager(vault().managerOf(otherTokenId));
+    if (otherManager.actorCount(PROTECTOR) == 0) revert NoProtectorsToImport();
+    _setProtectors(otherManager.getProtectors());
+    if (otherManager.actorCount(SAFE_RECIPIENT) > 0) {
+      address[] memory otherSafeRecipients = otherManager.getSafeRecipients();
+      for (uint256 i = 0; i < otherSafeRecipients.length; i++) {
+        _addActor(otherSafeRecipients[i], SAFE_RECIPIENT);
+        emit SafeRecipientChange(otherSafeRecipients[i], true);
+      }
+    }
   }
 
   // @dev see {ICrunaManager.sol-getProtectors}
