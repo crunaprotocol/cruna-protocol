@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {ICanonicalAddresses} from "../utils/ICanonicalAddresses.sol";
+import {ICanonicalAddresses} from "../canonical/ICanonicalAddresses.sol";
 
 //import {console} from "hardhat/console.sol";
 
