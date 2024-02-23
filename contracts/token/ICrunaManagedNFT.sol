@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: GPL3
 pragma solidity ^0.8.20;
 
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+
 // Author: Francesco Sullo <francesco@sullo.co>
-interface ICrunaManagedNFT {
+interface ICrunaManagedNFT is IERC721 {
   event ManagedTransfer(bytes4 indexed pluginNameId, uint256 indexed tokenId);
   event DefaultManagerUpgrade(address newManagerProxy);
 

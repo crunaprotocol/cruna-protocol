@@ -9,7 +9,8 @@ import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 import {CrunaManager} from "../manager/CrunaManager.sol";
 import {TokenLinkedContract} from "../utils/TokenLinkedContract.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
-import {ICrunaPlugin, IVault} from "./ICrunaPlugin.sol";
+import {CrunaManagedNFTBase} from "../token/CrunaManagedNFTBase.sol";
+import {ICrunaPlugin} from "./ICrunaPlugin.sol";
 import {CanonicalAddresses} from "../canonical/CanonicalAddresses.sol";
 
 //import {console} from "hardhat/console.sol";
@@ -40,7 +41,7 @@ abstract contract CrunaPluginBase is Context, CanonicalAddresses, TokenLinkedCon
   // Inits the manager. It should be executed immediately after the deployment
   function initManager() external virtual override {
     if (address(manager) != address(0)) revert Forbidden();
-    manager = CrunaManager(IVault(tokenAddress()).managerOf(tokenId()));
+    manager = CrunaManager(CrunaManagedNFTBase(tokenAddress()).managerOf(tokenId()));
   }
 
   function isERC6551Account() external pure virtual returns (bool) {
@@ -54,8 +55,8 @@ abstract contract CrunaPluginBase is Context, CanonicalAddresses, TokenLinkedCon
 
   function nameId() public view virtual override returns (bytes4);
 
-  function vault() public view virtual override returns (IVault) {
-    return IVault(tokenAddress());
+  function vault() public view virtual override returns (CrunaManagedNFTBase) {
+    return CrunaManagedNFTBase(tokenAddress());
   }
 
   // @dev Upgrade the implementation of the plugin
