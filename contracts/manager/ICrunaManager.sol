@@ -123,9 +123,7 @@ interface ICrunaManager is ITokenLinkedContract, INamed {
   // @dev Set multiple protectors at the same time
   //      It can be called only when there are no protectors set
   // @param protectors_ The protectors' addresses to be set
-  function setProtectors(
-    address[] memory protectors_
-  ) external;
+  function setProtectors(address[] memory protectors_) external;
 
   // @dev Finds a PROTECTOR
   // @param protector_ The protector address

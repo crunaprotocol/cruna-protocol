@@ -124,9 +124,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   }
 
   // only to set up many protectors at the same time as first protectors
-  function setProtectors(
-    address[] memory protectors_
-  ) external virtual override onlyTokenOwner {
+  function setProtectors(address[] memory protectors_) external virtual override onlyTokenOwner {
     if (actorCount(PROTECTOR) > 0) revert ProtectorsAlreadySet();
     for (uint256 i = 0; i < protectors_.length; i++) {
       if (protectors_[i] == address(0)) revert ZeroAddress();
