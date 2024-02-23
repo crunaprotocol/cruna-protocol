@@ -19,6 +19,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
 
   error ProtectorNotFound();
   error ProtectorAlreadySetByYou();
+  error ProtectorsAlreadySet();
 
   error CannotBeYourself();
   error NotTheAuthorizedPlugin();
@@ -94,6 +95,11 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     return hasProtectors();
   }
 
+  function version() public pure virtual override returns (uint256) {
+    // 1.0.1
+    return 1e6 + 1;
+  }
+
   // @dev see {ICrunaManager.sol-setProtector}
   function setProtector(
     address protector_,
@@ -115,6 +121,18 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     );
     emit ProtectorChange(protector_, status);
     _emitLockeEvent(status);
+  }
+
+  // only to set up many protectors at the same time as first protectors
+  function setProtectors(address[] memory protectors_) external virtual override onlyTokenOwner {
+    if (actorCount(PROTECTOR) > 0) revert ProtectorsAlreadySet();
+    for (uint256 i = 0; i < protectors_.length; i++) {
+      if (protectors_[i] == address(0)) revert ZeroAddress();
+      if (protectors_[i] == _msgSender()) revert CannotBeYourself();
+      _addActor(protectors_[i], PROTECTOR);
+      emit ProtectorChange(protectors_[i], true);
+    }
+    _emitLockeEvent(true);
   }
 
   // @dev see {ICrunaManager.sol-getProtectors}
