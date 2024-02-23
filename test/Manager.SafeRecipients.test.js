@@ -172,5 +172,4 @@ describe("CrunaManager : Safe Recipients", function () {
       .to.emit(manager, "SafeRecipientChange")
       .withArgs(fred.address, false);
   });
-
 });

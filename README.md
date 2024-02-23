@@ -150,6 +150,9 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**1.0.0-rc.6**
+- Add importFrom function to allow to import protectors and safe recipients from another manager owned by the same owner, if and only if the new tokenId has no protectors and safe recipients
+
 **1.0.0-rc.5**
 - Add setProtectors function to allow to quickly set many protectors in one transaction, but only if no protectors are already set
 

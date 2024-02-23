@@ -94,7 +94,9 @@ describe("CrunaManager : importFrom ", function () {
 
     expect(await manager.getSafeRecipients()).deep.equal([alice.address, fred.address]);
 
-    await expect(manager.connect(bob).setProtectors([mark.address, mark.address, otto.address])).revertedWith("ActorAlreadyAdded");
+    await expect(manager.connect(bob).setProtectors([mark.address, mark.address, otto.address])).revertedWith(
+      "ActorAlreadyAdded",
+    );
 
     await manager.connect(bob).setProtectors([mark.address, otto.address]);
 
@@ -104,27 +106,24 @@ describe("CrunaManager : importFrom ", function () {
     const managerAddress2 = await vault.managerOf(tokenId2);
     const manager2 = await ethers.getContractAt("CrunaManager", managerAddress2);
 
-    await expect(manager2.connect(alice).importFrom(tokenId))
-        .revertedWith("NotTheSameOwner");
+    await expect(manager2.connect(alice).importFrom(tokenId)).revertedWith("NotTheSameOwner");
 
     const tokenId3 = await buyAVault(bob);
     const managerAddress3 = await vault.managerOf(tokenId3);
     const manager3 = await ethers.getContractAt("CrunaManager", managerAddress3);
 
-    await expect(manager3.connect(bob).importFrom(tokenId3))
-        .revertedWith("CannotImportFromYourself");
+    await expect(manager3.connect(bob).importFrom(tokenId3)).revertedWith("CannotImportFromYourself");
 
     await expect(manager3.connect(bob).importFrom(tokenId))
-        .emit(manager3, "ProtectorChange")
-        .withArgs(mark.address, true)
-        .emit(manager3, "ProtectorChange")
-        .withArgs(otto.address, true)
-        .emit(manager3, "SafeRecipientChange")
-        .withArgs(alice.address, true)
-        .emit(manager3, "SafeRecipientChange")
-        .withArgs(fred.address, true)
-        .emit(vault, "Locked")
-        .withArgs(tokenId3, true);
+      .emit(manager3, "ProtectorChange")
+      .withArgs(mark.address, true)
+      .emit(manager3, "ProtectorChange")
+      .withArgs(otto.address, true)
+      .emit(manager3, "SafeRecipientChange")
+      .withArgs(alice.address, true)
+      .emit(manager3, "SafeRecipientChange")
+      .withArgs(fred.address, true)
+      .emit(vault, "Locked")
+      .withArgs(tokenId3, true);
   });
-
 });

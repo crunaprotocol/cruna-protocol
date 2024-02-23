@@ -41,6 +41,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   error CannotImportFromYourself();
   error NotTheSameOwner();
   error NoProtectorsToImport();
+  error SafeRecipientsAlreadySet();
 
   bytes4 public constant PROTECTOR = bytes4(keccak256("PROTECTOR"));
   bytes4 public constant SAFE_RECIPIENT = bytes4(keccak256("SAFE_RECIPIENT"));
@@ -132,7 +133,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     _setProtectors(protectors_);
   }
 
- function _setProtectors(address[] memory protectors_) internal virtual {
+  function _setProtectors(address[] memory protectors_) internal virtual {
     for (uint256 i = 0; i < protectors_.length; i++) {
       if (protectors_[i] == address(0)) revert ZeroAddress();
       if (protectors_[i] == _msgSender()) revert CannotBeYourself();
@@ -144,6 +145,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
 
   function importFrom(uint256 otherTokenId) external virtual override onlyTokenOwner {
     if (actorCount(PROTECTOR) > 0) revert ProtectorsAlreadySet();
+    if (actorCount(SAFE_RECIPIENT) > 0) revert SafeRecipientsAlreadySet();
     if (otherTokenId == tokenId()) revert CannotImportFromYourself();
     if (vault().ownerOf(otherTokenId) != owner()) revert NotTheSameOwner();
     CrunaManager otherManager = CrunaManager(vault().managerOf(otherTokenId));
