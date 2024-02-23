@@ -43,4 +43,5 @@ contract CanonicalAddresses {
   function crunaGuardian() external view returns (ICrunaGuardian) {
     return _crunaGuardian();
   }
+
 }

@@ -37,13 +37,15 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   error InvalidValidity();
   error InvalidAccountStatus();
   error UntrustedImplementationsCanMakeTransfersOnlyOnTestnet();
+  error StillUntrusted();
+  error PluginAlreadyTrusted();
 
   bytes4 public constant PROTECTOR = bytes4(keccak256("PROTECTOR"));
   bytes4 public constant SAFE_RECIPIENT = bytes4(keccak256("SAFE_RECIPIENT"));
 
-  mapping(bytes4 => mapping(bytes4 => CrunaPlugin)) public pluginsById;
   PluginStatus[] public allPlugins;
-  mapping(bytes4 => uint256) public timeLocks;
+  mapping(bytes4 => mapping(bytes4 => CrunaPlugin)) public pluginsById;
+  mapping(bytes4 => mapping(bytes4 => uint256)) public timeLocks;
 
   // @dev Counts the protectors.
   function countActiveProtectors() public view virtual override returns (uint256) {
@@ -201,7 +203,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   //   extra2 = isAccount ? 1 : 0;
   function plug(
     string memory name,
-    address pluginProxy,
+    address proxyAddress_,
     bool canManageTransfer,
     bool isERC6551Account,
     bytes4, // salt is ignored in this version. Here for the future
@@ -212,7 +214,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     if (validFor > 9999999) revert InvalidValidity();
     bytes4 _nameId = _stringToBytes4(name);
     if (pluginsById[_nameId][0x00000000].proxyAddress != address(0)) revert PluginAlreadyPlugged();
-    uint256 requires = _crunaGuardian().trustedImplementation(_nameId, pluginProxy);
+    uint256 requires = _crunaGuardian().trustedImplementation(_nameId, proxyAddress_);
     if (requires == 0 && canManageTransfer && vault().deployedToProduction()) {
       // If requires == 0 the plugin is not trusted, for example during development.
       // If later it is upgraded with a trusted implementation, it won't be possible anymore
@@ -223,20 +225,20 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     if (requires > version()) revert PluginRequiresUpdatedManager(requires);
     _preValidateAndCheckSignature(
       this.plug.selector,
-      pluginProxy,
+      proxyAddress_,
       canManageTransfer ? 1 : 0,
       isERC6551Account ? 1 : 0,
       0,
       timestamp * 1e7 + validFor,
       signature
     );
-    address _pluginAddress = vault().deployPlugin(pluginProxy, 0x00000000, tokenId(), isERC6551Account);
+    address _pluginAddress = vault().deployPlugin(proxyAddress_, 0x00000000, tokenId(), isERC6551Account);
     ICrunaPlugin _plugin = ICrunaPlugin(_pluginAddress);
     if (_plugin.nameId() != _nameId) revert InvalidImplementation();
     if (_plugin.isERC6551Account() != isERC6551Account) revert InvalidAccountStatus();
     allPlugins.push(PluginStatus({name: name, active: true, salt: 0x00000000}));
     pluginsById[_nameId][0x00000000] = CrunaPlugin({
-      proxyAddress: pluginProxy,
+      proxyAddress: proxyAddress_,
       canManageTransfer: canManageTransfer,
       canBeReset: _plugin.requiresResetOnTransfer(),
       active: true,
@@ -244,15 +246,19 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       isERC6551Account: isERC6551Account,
       salt: 0x00000000
     });
-    _emitPluginStatusChange(name, address(_plugin), true);
+    emit PluginStatusChange(name, 0x00000000, address(_plugin), true);
   }
 
-  function _emitPluginStatusChange(string memory name, address pluginAddress_, bool status) internal virtual {
-    // Avoid to revert if the emission of the event fails.
-    // It should never happen, but if it happens, we are
-    // notified by the EmitEventFailed event, instead of reverting
-    // the entire transaction.
-    emit PluginStatusChange(name, pluginAddress_, status);
+  // To set as trusted a plugin that initially was not trusted
+  function trustPlugin(string memory name, bytes4) external virtual override onlyTokenOwner {
+    bytes4 salt = 0x00000000;
+    bytes4 _nameId = _stringToBytes4(name);
+    if (pluginsById[_nameId][salt].proxyAddress == address(0)) revert PluginNotFound();
+    if (pluginsById[_nameId][salt].trusted) revert PluginAlreadyTrusted();
+    if (_crunaGuardian().trustedImplementation(_nameId, pluginsById[_nameId][salt].proxyAddress) > 0) {
+      pluginsById[_nameId][salt].trusted = true;
+      emit PluginTrusted(name, salt);
+    } else revert StillUntrusted();
   }
 
   function _isPluginAuthorizable(bytes4 _nameId, bytes4 salt) internal view virtual {
@@ -297,7 +303,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       timeLocks[_nameId] = block.timestamp + timeLock;
     }
     pluginsById[_nameId][salt].canManageTransfer = authorized;
-    emit PluginAuthorizationChange(name, pluginAddress(_nameId, salt), authorized, timeLock);
+    emit PluginAuthorizationChange(name, salt, pluginAddress(_nameId, salt), authorized, timeLock);
   }
 
   function _emitLockeEvent(bool status) internal virtual {
@@ -440,7 +446,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     if (resetPlugin && pluginsById[_nameId][salt].canBeReset) {
       _resetPlugin(_nameId, salt);
     }
-    _emitPluginStatusChange(name, pluginAddress(_nameId, salt), false);
+    emit PluginStatusChange(name, salt, pluginAddress(_nameId, salt), false);
   }
 
   function _isPluginDisabled(string memory name, bytes4 salt) internal view virtual returns (uint256) {
@@ -476,7 +482,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     if (resetPlugin && pluginsById[_nameId][salt].canBeReset) {
       _resetPlugin(_nameId, salt);
     }
-    _emitPluginStatusChange(name, pluginAddress(_nameId, salt), true);
+    emit PluginStatusChange(name, salt, pluginAddress(_nameId, salt), true);
   }
 
   function _resetPlugin(bytes4 _nameId, bytes4) internal virtual {
