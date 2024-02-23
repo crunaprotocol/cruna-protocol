@@ -40,7 +40,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   error UntrustedImplementationsCanMakeTransfersOnlyOnTestnet();
   error CannotImportFromYourself();
   error NotTheSameOwner();
-  error NothingToBeImported();
+  error NothingToImport();
   error SafeRecipientsAlreadySet();
 
   bytes4 public constant PROTECTOR = bytes4(keccak256("PROTECTOR"));
@@ -149,7 +149,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     if (otherTokenId == tokenId()) revert CannotImportFromYourself();
     if (vault().ownerOf(otherTokenId) != owner()) revert NotTheSameOwner();
     CrunaManager otherManager = CrunaManager(vault().managerOf(otherTokenId));
-    if (otherManager.actorCount(PROTECTOR) == 0 && otherManager.actorCount(SAFE_RECIPIENT) == 0) revert NothingToBeImported();
+    if (otherManager.actorCount(PROTECTOR) == 0 && otherManager.actorCount(SAFE_RECIPIENT) == 0) revert NothingToImport();
     _setProtectors(otherManager.getProtectors());
     if (otherManager.actorCount(SAFE_RECIPIENT) > 0) {
       address[] memory otherSafeRecipients = otherManager.getSafeRecipients();

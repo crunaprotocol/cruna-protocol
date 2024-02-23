@@ -287,5 +287,4 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, CanonicalAddresses, I
         tokenId
       );
   }
-
 }

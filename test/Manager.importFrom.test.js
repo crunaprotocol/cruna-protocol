@@ -90,7 +90,6 @@ describe("CrunaManager : importFrom ", function () {
 
     await expect(manager1.connect(bob).importFrom(tokenId)).revertedWith("NothingToBeImported");
 
-
     // set Alice and Fred as a safe recipient
     await expect(manager.connect(bob).setSafeRecipient(alice.address, true, 0, 0, 0))
       .to.emit(manager, "SafeRecipientChange")
