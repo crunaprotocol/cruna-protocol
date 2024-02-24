@@ -2,10 +2,10 @@
 pragma solidity ^0.8.20;
 
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {IManagedNFT} from "./IManagedNFT.sol";
 
 // Author: Francesco Sullo <francesco@sullo.co>
-interface ICrunaManagedNFT is IERC721 {
-  event ManagedTransfer(bytes4 indexed pluginNameId, uint256 indexed tokenId);
+interface ICrunaManagedNFT is IManagedNFT, IERC721 {
   event DefaultManagerUpgrade(address newManagerProxy);
 
   struct ManagerHistory {
@@ -13,12 +13,6 @@ interface ICrunaManagedNFT is IERC721 {
     uint256 firstTokenId;
     uint256 lastTokenId;
   }
-
-  // @dev Allow a plugin to transfer the token
-  // @param pluginNameId The hash of the plugin name.
-  // @param tokenId The id of the token.
-  // @param to The address of the recipient.
-  function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external;
 
   function setMaxTokenId(uint256 maxTokenId_) external;
 

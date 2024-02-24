@@ -73,7 +73,7 @@ describe("SignatureValidator", function () {
       message,
     );
 
-    expect(
+    await expect(
       (
         await validator.recoverSigner(
           message.selector,
@@ -111,7 +111,7 @@ describe("SignatureValidator", function () {
       validator,
     );
 
-    expect(
+    await expect(
       (
         await validator.recoverSigner(
           message.selector,

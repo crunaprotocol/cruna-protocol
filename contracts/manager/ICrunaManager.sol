@@ -18,13 +18,17 @@ interface ICrunaManager is ITokenLinkedContract, INamed {
 
   event SafeRecipientChange(address indexed recipient, bool status);
 
-  event PluginStatusChange(string indexed name, address plugin_, bool status);
+  event PluginStatusChange(string indexed name, bytes4 salt, address plugin_, bool status);
 
-  event PluginAuthorizationChange(string indexed name, address plugin_, bool status, uint256 lockTime);
+  event PluginAuthorizationChange(string indexed name, bytes4 salt, address plugin_, bool status, uint256 lockTime);
 
   // Emitted when  protectors and safe recipients are removed and all plugins are disabled (if they require it)
   // This event overrides any specific ProtectorChange, SafeRecipientChange and PluginStatusChange event
   event Reset();
+
+  event PluginTrusted(string indexed name, bytes4 salt);
+
+  event ImplementationUpgraded(address implementation_, uint256 currentVersion, uint256 newVersion);
 
   enum EventAction {
     ProtectorChange,
@@ -53,9 +57,6 @@ interface ICrunaManager is ITokenLinkedContract, INamed {
   function upgrade(address implementation_) external;
 
   //  function getImplementation() external view returns (address);
-
-  // simulate ERC-721 to allow plugins to be deployed via ERC-6551 Registry
-  function ownerOf(uint256) external view returns (address);
 
   function vault() external view returns (CrunaManagedNFTBase);
 
@@ -192,6 +193,8 @@ interface ICrunaManager is ITokenLinkedContract, INamed {
   function pluginAddress(bytes4 _nameId, bytes4 salt) external view returns (address);
 
   function plugin(bytes4 _nameId, bytes4 salt) external view returns (ICrunaPlugin);
+
+  function trustPlugin(string memory name, bytes4) external;
 
   function countPlugins() external view returns (uint256, uint256);
 

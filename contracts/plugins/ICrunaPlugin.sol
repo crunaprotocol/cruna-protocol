@@ -12,14 +12,6 @@ import {INamed} from "../utils/INamed.sol";
    the primary manage, which is CrunaManager.sol
 */
 interface ICrunaPlugin is ITokenLinkedContract, INamed {
-  // this is also used in the CrunaManager
-  struct CrunaPlugin {
-    address proxyAddress;
-    bool canManageTransfer;
-    bool canBeReset;
-    bool active;
-  }
-
   function initManager() external;
 
   // function called in the dashboard to know if the plugin is asking the

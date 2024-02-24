@@ -88,7 +88,7 @@ describe("CrunaManager : importFrom ", function () {
     const managerAddress1 = await vault.managerOf(tokenId1);
     const manager1 = await ethers.getContractAt("CrunaManager", managerAddress1);
 
-    await expect(manager1.connect(bob).importFrom(tokenId)).revertedWith("NothingToBeImported");
+    await expect(manager1.connect(bob).importFrom(tokenId)).revertedWith("NothingToImport");
 
     // set Alice and Fred as a safe recipient
     await expect(manager.connect(bob).setSafeRecipient(alice.address, true, 0, 0, 0))

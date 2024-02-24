@@ -295,9 +295,9 @@ describe("CrunaManager : Protectors", function () {
       )
     )[0];
 
-    expect(manager.connect(bob).setProtector(otto.address, false, ts, 3600, signature))
+    await expect(manager.connect(bob).setProtector(otto.address, false, ts, 3600, signature))
       .emit(manager, "ProtectorChange")
-      .withArgs(alice.address, false);
+      .withArgs(otto.address, false);
   });
 
   it("should add the first protector via preApproval and remove it", async function () {
@@ -367,7 +367,7 @@ describe("CrunaManager : Protectors", function () {
     // To do so Bob needs Alice's signature
 
     let allProtectors = await manager.getProtectors();
-    expect(allProtectors[0]).equal(alice.address);
+    await expect(allProtectors[0]).equal(alice.address);
 
     signature = (
       await signRequest(
@@ -392,14 +392,14 @@ describe("CrunaManager : Protectors", function () {
       .withArgs(fred.address, true);
 
     allProtectors = await manager.getProtectors();
-    expect(allProtectors[1]).equal(fred.address);
+    await expect(allProtectors[1]).equal(fred.address);
 
     // test listProtectors is of type array and that it has two protector addresses
     // and that the second address is fred's.
     let totalProtectors = await manager.listProtectors();
-    expect(totalProtectors).to.be.an("array");
+    await expect(totalProtectors).to.be.an("array");
     expect(await totalProtectors.length).to.equal(2);
-    expect(totalProtectors[1]).equal(fred.address);
+    await expect(totalProtectors[1]).equal(fred.address);
 
     expect(await manager.hasProtectors()).to.equal(true);
 
