@@ -5,7 +5,7 @@ import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {IManagedNFT} from "./IManagedNFT.sol";
 
 // Author: Francesco Sullo <francesco@sullo.co>
-interface ICrunaManagedNFT is IManagedNFT, IERC721 {
+interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
   event DefaultManagerUpgrade(address newManagerProxy);
 
   struct ManagerHistory {

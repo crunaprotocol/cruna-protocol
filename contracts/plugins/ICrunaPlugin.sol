@@ -2,7 +2,7 @@
 pragma solidity ^0.8.9;
 
 import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
-import {CrunaManagedNFTBase} from "../token/CrunaManagedNFTBase.sol";
+import {CrunaProtectedNFTBase} from "../token/CrunaProtectedNFTBase.sol";
 import {INamed} from "../utils/INamed.sol";
 
 /**
@@ -31,5 +31,5 @@ interface ICrunaPlugin is ITokenLinkedContract, INamed {
   //   wait for a new trusted implementation and upgrade it.
   function upgrade(address implementation_) external;
 
-  function vault() external view returns (CrunaManagedNFTBase);
+  function vault() external view returns (CrunaProtectedNFTBase);
 }
