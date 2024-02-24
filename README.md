@@ -136,9 +136,9 @@ npm install @cruna/protocol@1.0.0-rc.4
 or similar commands using Yarn or Pnpm, and use in your Solidity smart contracts, for example, as
 
 ```
-import {CrunaManagedNFTOwnable} from "@cruna/protocol/contracts/manager/CrunaManagedNFTOwnable.sol";
+import {CrunaProtectedNFTOwnable} from "@cruna/protocol/contracts/manager/CrunaProtectedNFTOwnable.sol";
 
-contract MySuperToken is CrunaManagedNFTOwnable {
+contract MySuperToken is CrunaProtectedNFTOwnable {
    
     constructor() CrunaManagedOwnable("My Super Token", "MST") {}
     
@@ -149,6 +149,9 @@ contract MySuperToken is CrunaManagedNFTOwnable {
 If your goal is to build a plugin, look at the contracts in [contracts/mocks/plugin-example](contracts/mocks/plugins/plugin-example) to start from.
 
 ## History
+
+**1.0.0-rc.7**
+- Rename CrunaManagedNFT to CrunaProtectedNFT for clarity
 
 **1.0.0-rc.6**
 - Add importFrom function to allow to import protectors and safe recipients from another manager owned by the same owner, if and only if the new tokenId has no protectors and safe recipients
@@ -167,11 +170,11 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 - Add more features in SignatureValidator to generalize common operations
 
 **1.0.0-rc.2**
-- Fix bug in CrunaManagedNFTBase#init
+- Fix bug in CrunaProtectedNFTBase#init
 
 **1.0.0-rc.1**
 - Add support for multi-sig and ERC4337 wallets as protectors. Since they cannot sign a valid typed_v4 signature, they must pre-approve the operation
-- Add firstTokenId to the init function of a CrunaManagedNFT to allow the owner to set the first tokenId (essential to define cross/multi-chain strategies)
+- Add firstTokenId to the init function of a CrunaProtectedNFT to allow the owner to set the first tokenId (essential to define cross/multi-chain strategies)
 
 **1.0.0-beta.10**
 - After extensive testing we verified that the global emitters were requiring too much gas because of the many external calls with many parameters across contracts
@@ -262,50 +265,50 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ```
   35 passing
 
-------------------------------------|----------|----------|----------|----------
-File                                |  % Stmts | % Branch |  % Funcs |  % Lines 
-------------------------------------|----------|----------|----------|----------
- canonical/                         |      100 |       50 |    83.33 |       75 
-  CanonicalAddresses.sol            |      100 |      100 |      100 |      100 
-  CrunaGuardian.sol                 |      100 |       50 |      100 |       75 
-  CrunaRegistry.sol                 |      100 |      100 |        0 |        0 
-  ICanonicalAddresses.sol           |      100 |      100 |      100 |      100 
-  ICrunaGuardian.sol                |      100 |      100 |      100 |      100 
-  ICrunaRegistry.sol                |      100 |      100 |      100 |      100 
- interfaces/                        |      100 |      100 |      100 |      100 
-  IERC6454.sol                      |      100 |      100 |      100 |      100 
-  IERC6982.sol                      |      100 |      100 |      100 |      100 
- manager/                           |    99.01 |    70.11 |    98.31 |     99.1 
-  Actor.sol                         |      100 |       80 |      100 |      100 
-  CrunaManager.sol                  |     99.4 |    69.74 |      100 |    99.45 
-  CrunaManagerBase.sol              |    94.44 |    66.67 |    83.33 |       95 
-  CrunaManagerProxy.sol             |      100 |      100 |      100 |      100 
-  ICrunaManager.sol                 |      100 |      100 |      100 |      100 
- plugins/                           |      100 |    78.57 |      100 |      100 
-  CrunaPluginBase.sol               |      100 |    78.57 |      100 |      100 
-  ICrunaPlugin.sol                  |      100 |      100 |      100 |      100 
- plugins/inheritance/               |      100 |    70.31 |      100 |     97.5 
-  IInheritanceCrunaPlugin.sol       |      100 |      100 |      100 |      100 
-  InheritanceCrunaPlugin.sol        |      100 |    70.31 |      100 |     97.5 
-  InheritanceCrunaPluginProxy.sol   |      100 |      100 |      100 |      100 
- token/                             |    94.64 |    64.81 |    95.83 |    95.16 
-  CrunaManagedNFTBase.sol           |    94.12 |    63.04 |    94.74 |    94.83 
-  CrunaManagedNFTOwnable.sol        |      100 |       50 |      100 |      100 
-  CrunaManagedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
-  ICrunaManagedNFT.sol              |      100 |      100 |      100 |      100 
-  IManagedNFT.sol                   |      100 |      100 |      100 |      100 
- utils/                             |    95.74 |    70.83 |      100 |    98.21 
-  ERC6551AccountProxy.sol           |       90 |       75 |      100 |    90.91 
-  FlexiTimelockController.sol       |      100 |       50 |      100 |      100 
-  INamed.sol                        |      100 |      100 |      100 |      100 
-  INamedAndVersioned.sol            |      100 |      100 |      100 |      100 
-  ITokenLinkedContract.sol          |      100 |      100 |      100 |      100 
-  IVersioned.sol                    |      100 |      100 |      100 |      100 
-  SignatureValidator.sol            |      100 |       90 |      100 |      100 
-  TokenLinkedContract.sol           |       90 |       50 |      100 |      100 
-------------------------------------|----------|----------|----------|----------
-All files                           |    98.21 |    69.44 |    97.18 |    97.36 
-------------------------------------|----------|----------|----------|----------
+--------------------------------------|----------|----------|----------|----------
+File                                  |  % Stmts | % Branch |  % Funcs |  % Lines 
+--------------------------------------|----------|----------|----------|----------
+ canonical/                           |      100 |       50 |    83.33 |       75 
+  CanonicalAddresses.sol              |      100 |      100 |      100 |      100 
+  CrunaGuardian.sol                   |      100 |       50 |      100 |       75 
+  CrunaRegistry.sol                   |      100 |      100 |        0 |        0 
+  ICanonicalAddresses.sol             |      100 |      100 |      100 |      100 
+  ICrunaGuardian.sol                  |      100 |      100 |      100 |      100 
+  ICrunaRegistry.sol                  |      100 |      100 |      100 |      100 
+ interfaces/                          |      100 |      100 |      100 |      100 
+  IERC6454.sol                        |      100 |      100 |      100 |      100 
+  IERC6982.sol                        |      100 |      100 |      100 |      100 
+ manager/                             |    99.01 |    70.11 |    98.31 |     99.1 
+  Actor.sol                           |      100 |       80 |      100 |      100 
+  CrunaManager.sol                    |     99.4 |    69.74 |      100 |    99.45 
+  CrunaManagerBase.sol                |    94.44 |    66.67 |    83.33 |       95 
+  CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
+  ICrunaManager.sol                   |      100 |      100 |      100 |      100 
+ plugins/                             |      100 |    78.57 |      100 |      100 
+  CrunaPluginBase.sol                 |      100 |    78.57 |      100 |      100 
+  ICrunaPlugin.sol                    |      100 |      100 |      100 |      100 
+ plugins/inheritance/                 |      100 |    70.31 |      100 |     97.5 
+  IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
+  InheritanceCrunaPlugin.sol          |      100 |    70.31 |      100 |     97.5 
+  InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
+ token/                               |    94.64 |    64.81 |    95.83 |    95.16 
+  CrunaProtectedNFTBase.sol           |    94.12 |    63.04 |    94.74 |    94.83 
+  CrunaProtectedNFTOwnable.sol        |      100 |       50 |      100 |      100 
+  CrunaProtectedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
+  ICrunaProtectedNFT.sol              |      100 |      100 |      100 |      100 
+  IManagedNFT.sol                     |      100 |      100 |      100 |      100 
+ utils/                               |    95.74 |    70.83 |      100 |    98.21 
+  ERC6551AccountProxy.sol             |       90 |       75 |      100 |    90.91 
+  FlexiTimelockController.sol         |      100 |       50 |      100 |      100 
+  INamed.sol                          |      100 |      100 |      100 |      100 
+  INamedAndVersioned.sol              |      100 |      100 |      100 |      100 
+  ITokenLinkedContract.sol            |      100 |      100 |      100 |      100 
+  IVersioned.sol                      |      100 |      100 |      100 |      100 
+  SignatureValidator.sol              |      100 |       90 |      100 |      100 
+  TokenLinkedContract.sol             |       90 |       50 |      100 |      100 
+--------------------------------------|----------|----------|----------|----------
+All files                             |    98.21 |    69.44 |    97.18 |    97.36 
+--------------------------------------|----------|----------|----------|----------
 ```
 
 ## License

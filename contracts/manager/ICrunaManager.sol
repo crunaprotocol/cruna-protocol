@@ -7,7 +7,7 @@ import {ICrunaPlugin} from "../plugins/ICrunaPlugin.sol";
 
 import {INamed} from "../utils/INamed.sol";
 import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
-import {CrunaManagedNFTBase} from "../token/CrunaManagedNFTBase.sol";
+import {CrunaProtectedNFTBase} from "../token/CrunaProtectedNFTBase.sol";
 
 //import {console} from "hardhat/console.sol";
 
@@ -58,7 +58,7 @@ interface ICrunaManager is ITokenLinkedContract, INamed {
 
   //  function getImplementation() external view returns (address);
 
-  function vault() external view returns (CrunaManagedNFTBase);
+  function vault() external view returns (CrunaProtectedNFTBase);
 
   function plug(
     string memory name,
