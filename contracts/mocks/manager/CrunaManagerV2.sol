@@ -3,7 +3,11 @@ pragma solidity ^0.8.0;
 
 import {CrunaManager} from "../../manager/CrunaManager.sol";
 
+//import {console} from "hardhat/console.sol";
+
 contract CrunaManagerV2 is CrunaManager {
+  bool public migrated;
+
   function version() public pure virtual override returns (uint256) {
     return 1e6 + 2e3;
   }
@@ -25,5 +29,10 @@ contract CrunaManagerV2 is CrunaManager {
     } else {
       return bytes1(uint8(bytes1("a")) + _nibble - 10);
     }
+  }
+
+  function migrate(uint256) external virtual override {
+    if (_msgSender() != address(this)) revert Forbidden();
+    migrated = true;
   }
 }

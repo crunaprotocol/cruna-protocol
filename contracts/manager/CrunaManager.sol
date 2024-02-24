@@ -53,6 +53,11 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   mapping(bytes4 => mapping(bytes4 => CrunaPlugin)) public pluginsById;
   mapping(bytes4 => mapping(bytes4 => uint256)) public timeLocks;
 
+  function migrate(uint256) external virtual override {
+    if (_msgSender() != address(this)) revert Forbidden();
+    // nothing, for now
+  }
+
   // @dev Counts the protectors.
   function countActiveProtectors() public view virtual override returns (uint256) {
     return _actors[PROTECTOR].length;
@@ -553,7 +558,8 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     if (pluginAddress(pluginNameId, salt) != _msgSender()) revert NotTheAuthorizedPlugin();
     _removeLockIfExpired(pluginNameId, salt);
     if (!pluginsById[pluginNameId][salt].canManageTransfer) revert PluginNotAuthorizedToManageTransfer();
-    if (!pluginsById[pluginNameId][salt].trusted && vault().deployedToProduction()) revert UntrustedImplementationsCanMakeTransfersOnlyOnTestnet();
+    if (!pluginsById[pluginNameId][salt].trusted && vault().deployedToProduction())
+      revert UntrustedImplementationsCanMakeTransfersOnlyOnTestnet();
     _resetActorsAndDisablePlugins();
     // In theory, the vault may revert, blocking the entire process
     // We allow it, assuming that the vault implementation has the

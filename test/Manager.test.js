@@ -143,7 +143,9 @@ describe("CrunaManager : Upgrades", function () {
       1,
     );
 
-    await manager.connect(bob).upgrade(managerV2Impl.address);
+    await expect(manager.connect(bob).upgrade(managerV2Impl.address))
+        .emit(manager, "ImplementationUpgraded")
+        .withArgs(managerV2Impl.address, 1000001, 1002000);
 
     expect(await manager.version()).to.equal(1e6 + 2e3);
     expect(await manager.hasProtectors()).to.equal(true);
@@ -151,6 +153,7 @@ describe("CrunaManager : Upgrades", function () {
     const managerV2 = await ethers.getContractAt("CrunaManagerV2", managerAddress);
     const b4 = "0xaabbccdd";
     expect(await managerV2.bytes4ToHexString(b4)).equal(b4);
+    expect(await managerV2.migrated()).to.equal(true);
   });
 
   it("should allow deployer to upgrade the default manager", async function () {

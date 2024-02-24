@@ -77,13 +77,20 @@ abstract contract CrunaManagerBase is
     uint256 requires = _crunaGuardian().trustedImplementation(nameId(), implementation_);
     if (requires == 0) revert UntrustedImplementation();
     INamedAndVersioned impl = INamedAndVersioned(implementation_);
-    uint256 _version = impl.version();
-    if (_version <= version()) revert InvalidVersion();
+    uint256 currentVersion = version();
+    uint256 newVersion = impl.version();
+    if (newVersion <= version()) revert InvalidVersion();
     if (impl.nameId() != _stringToBytes4("CrunaManager")) revert NotAManager();
     INamedAndVersioned manager = INamedAndVersioned(vault().managerOf(tokenId()));
     if (manager.version() < requires) revert PluginRequiresUpdatedManager(requires);
     StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
+    emit ImplementationUpgraded(implementation_, currentVersion, newVersion);
+    CrunaManagerBase _newManager = CrunaManagerBase(address(this));
+    _newManager.migrate(currentVersion);
   }
+
+  // must be implemented by the manager
+  function migrate(uint256 previousVersion) external virtual;
 
   // @dev This empty reserved space is put in place to allow future versions to add new
   // variables without shifting down storage in the inheritance chain.

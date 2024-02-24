@@ -140,11 +140,15 @@ describe("Sentinel and Inheritance", function () {
     } else {
       if (!trust) {
         await expect(
-            manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, "0x00000000", 0, 0, 0),
-        ).revertedWith("UntrustedImplementationsCanMakeTransfersOnlyOnTestnet")
+          manager
+            .connect(bob)
+            .plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, "0x00000000", 0, 0, 0),
+        ).revertedWith("UntrustedImplementationsCanMakeTransfersOnlyOnTestnet");
       }
       await expect(
-        manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, trust, false, "0x00000000", 0, 0, 0),
+        manager
+          .connect(bob)
+          .plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, trust, false, "0x00000000", 0, 0, 0),
       ).to.emit(manager, "PluginStatusChange");
     }
 
@@ -611,7 +615,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(manager.connect(bob).reEnablePlugin("InheritanceCrunaPlugin", "0x00000000", false, ts, 3600, signature))
       .to.emit(manager, "PluginStatusChange")
-      .withArgs("InheritanceCrunaPlugin", "0x00000000",inheritancePlugin.address, true);
+      .withArgs("InheritanceCrunaPlugin", "0x00000000", inheritancePlugin.address, true);
 
     await expect(
       manager.connect(bob).authorizePluginToTransfer("InheritanceCrunaPlugin", "0x00000000", false, 0, 0, 0, 0),
@@ -742,22 +746,28 @@ describe("Sentinel and Inheritance", function () {
 
     await inheritancePlugin.connect(bob).configureInheritance(0, 80, 30, beneficiary1.address, 0, 0, 0);
 
-    await expect(manager.connect(bob).authorizePluginToTransfer("InheritanceCrunaPlugin", "0x00000000", true, 0, 0, 0, 0))
-        .to.be.revertedWith("UntrustedImplementationsCanMakeTransfersOnlyOnTestnet");
+    await expect(
+      manager.connect(bob).authorizePluginToTransfer("InheritanceCrunaPlugin", "0x00000000", true, 0, 0, 0, 0),
+    ).to.be.revertedWith("UntrustedImplementationsCanMakeTransfersOnlyOnTestnet");
 
     await increaseBlockTimestampBy(100 * days);
 
-    await expect(inheritancePlugin.connect(beneficiary1).inherit()).to.be.revertedWith("UntrustedImplementationsCanMakeTransfersOnlyOnTestnet");
+    await expect(inheritancePlugin.connect(beneficiary1).inherit()).to.be.revertedWith(
+      "UntrustedImplementationsCanMakeTransfersOnlyOnTestnet",
+    );
 
     await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true, 10);
-    await expect(manager.connect(bob).authorizePluginToTransfer("InheritanceCrunaPlugin", "0x00000000", true, 0, 0, 0, 0)).revertedWith("UntrustedImplementationsCanMakeTransfersOnlyOnTestnet");
+    await expect(
+      manager.connect(bob).authorizePluginToTransfer("InheritanceCrunaPlugin", "0x00000000", true, 0, 0, 0, 0),
+    ).revertedWith("UntrustedImplementationsCanMakeTransfersOnlyOnTestnet");
 
-    await expect(manager.connect(bob).trustPlugin("InheritanceCrunaPlugin", "0x00000000")).to.emit(manager, "PluginTrusted").withArgs("InheritanceCrunaPlugin", "0x00000000");
+    await expect(manager.connect(bob).trustPlugin("InheritanceCrunaPlugin", "0x00000000"))
+      .to.emit(manager, "PluginTrusted")
+      .withArgs("InheritanceCrunaPlugin", "0x00000000");
 
     await manager.connect(bob).authorizePluginToTransfer("InheritanceCrunaPlugin", "0x00000000", true, 0, 0, 0, 0);
 
     await inheritancePlugin.connect(beneficiary1).inherit();
-
   });
 
   it("should set up a beneficiary and 5 sentinels and an inheritance with a quorum 3", async function () {
@@ -818,7 +828,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(manager.connect(bob).disablePlugin("InheritanceCrunaPlugin", "0x00000000", false, 0, 0, 0))
       .to.emit(manager, "PluginStatusChange")
-      .withArgs("InheritanceCrunaPlugin", "0x00000000",inheritancePlugin.address, false);
+      .withArgs("InheritanceCrunaPlugin", "0x00000000", inheritancePlugin.address, false);
 
     await increaseBlockTimestampBy(100 * days);
 
@@ -868,7 +878,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(manager.connect(bob).reEnablePlugin("InheritanceCrunaPlugin", "0x00000000", false, 0, 0, 0))
       .to.emit(manager, "PluginStatusChange")
-      .withArgs("InheritanceCrunaPlugin", "0x00000000",inheritancePlugin.address, true);
+      .withArgs("InheritanceCrunaPlugin", "0x00000000", inheritancePlugin.address, true);
 
     //
     await inheritancePlugin.connect(beneficiary2).inherit();
@@ -934,7 +944,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(manager.connect(bob).disablePlugin("InheritanceCrunaPlugin", "0x00000000", true, 0, 0, 0))
       .to.emit(manager, "PluginStatusChange")
-      .withArgs("InheritanceCrunaPlugin", "0x00000000",inheritancePlugin.address, false);
+      .withArgs("InheritanceCrunaPlugin", "0x00000000", inheritancePlugin.address, false);
 
     data = await inheritancePlugin.getSentinelsAndInheritanceData();
     expect(data[0].length).to.equal(0);
@@ -1004,7 +1014,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(manager.connect(bob).disablePlugin("InheritanceCrunaPlugin", "0x00000000", false, 0, 0, 0))
       .to.emit(manager, "PluginStatusChange")
-      .withArgs("InheritanceCrunaPlugin", "0x00000000",inheritancePlugin.address, false);
+      .withArgs("InheritanceCrunaPlugin", "0x00000000", inheritancePlugin.address, false);
 
     await increaseBlockTimestampBy(100 * days);
 
@@ -1054,7 +1064,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(manager.connect(bob).reEnablePlugin("InheritanceCrunaPlugin", "0x00000000", true, 0, 0, 0))
       .to.emit(manager, "PluginStatusChange")
-      .withArgs("InheritanceCrunaPlugin", "0x00000000",inheritancePlugin.address, true);
+      .withArgs("InheritanceCrunaPlugin", "0x00000000", inheritancePlugin.address, true);
 
     data = await inheritancePlugin.getSentinelsAndInheritanceData();
     expect(data[0].length).to.equal(0);
