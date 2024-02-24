@@ -42,7 +42,6 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   error PluginAlreadyTrusted();
   error CannotImportFromYourself();
   error NotTheSameOwner();
-  error NoProtectorsToImport();
   error SafeRecipientsAlreadySet();
   error NothingToImport();
 
