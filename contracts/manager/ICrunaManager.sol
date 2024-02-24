@@ -7,7 +7,7 @@ import {ICrunaPlugin} from "../plugins/ICrunaPlugin.sol";
 
 import {INamed} from "../utils/INamed.sol";
 import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
-import {IVault} from "../token/IVault.sol";
+import {CrunaManagedNFTBase} from "../token/CrunaManagedNFTBase.sol";
 
 //import {console} from "hardhat/console.sol";
 
@@ -59,7 +59,7 @@ interface ICrunaManager is ITokenLinkedContract, INamed {
   // simulate ERC-721 to allow plugins to be deployed via ERC-6551 Registry
   function ownerOf(uint256) external view returns (address);
 
-  function vault() external view returns (IVault);
+  function vault() external view returns (CrunaManagedNFTBase);
 
   function plug(
     string memory name,
@@ -121,6 +121,14 @@ interface ICrunaManager is ITokenLinkedContract, INamed {
     uint256 validFor,
     bytes calldata signature
   ) external;
+
+  // @dev Set multiple protectors at the same time
+  //      It can be called only when there are no protectors set
+  // @param protectors_ The protectors' addresses to be set
+  function setProtectors(address[] memory protectors_) external;
+
+  // @dev Imports the protects/safe-recipients from another tokenId owned by the same owner
+  function importFrom(uint256 tokenId) external;
 
   // @dev Finds a PROTECTOR
   // @param protector_ The protector address

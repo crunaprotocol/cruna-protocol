@@ -238,7 +238,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
       if (_inheritanceConf.approvers.length < _inheritanceConf.quorum) revert QuorumNotReached();
       // The sentinels nominated a beneficiary
       // we set an expiration time in case the beneficiary cannot inherit
-      // so the sentinels can propose a new beneficiary
+      // so that the sentinels can propose a new beneficiary
       if (_isGracePeriodExpiredAfterStart()) revert Expired();
     }
     _reset();

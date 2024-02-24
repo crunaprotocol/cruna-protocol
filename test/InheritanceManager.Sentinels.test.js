@@ -135,11 +135,16 @@ describe("Sentinel and Inheritance", function () {
       await expect(
         manager
           .connect(bob)
-          .plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, "0x00000000", ts, 3600, signature),
+          .plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, trust, false, "0x00000000", ts, 3600, signature),
       ).to.emit(manager, "PluginStatusChange");
     } else {
+      if (!trust) {
+        await expect(
+            manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, "0x00000000", 0, 0, 0),
+        ).revertedWith("UntrustedImplementationsCanMakeTransfersOnlyOnTestnet")
+      }
       await expect(
-        manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, "0x00000000", 0, 0, 0),
+        manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, trust, false, "0x00000000", 0, 0, 0),
       ).to.emit(manager, "PluginStatusChange");
     }
 
@@ -726,7 +731,7 @@ describe("Sentinel and Inheritance", function () {
     await inheritancePlugin.connect(beneficiary1).inherit();
   });
 
-  it.only("should allow to inherit only after plugin is trusted", async function () {
+  it("should allow to inherit only after plugin is trusted", async function () {
     const tokenId = await buyAVaultAndPlug(bob, undefined, false);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
@@ -738,24 +743,22 @@ describe("Sentinel and Inheritance", function () {
 
     await inheritancePlugin.connect(bob).configureInheritance(0, 80, 30, beneficiary1.address, 0, 0, 0);
 
-    await increaseBlockTimestampBy(75 * days);
+    await expect(manager.connect(bob).authorizePluginToTransfer("InheritanceCrunaPlugin", "0x00000000", true, 0, 0, 0, 0))
+        .to.be.revertedWith("UntrustedImplementationsCanMakeTransfersOnlyOnTestnet");
 
-    await manager.connect(bob).authorizePluginToTransfer("InheritanceCrunaPlugin", "0x00000000", false, 20 * days, 0, 0, 0);
+    await increaseBlockTimestampBy(100 * days);
 
-    const ts = await getTimestamp();
-    expect(await manager.timeLocks(bytes4(keccak256("InheritanceCrunaPlugin")))).to.equal(ts + 20 * days);
+    await expect(inheritancePlugin.connect(beneficiary1).inherit()).to.be.revertedWith("UntrustedImplementationsCanMakeTransfersOnlyOnTestnet");
 
-    await increaseBlockTimestampBy(10 * days);
+    await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true, 10);
+    await expect(manager.connect(bob).authorizePluginToTransfer("InheritanceCrunaPlugin", "0x00000000", true, 0, 0, 0, 0)).revertedWith("UntrustedImplementationsCanMakeTransfersOnlyOnTestnet");
 
-    await expect(inheritancePlugin.connect(beneficiary1).inherit()).to.be.revertedWith("PluginNotAuthorizedToManageTransfer");
+    await expect(manager.connect(bob).trustPlugin("InheritanceCrunaPlugin", "0x00000000")).to.emit(manager, "PluginTrusted").withArgs("InheritanceCrunaPlugin", "0x00000000");
 
-    await increaseBlockTimestampBy(12 * days);
+    await manager.connect(bob).authorizePluginToTransfer("InheritanceCrunaPlugin", "0x00000000", true, 0, 0, 0, 0);
 
     await inheritancePlugin.connect(beneficiary1).inherit();
 
-
-
-    await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true, 10);
   });
 
   it("should set up a beneficiary and 5 sentinels and an inheritance with a quorum 3", async function () {

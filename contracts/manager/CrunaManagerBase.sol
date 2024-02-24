@@ -9,7 +9,8 @@ import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 import {TokenLinkedContract} from "../utils/TokenLinkedContract.sol";
 import {INamed} from "../utils/INamed.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
-import {ICrunaManager, IVault} from "./ICrunaManager.sol";
+import {CrunaManagedNFTBase} from "../token/CrunaManagedNFTBase.sol";
+import {ICrunaManager} from "./ICrunaManager.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {CanonicalAddresses} from "../canonical/CanonicalAddresses.sol";
 
@@ -54,8 +55,8 @@ abstract contract CrunaManagerBase is
     return 1e6;
   }
 
-  function vault() public view virtual override returns (IVault) {
-    return IVault(tokenAddress());
+  function vault() public view virtual override returns (CrunaManagedNFTBase) {
+    return CrunaManagedNFTBase(tokenAddress());
   }
 
   function nameId() public view virtual override returns (bytes4) {

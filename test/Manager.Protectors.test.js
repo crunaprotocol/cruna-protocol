@@ -137,7 +137,7 @@ describe("CrunaManager : Protectors", function () {
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
 
-    expect(await manager.version()).to.equal(1e6);
+    expect(await manager.version()).to.equal(1000001);
     expect(await manager.tokenId()).to.equal(tokenId);
     expect(await manager.tokenAddress()).to.equal(vault.address);
     expect(await manager.owner()).to.equal(bob.address);
@@ -190,6 +190,8 @@ describe("CrunaManager : Protectors", function () {
     await expect(manager.connect(bob).setProtector(alice.address, false, ts, 3600, signature)).to.be.revertedWith(
       "SignatureAlreadyUsed",
     );
+
+    await expect(manager.connect(bob).setProtectors([mark.address, otto.address])).revertedWith("ProtectorsAlreadySet");
 
     // set a second protector
 
@@ -258,6 +260,44 @@ describe("CrunaManager : Protectors", function () {
     await expect(manager.connect(bob).setProtector(alice.address, true, ts, 3600, 0))
       .to.emit(manager, "ProtectorChange")
       .withArgs(alice.address, true);
+  });
+
+  it("should add the first 3 protectors and remove one of them", async function () {
+    const tokenId = await buyAVault(bob);
+    const managerAddress = await vault.managerOf(tokenId);
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+
+    expect(await manager.connect(bob).setProtectors([alice.address, mark.address, otto.address]))
+      .to.emit(vault, "Locked")
+      .withArgs(tokenId, true)
+      .to.emit(manager, "ProtectorChange")
+      .withArgs(alice.address, true)
+      .to.emit(manager, "ProtectorChange")
+      .withArgs(mark.address, true)
+      .to.emit(manager, "ProtectorChange")
+      .withArgs(otto.address, true);
+
+    let signature = (
+      await signRequest(
+        selector,
+        bob.address,
+        otto.address,
+        vault.address,
+        tokenId,
+        0,
+        0,
+        0,
+        ts,
+        3600,
+        chainId,
+        alice.address,
+        manager,
+      )
+    )[0];
+
+    expect(manager.connect(bob).setProtector(otto.address, false, ts, 3600, signature))
+      .emit(manager, "ProtectorChange")
+      .withArgs(alice.address, false);
   });
 
   it("should add the first protector via preApproval and remove it", async function () {
