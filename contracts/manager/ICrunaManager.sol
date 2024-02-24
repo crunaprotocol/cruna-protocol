@@ -58,9 +58,6 @@ interface ICrunaManager is ITokenLinkedContract, INamed {
 
   //  function getImplementation() external view returns (address);
 
-  // simulate ERC-721 to allow plugins to be deployed via ERC-6551 Registry
-  function ownerOf(uint256) external view returns (address);
-
   function vault() external view returns (CrunaManagedNFTBase);
 
   function plug(

@@ -10,7 +10,7 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 
 import {ICrunaPlugin} from "../plugins/ICrunaPlugin.sol";
-import {ICrunaManagedNFT} from "./ICrunaManagedNFT.sol";
+import {IManagedNFT, ICrunaManagedNFT} from "./ICrunaManagedNFT.sol";
 import {IERC6454} from "../interfaces/IERC6454.sol";
 import {IERC6982} from "../interfaces/IERC6982.sol";
 import {ICrunaManager} from "../manager/ICrunaManager.sol";
@@ -162,7 +162,7 @@ abstract contract CrunaManagedNFTBase is ICrunaManagedNFT, CanonicalAddresses, I
   // @dev See {ERC165-supportsInterface}.
   function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, IERC165) returns (bool) {
     return
-      interfaceId == type(ICrunaManagedNFT).interfaceId ||
+      interfaceId == type(IManagedNFT).interfaceId ||
       interfaceId == type(IERC6454).interfaceId ||
       interfaceId == type(IERC6982).interfaceId ||
       super.supportsInterface(interfaceId);

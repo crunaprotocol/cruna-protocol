@@ -87,16 +87,16 @@ const Helpers = {
         "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31",
       )
     ).address;
-    expect(erc6551RegistryAddress).to.be.equal(_ERC6551_REGISTRY);
+    await expect(erc6551RegistryAddress).to.be.equal(_ERC6551_REGISTRY);
 
     let crunaRegistryAddress = (await thiz.deployBytecodeViaNickSFactory(deployer, "CrunaRegistry", bytecodes.CrunaRegistry))
       .address;
 
-    expect(crunaRegistryAddress).to.be.equal(_CRUNA_REGISTRY);
+    await expect(crunaRegistryAddress).to.be.equal(_CRUNA_REGISTRY);
 
     let crunaGuardianAddress = (await thiz.deployBytecodeViaNickSFactory(deployer, "CrunaGuardian", bytecodes.CrunaGuardian))
       .address;
-    expect(crunaGuardianAddress).to.be.equal(_CRUNA_GUARDIAN);
+    await expect(crunaGuardianAddress).to.be.equal(_CRUNA_GUARDIAN);
     // console.log(crunaRegistryAddress, erc6551RegistryAddress, crunaGuardianAddress);
     return [crunaRegistryAddress, erc6551RegistryAddress, crunaGuardianAddress];
   },

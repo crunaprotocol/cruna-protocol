@@ -88,8 +88,8 @@ describe("Sentinel and Inheritance", function () {
       await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true, 10);
     }
 
-    expect((await manager.pluginsById(PLUGIN_ID, "0x00000000")).proxyAddress).to.equal(addr0);
-    expect((await manager.pluginsById(PLUGIN_ID, "0x00000000")).proxyAddress).equal(addr0);
+    await expect((await manager.pluginsById(PLUGIN_ID, "0x00000000")).proxyAddress).to.equal(addr0);
+    await expect((await manager.pluginsById(PLUGIN_ID, "0x00000000")).proxyAddress).equal(addr0);
     await expect(manager.allPlugins(0)).revertedWith("");
 
     if (withProtectors) {
@@ -152,21 +152,21 @@ describe("Sentinel and Inheritance", function () {
       ).to.emit(manager, "PluginStatusChange");
     }
 
-    expect((await manager.pluginsById(PLUGIN_ID, "0x00000000")).proxyAddress).not.equal(addr0);
-    expect((await manager.allPlugins(0)).name).equal("InheritanceCrunaPlugin");
-    expect((await manager.allPlugins(0)).active).to.be.true;
+    await expect((await manager.pluginsById(PLUGIN_ID, "0x00000000")).proxyAddress).not.equal(addr0);
+    await expect((await manager.allPlugins(0)).name).equal("InheritanceCrunaPlugin");
+    await expect((await manager.allPlugins(0)).active).to.be.true;
     const count = await manager.countPlugins();
-    expect(count[0]).equal(1);
-    expect(count[1]).equal(0);
-    expect((await manager.listPlugins(true))[0]).equal("InheritanceCrunaPlugin");
-    expect((await manager.listPlugins(false)).length).equal(0);
+    await expect(count[0]).equal(1);
+    await expect(count[1]).equal(0);
+    await expect((await manager.listPlugins(true))[0]).equal("InheritanceCrunaPlugin");
+    await expect((await manager.listPlugins(false)).length).equal(0);
 
     expect(await manager.isPluginActive("InheritanceCrunaPlugin", "0x00000000")).to.be.true;
     expect(await manager.plugged("InheritanceCrunaPlugin", "0x00000000")).to.be.true;
     expect(await manager.plugged("InheritancePlugin2", "0x00000000")).to.be.false;
 
     const pluginAddress = await manager.plugin(PLUGIN_ID, "0x00000000");
-    expect(pluginAddress).to.not.equal(addr0);
+    await expect(pluginAddress).to.not.equal(addr0);
     return nextTokenId;
   };
 
@@ -378,13 +378,13 @@ describe("Sentinel and Inheritance", function () {
       .connect(bob)
       .setSentinels([alice.address, fred.address, otto.address, mark.address, jerry.address], 0);
     let data = await inheritancePlugin.getSentinelsAndInheritanceData();
-    expect(data[0].length).to.equal(5);
-    expect(data[0][0]).to.equal(alice.address);
-    expect(data[0][1]).to.equal(fred.address);
-    expect(data[0][2]).to.equal(otto.address);
-    expect(data[0][3]).to.equal(mark.address);
-    expect(data[0][4]).to.equal(jerry.address);
-    expect(data[1].quorum).to.equal(0);
+    await expect(data[0].length).to.equal(5);
+    await expect(data[0][0]).to.equal(alice.address);
+    await expect(data[0][1]).to.equal(fred.address);
+    await expect(data[0][2]).to.equal(otto.address);
+    await expect(data[0][3]).to.equal(mark.address);
+    await expect(data[0][4]).to.equal(jerry.address);
+    await expect(data[1].quorum).to.equal(0);
     expect(data[1].proofOfLifeDurationInDays).to.equal(0);
     expect(data[1].lastProofOfLife).to.equal(0);
     expect(data[1].beneficiary).to.equal(addr0);
@@ -652,6 +652,17 @@ describe("Sentinel and Inheritance", function () {
     const tokenId = await buyAVaultAndPlug(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+
+    let pluginIndex = await manager.pluginIndex("InheritanceCrunaPlugin", "0x00000000");
+    expect(pluginIndex[0]).to.equal(true);
+    expect(pluginIndex[1]).to.equal(0);
+
+    pluginIndex = await manager.pluginIndex("InheritanceCrunaPlugin", "0x00000001");
+    expect(pluginIndex[0]).to.equal(true); // because we ignore the salt in V1
+
+    pluginIndex = await manager.pluginIndex("InheritanceCrunaPluginX", "0x00000000");
+    expect(pluginIndex[0]).to.equal(false);
+    expect(pluginIndex[1]).to.equal(0);
 
     const nameId = bytes4(keccak256("InheritanceCrunaPlugin"));
     const inheritancePluginAddress = await manager.plugin(nameId, "0x00000000");

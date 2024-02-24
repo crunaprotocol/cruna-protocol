@@ -46,13 +46,13 @@ abstract contract CrunaManagerBase is
    */
   bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
+  function version() public pure virtual override returns (uint256) {
+    return 1e6;
+  }
+
   modifier onlyTokenOwner() {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     _;
-  }
-
-  function version() public pure virtual override returns (uint256) {
-    return 1e6;
   }
 
   function vault() public view virtual override returns (CrunaManagedNFTBase) {
@@ -61,10 +61,6 @@ abstract contract CrunaManagerBase is
 
   function nameId() public view virtual override returns (bytes4) {
     return _stringToBytes4("CrunaManager");
-  }
-
-  function ownerOf(uint256) external view virtual override returns (address) {
-    return owner();
   }
 
   function _stringToBytes4(string memory str) internal pure returns (bytes4) {
