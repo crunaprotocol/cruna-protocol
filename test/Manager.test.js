@@ -144,8 +144,8 @@ describe("CrunaManager : Upgrades", function () {
     );
 
     await expect(manager.connect(bob).upgrade(managerV2Impl.address))
-        .emit(manager, "ImplementationUpgraded")
-        .withArgs(managerV2Impl.address, 1000001, 1002000);
+      .emit(manager, "ImplementationUpgraded")
+      .withArgs(managerV2Impl.address, 1000001, 1002000);
 
     expect(await manager.version()).to.equal(1e6 + 2e3);
     expect(await manager.hasProtectors()).to.equal(true);
@@ -163,6 +163,8 @@ describe("CrunaManager : Upgrades", function () {
     expect(await proxyV2.getImplementation()).to.equal(managerV2Impl.address);
     let history = await vault.managerHistory(0);
     const initialManager = await ethers.getContractAt("CrunaManager", history.managerAddress);
+
+    await expect(initialManager.migrate(1000001)).to.be.revertedWith("Forbidden");
 
     expect(await initialManager.version()).to.equal(1000001);
 
