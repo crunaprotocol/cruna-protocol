@@ -260,18 +260,25 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  43 passing
+  35 passing
 
 ------------------------------------|----------|----------|----------|----------
 File                                |  % Stmts | % Branch |  % Funcs |  % Lines 
 ------------------------------------|----------|----------|----------|----------
+ canonical/                         |      100 |       50 |    83.33 |       75 
+  CanonicalAddresses.sol            |      100 |      100 |      100 |      100 
+  CrunaGuardian.sol                 |      100 |       50 |      100 |       75 
+  CrunaRegistry.sol                 |      100 |      100 |        0 |        0 
+  ICanonicalAddresses.sol           |      100 |      100 |      100 |      100 
+  ICrunaGuardian.sol                |      100 |      100 |      100 |      100 
+  ICrunaRegistry.sol                |      100 |      100 |      100 |      100 
  interfaces/                        |      100 |      100 |      100 |      100 
   IERC6454.sol                      |      100 |      100 |      100 |      100 
   IERC6982.sol                      |      100 |      100 |      100 |      100 
- manager/                           |    98.25 |    67.39 |    98.18 |    97.37 
-  Actor.sol                         |      100 |       60 |      100 |      100 
-  CrunaManager.sol                  |    98.55 |     68.1 |      100 |    97.39 
-  CrunaManagerBase.sol              |    93.33 |    66.67 |    85.71 |    94.12 
+ manager/                           |    99.01 |    70.11 |    98.31 |     99.1 
+  Actor.sol                         |      100 |       80 |      100 |      100 
+  CrunaManager.sol                  |     99.4 |    69.74 |      100 |    99.45 
+  CrunaManagerBase.sol              |    94.44 |    66.67 |    83.33 |       95 
   CrunaManagerProxy.sol             |      100 |      100 |      100 |      100 
   ICrunaManager.sol                 |      100 |      100 |      100 |      100 
  plugins/                           |      100 |    78.57 |      100 |      100 
@@ -281,21 +288,15 @@ File                                |  % Stmts | % Branch |  % Funcs |  % Lines
   IInheritanceCrunaPlugin.sol       |      100 |      100 |      100 |      100 
   InheritanceCrunaPlugin.sol        |      100 |    70.31 |      100 |     97.5 
   InheritanceCrunaPluginProxy.sol   |      100 |      100 |      100 |      100 
- token/                             |    94.64 |    68.52 |    95.83 |    95.16 
-  CrunaManagedNFTBase.sol           |    94.12 |    67.39 |    94.74 |    94.83 
+ token/                             |    94.64 |    64.81 |    95.83 |    95.16 
+  CrunaManagedNFTBase.sol           |    94.12 |    63.04 |    94.74 |    94.83 
   CrunaManagedNFTOwnable.sol        |      100 |       50 |      100 |      100 
   CrunaManagedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaManagedNFT.sol              |      100 |      100 |      100 |      100 
-  IVault.sol                        |      100 |      100 |      100 |      100 
- utils/                             |    88.33 |    66.07 |    87.88 |    89.19 
-  CanonicalAddresses.sol            |       50 |      100 |       50 |       50 
-  CrunaGuardian.sol                 |      100 |       50 |      100 |       75 
-  CrunaRegistry.sol                 |      100 |      100 |      100 |      100 
+  IManagedNFT.sol                   |      100 |      100 |      100 |      100 
+ utils/                             |    95.74 |    70.83 |      100 |    98.21 
   ERC6551AccountProxy.sol           |       90 |       75 |      100 |    90.91 
-  FlexiTimelockController.sol       |    81.82 |       45 |    85.71 |    88.89 
-  ICanonicalAddresses.sol           |      100 |      100 |      100 |      100 
-  ICrunaGuardian.sol                |      100 |      100 |      100 |      100 
-  ICrunaRegistry.sol                |      100 |      100 |      100 |      100 
+  FlexiTimelockController.sol       |      100 |       50 |      100 |      100 
   INamed.sol                        |      100 |      100 |      100 |      100 
   INamedAndVersioned.sol            |      100 |      100 |      100 |      100 
   ITokenLinkedContract.sol          |      100 |      100 |      100 |      100 
@@ -303,7 +304,7 @@ File                                |  % Stmts | % Branch |  % Funcs |  % Lines
   SignatureValidator.sol            |      100 |       90 |      100 |      100 
   TokenLinkedContract.sol           |       90 |       50 |      100 |      100 
 ------------------------------------|----------|----------|----------|----------
-All files                           |     96.4 |     68.4 |    95.68 |    95.74 
+All files                           |    98.21 |    69.44 |    97.18 |    97.36 
 ------------------------------------|----------|----------|----------|----------
 ```
 

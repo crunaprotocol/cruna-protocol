@@ -10,5 +10,4 @@ interface IManagedNFT {
   // @param tokenId The id of the token.
   // @param to The address of the recipient.
   function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external;
-
 }
