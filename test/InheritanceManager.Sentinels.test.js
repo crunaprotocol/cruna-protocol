@@ -712,7 +712,6 @@ describe("Sentinel and Inheritance", function () {
     const inheritancePluginAddress = await manager.plugin(nameId, "0x00000000");
 
     const inheritancePlugin = await ethers.getContractAt("InheritanceCrunaPlugin", inheritancePluginAddress);
-
     await inheritancePlugin.connect(bob).configureInheritance(0, 80, 30, beneficiary1.address, 0, 0, 0);
 
     await increaseBlockTimestampBy(75 * days);
@@ -720,7 +719,7 @@ describe("Sentinel and Inheritance", function () {
     await manager.connect(bob).authorizePluginToTransfer("InheritanceCrunaPlugin", "0x00000000", false, 20 * days, 0, 0, 0);
 
     const ts = await getTimestamp();
-    expect(await manager.timeLocks(bytes4(keccak256("InheritanceCrunaPlugin")))).to.equal(ts + 20 * days);
+    expect(await manager.timeLocks(bytes4(keccak256("InheritanceCrunaPlugin")), "0x00000000")).to.equal(ts + 20 * days);
 
     await increaseBlockTimestampBy(10 * days);
 
