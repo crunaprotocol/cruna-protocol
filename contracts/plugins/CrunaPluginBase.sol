@@ -12,10 +12,18 @@ import {IVersioned} from "../utils/IVersioned.sol";
 import {CrunaProtectedNFTBase} from "../token/CrunaProtectedNFTBase.sol";
 import {ICrunaPlugin} from "./ICrunaPlugin.sol";
 import {CanonicalAddresses} from "../canonical/CanonicalAddresses.sol";
+import {SignatureValidator} from "../utils/SignatureValidator.sol";
 
 //import {console} from "hardhat/console.sol";
 
-abstract contract CrunaPluginBase is Context, CanonicalAddresses, TokenLinkedContract, IVersioned, ICrunaPlugin {
+abstract contract CrunaPluginBase is
+  Context,
+  CanonicalAddresses,
+  TokenLinkedContract,
+  IVersioned,
+  ICrunaPlugin,
+  SignatureValidator
+{
   error NotTheTokenOwner();
   error UntrustedImplementation();
   error InvalidVersion();
@@ -23,6 +31,8 @@ abstract contract CrunaPluginBase is Context, CanonicalAddresses, TokenLinkedCon
   error ControllerAlreadySet();
   error NotTheDeployer();
   error Forbidden();
+
+  receive() external payable {}
 
   /**
    * @dev Storage slot with the address of the current implementation.
@@ -36,6 +46,10 @@ abstract contract CrunaPluginBase is Context, CanonicalAddresses, TokenLinkedCon
   modifier onlyTokenOwner() {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     _;
+  }
+
+  function _canPreApprove(bytes4, address, address signer) internal view virtual override returns (bool) {
+    return manager.isAProtector(signer);
   }
 
   // Inits the manager. It should be executed immediately after the deployment

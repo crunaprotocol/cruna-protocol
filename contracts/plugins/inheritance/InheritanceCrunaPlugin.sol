@@ -10,11 +10,10 @@ import {IInheritanceCrunaPlugin} from "./IInheritanceCrunaPlugin.sol";
 import {ICrunaPlugin, CrunaPluginBase} from "../CrunaPluginBase.sol";
 import {INamed} from "../../utils/INamed.sol";
 import {Actor} from "../../manager/Actor.sol";
-import {SignatureValidator} from "../../utils/SignatureValidator.sol";
 
 //import {console} from "hardhat/console.sol";
 
-contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaPluginBase, Actor, SignatureValidator {
+contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaPluginBase, Actor {
   using ECDSA for bytes32;
   using Strings for uint256;
 
@@ -40,10 +39,6 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   bytes4 public constant SENTINEL = bytes4(keccak256(abi.encodePacked("SENTINEL")));
   InheritanceConf internal _inheritanceConf;
   Votes internal _votes;
-
-  function _canPreApprove(bytes4, address, address signer) internal view virtual override returns (bool) {
-    return manager.isAProtector(signer);
-  }
 
   function requiresToManageTransfer() external pure override returns (bool) {
     return true;
