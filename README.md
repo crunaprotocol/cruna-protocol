@@ -150,6 +150,9 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**1.0.0-rc.8**
+- Non-blocking approach to beneficiary nominations in InheritanceCrunaPlugin
+
 **1.0.0-rc.7**
 - Rename CrunaManagedNFT to CrunaProtectedNFT for clarity
 
@@ -263,7 +266,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  35 passing
+  36 passing
 
 --------------------------------------|----------|----------|----------|----------
 File                                  |  % Stmts | % Branch |  % Funcs |  % Lines 
@@ -287,9 +290,9 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
  plugins/                             |      100 |    78.57 |      100 |      100 
   CrunaPluginBase.sol                 |      100 |    78.57 |      100 |      100 
   ICrunaPlugin.sol                    |      100 |      100 |      100 |      100 
- plugins/inheritance/                 |      100 |    70.31 |      100 |     97.5 
+ plugins/inheritance/                 |    98.65 |    68.97 |      100 |    97.78 
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
-  InheritanceCrunaPlugin.sol          |      100 |    70.31 |      100 |     97.5 
+  InheritanceCrunaPlugin.sol          |    98.65 |    68.97 |      100 |    97.78 
   InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
  token/                               |    94.64 |    64.81 |    95.83 |    95.16 
   CrunaProtectedNFTBase.sol           |    94.12 |    63.04 |    94.74 |    94.83 
@@ -307,7 +310,7 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   SignatureValidator.sol              |      100 |       90 |      100 |      100 
   TokenLinkedContract.sol             |       90 |       50 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    98.21 |    69.44 |    97.18 |    97.36 
+All files                             |    98.02 |    69.21 |    97.24 |    97.41 
 --------------------------------------|----------|----------|----------|----------
 ```
 

@@ -10,8 +10,8 @@ interface IInheritanceCrunaPlugin {
   event InheritanceConfigured(
     address indexed owner,
     uint256 quorum,
-    uint256 proofOfLifeDurationInDays,
-    uint256 gracePeriod,
+    uint256 proofOfLifeDurationInWeeks,
+    uint256 gracePeriodInWeeks,
     address beneficiary
   );
 
@@ -21,17 +21,23 @@ interface IInheritanceCrunaPlugin {
 
   event TransferRequestApproved(address indexed sentinel);
 
+  event VotedForBeneficiary(address indexed sentinel, address indexed beneficiary);
+
+  event BeneficiaryApproved(address indexed beneficiary);
+
   // @dev Struct to store the configuration for the inheritance
   struct InheritanceConf {
-    uint16 quorum;
-    uint16 proofOfLifeDurationInDays;
-    uint32 lastProofOfLife;
-    uint16 gracePeriod;
     address beneficiary;
-    //
-    uint32 requestUpdatedAt;
-    bool waitForGracePeriod;
-    address[] approvers;
+    uint8 quorum;
+    uint8 gracePeriodInWeeks;
+    uint8 proofOfLifeDurationInWeeks;
+    uint32 lastProofOfLife;
+    uint32 extendedProofOfLife;
+  }
+
+  struct Votes {
+    address[] nominations;
+    mapping(address => address) favorites;
   }
 
   // beneficiaries
@@ -55,13 +61,13 @@ interface IInheritanceCrunaPlugin {
 
   // @dev Configures an inheritance
   // @param quorum The number of sentinels required to approve a request
-  // @param proofOfLifeDurationInDays The duration of the Proof-of-Live, i.e., the number
+  // @param proofOfLifeDurationInWeeks The duration of the Proof-of-Live, i.e., the number
   //   of days after which the sentinels can start the process to inherit the token if the
   //   owner does not prove to be alive
   function configureInheritance(
-    uint256 quorum,
-    uint256 proofOfLifeDurationInDays,
-    uint256 gracePeriod,
+    uint8 quorum,
+    uint8 proofOfLifeDurationInWeeks,
+    uint8 gracePeriodInWeeks,
     address beneficiary,
     uint256 timestamp,
     uint256 validFor,
@@ -71,11 +77,14 @@ interface IInheritanceCrunaPlugin {
   // @dev Return all the sentinels
   function getSentinelsAndInheritanceData() external view returns (address[] memory, InheritanceConf memory);
 
+  function getVotes() external view returns (address[] memory);
+
   // @dev allows the user to trigger a Proof-of-Live
   function proofOfLife() external;
 
   // @dev Allows the sentinels to nominate a beneficiary
   // @param beneficiary The beneficiary address
+  // @param vote True to vote, false to retire candidate
   function requestTransfer(address beneficiary) external;
 
   /** @dev Allows the beneficiary to inherit the token

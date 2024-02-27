@@ -1,6 +1,6 @@
 {
   "name": "@cruna/protocol",
-  "version": "1.0.0-rc.7",
+  "version": "1.0.0-rc.8",
   "description": "The Cruna protocol",
   "publishConfig": {
     "access": "public"
@@ -8,6 +8,7 @@
   "files": [
     "**/*.sol",
     "!/mocks/**/*",
+    "!/plugins/inheritance/**/*",
     "README.md"
   ],
   "scripts": {
