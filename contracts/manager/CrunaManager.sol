@@ -549,7 +549,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
 
   // @dev See {IProtected721-managedTransfer}.
   // This is a special function that can be called only by authorized plugins
-  function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external virtual override nonReentrant {
+  function managedTransfer(bytes4 pluginNameId, address to) external virtual override nonReentrant {
     // In v2, we will find the plugin calling, instead of defaulting to 0x00000000
     bytes4 salt = 0x00000000;
     if (pluginsById[pluginNameId][salt].proxyAddress == address(0) || !pluginsById[pluginNameId][salt].active)
@@ -564,7 +564,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     // We allow it, assuming that the vault implementation has the
     // right to set up more advanced rules, before allowing the transfer,
     // despite the plugin has the ability to do so.
-    vault().managedTransfer(pluginNameId, tokenId, to);
+    vault().managedTransfer(pluginNameId, tokenId(), to);
   }
 
   function _resetActorsAndDisablePlugins() internal virtual {

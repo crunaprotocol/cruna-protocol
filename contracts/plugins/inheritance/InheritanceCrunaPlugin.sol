@@ -31,11 +31,15 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   error WaitingForBeneficiary();
   error NotExpiredYet();
   error QuorumAlreadyReached();
-
+  error CandidateNotFound();
   error InvalidValidity();
+  error NoVoteToRetire();
+  error InvalidParameters();
+  error TooManySentinels();
 
   bytes4 public constant SENTINEL = bytes4(keccak256(abi.encodePacked("SENTINEL")));
   InheritanceConf internal _inheritanceConf;
+  Votes internal _votes;
 
   function _canPreApprove(bytes4, address, address signer) internal view virtual override returns (bool) {
     return manager.isAProtector(signer);
@@ -83,7 +87,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
       _removeActor(sentinel, SENTINEL);
       uint256 shares = actorCount(SENTINEL);
       if (_inheritanceConf.quorum > shares) {
-        _inheritanceConf.quorum = uint16(shares);
+        _inheritanceConf.quorum = uint8(shares);
       }
     } else {
       _addActor(sentinel, SENTINEL);
@@ -96,14 +100,15 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     for (uint256 i = 0; i < sentinels.length; i++) {
       setSentinel(sentinels[i], true, 0, 0, emptySignature);
     }
+    if (getActors(SENTINEL).length > 11) revert TooManySentinels();
   }
 
   // @dev see {IInheritanceCrunaPlugin.sol-configureInheritance}
   // allow when protectors are active
   function configureInheritance(
-    uint256 quorum,
-    uint256 proofOfLifeDurationInDays,
-    uint256 gracePeriod,
+    uint8 quorum,
+    uint8 proofOfLifeDurationInWeeks,
+    uint8 gracePeriodInWeeks,
     address beneficiary,
     uint256 timestamp,
     uint256 validFor,
@@ -117,35 +122,31 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
       tokenAddress(),
       tokenId(),
       quorum,
-      proofOfLifeDurationInDays,
-      gracePeriod,
+      proofOfLifeDurationInWeeks,
+      gracePeriodInWeeks,
       timestamp * 1e7 + validFor,
       signature
     );
-    _configureInheritance(uint16(quorum), uint16(proofOfLifeDurationInDays), uint16(gracePeriod), beneficiary);
+    _configureInheritance(quorum, proofOfLifeDurationInWeeks, gracePeriodInWeeks, beneficiary);
   }
 
   function _configureInheritance(
-    uint16 quorum,
-    uint16 proofOfLifeDurationInDays,
-    uint16 gracePeriod,
+    uint8 quorum,
+    uint8 proofOfLifeDurationInWeeks,
+    uint8 gracePeriodInWeeks,
     address beneficiary
   ) internal virtual {
     if (actorCount(SENTINEL) > 0 && quorum == 0) revert QuorumCannotBeZero();
     if (quorum > actorCount(SENTINEL)) revert QuorumCannotBeGreaterThanSentinels();
-    if (quorum == 0 && beneficiary == address(0)) revert ZeroAddress();
+    if (quorum == 0 && beneficiary == address(0)) revert InvalidParameters();
     _inheritanceConf.quorum = quorum;
-    _inheritanceConf.proofOfLifeDurationInDays = proofOfLifeDurationInDays;
+    _inheritanceConf.proofOfLifeDurationInWeeks = proofOfLifeDurationInWeeks;
     // solhint-disable-next-line not-rely-on-time
     _inheritanceConf.lastProofOfLife = uint32(block.timestamp);
-    _inheritanceConf.gracePeriod = gracePeriod;
+    _inheritanceConf.gracePeriodInWeeks = gracePeriodInWeeks;
     _inheritanceConf.beneficiary = beneficiary;
-    _inheritanceConf.requestUpdatedAt = 0;
-    if (beneficiary != address(0)) {
-      _inheritanceConf.waitForGracePeriod = true;
-    }
-    delete _inheritanceConf.approvers;
-    emit InheritanceConfigured(_msgSender(), quorum, proofOfLifeDurationInDays, gracePeriod, beneficiary);
+    _resetNominationsAndVotes();
+    emit InheritanceConfigured(_msgSender(), quorum, proofOfLifeDurationInWeeks, gracePeriodInWeeks, beneficiary);
   }
 
   // @dev see {IInheritanceCrunaPlugin.sol-getSentinelsAndInheritanceData}
@@ -153,51 +154,84 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     return (getActors(SENTINEL), _inheritanceConf);
   }
 
+  function getVotes() external view virtual override returns (address[] memory) {
+    address[] memory votes = getActors(SENTINEL);
+    for (uint256 i = 0; i < votes.length; i++) {
+      votes[i] = _votes.favorites[votes[i]];
+    }
+    return votes;
+  }
+
   // @dev see {IInheritanceCrunaPlugin.sol-proofOfLife}
   function proofOfLife() external virtual override onlyTokenOwner {
-    if (_inheritanceConf.proofOfLifeDurationInDays == 0) revert InheritanceNotConfigured();
+    if (_inheritanceConf.proofOfLifeDurationInWeeks == 0) revert InheritanceNotConfigured();
     // solhint-disable-next-line not-rely-on-time
     _inheritanceConf.lastProofOfLife = uint32(block.timestamp);
-    if (_inheritanceConf.requestUpdatedAt > 0) {
-      // it is not the beneficiary nominated by the owner
-      delete _inheritanceConf.beneficiary;
-    }
-    delete _inheritanceConf.approvers;
-    delete _inheritanceConf.requestUpdatedAt;
+    // clean nominations and votes, if any
+    _resetNominationsAndVotes();
     emit ProofOfLife(_msgSender());
+  }
+
+  function _quorumReached() internal view virtual returns (address) {
+    address[] memory sentinels = getActors(SENTINEL);
+    for (uint256 k = 0; k < _votes.nominations.length; k++) {
+      uint256 votes = 0;
+      for (uint256 i = 0; i < sentinels.length; i++) {
+        if (_votes.favorites[sentinels[i]] == _votes.nominations[k]) {
+          votes++;
+          if (votes == _inheritanceConf.quorum) {
+            return _votes.nominations[k];
+          }
+        }
+      }
+    }
+    return address(0);
+  }
+
+  function _isNominated(address beneficiary) internal view virtual returns (bool) {
+    for (uint256 i = 0; i < _votes.nominations.length; i++) {
+      if (beneficiary == _votes.nominations[i]) {
+        return true;
+      }
+    }
+    return false;
   }
 
   // @dev see {IInheritanceCrunaPlugin.sol-requestTransfer}
   function requestTransfer(address beneficiary) external virtual override {
-    if (beneficiary == address(0)) revert ZeroAddress();
-    if (_inheritanceConf.proofOfLifeDurationInDays == 0) revert InheritanceNotConfigured();
+    if (_inheritanceConf.proofOfLifeDurationInWeeks == 0) revert InheritanceNotConfigured();
+    if (_inheritanceConf.beneficiary != address(0) && !_isGracePeriodExpiredForBeneficiary()) revert WaitingForBeneficiary();
     _checkIfStillAlive();
     if (!_isASentinel()) revert NotASentinel();
-    if (_inheritanceConf.waitForGracePeriod && !_isGracePeriodExpiredForBeneficiary()) revert WaitingForBeneficiary();
-    // the following prevents hostile beneficiaries from blocking the process not allowing
-    // them to reset the beneficiary
-    for (uint256 i = 0; i < _inheritanceConf.approvers.length; i++) {
-      if (_msgSender() == _inheritanceConf.approvers[i]) {
-        revert RequestAlreadyApproved();
+    if (beneficiary == address(0)) {
+      if (_votes.favorites[_msgSender()] == address(0)) revert NoVoteToRetire();
+    } else if (!_isNominated(beneficiary)) {
+      _votes.nominations.push(beneficiary);
+    }
+    //    console.log("requestTransfer");
+    emit VotedForBeneficiary(_msgSender(), beneficiary);
+    _votes.favorites[_msgSender()] = beneficiary;
+    address winner = _quorumReached();
+    if (winner == address(0)) {
+      // here in case there is a previous nominated beneficiary
+      delete _inheritanceConf.beneficiary;
+    } else {
+      emit BeneficiaryApproved(beneficiary);
+      _inheritanceConf.beneficiary = winner;
+      // solhint-disable-next-line not-rely-on-time
+      _inheritanceConf.extendedProofOfLife = uint32(block.timestamp) - _inheritanceConf.lastProofOfLife;
+      _resetNominationsAndVotes();
+    }
+  }
+
+  function _resetNominationsAndVotes() internal virtual {
+    if (_votes.nominations.length > 0) {
+      delete _votes.nominations;
+      address[] memory _sentinels = getActors(SENTINEL);
+      for (uint256 i = 0; i < _sentinels.length; i++) {
+        delete _votes.favorites[_sentinels[i]];
       }
     }
-    if (_inheritanceConf.beneficiary != beneficiary) {
-      // a different sentinel can propose a new beneficiary only after the first request expires
-      if (_isGracePeriodExpiredAfterStart()) {
-        delete _inheritanceConf.beneficiary;
-        delete _inheritanceConf.approvers;
-      } else revert NotExpiredYet();
-    }
-    if (_inheritanceConf.approvers.length == _inheritanceConf.quorum) revert QuorumAlreadyReached();
-    if (_inheritanceConf.beneficiary == address(0)) {
-      _inheritanceConf.beneficiary = beneficiary;
-      emit TransferRequested(_msgSender(), beneficiary);
-    } else {
-      emit TransferRequestApproved(_msgSender());
-    }
-    _inheritanceConf.approvers.push(_msgSender());
-    // updating all the time, gives more time to the beneficiary to inherit
-    _inheritanceConf.requestUpdatedAt = uint32(block.timestamp);
   }
 
   function _isASentinel() internal view virtual returns (bool) {
@@ -207,42 +241,31 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   function _checkIfStillAlive() internal view virtual {
     if (
       // solhint-disable-next-line not-rely-on-time
-      block.timestamp - _inheritanceConf.lastProofOfLife < _inheritanceConf.proofOfLifeDurationInDays * 1 days
+      block.timestamp - _inheritanceConf.lastProofOfLife < uint256(_inheritanceConf.proofOfLifeDurationInWeeks) * 7 days
     ) revert StillAlive();
   }
 
   function _isGracePeriodExpiredForBeneficiary() internal virtual returns (bool) {
     if (
       // solhint-disable-next-line not-rely-on-time
-      block.timestamp - _inheritanceConf.lastProofOfLife >
-      (_inheritanceConf.proofOfLifeDurationInDays + _inheritanceConf.gracePeriod) * 1 days
+      block.timestamp - (_inheritanceConf.lastProofOfLife + _inheritanceConf.extendedProofOfLife) >
+      (uint256(_inheritanceConf.proofOfLifeDurationInWeeks) + _inheritanceConf.gracePeriodInWeeks) * 7 days
     ) {
       delete _inheritanceConf.beneficiary;
-      delete _inheritanceConf.waitForGracePeriod;
+      _resetNominationsAndVotes();
       return true;
-    } else return false;
-  }
-
-  function _isGracePeriodExpiredAfterStart() internal view virtual returns (bool) {
-    return block.timestamp - _inheritanceConf.requestUpdatedAt > _inheritanceConf.gracePeriod * 1 days;
+    } else {
+      return false;
+    }
   }
 
   // @dev see {IInheritanceCrunaPlugin.sol-inherit}
   function inherit() external virtual override {
-    _checkIfStillAlive();
     if (_inheritanceConf.beneficiary == address(0)) revert BeneficiaryNotSet();
     if (_inheritanceConf.beneficiary != _msgSender()) revert NotTheBeneficiary();
-    if (_inheritanceConf.waitForGracePeriod) {
-      if (actorCount(SENTINEL) > 0 && _isGracePeriodExpiredForBeneficiary()) revert Expired();
-    } else {
-      if (_inheritanceConf.approvers.length < _inheritanceConf.quorum) revert QuorumNotReached();
-      // The sentinels nominated a beneficiary
-      // we set an expiration time in case the beneficiary cannot inherit
-      // so that the sentinels can propose a new beneficiary
-      if (_isGracePeriodExpiredAfterStart()) revert Expired();
-    }
+    _checkIfStillAlive();
     _reset();
-    manager.managedTransfer(nameId(), tokenId(), _msgSender());
+    manager.managedTransfer(nameId(), _msgSender());
   }
 
   function reset() external override {

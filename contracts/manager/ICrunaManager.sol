@@ -176,7 +176,7 @@ interface ICrunaManager is ITokenLinkedContract, INamed {
     bytes calldata signature
   ) external;
 
-  function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external;
+  function managedTransfer(bytes4 pluginNameId, address to) external;
 
   // @dev blocks a plugin for a maximum of 30 days from transferring the NFT
   //   If the plugins must be blocked for more time, disable it
