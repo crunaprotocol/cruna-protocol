@@ -8,6 +8,7 @@
   "files": [
     "**/*.sol",
     "!/mocks/**/*",
+    "!/plugins/inheritance/**/*",
     "README.md"
   ],
   "scripts": {
