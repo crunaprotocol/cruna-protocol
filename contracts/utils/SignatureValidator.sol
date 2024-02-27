@@ -46,7 +46,7 @@ abstract contract SignatureValidator is EIP712, Context {
     uint256 extra,
     uint256 extra2,
     uint256 extra3,
-    // we encode here the isProtector to avoid too many variables
+    // we encode here the isProtector to avoid too many variables, when setting the first protector
     uint256 timeValidationAndSetProtector,
     bytes calldata signature
   ) internal virtual {
