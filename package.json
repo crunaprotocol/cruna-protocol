@@ -1,6 +1,6 @@
 {
   "name": "@cruna/protocol",
-  "version": "1.0.0-rc.9",
+  "version": "1.0.0-rc.10",
   "description": "The Cruna protocol",
   "publishConfig": {
     "access": "public"
@@ -55,7 +55,7 @@
     "case": "^1.6.3",
     "chai": "^4.3.10",
     "dotenv": "^16.3.1",
-    "eth-deploy-utils": "1.0.0-beta.11",
+    "eth-deploy-utils": "^1.0.0",
     "eth-sig-util": "^3.0.1",
     "ethereum-waffle": "^4.0.10",
     "ethereumjs-abi": "^0.6.8",
