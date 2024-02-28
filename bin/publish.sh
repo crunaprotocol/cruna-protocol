@@ -30,8 +30,6 @@ cp canonical-addresses/not-localhost/CanonicalAddresses.sol contracts/canonical/
 cp README.md contracts/README.md
 cd contracts
 
-exit
-
 if [[ $version =~ -([a-zA-Z]+) ]]; then
   tag=${BASH_REMATCH[1]}
   echo "Publishing $tag version $version"
