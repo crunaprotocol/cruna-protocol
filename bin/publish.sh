@@ -26,10 +26,11 @@ if [[ $version == "" ]]; then
   exit 1
 fi
 
+./scripts/set-canonical.js
+
+exit
 cp README.md contracts/README.md
 cd contracts
-
-cp ../canonical-addresses/non-localhost/CanonicalAddresses.sol canonical/CanonicalAddresses.sol
 
 if [[ $version =~ -([a-zA-Z]+) ]]; then
   tag=${BASH_REMATCH[1]}
