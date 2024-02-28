@@ -150,6 +150,9 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**1.0.0-rc.11**
+- Fix `bin/publish.sh` — it was not copying the right canonical contracts before publishing.
+
 **1.0.0-rc.10**
 - Fix canonical addresses and deploy bytecodes to avoid that changes in the dependencies alters the addresses of the canonical contracts
 
