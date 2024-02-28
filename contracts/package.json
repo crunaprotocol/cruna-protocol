@@ -1,6 +1,6 @@
 {
   "name": "@cruna/protocol",
-  "version": "1.0.0-rc.11",
+  "version": "1.0.0-rc.12",
   "description": "The Cruna protocol",
   "publishConfig": {
     "access": "public"
@@ -9,7 +9,8 @@
     "**/*.sol",
     "!/mocks/**/*",
     "!/plugins/inheritance/**/*",
-    "README.md"
+    "README.md",
+    "canonicalBytecodes.json"
   ],
   "scripts": {
     "clean": "rimraf artifacts cache coverage coverage.json",
