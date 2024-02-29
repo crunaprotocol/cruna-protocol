@@ -131,7 +131,7 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 Cruna is in beta stage, and to use it you must specify the version you want to install. Install it with, for example
 
 ```sh
-npm install @cruna/protocol@1.0.0-rc.4
+npm install @cruna/protocol
 ```
 or similar commands using Yarn or Pnpm, and use in your Solidity smart contracts, for example, as
 
@@ -149,6 +149,9 @@ contract MySuperToken is CrunaProtectedNFTOwnable {
 If your goal is to build a plugin, look at the contracts in [contracts/mocks/plugin-example](contracts/mocks/plugins/plugin-example) to start from.
 
 ## History
+
+**0.1.1**
+- fix install instructions in README
 
 **0.1.0**
 - moving the repo from cruna-cc to crunaprotocol
