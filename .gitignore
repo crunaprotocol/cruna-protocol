@@ -63,8 +63,7 @@ db
 /etherscan
 .openzeppelin
 /test/fixtures/csv
-/export
-!/export/deployedProduction.json
+/export/deployed.json
 /flattened
 tmp
 !tmp/.gitkeep
