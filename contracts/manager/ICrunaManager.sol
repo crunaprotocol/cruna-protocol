@@ -121,13 +121,8 @@ interface ICrunaManager is ITokenLinkedContract, INamed {
     bytes calldata signature
   ) external;
 
-  // @dev Set multiple protectors at the same time
-  //      It can be called only when there are no protectors set
-  // @param protectors_ The protectors' addresses to be set
-  function setProtectors(address[] memory protectors_) external;
-
   // @dev Imports the protects/safe-recipients from another tokenId owned by the same owner
-  function importFrom(uint256 tokenId) external;
+  function importProtectorsAndSafeRecipientsFrom(uint256 tokenId) external;
 
   // @dev Finds a PROTECTOR
   // @param protector_ The protector address

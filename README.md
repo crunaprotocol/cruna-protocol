@@ -150,6 +150,9 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**1.0.0-rc.14**
+- remove CrunaManager.setProtectors because it can cause misuses that can lead to losses
+
 **1.0.0-rc.13**
 - Fix `bin/publish.sh` — it was not copying the right canonical contracts before publishing.
 
@@ -166,7 +169,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 - Rename CrunaManagedNFT to CrunaProtectedNFT for clarity
 
 **1.0.0-rc.6**
-- Add importFrom function to allow to import protectors and safe recipients from another manager owned by the same owner, if and only if the new tokenId has no protectors and safe recipients
+- Add importProtectorsAndSafeRecipientsFrom function to allow to import protectors and safe recipients from another manager owned by the same owner, if and only if the new tokenId has no protectors and safe recipients
 
 **1.0.0-rc.5**
 - Add setProtectors function to allow to quickly set many protectors in one transaction, but only if no protectors are already set
@@ -275,7 +278,7 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 ## Test coverage
 
 ```
-  36 passing
+  37 passing
 
 --------------------------------------|----------|----------|----------|----------
 File                                  |  % Stmts | % Branch |  % Funcs |  % Lines 
@@ -290,10 +293,10 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
  interfaces/                          |      100 |      100 |      100 |      100 
   IERC6454.sol                        |      100 |      100 |      100 |      100 
   IERC6982.sol                        |      100 |      100 |      100 |      100 
- manager/                             |    99.01 |    70.11 |    98.31 |     99.1 
-  Actor.sol                           |      100 |       80 |      100 |      100 
-  CrunaManager.sol                    |     99.4 |    69.74 |      100 |    99.45 
-  CrunaManagerBase.sol                |    94.44 |    66.67 |    83.33 |       95 
+ manager/                             |       99 |    71.18 |    98.28 |     99.1 
+  Actor.sol                           |      100 |       70 |      100 |      100 
+  CrunaManager.sol                    |    99.39 |    70.95 |      100 |    99.45 
+  CrunaManagerBase.sol                |    94.44 |       75 |    83.33 |       95 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   ICrunaManager.sol                   |      100 |      100 |      100 |      100 
  plugins/                             |      100 |    78.57 |      100 |      100 
@@ -319,7 +322,7 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   SignatureValidator.sol              |      100 |       90 |      100 |      100 
   TokenLinkedContract.sol             |       90 |       50 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    98.02 |    69.21 |    97.24 |    97.41 
+All files                             |    98.01 |    69.71 |    97.22 |     97.4 
 --------------------------------------|----------|----------|----------|----------
 ```
 

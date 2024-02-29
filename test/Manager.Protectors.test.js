@@ -42,6 +42,30 @@ describe("CrunaManager : Protectors", function () {
 
   let CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN;
 
+  async function setProtector(manager, owner, actor, tokenId, protector, active) {
+    let signature = (
+      await signRequest(
+        await selectorId("ICrunaManager", "setProtector"),
+        owner.address,
+        actor.address,
+        vault.address,
+        tokenId,
+        active ? 1 : 0,
+        0,
+        0,
+        ts,
+        3600,
+        chainId,
+        protector.address,
+        manager,
+      )
+    )[0];
+
+    await expect(manager.connect(owner).setProtector(actor.address, active, ts, 3600, signature))
+      .to.emit(manager, "ProtectorChange")
+      .withArgs(actor.address, active);
+  }
+
   before(async function () {
     [deployer, proposer, executor, bob, alice, fred, mark, otto] = await ethers.getSigners();
     chainId = await getChainId();
@@ -191,8 +215,6 @@ describe("CrunaManager : Protectors", function () {
       "SignatureAlreadyUsed",
     );
 
-    await expect(manager.connect(bob).setProtectors([mark.address, otto.address])).revertedWith("ProtectorsAlreadySet");
-
     // set a second protector
 
     signature = (
@@ -267,37 +289,11 @@ describe("CrunaManager : Protectors", function () {
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
 
-    expect(await manager.connect(bob).setProtectors([alice.address, mark.address, otto.address]))
-      .to.emit(vault, "Locked")
-      .withArgs(tokenId, true)
-      .to.emit(manager, "ProtectorChange")
-      .withArgs(alice.address, true)
-      .to.emit(manager, "ProtectorChange")
-      .withArgs(mark.address, true)
-      .to.emit(manager, "ProtectorChange")
-      .withArgs(otto.address, true);
+    await setProtector(manager, bob, alice, tokenId, alice, true);
+    await setProtector(manager, bob, mark, tokenId, alice, true);
+    await setProtector(manager, bob, otto, tokenId, mark, true);
 
-    let signature = (
-      await signRequest(
-        selector,
-        bob.address,
-        otto.address,
-        vault.address,
-        tokenId,
-        0,
-        0,
-        0,
-        ts,
-        3600,
-        chainId,
-        alice.address,
-        manager,
-      )
-    )[0];
-
-    await expect(manager.connect(bob).setProtector(otto.address, false, ts, 3600, signature))
-      .emit(manager, "ProtectorChange")
-      .withArgs(otto.address, false);
+    await setProtector(manager, bob, otto, tokenId, alice, false);
   });
 
   it("should add the first protector via preApproval and remove it", async function () {
@@ -342,26 +338,8 @@ describe("CrunaManager : Protectors", function () {
 
     expect(await manager.hasProtectors()).to.equal(false);
 
-    let signature = (
-      await signRequest(
-        selector,
-        bob.address,
-        alice.address,
-        vault.address,
-        tokenId,
-        1,
-        0,
-        0,
-        ts,
-        3600,
-        chainId,
-        alice.address,
-        manager,
-      )
-    )[0];
-
     // set Alice as first Bob's protector
-    await manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature);
+    await setProtector(manager, bob, alice, tokenId, alice, true);
 
     // Set Fred as Bob's protector
     // To do so Bob needs Alice's signature
@@ -369,27 +347,7 @@ describe("CrunaManager : Protectors", function () {
     let allProtectors = await manager.getProtectors();
     await expect(allProtectors[0]).equal(alice.address);
 
-    signature = (
-      await signRequest(
-        selector,
-        bob.address,
-        fred.address,
-        vault.address,
-        tokenId,
-        1,
-        0,
-        0,
-        ts,
-        3600,
-        chainId,
-        alice.address,
-        manager,
-      )
-    )[0];
-
-    await expect(manager.connect(bob).setProtector(fred.address, true, ts, 3600, signature))
-      .to.emit(manager, "ProtectorChange")
-      .withArgs(fred.address, true);
+    await setProtector(manager, bob, fred, tokenId, alice, true);
 
     allProtectors = await manager.getProtectors();
     await expect(allProtectors[1]).equal(fred.address);
@@ -403,28 +361,8 @@ describe("CrunaManager : Protectors", function () {
 
     expect(await manager.hasProtectors()).to.equal(true);
 
+    await setProtector(manager, bob, alice, tokenId, fred, false);
     // let Fred remove Alice as protector
-    signature = (
-      await signRequest(
-        selector,
-        bob.address,
-        alice.address,
-        vault.address,
-        tokenId,
-        0,
-        0,
-        0,
-        ts,
-        3600,
-        chainId,
-        fred.address,
-        manager,
-      )
-    )[0];
-
-    await expect(manager.connect(bob).setProtector(alice.address, false, ts, 3600, signature))
-      .to.emit(manager, "ProtectorChange")
-      .withArgs(alice.address, false);
 
     expect(await manager.findProtectorIndex(fred.address)).to.equal(0);
   });
@@ -434,32 +372,13 @@ describe("CrunaManager : Protectors", function () {
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
 
-    let signature = (
-      await signRequest(
-        selector,
-        bob.address,
-        alice.address,
-        vault.address,
-        tokenId,
-        1,
-        0,
-        0,
-        ts,
-        3600,
-        chainId,
-        alice.address,
-        manager,
-      )
-    )[0];
-
-    // set Alice as first Bob's protector
-    await manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature);
+    await setProtector(manager, bob, alice, tokenId, alice, true);
 
     await expect(
       vault.connect(bob)["safeTransferFrom(address,address,uint256)"](bob.address, fred.address, tokenId),
     ).to.be.revertedWith("NotTransferable");
 
-    signature = (
+    let signature = (
       await signRequest(
         await selectorId("ICrunaManager", "protectedTransfer"),
         bob.address,
