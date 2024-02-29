@@ -40,7 +40,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   error UntrustedImplementationsCanMakeTransfersOnlyOnTestnet();
   error StillUntrusted();
   error PluginAlreadyTrusted();
-  error CannotImportFromYourself();
+  error CannotimportProtectorsAndSafeRecipientsFromYourself();
   error NotTheSameOwner();
   error SafeRecipientsAlreadySet();
   error NothingToImport();
@@ -134,12 +134,6 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     _emitLockeEvent(status);
   }
 
-  // only to set up many protectors at the same time as first protectors
-  function setProtectors(address[] memory protectors_) external virtual override onlyTokenOwner {
-    if (actorCount(PROTECTOR) > 0) revert ProtectorsAlreadySet();
-    _setProtectors(protectors_);
-  }
-
   function _setProtectors(address[] memory protectors_) internal virtual {
     for (uint256 i = 0; i < protectors_.length; i++) {
       if (protectors_[i] == address(0)) revert ZeroAddress();
@@ -150,10 +144,10 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     }
   }
 
-  function importFrom(uint256 otherTokenId) external virtual override onlyTokenOwner {
+  function importProtectorsAndSafeRecipientsFrom(uint256 otherTokenId) external virtual override onlyTokenOwner {
     if (actorCount(PROTECTOR) > 0) revert ProtectorsAlreadySet();
     if (actorCount(SAFE_RECIPIENT) > 0) revert SafeRecipientsAlreadySet();
-    if (otherTokenId == tokenId()) revert CannotImportFromYourself();
+    if (otherTokenId == tokenId()) revert CannotimportProtectorsAndSafeRecipientsFromYourself();
     if (vault().ownerOf(otherTokenId) != owner()) revert NotTheSameOwner();
     CrunaManager otherManager = CrunaManager(vault().managerOf(otherTokenId));
     if (otherManager.actorCount(PROTECTOR) == 0 && otherManager.actorCount(SAFE_RECIPIENT) == 0) revert NothingToImport();
