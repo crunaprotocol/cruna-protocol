@@ -150,6 +150,9 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**1.0.0-rc.15**
+- moving the repo from cruna-cc to crunaprotocol
+
 **1.0.0-rc.14**
 - remove CrunaManager.setProtectors because it can cause misuses that can lead to losses
 

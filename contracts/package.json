@@ -1,6 +1,6 @@
 {
   "name": "@cruna/protocol",
-  "version": "1.0.0-rc.14",
+  "version": "1.0.0-rc.15",
   "description": "The Cruna protocol",
   "publishConfig": {
     "access": "public"
@@ -18,16 +18,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cruna-cc/cruna-protocol.git"
+    "url": "git+https://github.com/crunaprotocol/cruna-protocol.git"
   },
   "author": {
     "name": "Francesco Sullo",
     "email": "francesco@sullo.co"
   },
   "bugs": {
-    "url": "https://github.com/cruna-cc/cruna-protocol/issues"
+    "url": "https://github.com/crunaprotocol/cruna-protocol/issues"
   },
-  "homepage": "https://github.com/cruna-cc/cruna-protocol#readme",
+  "homepage": "https://github.com/crunaprotocol/cruna-protocol#readme",
   "license": "GPL3",
   "keywords": [
     "solidity",
