@@ -108,7 +108,7 @@ devDependencies:
     version: 4.1.1(typescript@5.3.3)
   solidity-coverage:
     specifier: ^0.8.5
-    version: 0.8.8(hardhat@2.20.1)
+    version: 0.8.9(hardhat@2.20.1)
   typescript:
     specifier: ^5.3.3
     version: 5.3.3
@@ -7402,8 +7402,8 @@ packages:
     resolution: {integrity: sha512-wciNMLg/Irp8OKGrh3S2tfvZiZ0NEyILfcRCXCD4mp7SgK/i9gzLfhY2hY7VMCQJ3kH9UB9BzNdibIVMchzyYw==}
     dev: true
 
-  /solidity-coverage@0.8.8(hardhat@2.20.1):
-    resolution: {integrity: sha512-7RN6/8YAFMQNeMdSulARtE0VC5JitBAUMwvkr10FkOK+nux5q+WykrgSZntkWrX/VHzRa096P4OOViO0T9Q9Cw==}
+  /solidity-coverage@0.8.9(hardhat@2.20.1):
+    resolution: {integrity: sha512-ZhPsxlsLkYyzgwoVGh8RBN2ju7JVahvMkk+8RBVc0vP/3UNq88GzvL8kvbuY48lVIRL8eQjJ+0X8al2Bu9/2iQ==}
     hasBin: true
     peerDependencies:
       hardhat: ^2.11.0
