@@ -40,4 +40,6 @@ else
 fi
 
 rm README.md
+cp canonical-addresses/localhost/CanonicalAddresses.sol contracts/canonical/.
+
 cd ..

@@ -49,6 +49,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, CanonicalAddresses, I
   error NotAvailableIfTokenIdsAreNotProgressive();
   error TokenIdOverFlow();
   error NftNotInitiated();
+  error InvalidMaxTokenId();
 
   bytes4 public constant NAME_HASH = bytes4(keccak256("CrunaProtectedNFT"));
 
@@ -114,7 +115,8 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, CanonicalAddresses, I
 
   function setMaxTokenId(uint256 maxTokenId_) external virtual {
     _canManage(nftConf.maxTokenId == 0);
-    if (nftConf.nextTokenId > 0 && maxTokenId_ < nftConf.nextTokenId - 1) maxTokenId_ = nftConf.nextTokenId - 1;
+    if (maxTokenId_ == 0) revert InvalidMaxTokenId();
+    if (nftConf.progressiveTokenIds && nftConf.nextTokenId > maxTokenId_ + 1) revert InvalidMaxTokenId();
     nftConf.maxTokenId = uint112(maxTokenId_);
   }
 

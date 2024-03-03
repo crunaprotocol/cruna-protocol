@@ -3094,6 +3094,11 @@
     },
     {
       "inputs": [],
+      "name": "InvalidMaxTokenId",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "InvalidNextTokenId",
       "type": "error"
     },
