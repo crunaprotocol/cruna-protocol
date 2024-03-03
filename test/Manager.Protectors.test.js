@@ -83,7 +83,7 @@ describe("CrunaManager : Protectors", function () {
 
     vault = await deployContract("OwnableNFT", deployer.address);
 
-    await vault.init(proxy.address, 1, true);
+    await vault.init(proxy.address, true, false, 1, 0);
 
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
     await vault.setFactory(factory.address);
@@ -104,7 +104,7 @@ describe("CrunaManager : Protectors", function () {
   const buyAVault = async (bob) => {
     const price = await factory.finalPrice(usdc.address);
     await usdc.connect(bob).approve(factory.address, price);
-    const nextTokenId = await vault.nextTokenId();
+    const nextTokenId = (await vault.nftConf()).nextTokenId;
     const precalculatedAddress = await vault.managerOf(nextTokenId);
 
     // console.log(keccak256("TokenLinkedContractCreated(address,address,bytes32,uint256,address,uint256)"))

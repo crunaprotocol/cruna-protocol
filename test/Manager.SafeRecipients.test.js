@@ -49,7 +49,7 @@ describe("CrunaManager : Safe Recipients", function () {
 
     vault = await deployContract("OwnableNFT", deployer.address);
 
-    await vault.init(proxy.address, 1, true);
+    await vault.init(proxy.address, true, false, 1, 0);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
 
     await vault.setFactory(factory.address);
@@ -69,7 +69,7 @@ describe("CrunaManager : Safe Recipients", function () {
   const buyAVault = async (bob) => {
     const price = await factory.finalPrice(usdc.address);
     await usdc.connect(bob).approve(factory.address, price);
-    const nextTokenId = await vault.nextTokenId();
+    const nextTokenId = (await vault.nftConf()).nextTokenId;
     await factory.connect(bob).buyVaults(usdc.address, 1);
 
     const managerAddress = await vault.managerOf(nextTokenId);

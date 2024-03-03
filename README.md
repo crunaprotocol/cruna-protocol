@@ -140,7 +140,7 @@ import {CrunaProtectedNFTOwnable} from "@cruna/protocol/contracts/manager/CrunaP
 
 contract MySuperToken is CrunaProtectedNFTOwnable {
    
-    constructor() CrunaManagedOwnable("My Super Token", "MST") {}
+    constructor(address owner_) CrunaManagedOwnable("My Super Token", "MST", owner_) {}
     
     // add your special features here
 }
@@ -149,6 +149,9 @@ contract MySuperToken is CrunaProtectedNFTOwnable {
 If your goal is to build a plugin, look at the contracts in [contracts/mocks/plugin-example](contracts/mocks/plugins/plugin-example) to start from.
 
 ## History
+
+**0.1.2**
+- allow protected NFTs to mint specific tokens, instead of forcing a sequential minting
 
 **0.1.1**
 - fix install instructions in README
@@ -305,15 +308,15 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   CrunaManagerBase.sol                |    94.44 |       75 |    83.33 |       95 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   ICrunaManager.sol                   |      100 |      100 |      100 |      100 
- plugins/                             |      100 |    78.57 |      100 |      100 
-  CrunaPluginBase.sol                 |      100 |    78.57 |      100 |      100 
+ plugins/                             |    93.75 |    83.33 |    88.89 |    94.44 
+  CrunaPluginBase.sol                 |    93.75 |    83.33 |    88.89 |    94.44 
   ICrunaPlugin.sol                    |      100 |      100 |      100 |      100 
  plugins/inheritance/                 |    98.63 |    68.97 |      100 |    97.75 
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
   InheritanceCrunaPlugin.sol          |    98.63 |    68.97 |      100 |    97.75 
   InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
- token/                               |    94.64 |    64.81 |    95.83 |    95.16 
-  CrunaProtectedNFTBase.sol           |    94.12 |    63.04 |    94.74 |    94.83 
+ token/                               |    86.15 |       60 |    92.59 |    85.51 
+  CrunaProtectedNFT.sol               |       85 |    57.69 |    90.91 |    84.62 
   CrunaProtectedNFTOwnable.sol        |      100 |       50 |      100 |      100 
   CrunaProtectedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaProtectedNFT.sol              |      100 |      100 |      100 |      100 
@@ -328,7 +331,7 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   SignatureValidator.sol              |      100 |       90 |      100 |      100 
   TokenLinkedContract.sol             |       90 |       50 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    98.01 |    69.71 |    97.22 |     97.4 
+All files                             |    96.37 |    68.93 |    95.97 |    95.74 
 --------------------------------------|----------|----------|----------|----------
 ```
 

@@ -56,15 +56,15 @@ describe("Testing contract deployments", function () {
     vault = await deployContract("TimeControlledNFT", delay, [proposer.address], [executor.address], deployer.address);
 
     expect(await vault.version()).to.equal(1000000);
-    await vault.init(proxy.address, 1, true);
+    await vault.init(proxy.address, true, false, 1, 0);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
     await vault.setFactory(factory.address);
     expect(await vault.supportsInterface(getInterfaceId("IAccessControl"))).to.equal(true);
 
-    expect(await vault.maxTokenId()).to.equal(0);
+    expect((await vault.nftConf()).maxTokenId).to.equal(0);
     // first time it does not require a proposer/executor approach
     await vault.setMaxTokenId(10000);
-    expect(await vault.maxTokenId()).to.equal(10000);
+    expect((await vault.nftConf()).maxTokenId).to.equal(10000);
 
     usdc = await deployContract("USDCoin", deployer.address);
     usdt = await deployContract("TetherUSD", deployer.address);
@@ -80,7 +80,7 @@ describe("Testing contract deployments", function () {
     // second time it requires a proposer/executor approach
     await expect(vault.setMaxTokenId(20000)).revertedWith("MustCallThroughTimeController");
     await proposeAndExecute(vault, proposer, executor, 10, "setMaxTokenId", 20000);
-    expect(await vault.maxTokenId()).to.equal(20000);
+    expect((await vault.nftConf()).maxTokenId).to.equal(20000);
   });
 
   it("should deploy everything as expected", async function () {
@@ -90,7 +90,7 @@ describe("Testing contract deployments", function () {
   it("should get the token parameters from the manager", async function () {
     let price = await factory.finalPrice(usdc.address);
     await usdc.connect(bob).approve(factory.address, price);
-    const nextTokenId = await vault.nextTokenId();
+    const nextTokenId = (await vault.nftConf()).nextTokenId;
     const managerAddress = await vault.managerOf(nextTokenId);
     expect(await ethers.provider.getCode(managerAddress)).equal("0x");
     await factory.connect(bob).buyVaults(usdc.address, 1);

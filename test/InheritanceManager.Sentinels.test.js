@@ -55,7 +55,7 @@ describe("Sentinel and Inheritance", function () {
     proxy = await deployUtils.attach("CrunaManager", deployedProxy.address);
     vault = await deployContract("OwnableNFT", deployer.address);
 
-    await vault.init(proxy.address, 1, true);
+    await vault.init(proxy.address, true, false, 1, 0);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
     await vault.setFactory(factory.address);
 
@@ -76,7 +76,7 @@ describe("Sentinel and Inheritance", function () {
   const buyAVaultAndPlug = async (bob, withProtectors, trust = true) => {
     const price = await factory.finalPrice(usdc.address);
     await usdc.connect(bob).approve(factory.address, price);
-    const nextTokenId = await vault.nextTokenId();
+    const nextTokenId = (await vault.nftConf()).nextTokenId;
     await factory.connect(bob).buyVaults(usdc.address, 1);
     const manager = await ethers.getContractAt("CrunaManager", await vault.managerOf(nextTokenId));
 

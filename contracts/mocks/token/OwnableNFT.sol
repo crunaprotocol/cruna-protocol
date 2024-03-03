@@ -29,7 +29,7 @@ contract OwnableNFT is CrunaProtectedNFTOwnable {
   //   using Nick's factory, so we may in theory hardcode them in the code. However,
   //   if so, we will not be able to test the contract.
   // @param owner The address of the owner.
-  constructor(address admin) CrunaProtectedNFTOwnable("Cruna Vaults", "CRUNA1", admin) {}
+  constructor(address owner_) CrunaProtectedNFTOwnable("Cruna Vaults", "CRUNA1", owner_) {}
 
   // @dev Set factory to 0x0 to disable a factory.
   // @notice This is the only function that can be called by the owner.
@@ -55,6 +55,6 @@ contract OwnableNFT is CrunaProtectedNFTOwnable {
   // @dev This function will mint a new token
   // @param to The address of the recipient
   function safeMintAndActivate(address to, uint256 amount) public virtual onlyFactory {
-    _mintAndActivate(to, amount);
+    _mintAndActivateByAmount(to, amount);
   }
 }

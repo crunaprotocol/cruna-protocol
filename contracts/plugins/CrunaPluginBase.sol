@@ -9,7 +9,7 @@ import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 import {CrunaManager} from "../manager/CrunaManager.sol";
 import {TokenLinkedContract} from "../utils/TokenLinkedContract.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
-import {CrunaProtectedNFTBase} from "../token/CrunaProtectedNFTBase.sol";
+import {CrunaProtectedNFT} from "../token/CrunaProtectedNFT.sol";
 import {ICrunaPlugin} from "./ICrunaPlugin.sol";
 import {CanonicalAddresses} from "../canonical/CanonicalAddresses.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
@@ -41,7 +41,7 @@ abstract contract CrunaPluginBase is
    */
   bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
-  CrunaManager public manager;
+  //  CrunaManager public manager;
 
   modifier onlyTokenOwner() {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
@@ -49,13 +49,15 @@ abstract contract CrunaPluginBase is
   }
 
   function _canPreApprove(bytes4, address, address signer) internal view virtual override returns (bool) {
-    return manager.isAProtector(signer);
+    return _manager().isAProtector(signer);
   }
 
-  // Inits the manager. It should be executed immediately after the deployment
-  function initManager() external virtual override {
-    if (address(manager) != address(0)) revert Forbidden();
-    manager = CrunaManager(CrunaProtectedNFTBase(tokenAddress()).managerOf(tokenId()));
+  function manager() external view virtual override returns (CrunaManager) {
+    return _manager();
+  }
+
+  function _manager() internal view virtual returns (CrunaManager) {
+    return CrunaManager(_vault().managerOf(tokenId()));
   }
 
   function isERC6551Account() external pure virtual returns (bool) {
@@ -69,8 +71,12 @@ abstract contract CrunaPluginBase is
 
   function nameId() public view virtual override returns (bytes4);
 
-  function vault() public view virtual override returns (CrunaProtectedNFTBase) {
-    return CrunaProtectedNFTBase(tokenAddress());
+  function vault() external view virtual override returns (CrunaProtectedNFT) {
+    return _vault();
+  }
+
+  function _vault() internal view virtual returns (CrunaProtectedNFT) {
+    return CrunaProtectedNFT(tokenAddress());
   }
 
   // @dev Upgrade the implementation of the plugin
@@ -88,8 +94,7 @@ abstract contract CrunaPluginBase is
     IVersioned impl = IVersioned(implementation_);
     uint256 _version = impl.version();
     if (_version <= version()) revert InvalidVersion();
-    CrunaManager _manager = CrunaManager(vault().managerOf(tokenId()));
-    if (_manager.version() < requires) revert PluginRequiresUpdatedManager(requires);
+    if (_manager().version() < requires) revert PluginRequiresUpdatedManager(requires);
     StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
   }
 

@@ -49,11 +49,11 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   function _isProtected() internal view virtual override returns (bool) {
-    return manager.hasProtectors();
+    return _manager().hasProtectors();
   }
 
   function _isProtector(address protector) internal view virtual override returns (bool) {
-    return manager.isAProtector(protector);
+    return _manager().isAProtector(protector);
   }
 
   // sentinels and beneficiaries
@@ -260,11 +260,11 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     if (_inheritanceConf.beneficiary != _msgSender()) revert NotTheBeneficiary();
     _checkIfStillAlive();
     _reset();
-    manager.managedTransfer(nameId(), _msgSender());
+    _manager().managedTransfer(nameId(), _msgSender());
   }
 
   function reset() external override {
-    if (_msgSender() != address(manager)) revert Forbidden();
+    if (_msgSender() != address(_manager())) revert Forbidden();
     _reset();
   }
 
