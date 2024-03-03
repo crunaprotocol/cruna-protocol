@@ -47,7 +47,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, CanonicalAddresses, I
   error UntrustedImplementation();
   error InvalidNextTokenId();
   error NotAvailableIfTokenIdsAreNotProgressive();
-  error TokenIdOverFlow();
+  error InvalidTokenId();
   error NftNotInitiated();
   error InvalidMaxTokenId();
 
@@ -223,9 +223,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, CanonicalAddresses, I
     if (nftConf.managerHistoryLength == 0) revert NftNotInitiated();
     uint256 tokenId = nftConf.nextTokenId;
     for (uint256 i = 0; i < amount; i++) {
-      if (nftConf.maxTokenId > 0 && tokenId > nftConf.maxTokenId) revert SupplyOverflow();
-      _deploy(defaultManagerImplementation(tokenId), 0x00, tokenId, false);
-      _safeMint(to, tokenId++);
+      _mintAndActivate(to, tokenId++);
     }
     nftConf.nextTokenId = uint112(tokenId);
   }
@@ -233,7 +231,11 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, CanonicalAddresses, I
   // @dev This function will mint a new token and initialize it.
   function _mintAndActivate(address to, uint256 tokenId) internal virtual {
     if (nftConf.managerHistoryLength == 0) revert NftNotInitiated();
-    if (tokenId > type(uint112).max) revert TokenIdOverFlow();
+    if (
+      tokenId > type(uint112).max ||
+      (nftConf.maxTokenId > 0 && tokenId > nftConf.maxTokenId) ||
+      (tokenId < managerHistory[0].firstTokenId)
+    ) revert InvalidTokenId();
     _deploy(defaultManagerImplementation(tokenId), 0x00, tokenId, false);
     _safeMint(to, tokenId++);
   }

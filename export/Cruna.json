@@ -3104,6 +3104,11 @@
     },
     {
       "inputs": [],
+      "name": "InvalidTokenId",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "MustCallThroughTimeController",
       "type": "error"
     },
@@ -3235,11 +3240,6 @@
         }
       ],
       "name": "TimelockUnexpectedOperationState",
-      "type": "error"
-    },
-    {
-      "inputs": [],
-      "name": "TokenIdOverFlow",
       "type": "error"
     },
     {

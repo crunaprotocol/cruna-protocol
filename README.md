@@ -150,6 +150,9 @@ If your goal is to build a plugin, look at the contracts in [contracts/mocks/plu
 
 ## History
 
+**0.1.4**
+- improve _mintAndActivate in CrunaProtectedNFT
+
 **0.1.3**
 - improve setMaxTokenId in CrunaProtectedNFT
 
@@ -318,8 +321,8 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
   InheritanceCrunaPlugin.sol          |    98.63 |    68.97 |      100 |    97.75 
   InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
- token/                               |    86.36 |    59.68 |    92.59 |    85.71 
-  CrunaProtectedNFT.sol               |    85.25 |    57.41 |    90.91 |    84.85 
+ token/                               |    92.19 |    59.38 |     96.3 |    91.18 
+  CrunaProtectedNFT.sol               |    91.53 |    57.14 |    95.45 |    90.63 
   CrunaProtectedNFTOwnable.sol        |      100 |       50 |      100 |      100 
   CrunaProtectedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaProtectedNFT.sol              |      100 |      100 |      100 |      100 
@@ -334,7 +337,7 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   SignatureValidator.sol              |      100 |       90 |      100 |      100 
   TokenLinkedContract.sol             |       90 |       50 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    96.38 |    68.82 |    95.97 |    95.74 
+All files                             |    97.33 |    68.72 |    96.64 |    96.58 
 --------------------------------------|----------|----------|----------|----------
 ```
 
