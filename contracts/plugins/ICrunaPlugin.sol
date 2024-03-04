@@ -2,8 +2,9 @@
 pragma solidity ^0.8.9;
 
 import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
-import {CrunaProtectedNFTBase} from "../token/CrunaProtectedNFTBase.sol";
+import {CrunaProtectedNFT} from "../token/CrunaProtectedNFT.sol";
 import {INamed} from "../utils/INamed.sol";
+import {CrunaManager} from "../manager/CrunaManager.sol";
 
 /**
  @title ICrunaPlugin.sol
@@ -12,8 +13,6 @@ import {INamed} from "../utils/INamed.sol";
    the primary manage, which is CrunaManager.sol
 */
 interface ICrunaPlugin is ITokenLinkedContract, INamed {
-  function initManager() external;
-
   // function called in the dashboard to know if the plugin is asking the
   // right to make a managed transfer of the vault
   function requiresToManageTransfer() external pure returns (bool);
@@ -31,5 +30,7 @@ interface ICrunaPlugin is ITokenLinkedContract, INamed {
   //   wait for a new trusted implementation and upgrade it.
   function upgrade(address implementation_) external;
 
-  function vault() external view returns (CrunaProtectedNFTBase);
+  function manager() external view returns (CrunaManager);
+
+  function vault() external view returns (CrunaProtectedNFT);
 }

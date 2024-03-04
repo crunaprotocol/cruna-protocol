@@ -257,11 +257,10 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     bytes4 _nameId = _stringToBytes4(name);
     if (pluginsById[_nameId][0x00000000].proxyAddress != address(0)) revert PluginAlreadyPlugged();
     uint256 requires = _crunaGuardian().trustedImplementation(_nameId, proxyAddress_);
-    if (requires == 0 && canManageTransfer && vault().deployedToProduction()) {
+
+    if (requires == 0 && canManageTransfer && !vault().allowUntrustedTransfers()) {
       // If requires == 0 the plugin is not trusted, for example during development.
-      // If later it is upgraded with a trusted implementation, it won't be possible anymore
-      // to upgrade it with a not-trusted version. However, a plugin that starts with an
-      // untrusted version can never manage the transfer.
+      // If later it is upgraded with a trusted implementation, it can be explicitly trusted using trustPlugin.
       revert UntrustedImplementationsCanMakeTransfersOnlyOnTestnet();
     }
     if (requires > version()) revert PluginRequiresUpdatedManager(requires);
@@ -306,7 +305,8 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
 
   function _isPluginAuthorizable(bytes4 _nameId, bytes4 salt) internal view virtual {
     if (pluginsById[_nameId][salt].proxyAddress == address(0)) revert PluginNotFound();
-    if (!pluginsById[_nameId][salt].trusted && vault().deployedToProduction())
+
+    if (!pluginsById[_nameId][salt].trusted && !vault().allowUntrustedTransfers())
       revert UntrustedImplementationsCanMakeTransfersOnlyOnTestnet();
     ICrunaPlugin _plugin = plugin(_nameId, salt);
     if (!_plugin.requiresToManageTransfer()) revert NotATransferPlugin();
@@ -551,7 +551,8 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     if (pluginAddress(pluginNameId, salt) != _msgSender()) revert NotTheAuthorizedPlugin();
     _removeLockIfExpired(pluginNameId, salt);
     if (!pluginsById[pluginNameId][salt].canManageTransfer) revert PluginNotAuthorizedToManageTransfer();
-    if (!pluginsById[pluginNameId][salt].trusted && vault().deployedToProduction())
+
+    if (!pluginsById[pluginNameId][salt].trusted && !vault().allowUntrustedTransfers())
       revert UntrustedImplementationsCanMakeTransfersOnlyOnTestnet();
     _resetActorsAndDisablePlugins();
     // In theory, the vault may revert, blocking the entire process

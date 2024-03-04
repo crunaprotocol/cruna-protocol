@@ -8,21 +8,44 @@ import {IManagedNFT} from "./IManagedNFT.sol";
 interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
   event DefaultManagerUpgrade(address newManagerProxy);
 
+  /**
+   * @dev Optimized configuration structure for the generic NFT
+   *
+   * Elements:
+   * - progressiveTokenIds is used to allow the upgrade of the default manager implementation. It is used to assure that the manager can be upgraded in a safe way.
+   * - allowUntrustedTransfers is used by the managers to allow untrusted plugins to transfer the tokens. Typically, we would set it true for testnets and false for mainnets.
+   * - nextTokenId is the next tokenId to be used. It is used to mint new tokens if progressiveTokenIds is true. Notice the limit to a uint112.
+   * - maxTokenId is the maximum tokenId that can be minted. It is used to limit the minting of new tokens. Notice the limit to a uint112.
+   * - managerHistoryLength is the length of the manager history.
+   */
+  struct NftConf {
+    bool progressiveTokenIds;
+    bool allowUntrustedTransfers;
+    uint112 nextTokenId;
+    uint112 maxTokenId;
+    uint8 managerHistoryLength;
+    // for future changes
+    uint8 unusedField;
+  }
+
   struct ManagerHistory {
+    uint112 firstTokenId;
+    uint112 lastTokenId;
     address managerAddress;
-    uint256 firstTokenId;
-    uint256 lastTokenId;
   }
 
   function setMaxTokenId(uint256 maxTokenId_) external;
 
-  // @dev This function will initialize the contract.
-  // @param managerProxy_ The address of the manager proxy.
-  // @param firstTokenId_ The first tokenId to be used. Notice that in multi-chain scenarios,
-  //   the same tokenId can be used on different chains, so it's important to avoid collisions.
-  //   A good practice is to use the chainId as a prefix. For example, the first token on Polygon
-  //   could be 137000001, while the first token on BSC could be 56000001.
-  function init(address managerProxy_, uint256 firstTokenId_, bool deployedToProduction_) external;
+  function allowUntrustedTransfers() external view returns (bool);
+
+  // @dev This function will initialize the nft.
+  function init(
+    address managerAddress_,
+    bool progressiveTokenIds_,
+    bool allowUntrustedTransfers_,
+    uint112 nextTokenId_,
+    uint112 maxTokenId_
+  ) external;
 
   function defaultManagerImplementation(uint256 _tokenId) external view returns (address);
 
@@ -39,4 +62,11 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
     uint256 tokenId,
     bool isERC6551Account
   ) external returns (address);
+
+  function isDeployed(
+    address implementation,
+    bytes32 salt,
+    uint256 tokenId,
+    bool isERC6551Account
+  ) external view returns (bool);
 }

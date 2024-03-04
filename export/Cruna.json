@@ -1677,7 +1677,7 @@
       "name": "vault",
       "outputs": [
         {
-          "internalType": "contract CrunaProtectedNFTBase",
+          "internalType": "contract CrunaProtectedNFT",
           "name": "",
           "type": "address"
         }
@@ -2504,13 +2504,6 @@
     },
     {
       "inputs": [],
-      "name": "initManager",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "isERC6551Account",
       "outputs": [
         {
@@ -2892,7 +2885,7 @@
       "name": "vault",
       "outputs": [
         {
-          "internalType": "contract CrunaProtectedNFTBase",
+          "internalType": "contract CrunaProtectedNFT",
           "name": "",
           "type": "address"
         }
@@ -3101,7 +3094,17 @@
     },
     {
       "inputs": [],
+      "name": "InvalidMaxTokenId",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "InvalidNextTokenId",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidTokenId",
       "type": "error"
     },
     {
@@ -3111,7 +3114,17 @@
     },
     {
       "inputs": [],
+      "name": "NftNotInitiated",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "NotAuthorized",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NotAvailableIfTokenIdsAreNotProgressive",
       "type": "error"
     },
     {
@@ -3682,6 +3695,19 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "allowUntrustedTransfers",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -3834,19 +3860,6 @@
         }
       ],
       "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "deployedToProduction",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -4172,18 +4185,28 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "managerProxy_",
+          "name": "managerAddress_",
           "type": "address"
         },
         {
-          "internalType": "uint256",
-          "name": "firstTokenId_",
-          "type": "uint256"
+          "internalType": "bool",
+          "name": "progressiveTokenIds_",
+          "type": "bool"
         },
         {
           "internalType": "bool",
-          "name": "deployedToProduction_",
+          "name": "allowUntrustedTransfers_",
           "type": "bool"
+        },
+        {
+          "internalType": "uint112",
+          "name": "nextTokenId_",
+          "type": "uint112"
+        },
+        {
+          "internalType": "uint112",
+          "name": "maxTokenId_",
+          "type": "uint112"
         }
       ],
       "name": "init",
@@ -4205,6 +4228,40 @@
         }
       ],
       "name": "isApprovedForAll",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "implementation",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "salt",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "isERC6551Account",
+          "type": "bool"
+        }
+      ],
+      "name": "isDeployed",
       "outputs": [
         {
           "internalType": "bool",
@@ -4373,32 +4430,19 @@
       "name": "managerHistory",
       "outputs": [
         {
+          "internalType": "uint112",
+          "name": "firstTokenId",
+          "type": "uint112"
+        },
+        {
+          "internalType": "uint112",
+          "name": "lastTokenId",
+          "type": "uint112"
+        },
+        {
           "internalType": "address",
           "name": "managerAddress",
           "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "firstTokenId",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "lastTokenId",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "managerHistoryLength",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -4425,19 +4469,6 @@
     },
     {
       "inputs": [],
-      "name": "maxTokenId",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "name",
       "outputs": [
         {
@@ -4451,12 +4482,37 @@
     },
     {
       "inputs": [],
-      "name": "nextTokenId",
+      "name": "nftConf",
       "outputs": [
         {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
+          "internalType": "bool",
+          "name": "progressiveTokenIds",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "allowUntrustedTransfers",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint112",
+          "name": "nextTokenId",
+          "type": "uint112"
+        },
+        {
+          "internalType": "uint112",
+          "name": "maxTokenId",
+          "type": "uint112"
+        },
+        {
+          "internalType": "uint8",
+          "name": "managerHistoryLength",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint8",
+          "name": "unusedField",
+          "type": "uint8"
         }
       ],
       "stateMutability": "view",
