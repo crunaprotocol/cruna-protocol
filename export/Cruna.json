@@ -4430,19 +4430,19 @@
       "name": "managerHistory",
       "outputs": [
         {
+          "internalType": "uint112",
+          "name": "firstTokenId",
+          "type": "uint112"
+        },
+        {
+          "internalType": "uint112",
+          "name": "lastTokenId",
+          "type": "uint112"
+        },
+        {
           "internalType": "address",
           "name": "managerAddress",
           "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "firstTokenId",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "lastTokenId",
-          "type": "uint256"
         }
       ],
       "stateMutability": "view",

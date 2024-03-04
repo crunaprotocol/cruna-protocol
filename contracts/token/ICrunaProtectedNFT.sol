@@ -8,12 +8,6 @@ import {IManagedNFT} from "./IManagedNFT.sol";
 interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
   event DefaultManagerUpgrade(address newManagerProxy);
 
-  struct ManagerHistory {
-    address managerAddress;
-    uint256 firstTokenId;
-    uint256 lastTokenId;
-  }
-
   /**
    * @dev Optimized configuration structure for the generic NFT
    *
@@ -32,6 +26,12 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
     uint8 managerHistoryLength;
     // for future changes
     uint8 unusedField;
+  }
+
+  struct ManagerHistory {
+    uint112 firstTokenId;
+    uint112 lastTokenId;
+    address managerAddress;
   }
 
   function setMaxTokenId(uint256 maxTokenId_) external;
