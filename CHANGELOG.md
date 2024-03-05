@@ -1,5 +1,8 @@
 # Change log
 
+**0.1.6**
+- Add check to avoid double initializations in CrunaProtectedNFT
+
 **0.1.5**
 - Align ManagedHistory fields to NFTConf fields (uint256 > uint112)
 
