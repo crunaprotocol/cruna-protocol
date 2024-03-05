@@ -83,6 +83,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, CanonicalAddresses, I
   /**
    * @dev Initializes the NFT. It MUST be called before doing anything else
    * @notice A wrong configuration can make the NFT unusable.
+   * If you need special configurations, override this function.
    */
   function init(
     address managerAddress_,
@@ -92,6 +93,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, CanonicalAddresses, I
     uint112 maxTokenId_
   ) external virtual override {
     _canManage(true);
+    if (nftConf.managerHistoryLength > 0) revert AlreadyInitiated();
     if (managerAddress_ == address(0)) revert ZeroAddress();
     nftConf = NftConf({
       progressiveTokenIds: progressiveTokenIds_,
@@ -216,8 +218,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, CanonicalAddresses, I
 
   // minting and initialization
 
-  // @dev This function will mint a new token and initialize it.
-  // @param to The address of the recipient.
+  // @dev This function will mint a new token and initialize it if progressiveTokenIds is true.
   function _mintAndActivateByAmount(address to, uint256 amount) internal virtual {
     if (!nftConf.progressiveTokenIds) revert NotAvailableIfTokenIdsAreNotProgressive();
     if (nftConf.managerHistoryLength == 0) revert NftNotInitiated();
@@ -229,6 +230,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, CanonicalAddresses, I
   }
 
   // @dev This function will mint a new token and initialize it.
+  // Use it carefully if nftConf.progressiveTokenIds is true.
   function _mintAndActivate(address to, uint256 tokenId) internal virtual {
     if (nftConf.managerHistoryLength == 0) revert NftNotInitiated();
     if (
