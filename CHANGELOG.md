@@ -1,5 +1,8 @@
 # Change log
 
+**0.1.7**
+- Modify signature of init function in CrunaProtectedNFT to give more flexibility to override the default implementation if needed
+
 **0.1.6**
 - Add check to avoid double initializations in CrunaProtectedNFT
 

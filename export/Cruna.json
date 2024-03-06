@@ -4199,14 +4199,14 @@
           "type": "bool"
         },
         {
-          "internalType": "uint112",
+          "internalType": "uint256",
           "name": "nextTokenId_",
-          "type": "uint112"
+          "type": "uint256"
         },
         {
-          "internalType": "uint112",
+          "internalType": "uint256",
           "name": "maxTokenId_",
-          "type": "uint112"
+          "type": "uint256"
         }
       ],
       "name": "init",

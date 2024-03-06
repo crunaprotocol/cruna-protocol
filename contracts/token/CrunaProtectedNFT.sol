@@ -83,14 +83,14 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, CanonicalAddresses, I
   /**
    * @dev Initializes the NFT. It MUST be called before doing anything else
    * @notice A wrong configuration can make the NFT unusable.
-   * If you need special configurations, override this function.
+   * If you need special configurations, override this function. For this case, we keep the tokenId params as uint256 to provide more flexibility
    */
   function init(
     address managerAddress_,
     bool progressiveTokenIds_,
     bool allowUntrustedTransfers_,
-    uint112 nextTokenId_,
-    uint112 maxTokenId_
+    uint256 nextTokenId_,
+    uint256 maxTokenId_
   ) external virtual override {
     _canManage(true);
     if (nftConf.managerHistoryLength > 0) revert AlreadyInitiated();
@@ -98,12 +98,12 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, CanonicalAddresses, I
     nftConf = NftConf({
       progressiveTokenIds: progressiveTokenIds_,
       allowUntrustedTransfers: allowUntrustedTransfers_,
-      nextTokenId: nextTokenId_,
-      maxTokenId: maxTokenId_,
+      nextTokenId: uint112(nextTokenId_),
+      maxTokenId: uint112(maxTokenId_),
       managerHistoryLength: 1,
       unusedField: 0
     });
-    managerHistory.push(ManagerHistory({managerAddress: managerAddress_, firstTokenId: nextTokenId_, lastTokenId: 0}));
+    managerHistory.push(ManagerHistory({managerAddress: managerAddress_, firstTokenId: uint112(nextTokenId_), lastTokenId: 0}));
   }
 
   function allowUntrustedTransfers() external view virtual override returns (bool) {

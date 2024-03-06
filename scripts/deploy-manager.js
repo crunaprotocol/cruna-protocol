@@ -2,6 +2,7 @@ require("dotenv").config();
 const hre = require("hardhat");
 const ethers = hre.ethers;
 const path = require("path");
+const fs = require("fs-extra");
 const EthDeployUtils = require("eth-deploy-utils");
 // const EthDeployUtils = require("../../../Personal/deploy-utils");
 
@@ -17,17 +18,34 @@ async function main() {
 
   process.env.CHAIN_ID = chainId;
   require("./set-canonical");
+  const bytecodesPath = path.resolve(__dirname, "../export/deployedBytecodes.json ");
 
-  if (chainId === 1337) {
-    // on localhost, we deploy the factory if not deployed yet
-    await deployUtils.deployNickSFactory(deployer);
+  if (!fs.existsSync(bytecodesPath)) {
+    fs.writeFileSync(bytecodesPath, JSON.stringify({}));
   }
 
   let salt = ethers.constants.HashZero;
+  const bytecodes = JSON.parse(fs.readFileSync(bytecodesPath));
 
-  const manager = await deployUtils.deployContractViaNickSFactory(deployer, "CrunaManager", salt);
+  if (!bytecodes.CrunaManager || process.env.OVERRIDE) {
+    bytecodes.CrunaManager = await deployUtils.getBytecodeToBeDeployedViaNickSFactory(deployer, "CrunaManager", salt);
+  }
 
-  await deployUtils.deployContractViaNickSFactory(deployer, "CrunaManagerProxy", ["address"], [manager.address], salt);
+  let manager = await deployUtils.deployBytecodeViaNickSFactory(deployer, "CrunaManager", bytecodes.CrunaManager, salt);
+
+  if (!bytecodes.CrunaManagerProxy || process.env.OVERRIDE) {
+    bytecodes.CrunaManagerProxy = await deployUtils.getBytecodeToBeDeployedViaNickSFactory(
+      deployer,
+      "CrunaManagerProxy",
+      ["address"],
+      [manager.address],
+      salt,
+    );
+  }
+
+  let proxy = await deployUtils.deployBytecodeViaNickSFactory(deployer, "CrunaManagerProxy", bytecodes.CrunaManagerProxy, salt);
+
+  fs.writeFileSync(bytecodesPath, JSON.stringify(bytecodes, null, 2));
 }
 
 main()

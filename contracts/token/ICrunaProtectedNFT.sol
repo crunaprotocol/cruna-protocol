@@ -43,8 +43,8 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
     address managerAddress_,
     bool progressiveTokenIds_,
     bool allowUntrustedTransfers_,
-    uint112 nextTokenId_,
-    uint112 maxTokenId_
+    uint256 nextTokenId_,
+    uint256 maxTokenId_
   ) external;
 
   function defaultManagerImplementation(uint256 _tokenId) external view returns (address);
