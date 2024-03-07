@@ -32,7 +32,11 @@ abstract contract CrunaPluginBase is
   error NotTheDeployer();
   error Forbidden();
 
-  receive() external payable {}
+  /**
+  * @dev required if developing an ERC6551 account as a plugin.
+  * If a plugin does not need it, the function should be overridden and revert
+  */
+  receive() external payable virtual {}
 
   /**
    * @dev Storage slot with the address of the current implementation.

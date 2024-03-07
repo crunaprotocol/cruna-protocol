@@ -12,7 +12,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 abstract contract SignatureValidator is EIP712, Context {
   using ECDSA for bytes32;
 
-  event PreApproved(bytes32 hash, address signer);
+  event PreApproved(bytes32 hash, address indexed signer);
 
   error TimestampInvalidOrExpired();
   error NotAuthorized();

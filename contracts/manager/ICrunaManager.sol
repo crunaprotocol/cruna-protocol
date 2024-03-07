@@ -28,7 +28,7 @@ interface ICrunaManager is ITokenLinkedContract, INamed {
 
   event PluginTrusted(string indexed name, bytes4 salt);
 
-  event ImplementationUpgraded(address implementation_, uint256 currentVersion, uint256 newVersion);
+  event ImplementationUpgraded(address indexed implementation_, uint256 currentVersion, uint256 newVersion);
 
   enum EventAction {
     ProtectorChange,

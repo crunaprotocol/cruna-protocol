@@ -35,10 +35,15 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   error NoVoteToRetire();
   error InvalidParameters();
   error TooManySentinels();
+  error CannotReceiveFunds();
 
   bytes4 public constant SENTINEL = bytes4(keccak256(abi.encodePacked("SENTINEL")));
   InheritanceConf internal _inheritanceConf;
   Votes internal _votes;
+
+  receive() external override payable virtual {
+    revert CannotReceiveFunds();
+  }
 
   function requiresToManageTransfer() external pure override returns (bool) {
     return true;
@@ -192,6 +197,16 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     return false;
   }
 
+  function _popNominated(address beneficiary) internal virtual {
+    for (uint256 i = 0; i < _votes.nominations.length; i++) {
+      if (beneficiary == _votes.nominations[i]) {
+        _votes.nominations[i] = _votes.nominations[_votes.nominations.length - 1];
+        _votes.nominations.pop();
+        break;
+      }
+    }
+  }
+
   // @dev see {IInheritanceCrunaPlugin.sol-requestTransfer}
   function requestTransfer(address beneficiary) external virtual override {
     if (_inheritanceConf.proofOfLifeDurationInWeeks == 0) revert InheritanceNotConfigured();
@@ -200,6 +215,10 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     if (!_isASentinel()) revert NotASentinel();
     if (beneficiary == address(0)) {
       if (_votes.favorites[_msgSender()] == address(0)) revert NoVoteToRetire();
+      else {
+        _popNominated(_votes.favorites[_msgSender()]);
+        delete _votes.favorites[_msgSender()];
+      }
     } else if (!_isNominated(beneficiary)) {
       _votes.nominations.push(beneficiary);
     }

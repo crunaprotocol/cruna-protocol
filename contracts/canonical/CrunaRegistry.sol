@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.20;
 
 // Modified registry based on CrunaRegistry
 // https://github.com/erc6551/reference/blob/main/src/CrunaRegistry.sol

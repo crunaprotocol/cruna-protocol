@@ -109,7 +109,7 @@ contract VaultFactory is
     return price - discount;
   }
 
-  function buyVaults(address stableCoin, uint256 amount) external virtual override whenNotPaused nonReentrant {
+  function buyVaults(address stableCoin, uint256 amount) external virtual override nonReentrant whenNotPaused  {
     uint256 payment = finalPrice(stableCoin) * amount;
     if (payment > ERC20(stableCoin).balanceOf(_msgSender())) revert InsufficientFunds();
     vault.safeMintAndActivate(_msgSender(), amount);
@@ -121,7 +121,7 @@ contract VaultFactory is
     address stableCoin,
     address[] memory tos,
     uint256[] memory amounts
-  ) external virtual override whenNotPaused nonReentrant {
+  ) external virtual override nonReentrant whenNotPaused  {
     if (tos.length != amounts.length) revert InvalidArguments();
     uint256 amount = 0;
     for (uint256 i = 0; i < tos.length; i++) {

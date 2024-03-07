@@ -252,7 +252,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
-  ) external virtual override onlyTokenOwner nonReentrant {
+  ) external virtual override nonReentrant onlyTokenOwner  {
     if (validFor > 9999999) revert InvalidValidity();
     bytes4 _nameId = _stringToBytes4(name);
     if (pluginsById[_nameId][0x00000000].proxyAddress != address(0)) revert PluginAlreadyPlugged();
@@ -467,7 +467,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
-  ) external virtual override onlyTokenOwner nonReentrant {
+  ) external virtual override nonReentrant onlyTokenOwner  {
     bytes4 salt = 0x00000000;
     if (validFor > 9999999) revert InvalidValidity();
     uint256 i = _isPluginEnabled(name, salt);
@@ -506,7 +506,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
-  ) external virtual override onlyTokenOwner nonReentrant {
+  ) external virtual override nonReentrant onlyTokenOwner  {
     bytes4 salt = 0x00000000;
     if (validFor > 9999999) revert InvalidValidity();
     uint256 i = _isPluginDisabled(name, salt);

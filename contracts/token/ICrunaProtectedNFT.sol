@@ -6,7 +6,7 @@ import {IManagedNFT} from "./IManagedNFT.sol";
 
 // Author: Francesco Sullo <francesco@sullo.co>
 interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
-  event DefaultManagerUpgrade(address newManagerProxy);
+  event DefaultManagerUpgrade(address indexed newManagerProxy);
 
   /**
    * @dev Optimized configuration structure for the generic NFT
