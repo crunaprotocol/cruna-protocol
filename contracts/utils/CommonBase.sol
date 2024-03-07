@@ -10,6 +10,7 @@ import {CrunaProtectedNFT} from "../token/CrunaProtectedNFT.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {CanonicalAddresses} from "../canonical/CanonicalAddresses.sol";
 import {INamed} from "../utils/INamed.sol";
+
 //import {console} from "hardhat/console.sol";
 
 /**
@@ -32,7 +33,7 @@ abstract contract CommonBase is INamed, Context, CanonicalAddresses, TokenLinked
   }
 
   // must be overridden
-  function nameId() public view override virtual returns (bytes4){
+  function nameId() public view virtual override returns (bytes4) {
     return 0x00000000;
   }
 
@@ -40,6 +41,10 @@ abstract contract CommonBase is INamed, Context, CanonicalAddresses, TokenLinked
     return _vault();
   }
 
+  /**
+   * @dev Returns the keccak256 of a string variable.
+   * It saves gas compared to keccak256(abi.encodePacked(string)).
+   */
   function _hashString(string memory input) internal pure returns (bytes32 result) {
     // solhint-disable-next-line no-inline-assembly
     assembly {

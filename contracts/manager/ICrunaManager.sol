@@ -7,7 +7,6 @@ import {CrunaPluginBase} from "../plugins/CrunaPluginBase.sol";
 
 import {IVersioned} from "../utils/IVersioned.sol";
 import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
-import {CrunaProtectedNFT} from "../token/CrunaProtectedNFT.sol";
 
 //import {console} from "hardhat/console.sol";
 

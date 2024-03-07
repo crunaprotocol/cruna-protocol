@@ -59,7 +59,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     // nothing, for now
   }
 
-  function nameId() public view override virtual returns (bytes4){
+  function nameId() public view virtual override returns (bytes4) {
     return bytes4(keccak256("CrunaManager"));
   }
 
@@ -377,13 +377,15 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   function pluginAddress(bytes4 _nameId, bytes4) public view virtual override returns (address payable) {
     bytes4 salt = 0x00000000;
     return
-      payable(_crunaRegistry().tokenLinkedContract(
-        pluginsById[_nameId][salt].proxyAddress,
-        salt,
-        block.chainid,
-        tokenAddress(),
-        tokenId()
-      ));
+      payable(
+        _crunaRegistry().tokenLinkedContract(
+          pluginsById[_nameId][salt].proxyAddress,
+          salt,
+          block.chainid,
+          tokenAddress(),
+          tokenId()
+        )
+      );
   }
 
   function plugin(bytes4 _nameId, bytes4) public view virtual override returns (CrunaPluginBase) {

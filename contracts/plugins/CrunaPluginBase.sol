@@ -3,23 +3,15 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
 import {CrunaManager} from "../manager/CrunaManager.sol";
-import {TokenLinkedContract} from "../utils/TokenLinkedContract.sol";
-import {CrunaProtectedNFT} from "../token/CrunaProtectedNFT.sol";
 import {ICrunaPlugin, IVersioned} from "./ICrunaPlugin.sol";
-import {CanonicalAddresses} from "../canonical/CanonicalAddresses.sol";
-import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {CommonBase} from "../utils/CommonBase.sol";
 
 //import {console} from "hardhat/console.sol";
 
-abstract contract CrunaPluginBase is
-  ICrunaPlugin,
-  CommonBase
-{
+abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
   error UntrustedImplementation();
   error InvalidVersion();
   error PluginRequiresUpdatedManager(uint256 requiredVersion);

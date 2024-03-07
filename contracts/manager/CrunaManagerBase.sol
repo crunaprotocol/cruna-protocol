@@ -5,7 +5,6 @@ pragma solidity ^0.8.20;
 
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
-import {CrunaProtectedNFT} from "../token/CrunaProtectedNFT.sol";
 import {ICrunaManager} from "./ICrunaManager.sol";
 import {CommonBase} from "../utils/CommonBase.sol";
 
@@ -20,10 +19,7 @@ interface INamedAndVersioned {
   @title CrunaManagerBase.sol
   @dev Base contract for managers and plugins
 */
-abstract contract CrunaManagerBase is
-  ICrunaManager,
-  CommonBase
-{
+abstract contract CrunaManagerBase is ICrunaManager, CommonBase {
   error UntrustedImplementation();
   error InvalidVersion();
   error PluginRequiresUpdatedManager(uint256 requiredVersion);

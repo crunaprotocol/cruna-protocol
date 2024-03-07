@@ -2,7 +2,6 @@
 pragma solidity ^0.8.20;
 
 import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
-import {CrunaProtectedNFT} from "../token/CrunaProtectedNFT.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 import {CrunaManager} from "../manager/CrunaManager.sol";
 
@@ -31,5 +30,4 @@ interface ICrunaPlugin is ITokenLinkedContract, IVersioned {
   function upgrade(address implementation_) external;
 
   function manager() external view returns (CrunaManager);
-
 }

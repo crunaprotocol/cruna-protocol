@@ -8,7 +8,6 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 import {IInheritanceCrunaPlugin} from "./IInheritanceCrunaPlugin.sol";
 import {ICrunaPlugin, CrunaPluginBase} from "../CrunaPluginBase.sol";
-import {INamed} from "../../utils/INamed.sol";
 import {Actor} from "../../manager/Actor.sol";
 
 //import {console} from "hardhat/console.sol";

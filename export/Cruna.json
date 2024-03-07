@@ -17,11 +17,6 @@
     },
     {
       "inputs": [],
-      "name": "ControllerAlreadySet",
-      "type": "error"
-    },
-    {
-      "inputs": [],
       "name": "ECDSAInvalidSignature",
       "type": "error"
     },
@@ -105,11 +100,6 @@
     {
       "inputs": [],
       "name": "NotTheAuthorizedPlugin",
-      "type": "error"
-    },
-    {
-      "inputs": [],
-      "name": "NotTheDeployer",
       "type": "error"
     },
     {
@@ -282,7 +272,7 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "address",
           "name": "implementation_",
           "type": "address"
@@ -400,7 +390,7 @@
           "type": "bytes32"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "address",
           "name": "signer",
           "type": "address"
@@ -1132,7 +1122,7 @@
       "name": "plugin",
       "outputs": [
         {
-          "internalType": "contract ICrunaPlugin",
+          "internalType": "contract CrunaPluginBase",
           "name": "",
           "type": "address"
         }
@@ -1156,7 +1146,7 @@
       "name": "pluginAddress",
       "outputs": [
         {
-          "internalType": "address",
+          "internalType": "address payable",
           "name": "",
           "type": "address"
         }
@@ -1840,12 +1830,7 @@
     },
     {
       "inputs": [],
-      "name": "CandidateNotFound",
-      "type": "error"
-    },
-    {
-      "inputs": [],
-      "name": "ControllerAlreadySet",
+      "name": "CannotReceiveFunds",
       "type": "error"
     },
     {
@@ -1927,22 +1912,12 @@
     },
     {
       "inputs": [],
-      "name": "NotExpiredYet",
-      "type": "error"
-    },
-    {
-      "inputs": [],
       "name": "NotPermittedWhenProtectorsAreActive",
       "type": "error"
     },
     {
       "inputs": [],
       "name": "NotTheBeneficiary",
-      "type": "error"
-    },
-    {
-      "inputs": [],
-      "name": "NotTheDeployer",
       "type": "error"
     },
     {
@@ -1963,27 +1938,12 @@
     },
     {
       "inputs": [],
-      "name": "QuorumAlreadyReached",
-      "type": "error"
-    },
-    {
-      "inputs": [],
       "name": "QuorumCannotBeGreaterThanSentinels",
       "type": "error"
     },
     {
       "inputs": [],
       "name": "QuorumCannotBeZero",
-      "type": "error"
-    },
-    {
-      "inputs": [],
-      "name": "QuorumNotReached",
-      "type": "error"
-    },
-    {
-      "inputs": [],
-      "name": "RequestAlreadyApproved",
       "type": "error"
     },
     {
@@ -2108,7 +2068,7 @@
           "type": "bytes32"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "address",
           "name": "signer",
           "type": "address"
@@ -3074,11 +3034,6 @@
     },
     {
       "inputs": [],
-      "name": "ErrorCreatingManager",
-      "type": "error"
-    },
-    {
-      "inputs": [],
       "name": "ExecutorAlreadyExists",
       "type": "error"
     },
@@ -3095,11 +3050,6 @@
     {
       "inputs": [],
       "name": "InvalidMaxTokenId",
-      "type": "error"
-    },
-    {
-      "inputs": [],
-      "name": "InvalidNextTokenId",
       "type": "error"
     },
     {
@@ -3155,16 +3105,6 @@
     {
       "inputs": [],
       "name": "ProposerDoesNotExist",
-      "type": "error"
-    },
-    {
-      "inputs": [],
-      "name": "RegistryNotFound",
-      "type": "error"
-    },
-    {
-      "inputs": [],
-      "name": "SupplyOverflow",
       "type": "error"
     },
     {
@@ -3437,7 +3377,7 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "address",
           "name": "newManagerProxy",
           "type": "address"
@@ -5418,13 +5358,13 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "bytes4",
           "name": "nameId",
           "type": "bytes4"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "address",
           "name": "implementation",
           "type": "address"
@@ -6439,7 +6379,7 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "address",
           "name": "stableCoin",
           "type": "address"

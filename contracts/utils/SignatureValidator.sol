@@ -158,6 +158,7 @@ abstract contract SignatureValidator is EIP712, Context {
   }
 
   function _hashBytes(bytes memory signature) internal pure returns (bytes32 hash) {
+    // solhint-disable-next-line no-inline-assembly
     assembly {
       // Load the data pointer of the `signature` bytes array
       let data := add(signature, 32) // Skip the length field
