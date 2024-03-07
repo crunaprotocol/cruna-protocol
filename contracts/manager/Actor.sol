@@ -22,7 +22,7 @@ contract Actor {
   function actorIndex(address actor_, bytes4 role) public view returns (uint256) {
     address[] storage actors = _actors[role];
     // This may go out of gas if there are too many actors
-    for (uint256 i = 0; i < actors.length; i++) {
+    for (uint256 i; i < actors.length; i++) {
       if (actors[i] == actor_) {
         return i;
       }

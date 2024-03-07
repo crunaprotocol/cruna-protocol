@@ -3,15 +3,15 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {ICrunaPlugin} from "../plugins/ICrunaPlugin.sol";
+import {CrunaPluginBase} from "../plugins/CrunaPluginBase.sol";
 
-import {INamed} from "../utils/INamed.sol";
+import {IVersioned} from "../utils/IVersioned.sol";
 import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
 import {CrunaProtectedNFT} from "../token/CrunaProtectedNFT.sol";
 
 //import {console} from "hardhat/console.sol";
 
-interface ICrunaManager is ITokenLinkedContract, INamed {
+interface ICrunaManager is ITokenLinkedContract, IVersioned {
   event EmitEventFailed(EventAction action);
 
   event ProtectorChange(address indexed protector, bool status);
@@ -55,10 +55,6 @@ interface ICrunaManager is ITokenLinkedContract, INamed {
   }
 
   function upgrade(address implementation_) external;
-
-  //  function getImplementation() external view returns (address);
-
-  function vault() external view returns (CrunaProtectedNFT);
 
   function plug(
     string memory name,
@@ -185,9 +181,9 @@ interface ICrunaManager is ITokenLinkedContract, INamed {
     bytes calldata signature
   ) external;
 
-  function pluginAddress(bytes4 _nameId, bytes4 salt) external view returns (address);
+  function pluginAddress(bytes4 _nameId, bytes4 salt) external view returns (address payable);
 
-  function plugin(bytes4 _nameId, bytes4 salt) external view returns (ICrunaPlugin);
+  function plugin(bytes4 _nameId, bytes4 salt) external view returns (CrunaPluginBase);
 
   function trustPlugin(string memory name, bytes4) external;
 

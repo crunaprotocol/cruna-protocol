@@ -49,7 +49,7 @@ contract VaultFactory is
   }
 
   function version() public pure virtual returns (uint256) {
-    return 1e6;
+    return 1_000_000;
   }
 
   // solhint-disable-next-line no-empty-blocks
@@ -85,7 +85,7 @@ contract VaultFactory is
     } else if (stableCoins[stableCoin]) {
       delete stableCoins[stableCoin];
       // no risk of going out of cash because the factory will support just a couple of stable coins
-      for (uint256 i = 0; i < _stableCoins.length; i++) {
+      for (uint256 i; i < _stableCoins.length; i++) {
         if (_stableCoins[i] == stableCoin) {
           _stableCoins[i] = _stableCoins[_stableCoins.length - 1];
           _stableCoins.pop();
@@ -109,7 +109,7 @@ contract VaultFactory is
     return price - discount;
   }
 
-  function buyVaults(address stableCoin, uint256 amount) external virtual override nonReentrant whenNotPaused  {
+  function buyVaults(address stableCoin, uint256 amount) external virtual override nonReentrant whenNotPaused {
     uint256 payment = finalPrice(stableCoin) * amount;
     if (payment > ERC20(stableCoin).balanceOf(_msgSender())) revert InsufficientFunds();
     vault.safeMintAndActivate(_msgSender(), amount);
@@ -121,10 +121,10 @@ contract VaultFactory is
     address stableCoin,
     address[] memory tos,
     uint256[] memory amounts
-  ) external virtual override nonReentrant whenNotPaused  {
+  ) external virtual override nonReentrant whenNotPaused {
     if (tos.length != amounts.length) revert InvalidArguments();
     uint256 amount = 0;
-    for (uint256 i = 0; i < tos.length; i++) {
+    for (uint256 i; i < tos.length; i++) {
       if (tos[i] == address(0)) {
         revert ZeroAddress();
       }
@@ -132,8 +132,8 @@ contract VaultFactory is
     }
     uint256 payment = finalPrice(stableCoin) * amount;
     if (payment > ERC20(stableCoin).balanceOf(_msgSender())) revert InsufficientFunds();
-    for (uint256 i = 0; i < tos.length; i++) {
-      if (amounts[i] > 0) {
+    for (uint256 i; i < tos.length; i++) {
+      if (amounts[i] != 0) {
         vault.safeMintAndActivate(tos[i], amounts[i]);
       }
     }

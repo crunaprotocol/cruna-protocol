@@ -23,7 +23,7 @@ contract CrunaRegistry is ICrunaRegistry {
     uint256 chainId,
     address tokenContract,
     uint256 tokenId
-  ) external returns (address) {
+  ) external override returns (address) {
     // solhint-disable-next-line no-inline-assembly
     assembly {
       // Memory Layout:
@@ -99,7 +99,7 @@ contract CrunaRegistry is ICrunaRegistry {
     uint256 chainId,
     address tokenContract,
     uint256 tokenId
-  ) external view returns (address) {
+  ) external view override returns (address) {
     // solhint-disable-next-line no-inline-assembly
     assembly {
       // Silence unused variable warnings

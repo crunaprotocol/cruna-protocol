@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.20;
 
 import {FlexiTimelockController} from "../utils/FlexiTimelockController.sol";
 
@@ -11,7 +11,7 @@ import {ICrunaGuardian} from "./ICrunaGuardian.sol";
 /**
  * @dev Manages upgrade and cross-chain execution settings for accounts
  */
-contract CrunaGuardian is ICrunaGuardian, FlexiTimelockController, IVersioned {
+contract CrunaGuardian is ICrunaGuardian, IVersioned, FlexiTimelockController {
   error InvalidArguments();
 
   mapping(bytes4 => mapping(address => uint256)) private _isTrustedImplementation;
@@ -25,7 +25,7 @@ contract CrunaGuardian is ICrunaGuardian, FlexiTimelockController, IVersioned {
   ) FlexiTimelockController(minDelay, proposers, executors, admin) {}
 
   function version() public pure virtual returns (uint256) {
-    return 1e6;
+    return 1_000_000;
   }
 
   /**

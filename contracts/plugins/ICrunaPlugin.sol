@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: CC0-1.0
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.20;
 
 import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
 import {CrunaProtectedNFT} from "../token/CrunaProtectedNFT.sol";
-import {INamed} from "../utils/INamed.sol";
+import {IVersioned} from "../utils/IVersioned.sol";
 import {CrunaManager} from "../manager/CrunaManager.sol";
 
 /**
@@ -12,7 +12,7 @@ import {CrunaManager} from "../manager/CrunaManager.sol";
    Technically, plugins are secondary managers, pluggable in
    the primary manage, which is CrunaManager.sol
 */
-interface ICrunaPlugin is ITokenLinkedContract, INamed {
+interface ICrunaPlugin is ITokenLinkedContract, IVersioned {
   // function called in the dashboard to know if the plugin is asking the
   // right to make a managed transfer of the vault
   function requiresToManageTransfer() external pure returns (bool);
@@ -32,5 +32,4 @@ interface ICrunaPlugin is ITokenLinkedContract, INamed {
 
   function manager() external view returns (CrunaManager);
 
-  function vault() external view returns (CrunaProtectedNFT);
 }

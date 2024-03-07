@@ -30,7 +30,7 @@ interface IVersionedManager {
  * @dev This contracts is a base for NFTs with protected transfers. It must be extended implementing
  * the _canManage function to define who can alter the contract. Two versions are provided in this repo,CrunaProtectedNFTTimeControlled.sol and CrunaProtectedNFTOwnable.sol. The first is the recommended one, since it allows a governance aligned with best practices. The second is simpler, and can be used in less critical scenarios. If none of them fits your needs, you can implement your own policy.
  */
-abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, CanonicalAddresses, IVersioned, IERC6454, IERC6982, ERC721 {
+abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, CanonicalAddresses, IERC6454, IERC6982, ERC721 {
   using ECDSA for bytes32;
   using Strings for uint256;
   using Address for address;
@@ -38,14 +38,10 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, CanonicalAddresses, I
   error NotTransferable();
   error NotTheManager();
   error ZeroAddress();
-  error RegistryNotFound();
   error AlreadyInitiated();
-  error SupplyOverflow();
-  error ErrorCreatingManager();
   error NotTheTokenOwner();
   error CannotUpgradeToAnOlderVersion();
   error UntrustedImplementation();
-  error InvalidNextTokenId();
   error NotAvailableIfTokenIdsAreNotProgressive();
   error InvalidTokenId();
   error NftNotInitiated();
@@ -72,7 +68,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, CanonicalAddresses, I
 
   function version() public pure virtual returns (uint256) {
     // semver 1.2.3 => 1002003 = 1e6 + 2e3 + 3
-    return 1e6;
+    return 1_000_000;
   }
 
   // @dev Constructor of the contract.
@@ -93,7 +89,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, CanonicalAddresses, I
     uint256 maxTokenId_
   ) external virtual override {
     _canManage(true);
-    if (nftConf.managerHistoryLength > 0) revert AlreadyInitiated();
+    if (nftConf.managerHistoryLength != 0) revert AlreadyInitiated();
     if (managerAddress_ == address(0)) revert ZeroAddress();
     nftConf = NftConf({
       progressiveTokenIds: progressiveTokenIds_,
@@ -125,7 +121,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, CanonicalAddresses, I
   function defaultManagerImplementation(uint256 _tokenId) public view virtual override returns (address) {
     if (nftConf.managerHistoryLength == 1) return managerHistory[0].managerAddress;
     else {
-      for (uint256 i = 0; i < nftConf.managerHistoryLength; i++) {
+      for (uint256 i; i < nftConf.managerHistoryLength; i++) {
         if (
           _tokenId >= managerHistory[i].firstTokenId &&
           (managerHistory[i].lastTokenId == 0 || _tokenId <= managerHistory[i].lastTokenId)
@@ -223,7 +219,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, CanonicalAddresses, I
     if (!nftConf.progressiveTokenIds) revert NotAvailableIfTokenIdsAreNotProgressive();
     if (nftConf.managerHistoryLength == 0) revert NftNotInitiated();
     uint256 tokenId = nftConf.nextTokenId;
-    for (uint256 i = 0; i < amount; i++) {
+    for (uint256 i; i < amount; i++) {
       _mintAndActivate(to, tokenId++);
     }
     nftConf.nextTokenId = uint112(tokenId);
@@ -235,7 +231,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, CanonicalAddresses, I
     if (nftConf.managerHistoryLength == 0) revert NftNotInitiated();
     if (
       tokenId > type(uint112).max ||
-      (nftConf.maxTokenId > 0 && tokenId > nftConf.maxTokenId) ||
+      (nftConf.maxTokenId != 0 && tokenId > nftConf.maxTokenId) ||
       (tokenId < managerHistory[0].firstTokenId)
     ) revert InvalidTokenId();
     _deploy(defaultManagerImplementation(tokenId), 0x00, tokenId, false);
@@ -276,7 +272,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, CanonicalAddresses, I
     assembly {
       size := extcodesize(_addr)
     }
-    return (size > 0);
+    return (size != 0);
   }
 
   // @dev This function will return the address of the manager for tokenId.

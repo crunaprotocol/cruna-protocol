@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.20;
 
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
@@ -53,8 +53,8 @@ abstract contract SignatureValidator is EIP712, Context {
     if (timeValidationAndSetProtector < 1e17 && timeValidationAndSetProtector % 1e17 < 1e7) {
       if (_isProtected()) revert NotPermittedWhenProtectorsAreActive();
     } else {
-      if (usedSignatures[keccak256(signature)]) revert SignatureAlreadyUsed();
-      usedSignatures[keccak256(signature)] = true;
+      if (usedSignatures[_hashBytes(signature)]) revert SignatureAlreadyUsed();
+      usedSignatures[_hashBytes(signature)] = true;
       (address signer, bytes32 hash) = recoverSigner(
         selector,
         owner,
@@ -139,7 +139,7 @@ abstract contract SignatureValidator is EIP712, Context {
     uint256 timeValidation
   ) internal pure returns (bytes32) {
     return
-      keccak256(
+      _hashBytes(
         abi.encode(
           keccak256(
             "Auth(bytes4 selector,address owner,address actor,address tokenAddress,uint256 tokenId,uint256 extra,uint256 extra2,uint256 extra3,uint256 timeValidation)"
@@ -155,6 +155,17 @@ abstract contract SignatureValidator is EIP712, Context {
           timeValidation
         )
       );
+  }
+
+  function _hashBytes(bytes memory signature) internal pure returns (bytes32 hash) {
+    assembly {
+      // Load the data pointer of the `signature` bytes array
+      let data := add(signature, 32) // Skip the length field
+      // Load the length of the `signature` bytes array
+      let length := mload(signature)
+      // Perform the `keccak256` hash operation
+      hash := keccak256(data, length)
+    }
   }
 
   // @dev This empty reserved space is put in place to allow future versions to add new

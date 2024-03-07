@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
 // this is a reduction of IERC6551Account focusing purely on the bond between the NFT and the contract
 

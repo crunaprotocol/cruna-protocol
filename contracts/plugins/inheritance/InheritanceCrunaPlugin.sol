@@ -22,15 +22,10 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   error InheritanceNotConfigured();
   error StillAlive();
   error NotASentinel();
-  error RequestAlreadyApproved();
   error NotTheBeneficiary();
-  error QuorumNotReached();
   error Expired();
   error BeneficiaryNotSet();
   error WaitingForBeneficiary();
-  error NotExpiredYet();
-  error QuorumAlreadyReached();
-  error CandidateNotFound();
   error InvalidValidity();
   error NoVoteToRetire();
   error InvalidParameters();
@@ -41,7 +36,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   InheritanceConf internal _inheritanceConf;
   Votes internal _votes;
 
-  receive() external override payable virtual {
+  receive() external payable virtual override {
     revert CannotReceiveFunds();
   }
 
@@ -49,7 +44,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     return true;
   }
 
-  function nameId() public pure virtual override(INamed, CrunaPluginBase) returns (bytes4) {
+  function nameId() public pure virtual override returns (bytes4) {
     return bytes4(keccak256("InheritanceCrunaPlugin"));
   }
 
@@ -70,7 +65,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     uint256 validFor,
     bytes calldata signature
   ) public virtual override onlyTokenOwner {
-    if (validFor > 9999999) revert InvalidValidity();
+    if (validFor > 9_999_999) revert InvalidValidity();
     _validateAndCheckSignature(
       this.setSentinel.selector,
       owner(),
@@ -97,7 +92,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
 
   // @dev see {IInheritanceCrunaPlugin.sol-setSentinels}
   function setSentinels(address[] memory sentinels, bytes calldata emptySignature) external virtual override onlyTokenOwner {
-    for (uint256 i = 0; i < sentinels.length; i++) {
+    for (uint256 i; i < sentinels.length; i++) {
       setSentinel(sentinels[i], true, 0, 0, emptySignature);
     }
     if (getActors(SENTINEL).length > 11) revert TooManySentinels();
@@ -114,7 +109,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
-    if (validFor > 9999999) revert InvalidValidity();
+    if (validFor > 9_999_999) revert InvalidValidity();
     _validateAndCheckSignature(
       this.configureInheritance.selector,
       owner(),
@@ -136,7 +131,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     uint8 gracePeriodInWeeks,
     address beneficiary
   ) internal virtual {
-    if (actorCount(SENTINEL) > 0 && quorum == 0) revert QuorumCannotBeZero();
+    if (actorCount(SENTINEL) != 0 && quorum == 0) revert QuorumCannotBeZero();
     if (quorum > actorCount(SENTINEL)) revert QuorumCannotBeGreaterThanSentinels();
     if (quorum == 0 && beneficiary == address(0)) revert InvalidParameters();
     _inheritanceConf.quorum = quorum;
@@ -156,7 +151,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
 
   function getVotes() external view virtual override returns (address[] memory) {
     address[] memory votes = getActors(SENTINEL);
-    for (uint256 i = 0; i < votes.length; i++) {
+    for (uint256 i; i < votes.length; i++) {
       votes[i] = _votes.favorites[votes[i]];
     }
     return votes;
@@ -176,7 +171,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     address[] memory sentinels = getActors(SENTINEL);
     for (uint256 k = 0; k < _votes.nominations.length; k++) {
       uint256 votes = 0;
-      for (uint256 i = 0; i < sentinels.length; i++) {
+      for (uint256 i; i < sentinels.length; i++) {
         if (_votes.favorites[sentinels[i]] == _votes.nominations[k]) {
           votes++;
           if (votes == _inheritanceConf.quorum) {
@@ -189,7 +184,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   function _isNominated(address beneficiary) internal view virtual returns (bool) {
-    for (uint256 i = 0; i < _votes.nominations.length; i++) {
+    for (uint256 i; i < _votes.nominations.length; i++) {
       if (beneficiary == _votes.nominations[i]) {
         return true;
       }
@@ -198,7 +193,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   function _popNominated(address beneficiary) internal virtual {
-    for (uint256 i = 0; i < _votes.nominations.length; i++) {
+    for (uint256 i; i < _votes.nominations.length; i++) {
       if (beneficiary == _votes.nominations[i]) {
         _votes.nominations[i] = _votes.nominations[_votes.nominations.length - 1];
         _votes.nominations.pop();
@@ -242,7 +237,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     if (_votes.nominations.length > 0) {
       delete _votes.nominations;
       address[] memory _sentinels = getActors(SENTINEL);
-      for (uint256 i = 0; i < _sentinels.length; i++) {
+      for (uint256 i; i < _sentinels.length; i++) {
         delete _votes.favorites[_sentinels[i]];
       }
     }

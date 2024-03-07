@@ -8,49 +8,28 @@ import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
 import {CrunaManager} from "../manager/CrunaManager.sol";
 import {TokenLinkedContract} from "../utils/TokenLinkedContract.sol";
-import {IVersioned} from "../utils/IVersioned.sol";
 import {CrunaProtectedNFT} from "../token/CrunaProtectedNFT.sol";
-import {ICrunaPlugin} from "./ICrunaPlugin.sol";
+import {ICrunaPlugin, IVersioned} from "./ICrunaPlugin.sol";
 import {CanonicalAddresses} from "../canonical/CanonicalAddresses.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
+import {CommonBase} from "../utils/CommonBase.sol";
 
 //import {console} from "hardhat/console.sol";
 
 abstract contract CrunaPluginBase is
-  Context,
-  CanonicalAddresses,
-  TokenLinkedContract,
-  IVersioned,
   ICrunaPlugin,
-  SignatureValidator
+  CommonBase
 {
-  error NotTheTokenOwner();
   error UntrustedImplementation();
   error InvalidVersion();
   error PluginRequiresUpdatedManager(uint256 requiredVersion);
-  error ControllerAlreadySet();
-  error NotTheDeployer();
   error Forbidden();
 
   /**
-  * @dev required if developing an ERC6551 account as a plugin.
-  * If a plugin does not need it, the function should be overridden and revert
-  */
-  receive() external payable virtual {}
-
-  /**
-   * @dev Storage slot with the address of the current implementation.
-   * This is the keccak-256 hash of "eip1967.proxy.implementation" subtracted by 1, and is
-   * validated in the constructor.
+   * @dev required if developing an ERC6551 account as a plugin.
+   * If a plugin does not need it, the function should be overridden and revert
    */
-  bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
-
-  //  CrunaManager public manager;
-
-  modifier onlyTokenOwner() {
-    if (owner() != _msgSender()) revert NotTheTokenOwner();
-    _;
-  }
+  receive() external payable virtual {}
 
   function _canPreApprove(bytes4, address, address signer) internal view virtual override returns (bool) {
     return _manager().isAProtector(signer);
@@ -70,17 +49,7 @@ abstract contract CrunaPluginBase is
   }
 
   function version() public pure virtual override returns (uint256) {
-    return 1e6;
-  }
-
-  function nameId() public view virtual override returns (bytes4);
-
-  function vault() external view virtual override returns (CrunaProtectedNFT) {
-    return _vault();
-  }
-
-  function _vault() internal view virtual returns (CrunaProtectedNFT) {
-    return CrunaProtectedNFT(tokenAddress());
+    return 1_000_000;
   }
 
   // @dev Upgrade the implementation of the plugin
@@ -93,7 +62,7 @@ abstract contract CrunaPluginBase is
     if (requires == 0) {
       // The new implementation is not trusted.
       // If current implementation is trusted, the new implementation must be trusted too
-      if (_crunaGuardian().trustedImplementation(nameId(), implementation()) > 0) revert UntrustedImplementation();
+      if (_crunaGuardian().trustedImplementation(nameId(), implementation()) != 0) revert UntrustedImplementation();
     }
     IVersioned impl = IVersioned(implementation_);
     uint256 _version = impl.version();
