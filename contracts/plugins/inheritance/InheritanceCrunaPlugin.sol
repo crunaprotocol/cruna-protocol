@@ -57,7 +57,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     );
     if (!status) {
       _removeActor(sentinel, _SENTINEL);
-      uint256 shares = actorCount(_SENTINEL);
+      uint256 shares = _actorCount(_SENTINEL);
       if (_inheritanceConf.quorum > shares) {
         _inheritanceConf.quorum = uint8(shares);
       }
@@ -76,7 +76,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
         i++;
       }
     }
-    if (getActors(_SENTINEL).length > 11) revert TooManySentinels();
+    if (_actorCount(_SENTINEL) > 11) revert TooManySentinels();
   }
 
   // @dev see {IInheritanceCrunaPlugin.sol-configureInheritance}
@@ -106,13 +106,17 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     _configureInheritance(quorum, proofOfLifeDurationInWeeks, gracePeriodInWeeks, beneficiary);
   }
 
+  function countSentinels() external view virtual override returns (uint256) {
+    return _actorCount(_SENTINEL);
+  }
+
   // @dev see {IInheritanceCrunaPlugin.sol-getSentinelsAndInheritanceData}
   function getSentinelsAndInheritanceData() external view virtual override returns (address[] memory, InheritanceConf memory) {
-    return (getActors(_SENTINEL), _inheritanceConf);
+    return (_getActors(_SENTINEL), _inheritanceConf);
   }
 
   function getVotes() external view virtual override returns (address[] memory) {
-    address[] memory votes = getActors(_SENTINEL);
+    address[] memory votes = _getActors(_SENTINEL);
     uint256 len = votes.length;
     for (uint256 i; i < len; ) {
       votes[i] = _votes.favorites[votes[i]];
@@ -196,8 +200,8 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     uint8 gracePeriodInWeeks,
     address beneficiary
   ) internal virtual {
-    if (0 != actorCount(_SENTINEL) && 0 == quorum) revert QuorumCannotBeZero();
-    if (quorum > actorCount(_SENTINEL)) revert QuorumCannotBeGreaterThanSentinels();
+    if (0 != _actorCount(_SENTINEL) && 0 == quorum) revert QuorumCannotBeZero();
+    if (quorum > _actorCount(_SENTINEL)) revert QuorumCannotBeGreaterThanSentinels();
     if (0 == quorum && beneficiary == address(0)) revert InvalidParameters();
     _inheritanceConf.quorum = quorum;
     _inheritanceConf.proofOfLifeDurationInWeeks = proofOfLifeDurationInWeeks;
@@ -210,7 +214,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   function _quorumReached() internal view virtual returns (address) {
-    address[] memory sentinels = getActors(_SENTINEL);
+    address[] memory sentinels = _getActors(_SENTINEL);
     uint256 len = _votes.nominations.length;
     for (uint256 k; k < len; ) {
       unchecked {
@@ -260,7 +264,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   function _resetNominationsAndVotes() internal virtual {
     if (_votes.nominations.length != 0) {
       delete _votes.nominations;
-      address[] memory _sentinels = getActors(_SENTINEL);
+      address[] memory _sentinels = _getActors(_SENTINEL);
       uint256 len = _sentinels.length;
       for (uint256 i; i < len; ) {
         delete _votes.favorites[_sentinels[i]];
@@ -272,7 +276,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   function _isASentinel() internal view virtual returns (bool) {
-    return actorIndex(_msgSender(), _SENTINEL) != _MAX_ACTORS;
+    return _actorIndex(_msgSender(), _SENTINEL) != _MAX_ACTORS;
   }
 
   function _checkIfStillAlive() internal view virtual {

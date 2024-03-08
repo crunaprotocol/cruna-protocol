@@ -4,19 +4,21 @@ pragma solidity ^0.8.20;
 // Author: Francesco Sullo <francesco@sullo.co>
 
 // import {console} from "hardhat/console.sol";
-import {IActor} from "./IActor.sol";
 
 // @dev This contract manages actors
-contract Actor is IActor {
+contract Actor {
   uint256 private constant _MAX_ACTORS = 16;
-
   mapping(bytes4 => address[]) internal _actors;
 
-  function getActors(bytes4 role) public view virtual override returns (address[] memory) {
+  error ZeroAddress();
+  error ActorAlreadyAdded();
+  error TooManyActors();
+
+  function _getActors(bytes4 role) internal view virtual returns (address[] memory) {
     return _actors[role];
   }
 
-  function actorIndex(address actor_, bytes4 role) public view virtual override returns (uint256) {
+  function _actorIndex(address actor_, bytes4 role) internal view virtual returns (uint256) {
     address[] storage actors = _actors[role];
     // This may go out of gas if there are too many actors
     uint256 len = actors.length;
@@ -31,17 +33,17 @@ contract Actor is IActor {
     return _MAX_ACTORS;
   }
 
-  function actorCount(bytes4 role) public view virtual override returns (uint256) {
+  function _actorCount(bytes4 role) internal view virtual returns (uint256) {
     return _actors[role].length;
   }
 
   function _isActiveActor(address actor_, bytes4 role) internal view virtual returns (bool) {
-    uint256 i = actorIndex(actor_, role);
+    uint256 i = _actorIndex(actor_, role);
     return i < _MAX_ACTORS;
   }
 
   function _removeActor(address actor_, bytes4 role) internal virtual {
-    uint256 i = actorIndex(actor_, role);
+    uint256 i = _actorIndex(actor_, role);
     _removeActorByIndex(i, role);
   }
 

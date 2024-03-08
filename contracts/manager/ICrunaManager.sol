@@ -123,12 +123,6 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
 
   // simulate ERC-721
 
-  // @dev Return the protectors
-  // @return The addresses of active protectors set for the tokensOwner
-  //   The contract can implement intermediate statuses, like "pending" and "resigned", but the interface
-  //   only requires a list of the "active" protectors
-  function listProtectors() external view returns (address[] memory);
-
   // @dev Check if an address is a protector
   // @param protector_ The protector address
   // @return True if the protector is active for the tokensOwner.
@@ -148,6 +142,10 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
     uint256 validFor,
     bytes calldata signature
   ) external;
+
+  function countProtectors() external view returns (uint256);
+
+  function countSafeRecipients() external view returns (uint256);
 
   // @dev Imports the protects/safe-recipients from another tokenId owned by the same owner
   function importProtectorsAndSafeRecipientsFrom(uint256 tokenId) external;

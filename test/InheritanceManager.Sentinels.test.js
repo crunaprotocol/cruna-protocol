@@ -325,7 +325,7 @@ describe("Sentinel and Inheritance", function () {
     await expect(inheritancePlugin.connect(bob).setSentinel(fred.address, false, ts, 3600, signature))
       .to.emit(inheritancePlugin, "SentinelUpdated")
       .withArgs(bob.address, fred.address, false);
-    expect(await inheritancePlugin.actorCount(SENTINEL)).equal(1);
+    expect(await inheritancePlugin.countSentinels()).equal(1);
 
     signature = (
       await signRequest(

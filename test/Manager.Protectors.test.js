@@ -367,7 +367,7 @@ describe("CrunaManager : Protectors", function () {
 
     // test listProtectors is of type array and that it has two protector addresses
     // and that the second address is fred's.
-    let totalProtectors = await manager.listProtectors();
+    let totalProtectors = await manager.getProtectors();
     await expect(totalProtectors).to.be.an("array");
     expect(await totalProtectors.length).to.equal(2);
     await expect(totalProtectors[1]).equal(fred.address);

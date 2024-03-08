@@ -93,6 +93,8 @@ interface IInheritanceCrunaPlugin {
 
   function getVotes() external view returns (address[] memory);
 
+  function countSentinels() external view returns (uint256);
+
   // @dev allows the user to trigger a Proof-of-Live
   function proofOfLife() external;
 

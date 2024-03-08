@@ -494,49 +494,6 @@
     {
       "inputs": [
         {
-          "internalType": "bytes4",
-          "name": "role",
-          "type": "bytes4"
-        }
-      ],
-      "name": "actorCount",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "actor_",
-          "type": "address"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "role",
-          "type": "bytes4"
-        }
-      ],
-      "name": "actorIndex",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
@@ -628,6 +585,32 @@
           "name": "",
           "type": "uint256"
         },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "countProtectors",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "countSafeRecipients",
+      "outputs": [
         {
           "internalType": "uint256",
           "name": "",
@@ -766,25 +749,6 @@
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes4",
-          "name": "role",
-          "type": "bytes4"
-        }
-      ],
-      "name": "getActors",
-      "outputs": [
-        {
-          "internalType": "address[]",
-          "name": "",
-          "type": "address[]"
         }
       ],
       "stateMutability": "view",
@@ -950,19 +914,6 @@
           "internalType": "string[]",
           "name": "",
           "type": "string[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "listProtectors",
-      "outputs": [
-        {
-          "internalType": "address[]",
-          "name": "",
-          "type": "address[]"
         }
       ],
       "stateMutability": "view",
@@ -2191,49 +2142,6 @@
     {
       "inputs": [
         {
-          "internalType": "bytes4",
-          "name": "role",
-          "type": "bytes4"
-        }
-      ],
-      "name": "actorCount",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "actor_",
-          "type": "address"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "role",
-          "type": "bytes4"
-        }
-      ],
-      "name": "actorIndex",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
           "internalType": "uint8",
           "name": "quorum",
           "type": "uint8"
@@ -2272,6 +2180,19 @@
       "name": "configureInheritance",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "countSentinels",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -2351,25 +2272,6 @@
           "internalType": "contract IERC6551Registry",
           "name": "",
           "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes4",
-          "name": "role",
-          "type": "bytes4"
-        }
-      ],
-      "name": "getActors",
-      "outputs": [
-        {
-          "internalType": "address[]",
-          "name": "",
-          "type": "address[]"
         }
       ],
       "stateMutability": "view",

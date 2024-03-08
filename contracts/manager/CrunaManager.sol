@@ -44,7 +44,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
 
   /// @dev Find a specific protector
   function findProtectorIndex(address protector_) public view virtual override returns (uint256) {
-    return actorIndex(protector_, _PROTECTOR);
+    return _actorIndex(protector_, _PROTECTOR);
   }
 
   /// @dev Returns true if the address is a protector.
@@ -53,13 +53,13 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     return _isActiveActor(protector_, _PROTECTOR);
   }
 
-  /// @dev Returns the list of protectors.
-  function listProtectors() public view virtual override returns (address[] memory) {
-    return getActors(_PROTECTOR);
-  }
+  //  /// @dev Returns the list of protectors.
+  //  function listProtectors() public view virtual override returns (address[] memory) {
+  //    return _getActors(_PROTECTOR);
+  //  }
 
   function hasProtectors() public view virtual override returns (bool) {
-    return actorCount(_PROTECTOR) != 0;
+    return _actorCount(_PROTECTOR) != 0;
   }
 
   function isTransferable(address to) external view override returns (bool) {
@@ -98,12 +98,12 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   }
 
   function importProtectorsAndSafeRecipientsFrom(uint256 otherTokenId) external virtual override onlyTokenOwner {
-    if (actorCount(_PROTECTOR) != 0) revert ProtectorsAlreadySet();
-    if (actorCount(_SAFE_RECIPIENT) != 0) revert SafeRecipientsAlreadySet();
+    if (_actorCount(_PROTECTOR) != 0) revert ProtectorsAlreadySet();
+    if (_actorCount(_SAFE_RECIPIENT) != 0) revert SafeRecipientsAlreadySet();
     if (otherTokenId == tokenId()) revert CannotimportProtectorsAndSafeRecipientsFromYourself();
     if (_vault().ownerOf(otherTokenId) != owner()) revert NotTheSameOwner();
     CrunaManager otherManager = CrunaManager(_vault().managerOf(otherTokenId));
-    if (otherManager.actorCount(_PROTECTOR) == 0 && otherManager.actorCount(_SAFE_RECIPIENT) == 0) revert NothingToImport();
+    if (otherManager.countProtectors() == 0 && otherManager.countSafeRecipients() == 0) revert NothingToImport();
     address[] memory otherProtectors = otherManager.getProtectors();
     uint256 len = otherProtectors.length;
     for (uint256 i; i < len; ) {
@@ -128,7 +128,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
 
   // @dev see {ICrunaManager.sol-getProtectors}
   function getProtectors() external view virtual override returns (address[] memory) {
-    return getActors(_PROTECTOR);
+    return _getActors(_PROTECTOR);
   }
 
   // safe recipients
@@ -156,12 +156,12 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
 
   // @dev see {ICrunaManager.sol-isSafeRecipient}
   function isSafeRecipient(address recipient) public view virtual override returns (bool) {
-    return actorIndex(recipient, _SAFE_RECIPIENT) != _MAX_ACTORS;
+    return _actorIndex(recipient, _SAFE_RECIPIENT) != _MAX_ACTORS;
   }
 
   // @dev see {ICrunaManager.sol-getSafeRecipients}
   function getSafeRecipients() external view virtual override returns (address[] memory) {
-    return getActors(_SAFE_RECIPIENT);
+    return _getActors(_SAFE_RECIPIENT);
   }
 
   /**
@@ -481,7 +481,15 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   }
 
   function _isProtected() internal view virtual override returns (bool) {
-    return actorCount(_PROTECTOR) != 0;
+    return _actorCount(_PROTECTOR) != 0;
+  }
+
+  function countProtectors() external view virtual override returns (uint256) {
+    return _actorCount(_PROTECTOR);
+  }
+
+  function countSafeRecipients() external view virtual override returns (uint256) {
+    return _actorCount(_SAFE_RECIPIENT);
   }
 
   function _isProtector(address protector_) internal view virtual override returns (bool) {
