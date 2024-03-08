@@ -8,32 +8,13 @@ import {CrunaPluginBase} from "../plugins/CrunaPluginBase.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
 
-//import {console} from "hardhat/console.sol";
+// import {console} from "hardhat/console.sol";
 
 interface ICrunaManager is ITokenLinkedContract, IVersioned {
-  event EmitEventFailed(EventAction action);
-
-  event ProtectorChange(address indexed protector, bool status);
-
-  event SafeRecipientChange(address indexed recipient, bool status);
-
-  event PluginStatusChange(string indexed name, bytes4 salt, address plugin_, bool status);
-
-  event PluginAuthorizationChange(string indexed name, bytes4 salt, address plugin_, bool status, uint256 lockTime);
-
-  // Emitted when  protectors and safe recipients are removed and all plugins are disabled (if they require it)
-  // This event overrides any specific ProtectorChange, SafeRecipientChange and PluginStatusChange event
-  event Reset();
-
-  event PluginTrusted(string indexed name, bytes4 salt);
-
-  event ImplementationUpgraded(address indexed implementation_, uint256 currentVersion, uint256 newVersion);
-
-  enum EventAction {
-    ProtectorChange,
-    SafeRecipientChange,
-    PluginStatusChange,
-    Reset
+  enum PluginStatus {
+    Unplugged,
+    PluggedAndActive,
+    PluggedAndInactive
   }
 
   struct CrunaPlugin {
@@ -46,12 +27,66 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
     bytes4 salt;
   }
 
-  struct PluginStatus {
+  struct PluginElement {
     string name;
     bytes4 salt;
     // redundant to optimize gas usage
     bool active;
   }
+
+  event EmitLockedEventFailed();
+
+  event ProtectorChange(address indexed protector, bool status);
+
+  event ProtectorsAndSafeRecipientsImported(address[] protectors, address[] safeRecipients, uint256 fromTokenId);
+
+  event SafeRecipientChange(address indexed recipient, bool status);
+
+  event PluginStatusChange(string indexed name, bytes4 salt, address plugin_, PluginStatus status);
+
+  event PluginAuthorizationChange(string indexed name, bytes4 salt, address plugin_, bool status, uint256 lockTime);
+
+  // Emitted when  protectors and safe recipients are removed and all plugins are disabled (if they require it)
+  // This event overrides any specific ProtectorChange, SafeRecipientChange and PluginStatusChange event
+  event Reset();
+
+  event PluginTrusted(string indexed name, bytes4 salt);
+
+  event ImplementationUpgraded(address indexed implementation_, uint256 currentVersion, uint256 newVersion);
+
+  event PluginResetAttempt(bytes4 _nameId, bytes4 salt, bool success);
+
+  error UntrustedImplementation();
+  error InvalidVersion();
+  error PluginRequiresUpdatedManager(uint256 requiredVersion);
+  error Forbidden();
+  error NotAManager();
+  error ProtectorNotFound();
+  error ProtectorAlreadySetByYou();
+  error ProtectorsAlreadySet();
+  error CannotBeYourself();
+  error NotTheAuthorizedPlugin();
+  error PluginNumberOverflow();
+  error PluginAlreadyPlugged();
+  error PluginNotFound();
+  error PluginNotFoundOrDisabled();
+  error PluginNotDisabled();
+  error PluginAlreadyDisabled();
+  error PluginNotAuthorizedToManageTransfer();
+  error PluginAlreadyAuthorized();
+  error PluginAlreadyUnauthorized();
+  error NotATransferPlugin();
+  error InvalidImplementation();
+  error InvalidTimeLock();
+  error InvalidValidity();
+  error InvalidAccountStatus();
+  error UntrustedImplementationsNotAllowedToMakeTransfers();
+  error StillUntrusted();
+  error PluginAlreadyTrusted();
+  error CannotimportProtectorsAndSafeRecipientsFromYourself();
+  error NotTheSameOwner();
+  error SafeRecipientsAlreadySet();
+  error NothingToImport();
 
   function upgrade(address implementation_) external;
 
@@ -69,7 +104,6 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   function disablePlugin(
     string memory name,
     bytes4 salt,
-    bool resetPlugin,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
@@ -78,7 +112,6 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   function reEnablePlugin(
     string memory name,
     bytes4 salt,
-    bool resetPlugin,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
@@ -184,7 +217,9 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
 
   function plugin(bytes4 _nameId, bytes4 salt) external view returns (CrunaPluginBase);
 
-  function trustPlugin(string memory name, bytes4) external;
+  function unplug(string memory name, bytes4, uint256 timestamp, uint256 validFor, bytes calldata signature) external;
+
+  function trustPlugin(string memory name, bytes4 salt) external;
 
   function countPlugins() external view returns (uint256, uint256);
 

@@ -17,18 +17,6 @@ contract CanonicalAddresses {
 
   ICrunaGuardian private constant _CRUNA_GUARDIAN = ICrunaGuardian(0x8BDf0417F7Bbfd38Db30A5654BB2F827AD9e8EE2);
 
-  // we override this during test coverage, because the instrumentation of the smart contracts makes it different over time
-  function _crunaRegistry() internal pure  returns (ICrunaRegistry) {
-    return _CRUNA_REGISTRY;
-  }
-
-  function _erc6551Registry() internal pure  returns (IERC6551Registry) {
-    return _ERC6551_REGISTRY;
-  }
-
-  function _crunaGuardian() internal pure  returns (ICrunaGuardian) {
-    return _CRUNA_GUARDIAN;
-  }
 
   function crunaRegistry() external pure returns (ICrunaRegistry) {
     return _CRUNA_REGISTRY;
@@ -39,6 +27,18 @@ contract CanonicalAddresses {
   }
 
   function crunaGuardian() external pure returns (ICrunaGuardian) {
+    return _CRUNA_GUARDIAN;
+  }
+
+  function _crunaRegistry() internal pure  returns (ICrunaRegistry) {
+    return _CRUNA_REGISTRY;
+  }
+
+  function _erc6551Registry() internal pure  returns (IERC6551Registry) {
+    return _ERC6551_REGISTRY;
+  }
+
+  function _crunaGuardian() internal pure  returns (ICrunaGuardian) {
     return _CRUNA_GUARDIAN;
   }
 

@@ -163,6 +163,11 @@
       "type": "error"
     },
     {
+      "inputs": [],
+      "name": "PluginNumberOverflow",
+      "type": "error"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -236,7 +241,7 @@
     },
     {
       "inputs": [],
-      "name": "UntrustedImplementationsCanMakeTransfersOnlyOnTestnet",
+      "name": "UntrustedImplementationsNotAllowedToMakeTransfers",
       "type": "error"
     },
     {
@@ -257,15 +262,8 @@
     },
     {
       "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "enum ICrunaManager.EventAction",
-          "name": "action",
-          "type": "uint8"
-        }
-      ],
-      "name": "EmitEventFailed",
+      "inputs": [],
+      "name": "EmitLockedEventFailed",
       "type": "event"
     },
     {
@@ -334,6 +332,31 @@
       "anonymous": false,
       "inputs": [
         {
+          "indexed": false,
+          "internalType": "bytes4",
+          "name": "_nameId",
+          "type": "bytes4"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes4",
+          "name": "salt",
+          "type": "bytes4"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "name": "PluginResetAttempt",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
           "indexed": true,
           "internalType": "string",
           "name": "name",
@@ -353,9 +376,9 @@
         },
         {
           "indexed": false,
-          "internalType": "bool",
+          "internalType": "enum ICrunaManager.PluginStatus",
           "name": "status",
-          "type": "bool"
+          "type": "uint8"
         }
       ],
       "name": "PluginStatusChange",
@@ -420,6 +443,31 @@
     },
     {
       "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "protectors",
+          "type": "address[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "safeRecipients",
+          "type": "address[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "fromTokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "ProtectorsAndSafeRecipientsImported",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
       "inputs": [],
       "name": "Reset",
       "type": "event"
@@ -458,6 +506,19 @@
     },
     {
       "inputs": [],
+      "name": "MAX_VALID_FOR",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "PROTECTOR",
       "outputs": [
         {
@@ -477,6 +538,32 @@
           "internalType": "bytes4",
           "name": "",
           "type": "bytes4"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "TIMESTAMP_MULTIPLIER",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "TIME_VALIDATION_MULTIPLIER",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -665,11 +752,6 @@
           "internalType": "bytes4",
           "name": "",
           "type": "bytes4"
-        },
-        {
-          "internalType": "bool",
-          "name": "resetPlugin",
-          "type": "bool"
         },
         {
           "internalType": "uint256",
@@ -1186,14 +1268,9 @@
     {
       "inputs": [
         {
-          "internalType": "bytes4",
+          "internalType": "bytes8",
           "name": "",
-          "type": "bytes4"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "",
-          "type": "bytes4"
+          "type": "bytes8"
         }
       ],
       "name": "pluginsById",
@@ -1379,11 +1456,6 @@
           "type": "bytes4"
         },
         {
-          "internalType": "bool",
-          "name": "resetPlugin",
-          "type": "bool"
-        },
-        {
           "internalType": "uint256",
           "name": "timestamp",
           "type": "uint256"
@@ -1542,14 +1614,9 @@
     {
       "inputs": [
         {
-          "internalType": "bytes4",
+          "internalType": "bytes8",
           "name": "",
-          "type": "bytes4"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "",
-          "type": "bytes4"
+          "type": "bytes8"
         }
       ],
       "name": "timeLocks",
@@ -1626,6 +1693,39 @@
         }
       ],
       "name": "trustPlugin",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes4",
+          "name": "",
+          "type": "bytes4"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "validFor",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
+        }
+      ],
+      "name": "unplug",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -2181,12 +2281,51 @@
     },
     {
       "inputs": [],
+      "name": "MAX_VALID_FOR",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "SENTINEL",
       "outputs": [
         {
           "internalType": "bytes4",
           "name": "",
           "type": "bytes4"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "TIMESTAMP_MULTIPLIER",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "TIME_VALIDATION_MULTIPLIER",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -2865,10 +3004,6 @@
       ],
       "stateMutability": "pure",
       "type": "function"
-    },
-    {
-      "stateMutability": "payable",
-      "type": "receive"
     }
   ],
   "TimeControlledNFT": [
@@ -4139,14 +4274,14 @@
           "type": "bool"
         },
         {
-          "internalType": "uint256",
+          "internalType": "uint112",
           "name": "nextTokenId_",
-          "type": "uint256"
+          "type": "uint112"
         },
         {
-          "internalType": "uint256",
+          "internalType": "uint112",
           "name": "maxTokenId_",
-          "type": "uint256"
+          "type": "uint112"
         }
       ],
       "name": "init",
@@ -4830,9 +4965,9 @@
     {
       "inputs": [
         {
-          "internalType": "uint256",
+          "internalType": "uint112",
           "name": "maxTokenId_",
-          "type": "uint256"
+          "type": "uint112"
         }
       ],
       "name": "setMaxTokenId",

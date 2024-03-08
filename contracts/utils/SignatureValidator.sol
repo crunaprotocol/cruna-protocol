@@ -5,36 +5,89 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
-//import "hardhat/console.sol";
+import {ISignatureValidator} from "./ISignatureValidator.sol";
+
+// import "hardhat/console.sol";
 
 // @dev This contract is used to validate signatures.
 //   It is based on EIP712 and supports typed messages V4.
-abstract contract SignatureValidator is EIP712, Context {
+abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
   using ECDSA for bytes32;
 
-  event PreApproved(bytes32 hash, address indexed signer);
-
-  error TimestampInvalidOrExpired();
-  error NotAuthorized();
-  error NotPermittedWhenProtectorsAreActive();
-  error WrongDataOrNotSignedByProtector();
-  error SignatureAlreadyUsed();
+  uint256 public constant MAX_VALID_FOR = 9_999_999;
+  uint256 public constant TIMESTAMP_MULTIPLIER = 1e7;
+  uint256 public constant TIME_VALIDATION_MULTIPLIER = 1e17;
 
   mapping(bytes32 => address) public preApprovals;
   mapping(bytes32 => bool) public usedSignatures;
 
   constructor() EIP712("Cruna", "1") {}
 
-  // must be implemented by managers and plugins
+  // @dev This function validates a signature trying to be as flexible as possible.
+  //   As long as called inside the same contract, the cost adding some more parameters is negligible. Instead, calling it from other contracts can be expensive.
+  // @param selector The selector of the function being called.
+  // @param owner The owner of the token.
+  // @param actor The actor being authorized.
+  //   It can be address(0) if the parameter is not needed.
+  // @param tokenAddress The address of the token.
+  // @param tokenId The id of the token.
+  // @param extra The extra
+  // @param extra2 The extra2
+  // @param extra3 The extra3
+  // @param timeValidation A combination of timestamp and validity of the signature.
+  //   To be readable, the value is calculated as
+  //     timestamp * TIMESTAMP_MULTIPLIER + validity
+  // @param Returns the signer of the signature.
+  function recoverSigner(
+    bytes4 selector,
+    address owner,
+    address actor,
+    address tokenAddress,
+    uint256 tokenId,
+    uint256 extra,
+    uint256 extra2,
+    uint256 extra3,
+    uint256 timeValidation,
+    bytes calldata signature
+  ) public view override returns (address, bytes32) {
+    _validate(timeValidation);
+    bytes32 hash = _hashData(selector, owner, actor, tokenAddress, tokenId, extra, extra2, extra3, timeValidation);
+    if (65 == signature.length) {
+      return (_hashTypedDataV4(hash).recover(signature), hash);
+    }
+    return (preApprovals[hash], hash);
+  }
+
+  function preApprove(
+    bytes4 selector,
+    address owner,
+    address actor,
+    address tokenAddress,
+    uint256 tokenId,
+    uint256 extra,
+    uint256 extra2,
+    uint256 extra3,
+    uint256 timeValidation
+  ) external override {
+    if (!_canPreApprove(selector, actor, _msgSender())) revert NotAuthorized();
+    bytes32 hash = _hashData(selector, owner, actor, tokenAddress, tokenId, extra, extra2, extra3, timeValidation);
+    preApprovals[hash] = _msgSender();
+    emit PreApproved(hash, _msgSender());
+  }
+
+  // @dev Must be implemented by the contract using this base contract
   function _canPreApprove(bytes4 selector, address actor, address signer) internal view virtual returns (bool);
 
   function _validate(uint256 timeValidation) internal view {
-    uint256 timestamp = timeValidation / 1e7;
-    if (timestamp > block.timestamp || timestamp < block.timestamp - (timeValidation % 1e7)) revert TimestampInvalidOrExpired();
+    uint256 timestamp = timeValidation / TIMESTAMP_MULTIPLIER;
+    if (timestamp > block.timestamp || timestamp < block.timestamp - (timeValidation % TIMESTAMP_MULTIPLIER))
+      revert TimestampInvalidOrExpired();
   }
 
+  // @dev Must be implemented by the contract using this base contract
   function _isProtected() internal view virtual returns (bool);
 
+  // @dev Must be implemented by the contract using this base contract
   function _isProtector(address protector) internal view virtual returns (bool);
 
   function _validateAndCheckSignature(
@@ -50,7 +103,10 @@ abstract contract SignatureValidator is EIP712, Context {
     uint256 timeValidationAndSetProtector,
     bytes calldata signature
   ) internal virtual {
-    if (timeValidationAndSetProtector < 1e17 && timeValidationAndSetProtector % 1e17 < 1e7) {
+    if (
+      timeValidationAndSetProtector < TIME_VALIDATION_MULTIPLIER &&
+      timeValidationAndSetProtector % TIME_VALIDATION_MULTIPLIER < TIMESTAMP_MULTIPLIER
+    ) {
       if (_isProtected()) revert NotPermittedWhenProtectorsAreActive();
     } else {
       if (usedSignatures[_hashBytes(signature)]) revert SignatureAlreadyUsed();
@@ -64,67 +120,14 @@ abstract contract SignatureValidator is EIP712, Context {
         extra,
         extra2,
         extra3,
-        timeValidationAndSetProtector % 1e17,
+        timeValidationAndSetProtector % TIME_VALIDATION_MULTIPLIER,
         signature
       );
-      if (timeValidationAndSetProtector > 1e17 && !_isProtected()) {
+      if (timeValidationAndSetProtector > TIME_VALIDATION_MULTIPLIER && !_isProtected()) {
         if (signer != actor) revert WrongDataOrNotSignedByProtector();
       } else if (!_isProtector(signer)) revert WrongDataOrNotSignedByProtector();
       delete preApprovals[hash];
     }
-  }
-
-  // @dev This function validates a signature trying to be as flexible as possible.
-  //   As long as called inside the same contract, the cost adding some more parameters is negligible. Instead, calling it from other contracts can be expensive.
-  // @param selector The selector of the function being called.
-  // @param owner The owner of the token.
-  // @param actor The actor being authorized.
-  //   It can be address(0) if the parameter is not needed.
-  // @param tokenAddress The address of the token.
-  // @param tokenId The id of the token.
-  // @param extra The extra
-  // @param extra2 The extra2
-  // @param extra3 The extra3
-  // @param timeValidation A combination of timestamp and validity of the signature.
-  //   To be readable, the value is calculated as
-  //     timestamp * 1e7 + validity
-  // @param Returns the signer of the signature.
-  function recoverSigner(
-    bytes4 selector,
-    address owner,
-    address actor,
-    address tokenAddress,
-    uint256 tokenId,
-    uint256 extra,
-    uint256 extra2,
-    uint256 extra3,
-    uint256 timeValidation,
-    bytes calldata signature
-  ) public view returns (address, bytes32) {
-    _validate(timeValidation);
-    bytes32 hash = _hashData(selector, owner, actor, tokenAddress, tokenId, extra, extra2, extra3, timeValidation);
-    if (signature.length == 65) {
-      return (_hashTypedDataV4(hash).recover(signature), hash);
-    } else {
-      return (preApprovals[hash], hash);
-    }
-  }
-
-  function preApprove(
-    bytes4 selector,
-    address owner,
-    address actor,
-    address tokenAddress,
-    uint256 tokenId,
-    uint256 extra,
-    uint256 extra2,
-    uint256 extra3,
-    uint256 timeValidation
-  ) external {
-    if (!_canPreApprove(selector, actor, _msgSender())) revert NotAuthorized();
-    bytes32 hash = _hashData(selector, owner, actor, tokenAddress, tokenId, extra, extra2, extra3, timeValidation);
-    preApprovals[hash] = _msgSender();
-    emit PreApproved(hash, _msgSender());
   }
 
   function _hashData(

@@ -204,12 +204,19 @@ describe("CrunaManager : Protectors", function () {
       )
     )[0];
 
-    // set Alice as first Bob's protector
-    await expect(manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature))
-      .to.emit(manager, "ProtectorChange")
-      .withArgs(alice.address, true)
-      .to.emit(vault, "Locked")
-      .withArgs(tokenId, true);
+    if (!process.env.IS_COVERAGE) {
+      // set Alice as first Bob's protector
+      await expect(manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature))
+        .to.emit(manager, "ProtectorChange")
+        .withArgs(alice.address, true)
+        .to.emit(vault, "Locked")
+        .withArgs(tokenId, true);
+    } else {
+      // the Locked event is not emitted in coverage because the instrumented contract require more gas
+      await expect(manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature))
+        .to.emit(manager, "ProtectorChange")
+        .withArgs(alice.address, true);
+    }
 
     await expect(manager.connect(bob).setProtector(alice.address, false, ts, 3600, signature)).to.be.revertedWith(
       "SignatureAlreadyUsed",
@@ -314,11 +321,17 @@ describe("CrunaManager : Protectors", function () {
       .to.emit(manager, "PreApproved")
       .withArgs(hash, alice.address);
 
-    await expect(manager.connect(bob).setProtector(alice.address, true, ts, 3600, 0))
-      .to.emit(manager, "ProtectorChange")
-      .withArgs(alice.address, true)
-      .to.emit(vault, "Locked")
-      .withArgs(tokenId, true);
+    if (!process.env.IS_COVERAGE) {
+      await expect(manager.connect(bob).setProtector(alice.address, true, ts, 3600, 0))
+        .to.emit(manager, "ProtectorChange")
+        .withArgs(alice.address, true)
+        .to.emit(vault, "Locked")
+        .withArgs(tokenId, true);
+    } else {
+      await expect(manager.connect(bob).setProtector(alice.address, true, ts, 3600, 0))
+        .to.emit(manager, "ProtectorChange")
+        .withArgs(alice.address, true);
+    }
   });
 
   it("should throw is wrong data for first protector", async function () {

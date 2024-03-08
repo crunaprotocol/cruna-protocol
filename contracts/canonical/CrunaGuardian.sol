@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+import {ICrunaGuardian} from "./ICrunaGuardian.sol";
+import {IVersioned} from "../utils/IVersioned.sol";
 import {FlexiTimelockController} from "../utils/FlexiTimelockController.sol";
 
-import {IVersioned} from "../utils/IVersioned.sol";
-import {ICrunaGuardian} from "./ICrunaGuardian.sol";
-
-//import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 /**
  * @dev Manages upgrade and cross-chain execution settings for accounts
@@ -28,10 +27,7 @@ contract CrunaGuardian is ICrunaGuardian, IVersioned, FlexiTimelockController {
     return 1_000_000;
   }
 
-  /**
-   * @dev Sets a given implementation address as trusted, allowing accounts to upgrade to this
-   * implementation
-   */
+  // @dev see {ICrunaGuardian.sol-setTrustedImplementation}
   function setTrustedImplementation(
     bytes4 nameId,
     address implementation,

@@ -5,6 +5,21 @@ pragma solidity ^0.8.20;
 
 // erc165 interfaceId 0x8dca4bea
 interface IInheritanceCrunaPlugin {
+  // @dev Struct to store the configuration for the inheritance
+  struct InheritanceConf {
+    address beneficiary;
+    uint8 quorum;
+    uint8 gracePeriodInWeeks;
+    uint8 proofOfLifeDurationInWeeks;
+    uint32 lastProofOfLife;
+    uint32 extendedProofOfLife;
+  }
+
+  struct Votes {
+    address[] nominations;
+    mapping(address => address) favorites;
+  }
+
   event SentinelUpdated(address indexed owner, address indexed sentinel, bool status);
 
   event InheritanceConfigured(
@@ -25,20 +40,19 @@ interface IInheritanceCrunaPlugin {
 
   event BeneficiaryApproved(address indexed beneficiary);
 
-  // @dev Struct to store the configuration for the inheritance
-  struct InheritanceConf {
-    address beneficiary;
-    uint8 quorum;
-    uint8 gracePeriodInWeeks;
-    uint8 proofOfLifeDurationInWeeks;
-    uint32 lastProofOfLife;
-    uint32 extendedProofOfLife;
-  }
-
-  struct Votes {
-    address[] nominations;
-    mapping(address => address) favorites;
-  }
+  error QuorumCannotBeZero();
+  error QuorumCannotBeGreaterThanSentinels();
+  error InheritanceNotConfigured();
+  error StillAlive();
+  error NotASentinel();
+  error NotTheBeneficiary();
+  error Expired();
+  error BeneficiaryNotSet();
+  error WaitingForBeneficiary();
+  error InvalidValidity();
+  error NoVoteToRetire();
+  error InvalidParameters();
+  error TooManySentinels();
 
   // beneficiaries
 

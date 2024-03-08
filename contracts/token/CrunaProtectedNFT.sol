@@ -16,7 +16,7 @@ import {ICrunaManager} from "../manager/ICrunaManager.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 import {CanonicalAddresses} from "../canonical/CanonicalAddresses.sol";
 
-//import {console} from "hardhat/console.sol";
+// import {console} from "hardhat/console.sol";
 
 interface IVersionedManager {
   function version() external pure returns (uint256);
@@ -35,19 +35,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, Canonical
   using Strings for uint256;
   using Address for address;
 
-  error NotTransferable();
-  error NotTheManager();
-  error ZeroAddress();
-  error AlreadyInitiated();
-  error NotTheTokenOwner();
-  error CannotUpgradeToAnOlderVersion();
-  error UntrustedImplementation();
-  error NotAvailableIfTokenIdsAreNotProgressive();
-  error InvalidTokenId();
-  error NftNotInitiated();
-  error InvalidMaxTokenId();
-
-  bytes4 public constant NAME_HASH = bytes4(keccak256("CrunaProtectedNFT"));
+  bytes4 public constant NAME_HASH = 0xbe6d302d; // bytes4(keccak256("CrunaProtectedNFT"));
 
   NftConf public nftConf;
   ManagerHistory[] public managerHistory;
@@ -85,8 +73,8 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, Canonical
     address managerAddress_,
     bool progressiveTokenIds_,
     bool allowUntrustedTransfers_,
-    uint256 nextTokenId_,
-    uint256 maxTokenId_
+    uint112 nextTokenId_,
+    uint112 maxTokenId_
   ) external virtual override {
     _canManage(true);
     if (nftConf.managerHistoryLength != 0) revert AlreadyInitiated();
@@ -94,39 +82,32 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, Canonical
     nftConf = NftConf({
       progressiveTokenIds: progressiveTokenIds_,
       allowUntrustedTransfers: allowUntrustedTransfers_,
-      nextTokenId: uint112(nextTokenId_),
-      maxTokenId: uint112(maxTokenId_),
+      nextTokenId: nextTokenId_,
+      maxTokenId: maxTokenId_,
       managerHistoryLength: 1,
       unusedField: 0
     });
-    managerHistory.push(ManagerHistory({managerAddress: managerAddress_, firstTokenId: uint112(nextTokenId_), lastTokenId: 0}));
+    managerHistory.push(ManagerHistory({managerAddress: managerAddress_, firstTokenId: nextTokenId_, lastTokenId: 0}));
   }
 
   function allowUntrustedTransfers() external view virtual override returns (bool) {
     return nftConf.allowUntrustedTransfers;
   }
 
-  /**
-   * @dev Must be overridden to specify who can manage changes during initialization and later
-   */
-  function _canManage(bool isInitializing) internal view virtual;
-
-  function setMaxTokenId(uint256 maxTokenId_) external virtual {
+  function setMaxTokenId(uint112 maxTokenId_) external virtual {
     _canManage(nftConf.maxTokenId == 0);
     if (maxTokenId_ == 0) revert InvalidMaxTokenId();
     if (nftConf.progressiveTokenIds && nftConf.nextTokenId > maxTokenId_ + 1) revert InvalidMaxTokenId();
-    nftConf.maxTokenId = uint112(maxTokenId_);
+    nftConf.maxTokenId = maxTokenId_;
   }
 
   function defaultManagerImplementation(uint256 _tokenId) public view virtual override returns (address) {
     if (nftConf.managerHistoryLength == 1) return managerHistory[0].managerAddress;
-    else {
-      for (uint256 i; i < nftConf.managerHistoryLength; i++) {
-        if (
-          _tokenId >= managerHistory[i].firstTokenId &&
-          (managerHistory[i].lastTokenId == 0 || _tokenId <= managerHistory[i].lastTokenId)
-        ) return managerHistory[i].managerAddress;
-      }
+    for (uint256 i; i < nftConf.managerHistoryLength; i++) {
+      if (
+        _tokenId >= managerHistory[i].firstTokenId &&
+        (managerHistory[i].lastTokenId == 0 || _tokenId <= managerHistory[i].lastTokenId)
+      ) return managerHistory[i].managerAddress;
     }
     // should never happen
     return address(0);
@@ -156,13 +137,6 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, Canonical
     emit ManagedTransfer(pluginNameId, tokenId);
   }
 
-  // @dev See {ERC721-_beforeTokenTransfer}.
-  function _update(address to, uint256 tokenId, address auth) internal virtual override(ERC721) returns (address) {
-    if (isTransferable(tokenId, _ownerOf(tokenId), to)) {
-      return super._update(to, tokenId, auth);
-    } else revert NotTransferable();
-  }
-
   // @dev See {ERC165-supportsInterface}.
   function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, IERC165) returns (bool) {
     return
@@ -184,11 +158,9 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, Canonical
     // Burnings and self transfers are not allowed
     if (to == address(0) || from == to) return false;
     // if from zero, it is minting
-    else if (from == address(0)) return true;
-    else {
-      _requireOwned(tokenId);
-      return manager.isTransferable(to) || _approvedTransfers[tokenId];
-    }
+    if (from == address(0)) return true;
+    _requireOwned(tokenId);
+    return manager.isTransferable(to) || _approvedTransfers[tokenId];
   }
 
   // ERC6982
@@ -206,49 +178,12 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, Canonical
     return ICrunaManager(managerOf(tokenId)).locked();
   }
 
-  // When a protector is set and the token becomes locked, this event must be emit
-  // from the CrunaManager.sol
-  function emitLockedEvent(uint256 tokenId, bool locked_) external virtual onlyManagerOf(tokenId) {
+  /**
+   * @dev Emit a Locked event when a protector is set and the token becomes locked.
+   * This function is not virtual because if overridden, it may consume more gas than the gas sent by the manager.
+   */
+  function emitLockedEvent(uint256 tokenId, bool locked_) external onlyManagerOf(tokenId) {
     emit Locked(tokenId, locked_);
-  }
-
-  // minting and initialization
-
-  // @dev This function will mint a new token and initialize it if progressiveTokenIds is true.
-  function _mintAndActivateByAmount(address to, uint256 amount) internal virtual {
-    if (!nftConf.progressiveTokenIds) revert NotAvailableIfTokenIdsAreNotProgressive();
-    if (nftConf.managerHistoryLength == 0) revert NftNotInitiated();
-    uint256 tokenId = nftConf.nextTokenId;
-    for (uint256 i; i < amount; i++) {
-      _mintAndActivate(to, tokenId++);
-    }
-    nftConf.nextTokenId = uint112(tokenId);
-  }
-
-  // @dev This function will mint a new token and initialize it.
-  // Use it carefully if nftConf.progressiveTokenIds is true.
-  function _mintAndActivate(address to, uint256 tokenId) internal virtual {
-    if (nftConf.managerHistoryLength == 0) revert NftNotInitiated();
-    if (
-      tokenId > type(uint112).max ||
-      (nftConf.maxTokenId != 0 && tokenId > nftConf.maxTokenId) ||
-      (tokenId < managerHistory[0].firstTokenId)
-    ) revert InvalidTokenId();
-    _deploy(defaultManagerImplementation(tokenId), 0x00, tokenId, false);
-    _safeMint(to, tokenId++);
-  }
-
-  function _deploy(
-    address implementation,
-    bytes32 salt,
-    uint256 tokenId,
-    bool isERC6551Account
-  ) internal virtual returns (address) {
-    if (isERC6551Account) {
-      return _erc6551Registry().createAccount(implementation, salt, block.chainid, address(this), tokenId);
-    } else {
-      return _crunaRegistry().createTokenLinkedContract(implementation, salt, block.chainid, address(this), tokenId);
-    }
   }
 
   function deployPlugin(
@@ -296,5 +231,54 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, Canonical
         address(this),
         tokenId
       );
+  }
+
+  /**
+   * @dev Must be overridden to specify who can manage changes during initialization and later
+   */
+  function _canManage(bool isInitializing) internal view virtual;
+
+  // @dev See {ERC721-_beforeTokenTransfer}.
+  function _update(address to, uint256 tokenId, address auth) internal virtual override(ERC721) returns (address) {
+    if (isTransferable(tokenId, _ownerOf(tokenId), to)) {
+      return super._update(to, tokenId, auth);
+    }
+    revert NotTransferable();
+  }
+
+  // @dev This function will mint a new token and initialize it if progressiveTokenIds is true.
+  function _mintAndActivateByAmount(address to, uint256 amount) internal virtual {
+    if (!nftConf.progressiveTokenIds) revert NotAvailableIfTokenIdsAreNotProgressive();
+    if (nftConf.managerHistoryLength == 0) revert NftNotInitiated();
+    uint256 tokenId = nftConf.nextTokenId;
+    for (uint256 i; i < amount; i++) {
+      _mintAndActivate(to, tokenId++);
+    }
+    nftConf.nextTokenId = uint112(tokenId);
+  }
+
+  // @dev This function will mint a new token and initialize it.
+  // Use it carefully if nftConf.progressiveTokenIds is true.
+  function _mintAndActivate(address to, uint256 tokenId) internal virtual {
+    if (nftConf.managerHistoryLength == 0) revert NftNotInitiated();
+    if (
+      tokenId > type(uint112).max ||
+      (nftConf.maxTokenId != 0 && tokenId > nftConf.maxTokenId) ||
+      (tokenId < managerHistory[0].firstTokenId)
+    ) revert InvalidTokenId();
+    _deploy(defaultManagerImplementation(tokenId), 0x00, tokenId, false);
+    _safeMint(to, tokenId++);
+  }
+
+  function _deploy(
+    address implementation,
+    bytes32 salt,
+    uint256 tokenId,
+    bool isERC6551Account
+  ) internal virtual returns (address) {
+    if (isERC6551Account) {
+      return _erc6551Registry().createAccount(implementation, salt, block.chainid, address(this), tokenId);
+    }
+    return _crunaRegistry().createTokenLinkedContract(implementation, salt, block.chainid, address(this), tokenId);
   }
 }

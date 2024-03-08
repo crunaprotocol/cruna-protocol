@@ -6,8 +6,6 @@ import {IManagedNFT} from "./IManagedNFT.sol";
 
 // Author: Francesco Sullo <francesco@sullo.co>
 interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
-  event DefaultManagerUpgrade(address indexed newManagerProxy);
-
   /**
    * @dev Optimized configuration structure for the generic NFT
    *
@@ -34,7 +32,25 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
     address managerAddress;
   }
 
-  function setMaxTokenId(uint256 maxTokenId_) external;
+  // events
+
+  event DefaultManagerUpgrade(address indexed newManagerProxy);
+
+  // errors
+
+  error NotTransferable();
+  error NotTheManager();
+  error ZeroAddress();
+  error AlreadyInitiated();
+  error NotTheTokenOwner();
+  error CannotUpgradeToAnOlderVersion();
+  error UntrustedImplementation();
+  error NotAvailableIfTokenIdsAreNotProgressive();
+  error InvalidTokenId();
+  error NftNotInitiated();
+  error InvalidMaxTokenId();
+
+  function setMaxTokenId(uint112 maxTokenId_) external;
 
   function allowUntrustedTransfers() external view returns (bool);
 
@@ -43,8 +59,8 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
     address managerAddress_,
     bool progressiveTokenIds_,
     bool allowUntrustedTransfers_,
-    uint256 nextTokenId_,
-    uint256 maxTokenId_
+    uint112 nextTokenId_,
+    uint112 maxTokenId_
   ) external;
 
   function defaultManagerImplementation(uint256 _tokenId) external view returns (address);

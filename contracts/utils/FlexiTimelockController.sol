@@ -4,14 +4,14 @@ pragma solidity ^0.8.20;
 import {TimelockController} from "@openzeppelin/contracts/governance/TimelockController.sol";
 
 contract FlexiTimelockController is TimelockController {
+  uint256 public totalProposers;
+  uint256 public totalExecutors;
+
   error MustCallThroughTimeController();
   error ProposerAlreadyExists();
   error ProposerDoesNotExist();
   error ExecutorAlreadyExists();
   error ExecutorDoesNotExist();
-
-  uint256 public totalProposers;
-  uint256 public totalExecutors;
 
   modifier onlyThroughTimeController() {
     if (msg.sender != address(this)) revert MustCallThroughTimeController();

@@ -11,14 +11,16 @@ import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {CanonicalAddresses} from "../canonical/CanonicalAddresses.sol";
 import {INamed} from "../utils/INamed.sol";
 
-//import {console} from "hardhat/console.sol";
+import {ICommonBase} from "./ICommonBase.sol";
+
+// import {console} from "hardhat/console.sol";
 
 /**
   @title CrunaManagerBase.sol
   @dev Base contract for managers and plugins
 */
-abstract contract CommonBase is INamed, Context, CanonicalAddresses, TokenLinkedContract, SignatureValidator {
-  error NotTheTokenOwner();
+abstract contract CommonBase is ICommonBase, INamed, Context, CanonicalAddresses, TokenLinkedContract, SignatureValidator {
+  bytes4 internal constant _BYTES4_ZERO = bytes4(0);
 
   /**
    * @dev Storage slot with the address of the current implementation.
@@ -34,7 +36,7 @@ abstract contract CommonBase is INamed, Context, CanonicalAddresses, TokenLinked
 
   // must be overridden
   function nameId() public view virtual override returns (bytes4) {
-    return 0x00000000;
+    return _BYTES4_ZERO;
   }
 
   function vault() external view virtual returns (CrunaProtectedNFT) {
@@ -64,4 +66,10 @@ abstract contract CommonBase is INamed, Context, CanonicalAddresses, TokenLinked
   function _vault() internal view virtual returns (CrunaProtectedNFT) {
     return CrunaProtectedNFT(tokenAddress());
   }
+
+  // @dev This empty reserved space is put in place to allow future versions to add new
+  // variables without shifting down storage in the inheritance chain.
+  // See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+
+  uint256[50] private __gap;
 }

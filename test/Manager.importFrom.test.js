@@ -143,14 +143,8 @@ describe("CrunaManager : importProtectorsAndSafeRecipientsFrom ", function () {
     );
 
     await expect(manager3.connect(bob).importProtectorsAndSafeRecipientsFrom(tokenId))
-      .emit(manager3, "ProtectorChange")
-      .withArgs(mark.address, true)
-      .emit(manager3, "ProtectorChange")
-      .withArgs(otto.address, true)
-      .emit(manager3, "SafeRecipientChange")
-      .withArgs(alice.address, true)
-      .emit(manager3, "SafeRecipientChange")
-      .withArgs(fred.address, true)
+      .emit(manager3, "ProtectorsAndSafeRecipientsImported")
+      .withArgs([mark.address, otto.address], [alice.address, fred.address], tokenId)
       .emit(vault, "Locked")
       .withArgs(tokenId3, true);
   });

@@ -9,30 +9,11 @@ import {CrunaManager} from "../manager/CrunaManager.sol";
 import {ICrunaPlugin, IVersioned} from "./ICrunaPlugin.sol";
 import {CommonBase} from "../utils/CommonBase.sol";
 
-//import {console} from "hardhat/console.sol";
+// import {console} from "hardhat/console.sol";
 
 abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
-  error UntrustedImplementation();
-  error InvalidVersion();
-  error PluginRequiresUpdatedManager(uint256 requiredVersion);
-  error Forbidden();
-
-  /**
-   * @dev required if developing an ERC6551 account as a plugin.
-   * If a plugin does not need it, the function should be overridden and revert
-   */
-  receive() external payable virtual {}
-
-  function _canPreApprove(bytes4, address, address signer) internal view virtual override returns (bool) {
-    return _manager().isAProtector(signer);
-  }
-
   function manager() external view virtual override returns (CrunaManager) {
     return _manager();
-  }
-
-  function _manager() internal view virtual returns (CrunaManager) {
-    return CrunaManager(_vault().managerOf(tokenId()));
   }
 
   function isERC6551Account() external pure virtual returns (bool) {
@@ -51,7 +32,7 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
   function upgrade(address implementation_) external virtual override {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     uint256 requires = _crunaGuardian().trustedImplementation(nameId(), implementation_);
-    if (requires == 0) {
+    if (0 == requires) {
       // The new implementation is not trusted.
       // If current implementation is trusted, the new implementation must be trusted too
       if (_crunaGuardian().trustedImplementation(nameId(), implementation()) != 0) revert UntrustedImplementation();
@@ -61,6 +42,14 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
     if (_version <= version()) revert InvalidVersion();
     if (_manager().version() < requires) revert PluginRequiresUpdatedManager(requires);
     StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
+  }
+
+  function _canPreApprove(bytes4, address, address signer) internal view virtual override returns (bool) {
+    return _manager().isAProtector(signer);
+  }
+
+  function _manager() internal view virtual returns (CrunaManager) {
+    return CrunaManager(_vault().managerOf(tokenId()));
   }
 
   // @dev This empty reserved space is put in place to allow future versions to add new

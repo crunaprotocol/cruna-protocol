@@ -12,6 +12,12 @@ import {CrunaManager} from "../manager/CrunaManager.sol";
    the primary manage, which is CrunaManager.sol
 */
 interface ICrunaPlugin is ITokenLinkedContract, IVersioned {
+  error UntrustedImplementation();
+  error InvalidVersion();
+  error PluginRequiresUpdatedManager(uint256 requiredVersion);
+  error Forbidden();
+  error CannotReceiveFunds();
+
   // function called in the dashboard to know if the plugin is asking the
   // right to make a managed transfer of the vault
   function requiresToManageTransfer() external pure returns (bool);

@@ -8,7 +8,7 @@ import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 import {ICrunaManager} from "./ICrunaManager.sol";
 import {CommonBase} from "../utils/CommonBase.sol";
 
-//import {console} from "hardhat/console.sol";
+// import {console} from "hardhat/console.sol";
 
 interface INamedAndVersioned {
   function nameId() external view returns (bytes4);
@@ -20,12 +20,6 @@ interface INamedAndVersioned {
   @dev Base contract for managers and plugins
 */
 abstract contract CrunaManagerBase is ICrunaManager, CommonBase {
-  error UntrustedImplementation();
-  error InvalidVersion();
-  error PluginRequiresUpdatedManager(uint256 requiredVersion);
-  error Forbidden();
-  error NotAManager();
-
   function nameId() public view virtual override returns (bytes4) {
     // In this case, we do not use _hashString because the keccak256 is calculated at compile time
     return bytes4(keccak256("CrunaManager"));
@@ -39,7 +33,7 @@ abstract contract CrunaManagerBase is ICrunaManager, CommonBase {
   function upgrade(address implementation_) external virtual override {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     uint256 requires = _crunaGuardian().trustedImplementation(nameId(), implementation_);
-    if (requires == 0) revert UntrustedImplementation();
+    if (0 == requires) revert UntrustedImplementation();
     INamedAndVersioned impl = INamedAndVersioned(implementation_);
     uint256 currentVersion = version();
     uint256 newVersion = impl.version();

@@ -1,19 +1,25 @@
 # Change log
 
+**0.1.8**
+- In manager, add `unplug` to unplug a plugin and delete any local variable
+- Remove `resetPlugin` from `disablePlugin` and `reEnablePlugin`
+- Resolve some low security issues
+- Optimize gas usage
+
 **0.1.7**
-- Modify signature of init function in CrunaProtectedNFT to give more flexibility to override the default implementation if needed
+- Modify signature of init function in `CrunaProtectedNFT` to give more flexibility to override the default implementation if needed
 
 **0.1.6**
-- Add check to avoid double initializations in CrunaProtectedNFT
+- Add check to avoid double initializations in `CrunaProtectedNFT`
 
 **0.1.5**
-- Align ManagedHistory fields to NFTConf fields (uint256 > uint112)
+- Align `ManagedHistory` fields to `NFTConf` fields (uint256 > uint112)
 
 **0.1.4**
-- improve _mintAndActivate in CrunaProtectedNFT
+- improve `_mintAndActivate` in `CrunaProtectedNFT`
 
 **0.1.3**
-- improve setMaxTokenId in CrunaProtectedNFT
+- improve `setMaxTokenId` in `CrunaProtectedNFT`
 
 **0.1.2**
 - allow protected NFTs to mint specific tokens, instead of forcing a sequential minting
@@ -25,7 +31,7 @@
 - moving the repo from cruna-cc to crunaprotocol
 
 **1.0.0-rc.14**
-- remove CrunaManager.setProtectors because it can cause misuses that can lead to losses
+- remove `setProtectors` from manager because it can cause misuses that can lead to losses
 
 **1.0.0-rc.13**
 - Fix `bin/publish.sh` — it was not copying the right canonical contracts before publishing.
@@ -34,19 +40,19 @@
 - Fix canonical addresses and deploy bytecodes to avoid that changes in the dependencies alters the addresses of the canonical contracts
 
 **1.0.0-rc.9**
-- CrunaPluginBase extends now SignatureValidator
+- `CrunaPluginBase` extends now `SignatureValidator`
 
 **1.0.0-rc.8**
-- Non-blocking approach to beneficiary nominations in InheritanceCrunaPlugin
+- Non-blocking approach to beneficiary nominations in `InheritanceCrunaPlugin`
 
 **1.0.0-rc.7**
-- Rename CrunaManagedNFT to CrunaProtectedNFT for clarity
+- Rename `CrunaManagedNFT` to `CrunaProtectedNFT` for clarity
 
 **1.0.0-rc.6**
-- Add importProtectorsAndSafeRecipientsFrom function to allow to import protectors and safe recipients from another manager owned by the same owner, if and only if the new tokenId has no protectors and safe recipients
+- Add `importProtectorsAndSafeRecipientsFrom` function to allow to import protectors and safe recipients from another manager owned by the same owner, if and only if the new tokenId has no protectors and safe recipients
 
 **1.0.0-rc.5**
-- Add setProtectors function to allow to quickly set many protectors in one transaction, but only if no protectors are already set
+- Add `setProtectors` function to allow to quickly set many protectors in one transaction, but only if no protectors are already set
 
 **1.0.0-rc.4**
 - Add flag to specify that a vault has been deployed to a main network since it is not possible to know that on chain
@@ -54,15 +60,15 @@
 - To avoid security issues, transfers by untrusted plugins can be executed only on testnets
 
 **1.0.0-rc.3**
-- Plugins are now deployed by the NFT, not by the manager. This avoids issues when deploying plugins that supports IERC6551Account 
-- Canonical addresses for CrunaRegistry, CrunaGuardian and ERC6551Registry are now constant and hardcoded
-- Add more features in SignatureValidator to generalize common operations
+- Plugins are now deployed by the NFT, not by the manager. This avoids issues when deploying plugins that supports `IERC6551Account` 
+- Canonical addresses for `CrunaRegistry`, `CrunaGuardian` and `ERC6551Registry` are now constant and hardcoded
+- Add more features in `SignatureValidator` to generalize common operations
 
 **1.0.0-rc.2**
-- Fix bug in CrunaProtectedNFTBase#init
+- Fix bug in `CrunaProtectedNFTBase`#init
 
 **1.0.0-rc.1**
-- Add support for multi-sig and ERC4337 wallets as protectors. Since they cannot sign a valid typed_v4 signature, they must pre-approve the operation
+- Add support for multi-sig and `ERC4337` wallets as protectors. Since they cannot sign a valid typed_v4 signature, they must pre-approve the operation
 - Add firstTokenId to the init function of a CrunaProtectedNFT to allow the owner to set the first tokenId (essential to define cross/multi-chain strategies)
 
 **1.0.0-beta.10**
@@ -84,14 +90,14 @@
 - Minor alignment of function signatures, keeping timeValidation as an internal parameter, in favor of timestamp and validFor
 
 **1.0.0-beta-5**
-- Move events like ProtectorChange, SafeRecipientChange, etc. from the Manager to the Vault, because listening to events emitted by the vault is simpler than listening to the events emitted by all the managers
+- Move events like `ProtectorChange`, `SafeRecipientChange`, etc. from the Manager to the Vault, because listening to events emitted by the vault is simpler than listening to the events emitted by all the managers
 
 **1.0.0-beta.4**
 - Renaming contracts to better distinguish them
 - Add a function to allow a CrunaManaged NFT to upgrade the default implementation of the CrunaManager to a new version
 - Simplify proxies
-- Split ManagedERC721 in a basic contract, CrunaManagedBase, and two implementations based on Ownable and TimeControlled. The second is used by TimeControlledNFT, but the other can be chosen by less critical projects.
-- Extend TimeControlled also in the Guardian, to guarantee the fairness of the trusted implementations 
+- Split `ManagedERC721` in a basic contract, `CrunaManagedBase`, and two implementations based on `Ownable` and `TimeControlled`. The second is used by `TimeControlledNFT`, but the other can be chosen by less critical projects.
+- Extend `TimeControlled` also in the Guardian, to guarantee the fairness of the trusted implementations 
 
 **1.0.0-beta.3**
 - Better interface organization
@@ -99,7 +105,7 @@
 - Add Time Lock to Guardian
 
 **1.0.0-beta.2**
-- Fix typo in CrunaRegistry function name
+- Fix typo in `CrunaRegistry` function name
 - Reorganize folders and files
 - Add function to check if plugins needs to be reset on vault transfer
 
@@ -108,7 +114,7 @@
 
 **1.0.0-beta.0**
 - Add views to manager to be able to see which plugins are active, disabled, etc.
-- Add maxTokenId to ManagedERC721 to set a cap to the minting of tokens
+- Add maxTokenId to `ManagedERC721` to set a cap to the minting of tokens
 - Improved tests, adding calculations for gasLimit when buying vaults
 
 **1.0.0-alpha.7**
