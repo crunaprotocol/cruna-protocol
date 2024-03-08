@@ -496,12 +496,12 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     if (actor == address(0)) revert ZeroAddress();
     if (actor == sender) revert CannotBeYourself();
     _preValidateAndCheckSignature(_functionSelector, actor, status ? 1 : 0, 0, timestamp, validFor, signature);
-    bool _settingAProtector = timestamp > TIME_VALIDATION_MULTIPLIER - 1;
     if (!status) {
-      if (timestamp != 0 && _settingAProtector && !isAProtector(actor)) revert ProtectorNotFound();
+      if (timestamp != 0 && timestamp > TIME_VALIDATION_MULTIPLIER - 1 && !isAProtector(actor)) revert ProtectorNotFound();
       _removeActor(actor, role_);
     } else {
-      if (timestamp != 0 && _settingAProtector && isAProtector(actor)) revert ProtectorAlreadySetByYou();
+      if (timestamp != 0 && timestamp > TIME_VALIDATION_MULTIPLIER - 1 && isAProtector(actor))
+        revert ProtectorAlreadySetByYou();
       _addActor(actor, role_);
     }
   }
