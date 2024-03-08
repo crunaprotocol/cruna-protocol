@@ -19,7 +19,8 @@ contract Actor is IActor {
   function actorIndex(address actor_, bytes4 role) public view virtual override returns (uint256) {
     address[] storage actors = _actors[role];
     // This may go out of gas if there are too many actors
-    for (uint256 i; i < actors.length; i++) {
+    uint256 len = actors.length;
+    for (uint256 i; i < len; i++) {
       if (actors[i] == actor_) {
         return i;
       }

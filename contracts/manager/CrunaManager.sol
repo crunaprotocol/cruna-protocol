@@ -102,13 +102,15 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     CrunaManager otherManager = CrunaManager(_vault().managerOf(otherTokenId));
     if (otherManager.actorCount(PROTECTOR) == 0 && otherManager.actorCount(SAFE_RECIPIENT) == 0) revert NothingToImport();
     address[] memory otherProtectors = otherManager.getProtectors();
-    for (uint256 i; i < otherProtectors.length; i++) {
+    uint256 len = otherProtectors.length;
+    for (uint256 i; i < len; i++) {
       if (otherProtectors[i] == address(0)) revert ZeroAddress();
       if (otherProtectors[i] == _msgSender()) revert CannotBeYourself();
       _addActor(otherProtectors[i], PROTECTOR);
     }
     address[] memory otherSafeRecipients = otherManager.getSafeRecipients();
-    for (uint256 i; i < otherSafeRecipients.length; i++) {
+    len = otherSafeRecipients.length;
+    for (uint256 i; i < len; i++) {
       _addActor(otherSafeRecipients[i], SAFE_RECIPIENT);
     }
     emit ProtectorsAndSafeRecipientsImported(otherProtectors, otherSafeRecipients, otherTokenId);
@@ -237,7 +239,8 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       validFor,
       signature
     );
-    for (uint256 i; i < allPlugins.length; i++) {
+    uint256 len = allPlugins.length;
+    for (uint256 i; i < len; i++) {
       if (_hashString(allPlugins[i].name) == _hashString(name)) {
         if (pluginsById[_key].canBeReset) {
           _resetPlugin(_nameId, salt);
@@ -324,7 +327,8 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   function countPlugins() public view virtual override returns (uint256, uint256) {
     uint256 active;
     uint256 disabled;
-    for (uint256 i; i < allPlugins.length; i++) {
+    uint256 len = allPlugins.length;
+    for (uint256 i; i < len; i++) {
       if (allPlugins[i].active) active++;
       else disabled++;
     }
@@ -338,7 +342,8 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   }
 
   function pluginIndex(string memory name, bytes4) public view virtual returns (bool, uint256) {
-    for (uint256 i; i < allPlugins.length; i++) {
+    uint256 len = allPlugins.length;
+    for (uint256 i; i < len; i++) {
       if (_hashString(name) == _hashString(allPlugins[i].name)) {
         return (true, i);
       }
@@ -357,7 +362,8 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   function listPlugins(bool active) external view virtual returns (string[] memory) {
     (uint256 actives, uint256 disabled) = countPlugins();
     string[] memory _plugins = new string[](active ? actives : disabled);
-    for (uint256 i; i < allPlugins.length; i++) {
+    uint256 len = allPlugins.length;
+    for (uint256 i; i < len; i++) {
       if (allPlugins[i].active == active) {
         _plugins[i] = allPlugins[i].name;
       }
@@ -590,15 +596,14 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     _deleteActors(PROTECTOR);
     _deleteActors(SAFE_RECIPIENT);
     // disable all plugins
-    if (allPlugins.length != 0) {
-      for (uint256 i; i < allPlugins.length; i++) {
-        bytes4 _nameId = _stringToBytes4(allPlugins[i].name);
-        // We reset the plugin only if it requires it. In theory, this could consume a lot of gas and
-        // cause a revert of the entire process, but there is no other way to do it, because during a
-        // transfer, resettable plugins must be reset.
-        // It is responsibility of the user to plug only plugins that have been audited and trusted.
-        if (pluginsById[_combineBytes4(_nameId, allPlugins[i].salt)].canBeReset) _resetPlugin(_nameId, allPlugins[i].salt);
-      }
+    uint256 len = allPlugins.length;
+    for (uint256 i; i < len; i++) {
+      bytes4 _nameId = _stringToBytes4(allPlugins[i].name);
+      // We reset the plugin only if it requires it. In theory, this could consume a lot of gas and
+      // cause a revert of the entire process, but there is no other way to do it, because during a
+      // transfer, resettable plugins must be reset.
+      // It is responsibility of the user to plug only plugins that have been audited and trusted.
+      if (pluginsById[_combineBytes4(_nameId, allPlugins[i].salt)].canBeReset) _resetPlugin(_nameId, allPlugins[i].salt);
     }
     emit Reset();
   }

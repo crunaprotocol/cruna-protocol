@@ -68,7 +68,8 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
 
   // @dev see {IInheritanceCrunaPlugin.sol-setSentinels}
   function setSentinels(address[] memory sentinels, bytes calldata emptySignature) external virtual override onlyTokenOwner {
-    for (uint256 i; i < sentinels.length; i++) {
+    uint256 len = sentinels.length;
+    for (uint256 i; i < len; i++) {
       setSentinel(sentinels[i], true, 0, 0, emptySignature);
     }
     if (getActors(SENTINEL).length > 11) revert TooManySentinels();
@@ -108,7 +109,8 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
 
   function getVotes() external view virtual override returns (address[] memory) {
     address[] memory votes = getActors(SENTINEL);
-    for (uint256 i; i < votes.length; i++) {
+    uint256 len = votes.length;
+    for (uint256 i; i < len; i++) {
       votes[i] = _votes.favorites[votes[i]];
     }
     return votes;
@@ -202,9 +204,11 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
 
   function _quorumReached() internal view virtual returns (address) {
     address[] memory sentinels = getActors(SENTINEL);
-    for (uint256 k; k < _votes.nominations.length; k++) {
+    uint256 len = _votes.nominations.length;
+    for (uint256 k; k < len; k++) {
       uint256 votes;
-      for (uint256 i; i < sentinels.length; i++) {
+      uint256 len2 = sentinels.length;
+      for (uint256 i; i < len2; i++) {
         if (_votes.favorites[sentinels[i]] == _votes.nominations[k]) {
           votes++;
           if (votes == _inheritanceConf.quorum) {
@@ -217,7 +221,8 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   function _isNominated(address beneficiary) internal view virtual returns (bool) {
-    for (uint256 i; i < _votes.nominations.length; i++) {
+    uint256 len = _votes.nominations.length;
+    for (uint256 i; i < len; i++) {
       if (beneficiary == _votes.nominations[i]) {
         return true;
       }
@@ -226,7 +231,8 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   function _popNominated(address beneficiary) internal virtual {
-    for (uint256 i; i < _votes.nominations.length; i++) {
+    uint256 len = _votes.nominations.length;
+    for (uint256 i; i < len; i++) {
       if (beneficiary == _votes.nominations[i]) {
         _votes.nominations[i] = _votes.nominations[_votes.nominations.length - 1];
         _votes.nominations.pop();
@@ -236,10 +242,11 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   function _resetNominationsAndVotes() internal virtual {
-    if (_votes.nominations.length > 0) {
+    if (_votes.nominations.length != 0) {
       delete _votes.nominations;
       address[] memory _sentinels = getActors(SENTINEL);
-      for (uint256 i; i < _sentinels.length; i++) {
+      uint256 len = _sentinels.length;
+      for (uint256 i; i < len; i++) {
         delete _votes.favorites[_sentinels[i]];
       }
     }

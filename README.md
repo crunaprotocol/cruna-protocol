@@ -169,9 +169,9 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
  interfaces/                          |      100 |      100 |      100 |      100 
   IERC6454.sol                        |      100 |      100 |      100 |      100 
   IERC6982.sol                        |      100 |      100 |      100 |      100 
- manager/                             |    93.78 |    67.28 |    94.74 |    92.61 
+ manager/                             |    93.49 |    66.88 |    94.74 |    92.41 
   Actor.sol                           |      100 |       70 |      100 |      100 
-  CrunaManager.sol                    |    93.75 |     66.9 |    97.78 |    92.27 
+  CrunaManager.sol                    |    93.37 |    66.43 |    97.78 |       92 
   CrunaManagerBase.sol                |    86.67 |       70 |    33.33 |     87.5 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   IActor.sol                          |      100 |      100 |      100 |      100 
@@ -179,9 +179,9 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
  plugins/                             |    92.31 |       90 |    83.33 |    92.86 
   CrunaPluginBase.sol                 |    92.31 |       90 |    83.33 |    92.86 
   ICrunaPlugin.sol                    |      100 |      100 |      100 |      100 
- plugins/inheritance/                 |    93.51 |    66.67 |    95.83 |    90.63 
+ plugins/inheritance/                 |    92.86 |    66.67 |    95.83 |    90.29 
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
-  InheritanceCrunaPlugin.sol          |    93.51 |    66.67 |    95.65 |    90.63 
+  InheritanceCrunaPlugin.sol          |    92.86 |    66.67 |    95.65 |    90.29 
   InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
  token/                               |    92.31 |    59.09 |     96.3 |    91.55 
   CrunaProtectedNFT.sol               |    91.67 |     56.9 |    95.45 |    91.04 
@@ -202,7 +202,7 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   SignatureValidator.sol              |      100 |       90 |      100 |      100 
   TokenLinkedContract.sol             |       90 |       50 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    93.68 |    66.67 |    94.12 |    92.07 
+All files                             |    93.41 |    66.48 |    94.12 |     91.9 
 --------------------------------------|----------|----------|----------|----------
 ```
 
