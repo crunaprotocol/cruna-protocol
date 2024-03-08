@@ -7,6 +7,11 @@
     },
     {
       "inputs": [],
+      "name": "ActorNotFound",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "CannotBeYourself",
       "type": "error"
     },
@@ -1794,6 +1799,11 @@
     {
       "inputs": [],
       "name": "ActorAlreadyAdded",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ActorNotFound",
       "type": "error"
     },
     {

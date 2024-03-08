@@ -13,6 +13,7 @@ contract Actor {
   error ZeroAddress();
   error ActorAlreadyAdded();
   error TooManyActors();
+  error ActorNotFound();
 
   function _getActors(bytes4 role) internal view virtual returns (address[] memory) {
     return _actors[role];
@@ -49,7 +50,8 @@ contract Actor {
 
   function _removeActorByIndex(uint256 i, bytes4 role) internal virtual {
     address[] storage actors = _actors[role];
-    if (i < actors.length - 1) {
+    if (actors.length == 0 || i + 1 > actors.length) revert ActorNotFound();
+    if (i + 1 != actors.length) {
       actors[i] = actors[actors.length - 1];
     }
     actors.pop();
