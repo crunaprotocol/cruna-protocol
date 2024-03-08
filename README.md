@@ -180,9 +180,9 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
  plugins/                             |    92.86 |    83.33 |    83.33 |    93.33 
   CrunaPluginBase.sol                 |    92.86 |    83.33 |    83.33 |    93.33 
   ICrunaPlugin.sol                    |      100 |      100 |      100 |      100 
- plugins/inheritance/                 |    92.94 |    66.67 |       96 |    87.93 
+ plugins/inheritance/                 |    92.86 |    67.24 |       96 |    87.83 
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
-  InheritanceCrunaPlugin.sol          |    92.94 |    66.67 |    95.83 |    87.93 
+  InheritanceCrunaPlugin.sol          |    92.86 |    67.24 |    95.83 |    87.83 
   InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
  token/                               |    92.31 |    59.09 |     96.3 |       92 
   CrunaProtectedNFT.sol               |    91.67 |     56.9 |    95.45 |    91.55 
@@ -203,7 +203,7 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   SignatureValidator.sol              |      100 |       90 |      100 |      100 
   TokenLinkedContract.sol             |       90 |       50 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    92.26 |    65.47 |    93.04 |    89.89 
+All files                             |    92.24 |    65.56 |    93.04 |    89.87 
 --------------------------------------|----------|----------|----------|----------
 ```
 

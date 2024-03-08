@@ -1962,11 +1962,6 @@
     },
     {
       "inputs": [],
-      "name": "TooManySentinels",
-      "type": "error"
-    },
-    {
-      "inputs": [],
       "name": "UntrustedImplementation",
       "type": "error"
     },

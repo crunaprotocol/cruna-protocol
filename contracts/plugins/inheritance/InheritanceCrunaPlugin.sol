@@ -61,6 +61,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
         _inheritanceConf.quorum = uint8(shares);
       }
     } else {
+      // will revert if more than 16 sentinels
       _addActor(sentinel, _SENTINEL);
     }
     emit SentinelUpdated(_msgSender(), sentinel, status);
@@ -75,7 +76,6 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
         i++;
       }
     }
-    if (_actorCount(_SENTINEL) > 11) revert TooManySentinels();
   }
 
   // @dev see {IInheritanceCrunaPlugin.sol-configureInheritance}

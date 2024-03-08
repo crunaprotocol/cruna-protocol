@@ -52,7 +52,6 @@ interface IInheritanceCrunaPlugin {
   error InvalidValidity();
   error NoVoteToRetire();
   error InvalidParameters();
-  error TooManySentinels();
 
   // beneficiaries
 
