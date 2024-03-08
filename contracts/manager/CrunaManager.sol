@@ -6,6 +6,7 @@ pragma solidity ^0.8.20;
 import {Actor} from "./Actor.sol";
 import {CrunaManagerBase} from "./CrunaManagerBase.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {ExcessivelySafeCall} from "../libs/ExcessivelySafeCall.sol";
 
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
@@ -16,6 +17,7 @@ import {CrunaPluginBase} from "../plugins/CrunaPluginBase.sol";
 contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   using ECDSA for bytes32;
   using Strings for uint256;
+  using ExcessivelySafeCall for address;
 
   uint256 private constant _MAX_ACTORS = 16;
   bytes4 private constant _PROTECTOR = 0x245ac14a; // bytes4(keccak256("PROTECTOR"));
@@ -525,7 +527,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       bytes memory data = abi.encodeWithSignature("emitLockedEvent(uint256,bool)", tokenId(), status && protectorsCount == 1);
       address vaultAddress = address(_vault());
       // solhint-disable-next-line avoid-low-level-calls
-      (bool success, ) = vaultAddress.call{gas: 10_000}(data);
+      (bool success, ) = vaultAddress.excessivelySafeCall(10_000, 0, 32, data);
       if (!success) {
         // we emit a local event to alert. Not ideal, but better than reverting
         emit EmitLockedEventFailed();
@@ -579,7 +581,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     // stored data, and they would return gas back. 10_000 is a conservative amount of gas.
     // Any plugin needing more gas won't be trusted by the CrunaGuardian.
     // solhint-disable-next-line avoid-low-level-calls
-    (bool success, ) = plugin_.call{gas: 10_000}(data);
+    (bool success, ) = plugin_.excessivelySafeCall(10_000, 0, 32, data);
     // Optionally log success/failure
     emit PluginResetAttempt(_nameId, salt, success);
   }
