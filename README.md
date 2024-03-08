@@ -171,9 +171,9 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   IERC6982.sol                        |      100 |      100 |      100 |      100 
  libs/                                |       40 |        0 |    33.33 |    38.46 
   ExcessivelySafeCall.sol             |       40 |        0 |    33.33 |    38.46 
- manager/                             |    93.46 |    66.88 |    94.74 |    91.98 
+ manager/                             |     93.4 |    66.88 |    94.74 |    91.91 
   Actor.sol                           |      100 |       70 |      100 |      100 
-  CrunaManager.sol                    |    93.33 |    66.43 |    97.78 |     91.5 
+  CrunaManager.sol                    |    93.26 |    66.43 |    97.78 |    91.41 
   CrunaManagerBase.sol                |    86.67 |       70 |    33.33 |     87.5 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   IActor.sol                          |      100 |      100 |      100 |      100 
@@ -204,7 +204,7 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   SignatureValidator.sol              |      100 |       90 |      100 |      100 
   TokenLinkedContract.sol             |       90 |       50 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |     92.2 |     66.1 |    92.95 |    90.37 
+All files                             |    92.17 |     66.1 |    92.95 |    90.33 
 --------------------------------------|----------|----------|----------|----------
 ```
 

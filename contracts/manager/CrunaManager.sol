@@ -524,10 +524,14 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       // It should never happen, but if it happens, we are
       // notified by the EmitLockedEventFailed event, instead of reverting
       // the entire transaction.
-      bytes memory data = abi.encodeWithSignature("emitLockedEvent(uint256,bool)", tokenId(), status && protectorsCount == 1);
       address vaultAddress = address(_vault());
       // solhint-disable-next-line avoid-low-level-calls
-      (bool success, ) = vaultAddress.excessivelySafeCall(10_000, 0, 32, data);
+      (bool success, ) = vaultAddress.excessivelySafeCall(
+        10_000,
+        0,
+        32,
+        abi.encodeWithSignature("emitLockedEvent(uint256,bool)", tokenId(), status && protectorsCount == 1)
+      );
       if (!success) {
         // we emit a local event to alert. Not ideal, but better than reverting
         emit EmitLockedEventFailed();
@@ -576,12 +580,11 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   function _resetPlugin(bytes4 _nameId, bytes4) internal virtual {
     bytes4 salt = _BYTES4_ZERO;
     address plugin_ = pluginAddress(_nameId, salt);
-    bytes memory data = abi.encodeWithSignature("reset()");
     // A plugin resetting should spend very little gas because it mostly has to delete
     // stored data, and they would return gas back. 10_000 is a conservative amount of gas.
     // Any plugin needing more gas won't be trusted by the CrunaGuardian.
     // solhint-disable-next-line avoid-low-level-calls
-    (bool success, ) = plugin_.excessivelySafeCall(10_000, 0, 32, data);
+    (bool success, ) = plugin_.excessivelySafeCall(10_000, 0, 32, abi.encodeWithSignature("reset()"));
     // Optionally log success/failure
     emit PluginResetAttempt(_nameId, salt, success);
   }
