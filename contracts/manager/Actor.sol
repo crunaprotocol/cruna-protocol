@@ -20,9 +20,12 @@ contract Actor is IActor {
     address[] storage actors = _actors[role];
     // This may go out of gas if there are too many actors
     uint256 len = actors.length;
-    for (uint256 i; i < len; i++) {
+    for (uint256 i; i < len; ) {
       if (actors[i] == actor_) {
         return i;
+      }
+      unchecked {
+        i++;
       }
     }
     return _MAX_ACTORS;

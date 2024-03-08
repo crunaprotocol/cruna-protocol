@@ -101,11 +101,14 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, Canonical
 
   function defaultManagerImplementation(uint256 _tokenId) public view virtual override returns (address) {
     if (nftConf.managerHistoryLength == 1) return managerHistory[0].managerAddress;
-    for (uint256 i; i < nftConf.managerHistoryLength; i++) {
+    for (uint256 i; i < nftConf.managerHistoryLength; ) {
       if (
         _tokenId >= managerHistory[i].firstTokenId &&
         (managerHistory[i].lastTokenId == 0 || _tokenId <= managerHistory[i].lastTokenId)
       ) return managerHistory[i].managerAddress;
+      unchecked {
+        i++;
+      }
     }
     // should never happen
     return address(0);
@@ -249,8 +252,11 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, Canonical
     if (!nftConf.progressiveTokenIds) revert NotAvailableIfTokenIdsAreNotProgressive();
     if (nftConf.managerHistoryLength == 0) revert NftNotInitiated();
     uint256 tokenId = nftConf.nextTokenId;
-    for (uint256 i; i < amount; i++) {
-      _mintAndActivate(to, tokenId++);
+    for (uint256 i; i < amount; ) {
+      unchecked {
+        _mintAndActivate(to, tokenId++);
+        i++;
+      }
     }
     nftConf.nextTokenId = uint112(tokenId);
   }

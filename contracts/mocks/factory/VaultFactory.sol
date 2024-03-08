@@ -85,11 +85,14 @@ contract VaultFactory is
     } else if (stableCoins[stableCoin]) {
       delete stableCoins[stableCoin];
       // no risk of going out of cash because the factory will support just a couple of stable coins
-      for (uint256 i; i < _stableCoins.length; i++) {
+      for (uint256 i; i < _stableCoins.length; ) {
         if (_stableCoins[i] == stableCoin) {
           _stableCoins[i] = _stableCoins[_stableCoins.length - 1];
           _stableCoins.pop();
           break;
+        }
+        unchecked {
+          i++;
         }
       }
       emit StableCoinSet(stableCoin, active);
@@ -124,17 +127,23 @@ contract VaultFactory is
   ) external virtual override nonReentrant whenNotPaused {
     if (tos.length != amounts.length) revert InvalidArguments();
     uint256 amount = 0;
-    for (uint256 i; i < tos.length; i++) {
-      if (tos[i] == address(0)) {
-        revert ZeroAddress();
+    for (uint256 i; i < tos.length; ) {
+      unchecked {
+        if (tos[i] == address(0)) {
+          revert ZeroAddress();
+        }
+        amount += amounts[i];
+        i++;
       }
-      amount += amounts[i];
     }
     uint256 payment = finalPrice(stableCoin) * amount;
     if (payment > ERC20(stableCoin).balanceOf(_msgSender())) revert InsufficientFunds();
-    for (uint256 i; i < tos.length; i++) {
+    for (uint256 i; i < tos.length; ) {
       if (amounts[i] != 0) {
         vault.safeMintAndActivate(tos[i], amounts[i]);
+      }
+      unchecked {
+        i++;
       }
     }
     // we manage only trusted stable coins, so no risk of reentrancy

@@ -15,10 +15,12 @@ contract CrunaManagerV2 is CrunaManager {
   // new function in V2
   function bytes4ToHexString(bytes4 _bytes) public pure returns (string memory) {
     bytes memory byteArray = new bytes(8);
-    for (uint256 i; i < 4; i++) {
-      uint8 currentByte = uint8(_bytes[i]);
-      byteArray[2 * i] = _nibbleToHexChar(currentByte / 16);
-      byteArray[2 * i + 1] = _nibbleToHexChar(currentByte % 16);
+    unchecked {
+      for (uint256 i; i < 4; i++) {
+        uint8 currentByte = uint8(_bytes[i]);
+        byteArray[2 * i] = _nibbleToHexChar(currentByte / 16);
+        byteArray[2 * i + 1] = _nibbleToHexChar(currentByte % 16);
+      }
     }
     return string(abi.encodePacked("0x", string(byteArray)));
   }

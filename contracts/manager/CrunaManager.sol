@@ -106,15 +106,21 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     if (otherManager.actorCount(_PROTECTOR) == 0 && otherManager.actorCount(_SAFE_RECIPIENT) == 0) revert NothingToImport();
     address[] memory otherProtectors = otherManager.getProtectors();
     uint256 len = otherProtectors.length;
-    for (uint256 i; i < len; i++) {
+    for (uint256 i; i < len; ) {
       if (otherProtectors[i] == address(0)) revert ZeroAddress();
       if (otherProtectors[i] == _msgSender()) revert CannotBeYourself();
       _addActor(otherProtectors[i], _PROTECTOR);
+      unchecked {
+        i++;
+      }
     }
     address[] memory otherSafeRecipients = otherManager.getSafeRecipients();
     len = otherSafeRecipients.length;
-    for (uint256 i; i < len; i++) {
+    for (uint256 i; i < len; ) {
       _addActor(otherSafeRecipients[i], _SAFE_RECIPIENT);
+      unchecked {
+        i++;
+      }
     }
     emit ProtectorsAndSafeRecipientsImported(otherProtectors, otherSafeRecipients, otherTokenId);
     _emitLockeEvent(1, true);
@@ -243,14 +249,17 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       signature
     );
     uint256 len = allPlugins.length;
-    for (uint256 i; i < len; i++) {
-      if (_hashString(allPlugins[i].name) == _hashString(name)) {
-        if (pluginsById[_key].canBeReset) {
-          _resetPlugin(_nameId, salt);
+    for (uint256 i; i < len; ) {
+      unchecked {
+        if (_hashString(allPlugins[i].name) == _hashString(name)) {
+          if (pluginsById[_key].canBeReset) {
+            _resetPlugin(_nameId, salt);
+          }
+          allPlugins[i] = allPlugins[allPlugins.length - 1];
+          allPlugins.pop();
+          break;
         }
-        allPlugins[i] = allPlugins[allPlugins.length - 1];
-        allPlugins.pop();
-        break;
+        i++;
       }
     }
     delete pluginsById[_key];
@@ -331,9 +340,12 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     uint256 active;
     uint256 disabled;
     uint256 len = allPlugins.length;
-    for (uint256 i; i < len; i++) {
-      if (allPlugins[i].active) active++;
-      else disabled++;
+    for (uint256 i; i < len; ) {
+      unchecked {
+        if (allPlugins[i].active) active++;
+        else disabled++;
+        i++;
+      }
     }
     return (active, disabled);
   }
@@ -346,9 +358,12 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
 
   function pluginIndex(string memory name, bytes4) public view virtual returns (bool, uint256) {
     uint256 len = allPlugins.length;
-    for (uint256 i; i < len; i++) {
+    for (uint256 i; i < len; ) {
       if (_hashString(name) == _hashString(allPlugins[i].name)) {
         return (true, i);
+      }
+      unchecked {
+        i++;
       }
     }
     return (false, 0);
@@ -366,9 +381,13 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     (uint256 actives, uint256 disabled) = countPlugins();
     string[] memory _plugins = new string[](active ? actives : disabled);
     uint256 len = allPlugins.length;
-    for (uint256 i; i < len; i++) {
+    for (uint256 i; i < len; ) {
       if (allPlugins[i].active == active) {
         _plugins[i] = allPlugins[i].name;
+      }
+
+      unchecked {
+        i++;
       }
     }
     return _plugins;
@@ -603,13 +622,16 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     _deleteActors(_SAFE_RECIPIENT);
     // disable all plugins
     uint256 len = allPlugins.length;
-    for (uint256 i; i < len; i++) {
+    for (uint256 i; i < len; ) {
       bytes4 _nameId = _stringToBytes4(allPlugins[i].name);
       // We reset the plugin only if it requires it. In theory, this could consume a lot of gas and
       // cause a revert of the entire process, but there is no other way to do it, because during a
       // transfer, resettable plugins must be reset.
       // It is responsibility of the user to plug only plugins that have been audited and trusted.
       if (pluginsById[_combineBytes4(_nameId, allPlugins[i].salt)].canBeReset) _resetPlugin(_nameId, allPlugins[i].salt);
+      unchecked {
+        i++;
+      }
     }
     emit Reset();
   }

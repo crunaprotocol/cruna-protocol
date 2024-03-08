@@ -171,9 +171,9 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   IERC6982.sol                        |      100 |      100 |      100 |      100 
  libs/                                |       40 |        0 |    33.33 |    38.46 
   ExcessivelySafeCall.sol             |       40 |        0 |    33.33 |    38.46 
- manager/                             |     93.4 |    66.88 |    94.74 |    91.91 
+ manager/                             |     93.4 |    66.88 |    94.74 |    91.63 
   Actor.sol                           |      100 |       70 |      100 |      100 
-  CrunaManager.sol                    |    93.26 |    66.43 |    97.78 |    91.41 
+  CrunaManager.sol                    |    93.26 |    66.43 |    97.78 |    91.04 
   CrunaManagerBase.sol                |    86.67 |       70 |    33.33 |     87.5 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   IActor.sol                          |      100 |      100 |      100 |      100 
@@ -181,12 +181,12 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
  plugins/                             |    92.31 |       90 |    83.33 |    92.86 
   CrunaPluginBase.sol                 |    92.31 |       90 |    83.33 |    92.86 
   ICrunaPlugin.sol                    |      100 |      100 |      100 |      100 
- plugins/inheritance/                 |    92.86 |    66.67 |    95.83 |    90.29 
+ plugins/inheritance/                 |    92.86 |    66.67 |    95.83 |    87.83 
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
-  InheritanceCrunaPlugin.sol          |    92.86 |    66.67 |    95.65 |    90.29 
+  InheritanceCrunaPlugin.sol          |    92.86 |    66.67 |    95.65 |    87.83 
   InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
- token/                               |    92.31 |    59.09 |     96.3 |    91.55 
-  CrunaProtectedNFT.sol               |    91.67 |     56.9 |    95.45 |    91.04 
+ token/                               |    92.31 |    59.09 |     96.3 |       92 
+  CrunaProtectedNFT.sol               |    91.67 |     56.9 |    95.45 |    91.55 
   CrunaProtectedNFTOwnable.sol        |      100 |       50 |      100 |      100 
   CrunaProtectedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaProtectedNFT.sol              |      100 |      100 |      100 |      100 
@@ -204,7 +204,7 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   SignatureValidator.sol              |      100 |       90 |      100 |      100 
   TokenLinkedContract.sol             |       90 |       50 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    92.17 |     66.1 |    92.95 |    90.33 
+All files                             |    92.17 |     66.1 |    92.95 |     89.8 
 --------------------------------------|----------|----------|----------|----------
 ```
 
