@@ -8,7 +8,7 @@ import {IActor} from "./IActor.sol";
 
 // @dev This contract manages actors
 contract Actor is IActor {
-  uint256 public constant MAX_ACTORS = 16;
+  uint256 private constant _MAX_ACTORS = 16;
 
   mapping(bytes4 => address[]) internal _actors;
 
@@ -25,7 +25,7 @@ contract Actor is IActor {
         return i;
       }
     }
-    return MAX_ACTORS;
+    return _MAX_ACTORS;
   }
 
   function actorCount(bytes4 role) public view virtual override returns (uint256) {
@@ -34,7 +34,7 @@ contract Actor is IActor {
 
   function _isActiveActor(address actor_, bytes4 role) internal view virtual returns (bool) {
     uint256 i = actorIndex(actor_, role);
-    return i < MAX_ACTORS;
+    return i < _MAX_ACTORS;
   }
 
   function _removeActor(address actor_, bytes4 role) internal virtual {
@@ -55,7 +55,7 @@ contract Actor is IActor {
     // We allow to add up to 16 actors per role per owner to avoid the risk of going out of gas
     // looping the array. Most likely, the user will set between 1 and 7 actors per role, so,
     // it should be fine
-    if (_actors[role_].length == MAX_ACTORS - 1) revert TooManyActors();
+    if (_actors[role_].length == _MAX_ACTORS - 1) revert TooManyActors();
     if (_isActiveActor(actor_, role_)) revert ActorAlreadyAdded();
     _actors[role_].push(actor_);
   }

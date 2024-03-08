@@ -25,7 +25,7 @@ interface ISignatureValidator {
   // @param extra3 The extra3
   // @param timeValidation A combination of timestamp and validity of the signature.
   //   To be readable, the value is calculated as
-  //     timestamp * TIMESTAMP_MULTIPLIER + validity
+  //     timestamp * _TIMESTAMP_MULTIPLIER + validity
   // @param Returns the signer of the signature.
   function recoverSigner(
     bytes4 selector,

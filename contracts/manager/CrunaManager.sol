@@ -17,8 +17,9 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   using ECDSA for bytes32;
   using Strings for uint256;
 
-  bytes4 public constant PROTECTOR = 0x245ac14a; // bytes4(keccak256("PROTECTOR"));
-  bytes4 public constant SAFE_RECIPIENT = 0xb58bf73a; //bytes4(keccak256("SAFE_RECIPIENT"));
+  uint256 private constant _MAX_ACTORS = 16;
+  bytes4 private constant _PROTECTOR = 0x245ac14a; // bytes4(keccak256("PROTECTOR"));
+  bytes4 private constant _SAFE_RECIPIENT = 0xb58bf73a; //bytes4(keccak256("SAFE_RECIPIENT"));
 
   PluginElement[] public allPlugins;
 
@@ -36,27 +37,27 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
 
   /// @dev Counts the protectors.
   function countActiveProtectors() public view virtual override returns (uint256) {
-    return _actors[PROTECTOR].length;
+    return _actors[_PROTECTOR].length;
   }
 
   /// @dev Find a specific protector
   function findProtectorIndex(address protector_) public view virtual override returns (uint256) {
-    return actorIndex(protector_, PROTECTOR);
+    return actorIndex(protector_, _PROTECTOR);
   }
 
   /// @dev Returns true if the address is a protector.
   /// @param protector_ The protector address.
   function isAProtector(address protector_) public view virtual override returns (bool) {
-    return _isActiveActor(protector_, PROTECTOR);
+    return _isActiveActor(protector_, _PROTECTOR);
   }
 
   /// @dev Returns the list of protectors.
   function listProtectors() public view virtual override returns (address[] memory) {
-    return getActors(PROTECTOR);
+    return getActors(_PROTECTOR);
   }
 
   function hasProtectors() public view virtual override returns (bool) {
-    return actorCount(PROTECTOR) != 0;
+    return actorCount(_PROTECTOR) != 0;
   }
 
   function isTransferable(address to) external view override returns (bool) {
@@ -82,10 +83,10 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   ) external virtual override onlyTokenOwner {
     _setSignedActor(
       this.setProtector.selector,
-      PROTECTOR,
+      _PROTECTOR,
       protector_,
       status,
-      timestamp + (TIME_VALIDATION_MULTIPLIER / TIMESTAMP_MULTIPLIER),
+      timestamp + (_TIME_VALIDATION_MULTIPLIER / _TIMESTAMP_MULTIPLIER),
       validFor,
       signature,
       _msgSender()
@@ -95,23 +96,23 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   }
 
   function importProtectorsAndSafeRecipientsFrom(uint256 otherTokenId) external virtual override onlyTokenOwner {
-    if (actorCount(PROTECTOR) != 0) revert ProtectorsAlreadySet();
-    if (actorCount(SAFE_RECIPIENT) != 0) revert SafeRecipientsAlreadySet();
+    if (actorCount(_PROTECTOR) != 0) revert ProtectorsAlreadySet();
+    if (actorCount(_SAFE_RECIPIENT) != 0) revert SafeRecipientsAlreadySet();
     if (otherTokenId == tokenId()) revert CannotimportProtectorsAndSafeRecipientsFromYourself();
     if (_vault().ownerOf(otherTokenId) != owner()) revert NotTheSameOwner();
     CrunaManager otherManager = CrunaManager(_vault().managerOf(otherTokenId));
-    if (otherManager.actorCount(PROTECTOR) == 0 && otherManager.actorCount(SAFE_RECIPIENT) == 0) revert NothingToImport();
+    if (otherManager.actorCount(_PROTECTOR) == 0 && otherManager.actorCount(_SAFE_RECIPIENT) == 0) revert NothingToImport();
     address[] memory otherProtectors = otherManager.getProtectors();
     uint256 len = otherProtectors.length;
     for (uint256 i; i < len; i++) {
       if (otherProtectors[i] == address(0)) revert ZeroAddress();
       if (otherProtectors[i] == _msgSender()) revert CannotBeYourself();
-      _addActor(otherProtectors[i], PROTECTOR);
+      _addActor(otherProtectors[i], _PROTECTOR);
     }
     address[] memory otherSafeRecipients = otherManager.getSafeRecipients();
     len = otherSafeRecipients.length;
     for (uint256 i; i < len; i++) {
-      _addActor(otherSafeRecipients[i], SAFE_RECIPIENT);
+      _addActor(otherSafeRecipients[i], _SAFE_RECIPIENT);
     }
     emit ProtectorsAndSafeRecipientsImported(otherProtectors, otherSafeRecipients, otherTokenId);
     _emitLockeEvent(1, true);
@@ -119,7 +120,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
 
   // @dev see {ICrunaManager.sol-getProtectors}
   function getProtectors() external view virtual override returns (address[] memory) {
-    return getActors(PROTECTOR);
+    return getActors(_PROTECTOR);
   }
 
   // safe recipients
@@ -134,7 +135,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   ) external virtual override onlyTokenOwner {
     _setSignedActor(
       this.setSafeRecipient.selector,
-      SAFE_RECIPIENT,
+      _SAFE_RECIPIENT,
       recipient,
       status,
       timestamp,
@@ -147,12 +148,12 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
 
   // @dev see {ICrunaManager.sol-isSafeRecipient}
   function isSafeRecipient(address recipient) public view virtual override returns (bool) {
-    return actorIndex(recipient, SAFE_RECIPIENT) != MAX_ACTORS;
+    return actorIndex(recipient, _SAFE_RECIPIENT) != _MAX_ACTORS;
   }
 
   // @dev see {ICrunaManager.sol-getSafeRecipients}
   function getSafeRecipients() external view virtual override returns (address[] memory) {
-    return getActors(SAFE_RECIPIENT);
+    return getActors(_SAFE_RECIPIENT);
   }
 
   /**
@@ -459,20 +460,20 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   }
 
   function _isProtected() internal view virtual override returns (bool) {
-    return actorCount(PROTECTOR) != 0;
+    return actorCount(_PROTECTOR) != 0;
   }
 
   function _isProtector(address protector_) internal view virtual override returns (bool) {
-    return _isActiveActor(protector_, PROTECTOR);
+    return _isActiveActor(protector_, _PROTECTOR);
   }
 
   // from SignatureValidator
   function _canPreApprove(bytes4 selector, address actor, address signer) internal view virtual override returns (bool) {
-    if (_actors[PROTECTOR].length == 0) {
+    if (_actors[_PROTECTOR].length == 0) {
       // if there are no protectors, the signer can pre-approve its own candidate
       return selector == this.setProtector.selector && actor == signer;
     }
-    return _isActiveActor(signer, PROTECTOR);
+    return _isActiveActor(signer, _PROTECTOR);
   }
 
   // @dev Adds an actor, validating the data.
@@ -497,10 +498,10 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     if (actor == sender) revert CannotBeYourself();
     _preValidateAndCheckSignature(_functionSelector, actor, status ? 1 : 0, 0, timestamp, validFor, signature);
     if (!status) {
-      if (timestamp != 0 && timestamp > TIME_VALIDATION_MULTIPLIER - 1 && !isAProtector(actor)) revert ProtectorNotFound();
+      if (timestamp != 0 && timestamp > _TIME_VALIDATION_MULTIPLIER - 1 && !isAProtector(actor)) revert ProtectorNotFound();
       _removeActor(actor, role_);
     } else {
-      if (timestamp != 0 && timestamp > TIME_VALIDATION_MULTIPLIER - 1 && isAProtector(actor))
+      if (timestamp != 0 && timestamp > _TIME_VALIDATION_MULTIPLIER - 1 && isAProtector(actor))
         revert ProtectorAlreadySetByYou();
       _addActor(actor, role_);
     }
@@ -548,7 +549,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     uint256 validFor,
     bytes calldata signature
   ) internal virtual {
-    if (validFor > MAX_VALID_FOR) revert InvalidValidity();
+    if (validFor > _MAX_VALID_FOR) revert InvalidValidity();
     _validateAndCheckSignature(
       selector,
       owner(),
@@ -558,7 +559,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       extra,
       extra2,
       0,
-      timestamp * TIMESTAMP_MULTIPLIER + validFor,
+      timestamp * _TIMESTAMP_MULTIPLIER + validFor,
       signature
     );
   }
@@ -593,8 +594,8 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   }
 
   function _resetActorsAndPlugins() internal virtual {
-    _deleteActors(PROTECTOR);
-    _deleteActors(SAFE_RECIPIENT);
+    _deleteActors(_PROTECTOR);
+    _deleteActors(_SAFE_RECIPIENT);
     // disable all plugins
     uint256 len = allPlugins.length;
     for (uint256 i; i < len; i++) {

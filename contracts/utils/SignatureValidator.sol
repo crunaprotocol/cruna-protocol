@@ -14,9 +14,9 @@ import {ISignatureValidator} from "./ISignatureValidator.sol";
 abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
   using ECDSA for bytes32;
 
-  uint256 public constant MAX_VALID_FOR = 9_999_999;
-  uint256 public constant TIMESTAMP_MULTIPLIER = 1e7;
-  uint256 public constant TIME_VALIDATION_MULTIPLIER = 1e17;
+  uint256 internal constant _MAX_VALID_FOR = 9_999_999;
+  uint256 internal constant _TIMESTAMP_MULTIPLIER = 1e7;
+  uint256 internal constant _TIME_VALIDATION_MULTIPLIER = 1e17;
 
   mapping(bytes32 => address) public preApprovals;
   mapping(bytes32 => bool) public usedSignatures;
@@ -36,7 +36,7 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
   // @param extra3 The extra3
   // @param timeValidation A combination of timestamp and validity of the signature.
   //   To be readable, the value is calculated as
-  //     timestamp * TIMESTAMP_MULTIPLIER + validity
+  //     timestamp * _TIMESTAMP_MULTIPLIER + validity
   // @param Returns the signer of the signature.
   function recoverSigner(
     bytes4 selector,
@@ -79,8 +79,8 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
   function _canPreApprove(bytes4 selector, address actor, address signer) internal view virtual returns (bool);
 
   function _validate(uint256 timeValidation) internal view {
-    uint256 timestamp = timeValidation / TIMESTAMP_MULTIPLIER;
-    if (timestamp > block.timestamp || timestamp < block.timestamp - (timeValidation % TIMESTAMP_MULTIPLIER))
+    uint256 timestamp = timeValidation / _TIMESTAMP_MULTIPLIER;
+    if (timestamp > block.timestamp || timestamp < block.timestamp - (timeValidation % _TIMESTAMP_MULTIPLIER))
       revert TimestampInvalidOrExpired();
   }
 
@@ -104,8 +104,8 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
     bytes calldata signature
   ) internal virtual {
     if (
-      timeValidationAndSetProtector < TIME_VALIDATION_MULTIPLIER &&
-      timeValidationAndSetProtector % TIME_VALIDATION_MULTIPLIER < TIMESTAMP_MULTIPLIER
+      timeValidationAndSetProtector < _TIME_VALIDATION_MULTIPLIER &&
+      timeValidationAndSetProtector % _TIME_VALIDATION_MULTIPLIER < _TIMESTAMP_MULTIPLIER
     ) {
       if (_isProtected()) revert NotPermittedWhenProtectorsAreActive();
     } else {
@@ -120,10 +120,10 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
         extra,
         extra2,
         extra3,
-        timeValidationAndSetProtector % TIME_VALIDATION_MULTIPLIER,
+        timeValidationAndSetProtector % _TIME_VALIDATION_MULTIPLIER,
         signature
       );
-      if (timeValidationAndSetProtector > TIME_VALIDATION_MULTIPLIER && !_isProtected()) {
+      if (timeValidationAndSetProtector > _TIME_VALIDATION_MULTIPLIER && !_isProtected()) {
         if (signer != actor) revert WrongDataOrNotSignedByProtector();
       } else if (!_isProtector(signer)) revert WrongDataOrNotSignedByProtector();
       delete preApprovals[hash];

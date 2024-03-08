@@ -35,8 +35,6 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, Canonical
   using Strings for uint256;
   using Address for address;
 
-  bytes4 public constant NAME_HASH = 0xbe6d302d; // bytes4(keccak256("CrunaProtectedNFT"));
-
   NftConf public nftConf;
   ManagerHistory[] public managerHistory;
 
