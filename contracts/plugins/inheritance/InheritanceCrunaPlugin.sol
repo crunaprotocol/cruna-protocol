@@ -8,11 +8,10 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 import {IInheritanceCrunaPlugin} from "./IInheritanceCrunaPlugin.sol";
 import {ICrunaPlugin, CrunaPluginBase} from "../CrunaPluginBase.sol";
-import {Actor} from "../../manager/Actor.sol";
 
 // import {console} from "hardhat/console.sol";
 
-contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaPluginBase, Actor {
+contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaPluginBase {
   using ECDSA for bytes32;
   using Strings for uint256;
 

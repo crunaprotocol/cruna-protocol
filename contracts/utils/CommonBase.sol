@@ -12,6 +12,7 @@ import {CanonicalAddresses} from "../canonical/CanonicalAddresses.sol";
 import {INamed} from "../utils/INamed.sol";
 
 import {ICommonBase} from "./ICommonBase.sol";
+import {Actor} from "../manager/Actor.sol";
 
 // import {console} from "hardhat/console.sol";
 
@@ -19,7 +20,15 @@ import {ICommonBase} from "./ICommonBase.sol";
   @title CrunaManagerBase.sol
   @dev Base contract for managers and plugins
 */
-abstract contract CommonBase is ICommonBase, INamed, Context, CanonicalAddresses, TokenLinkedContract, SignatureValidator {
+abstract contract CommonBase is
+  ICommonBase,
+  INamed,
+  Context,
+  CanonicalAddresses,
+  Actor,
+  TokenLinkedContract,
+  SignatureValidator
+{
   bytes4 internal constant _BYTES4_ZERO = bytes4(0);
 
   /**

@@ -171,14 +171,14 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   IERC6982.sol                        |      100 |      100 |      100 |      100 
  libs/                                |       40 |        0 |    33.33 |    38.46 
   ExcessivelySafeCall.sol             |       40 |        0 |    33.33 |    38.46 
- manager/                             |    93.43 |    66.88 |    94.83 |    91.67 
+ manager/                             |    93.46 |    66.67 |    94.83 |     91.7 
   Actor.sol                           |      100 |       70 |      100 |      100 
   CrunaManager.sol                    |     93.3 |    66.43 |    97.83 |    91.08 
-  CrunaManagerBase.sol                |    86.67 |       70 |    33.33 |     87.5 
+  CrunaManagerBase.sol                |     87.5 |    66.67 |    33.33 |    88.24 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   ICrunaManager.sol                   |      100 |      100 |      100 |      100 
- plugins/                             |    92.31 |       90 |    83.33 |    92.86 
-  CrunaPluginBase.sol                 |    92.31 |       90 |    83.33 |    92.86 
+ plugins/                             |    92.86 |    83.33 |    83.33 |    93.33 
+  CrunaPluginBase.sol                 |    92.86 |    83.33 |    83.33 |    93.33 
   ICrunaPlugin.sol                    |      100 |      100 |      100 |      100 
  plugins/inheritance/                 |    92.94 |    66.67 |       96 |    87.93 
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
@@ -203,7 +203,7 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   SignatureValidator.sol              |      100 |       90 |      100 |      100 
   TokenLinkedContract.sol             |       90 |       50 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |     92.2 |     66.1 |    93.04 |    89.84 
+All files                             |    92.24 |    65.92 |    93.04 |    89.87 
 --------------------------------------|----------|----------|----------|----------
 ```
 

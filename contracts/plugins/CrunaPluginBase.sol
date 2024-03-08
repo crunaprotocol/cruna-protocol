@@ -31,6 +31,7 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
   //   wait for a new trusted implementation and upgrade it.
   function upgrade(address implementation_) external virtual override {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
+    if (implementation_ == address(0)) revert ZeroAddress();
     uint256 requires = _crunaGuardian().trustedImplementation(nameId(), implementation_);
     if (0 == requires) {
       // The new implementation is not trusted.
