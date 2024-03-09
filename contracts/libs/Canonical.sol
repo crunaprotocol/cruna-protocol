@@ -7,13 +7,13 @@ import {ICrunaGuardian} from "../canonical/ICrunaGuardian.sol";
 import {ICrunaRegistry} from "../canonical/CrunaRegistry.sol";
 
 /**
-  Canonical for testing testnet and mainnet
+  Canonical for testing and deployment to localhost (using hardhat mnemonic).
 */
 
 library Canonical {
 
   function crunaRegistry() internal pure returns (ICrunaRegistry) {
-    return ICrunaRegistry(0x714Bda695330B2410C0b52449b27b0D3B9e0e7C0);
+    return ICrunaRegistry(0xFe4F407dee99B8B5660454613b79A2bC9e628750);
   }
 
   function erc6551Registry() internal pure returns (IERC6551Registry) {
@@ -21,6 +21,6 @@ library Canonical {
   }
 
   function crunaGuardian() internal pure returns (ICrunaGuardian) {
-    return ICrunaGuardian(0x8BDf0417F7Bbfd38Db30A5654BB2F827AD9e8EE2);
+    return ICrunaGuardian(0x82AfcB8c199498264D3aB716CA2f17D73e417ebd);
   }
 }

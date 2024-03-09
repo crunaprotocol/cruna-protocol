@@ -35,6 +35,7 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
   // events
 
   event DefaultManagerUpgrade(address indexed newManagerProxy);
+  event MaxTokenIdChange(uint112 maxTokenId);
 
   // errors
 

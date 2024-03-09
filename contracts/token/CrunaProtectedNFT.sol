@@ -107,6 +107,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     if (_nftConf.progressiveTokenIds)
       if (_nftConf.nextTokenId > maxTokenId_ + 1) revert InvalidMaxTokenId();
     _nftConf.maxTokenId = maxTokenId_;
+    emit MaxTokenIdChange(maxTokenId_);
   }
 
   function defaultManagerImplementation(uint256 _tokenId) external view virtual override returns (address) {
