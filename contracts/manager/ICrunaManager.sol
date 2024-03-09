@@ -51,9 +51,7 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
 
   event SafeRecipientChange(address indexed recipient, bool status);
 
-  event PluginStatusChange(string indexed name, bytes4 salt, address plugin_, PluginChange change);
-
-  event PluginAuthorizationChange(string indexed name, bytes4 salt, address plugin_, bool status, uint256 lockTime);
+  event PluginStatusChange(string indexed name, bytes4 salt, address plugin_, uint256 change);
 
   // Emitted when  protectors and safe recipients are removed and all plugins are disabled (if they require it)
   // This event overrides any specific ProtectorChange, SafeRecipientChange and PluginStatusChange event
@@ -76,6 +74,7 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   error CannotBeYourself();
   error NotTheAuthorizedPlugin();
   error PluginNumberOverflow();
+  error PluginAsBeenMarkedAsNotPluggable();
   error PluginAlreadyPlugged();
   error PluginNotFound();
   error PluginNotFoundOrDisabled();

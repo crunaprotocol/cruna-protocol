@@ -43,20 +43,31 @@ async function main() {
     await deployUtils.deployBytecodeViaNickSFactory(deployer, "CrunaRegistry", canonicalBytecodes.CrunaRegistry);
 
     if (process.env.RECODE_GUARDIAN) {
-      // This is supposed to happen only during development when there can be breaking changes.
-      // It should not happen later, after the first guardian as been deployed, except if very serious
-      // issues are found.
-      canonicalBytecodes.CrunaGuardian = await deployUtils.getBytecodeToBeDeployedViaNickSFactory(deployer, "CrunaManager", ["uint256", "address[]", "address[]", "address"],
-          [delay, [proposerAddress], [executorAddress], deployer.address],
-          salt);
-      const guardian = await deployUtils.deployBytecodeViaNickSFactory(deployer, "CrunaGuardian", canonicalBytecodes.CrunaGuardian);
-      fs.writeFileSync(path.resolve(__dirname, "../contracts/canonicalBytecodes.json"), JSON.stringify(canonicalBytecodes, null, 2));
+      // This is supposed to happen only during development when there are breaking changes.
+      // It should not happen after the first guardian as been deployed, except if very serious
+      // issues are found and a new guardian is needed. In that unfortunate case, all managers
+      // and plugins will have to be upgraded by tokens' owners.
+      canonicalBytecodes.CrunaGuardian = await deployUtils.getBytecodeToBeDeployedViaNickSFactory(
+        deployer,
+        "CrunaManager",
+        ["uint256", "address[]", "address[]", "address"],
+        [delay, [proposerAddress], [executorAddress], deployer.address],
+        salt,
+      );
+      const guardian = await deployUtils.deployBytecodeViaNickSFactory(
+        deployer,
+        "CrunaGuardian",
+        canonicalBytecodes.CrunaGuardian,
+      );
+      fs.writeFileSync(
+        path.resolve(__dirname, "../contracts/canonicalBytecodes.json"),
+        JSON.stringify(canonicalBytecodes, null, 2),
+      );
       let canonical = fs.readFileSync(path.resolve(__dirname, "../libs-canonical/not-localhost/Canonical.sol"), "urf8");
-      canonical =  canonical.replace(/ICrunaGuardian\([]\)/, `ICrunaGuardian(${guardian.address})`);
+      canonical = canonical.replace(/ICrunaGuardian\([]\)/, `ICrunaGuardian(${guardian.address})`);
     } else {
       await deployUtils.deployBytecodeViaNickSFactory(deployer, "CrunaGuardian", canonicalBytecodes.CrunaGuardian);
     }
-
   }
 }
 
