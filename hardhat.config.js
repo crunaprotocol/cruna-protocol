@@ -8,6 +8,10 @@ require("@secrez/cryptoenv").parse(() => process.env.NODE_ENV !== "test" && !pro
 
 const {env} = process;
 
+process.on('warning', (warning) => {
+  console.log(warning.stack);
+});
+
 require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-waffle");
 require("@nomiclabs/hardhat-etherscan");
@@ -29,7 +33,16 @@ module.exports = {
       optimizer: {
         enabled: true,
         runs: 200,
-      },
+      }
+      // viaIR: true,
+      // optimizer: {
+      //   enabled: true,
+      //   details: {
+      //     yulDetails: {
+      //       optimizerSteps: "u",
+      //     },
+      //   },
+      // },
     },
   },
   networks: {

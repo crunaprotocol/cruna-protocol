@@ -9,7 +9,7 @@ interface IVaultFactory {
 
   event PriceSet(uint256 price);
 
-  event StableCoinSet(address stableCoin, bool active);
+  event StableCoinSet(address indexed stableCoin, bool active);
 
   // @dev Set the price
   // @param price the new price

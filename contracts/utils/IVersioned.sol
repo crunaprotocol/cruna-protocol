@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL3
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
 interface IVersioned {
   // @dev It returns the version of the contract

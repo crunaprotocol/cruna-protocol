@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
 import {ERC1967Utils} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
 import {Proxy} from "@openzeppelin/contracts/proxy/Proxy.sol";
 
-//import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 // This version of ERC6551AccountProxy is modified to work with the OpenZeppelin Contracts v5
 // The original version can be found in https://github.com/erc6551/reference
 contract ERC6551AccountProxy is Proxy {
-  error InvalidImplementation();
-
   address public immutable DEFAULT_IMPLEMENTATION;
+
+  error InvalidImplementation();
 
   receive() external payable virtual {
     _fallback();

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: CC0-1.0
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.20;
 
 // ERC165 interfaceId 0x6b61a747
 interface IERC6982 {

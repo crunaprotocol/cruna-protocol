@@ -1,14 +1,18 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.20;
 
-//import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 /**
  * @dev Manages upgrade and cross-chain execution settings for accounts
  */
 interface ICrunaGuardian {
-  event TrustedImplementationUpdated(bytes4 nameId, address implementation, bool trusted, uint256 requires);
+  event TrustedImplementationUpdated(bytes4 indexed nameId, address indexed implementation, bool trusted, uint256 requires);
 
+  /**
+   * @dev Sets a given implementation address as trusted, allowing accounts to upgrade to this implementation.
+   * All the values can be arbitrary, si there is no need for checking the input parameters.
+   */
   function setTrustedImplementation(bytes4 nameId, address implementation, bool trusted, uint256 requires) external;
 
   function trustedImplementation(bytes4 nameId, address implementation) external view returns (uint256);

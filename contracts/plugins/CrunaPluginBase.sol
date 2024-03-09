@@ -3,61 +3,36 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 
 import {CrunaManager} from "../manager/CrunaManager.sol";
-import {TokenLinkedContract} from "../utils/TokenLinkedContract.sol";
-import {IVersioned} from "../utils/IVersioned.sol";
-import {CrunaProtectedNFT} from "../token/CrunaProtectedNFT.sol";
-import {ICrunaPlugin} from "./ICrunaPlugin.sol";
-import {CanonicalAddresses} from "../canonical/CanonicalAddresses.sol";
-import {SignatureValidator} from "../utils/SignatureValidator.sol";
+import {ICrunaPlugin, IVersioned} from "./ICrunaPlugin.sol";
+import {CommonBase} from "../utils/CommonBase.sol";
+import {Canonical} from "../libs/Canonical.sol";
 
-//import {console} from "hardhat/console.sol";
+// import {console} from "hardhat/console.sol";
 
-abstract contract CrunaPluginBase is
-  Context,
-  CanonicalAddresses,
-  TokenLinkedContract,
-  IVersioned,
-  ICrunaPlugin,
-  SignatureValidator
-{
-  error NotTheTokenOwner();
-  error UntrustedImplementation();
-  error InvalidVersion();
-  error PluginRequiresUpdatedManager(uint256 requiredVersion);
-  error ControllerAlreadySet();
-  error NotTheDeployer();
-  error Forbidden();
+abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
+  Conf internal _conf;
 
-  receive() external payable {}
-
-  /**
-   * @dev Storage slot with the address of the current implementation.
-   * This is the keccak-256 hash of "eip1967.proxy.implementation" subtracted by 1, and is
-   * validated in the constructor.
-   */
-  bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
-
-  //  CrunaManager public manager;
-
-  modifier onlyTokenOwner() {
-    if (owner() != _msgSender()) revert NotTheTokenOwner();
+  modifier ifMustNotBeReset() {
+    if (_conf.mustBeReset == 1) revert PluginMustBeReset();
     _;
   }
 
-  function _canPreApprove(bytes4, address, address signer) internal view virtual override returns (bool) {
-    return _manager().isAProtector(signer);
+  modifier onlyManager() {
+    if (_msgSender() != address(_conf.manager)) revert Forbidden();
+    _;
+  }
+
+  function init() external {
+    address managerAddress = _vault().managerOf(tokenId());
+    if (_msgSender() != managerAddress) revert Forbidden();
+    _conf.manager = CrunaManager(managerAddress);
   }
 
   function manager() external view virtual override returns (CrunaManager) {
-    return _manager();
-  }
-
-  function _manager() internal view virtual returns (CrunaManager) {
-    return CrunaManager(_vault().managerOf(tokenId()));
+    return _conf.manager;
   }
 
   function isERC6551Account() external pure virtual returns (bool) {
@@ -65,18 +40,9 @@ abstract contract CrunaPluginBase is
     return false;
   }
 
-  function version() public pure virtual override returns (uint256) {
-    return 1e6;
-  }
-
-  function nameId() public view virtual override returns (bytes4);
-
-  function vault() external view virtual override returns (CrunaProtectedNFT) {
-    return _vault();
-  }
-
-  function _vault() internal view virtual returns (CrunaProtectedNFT) {
-    return CrunaProtectedNFT(tokenAddress());
+  // override if function is not 1.0.0
+  function version() external pure virtual override returns (uint256) {
+    return _version();
   }
 
   // @dev Upgrade the implementation of the plugin
@@ -85,17 +51,30 @@ abstract contract CrunaPluginBase is
   //   wait for a new trusted implementation and upgrade it.
   function upgrade(address implementation_) external virtual override {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
-    uint256 requires = _crunaGuardian().trustedImplementation(nameId(), implementation_);
-    if (requires == 0) {
+    if (implementation_ == address(0)) revert ZeroAddress();
+    uint256 requires = Canonical.crunaGuardian().trustedImplementation(_nameId(), implementation_);
+    if (0 == requires) {
       // The new implementation is not trusted.
       // If current implementation is trusted, the new implementation must be trusted too
-      if (_crunaGuardian().trustedImplementation(nameId(), implementation()) > 0) revert UntrustedImplementation();
+      if (Canonical.crunaGuardian().trustedImplementation(_nameId(), implementation()) != 0) revert UntrustedImplementation();
     }
     IVersioned impl = IVersioned(implementation_);
-    uint256 _version = impl.version();
-    if (_version <= version()) revert InvalidVersion();
-    if (_manager().version() < requires) revert PluginRequiresUpdatedManager(requires);
+    uint256 version_ = impl.version();
+    if (version_ <= _version()) revert InvalidVersion();
+    if (_conf.manager.version() < requires) revert PluginRequiresUpdatedManager(requires);
     StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
+  }
+
+  function resetOnTransfer() external override ifMustNotBeReset onlyManager {
+    _conf.mustBeReset = 1;
+  }
+
+  function _canPreApprove(bytes4, address, address signer) internal view virtual override returns (bool) {
+    return _conf.manager.isProtector(signer);
+  }
+
+  function _version() internal pure virtual returns (uint256) {
+    return 1_000_000;
   }
 
   // @dev This empty reserved space is put in place to allow future versions to add new

@@ -13,7 +13,7 @@ import {TimeControlledNFT} from "../token/TimeControlledNFT.sol";
 import {IVaultFactory} from "./IVaultFactory.sol";
 import {IVersioned} from "../../utils/IVersioned.sol";
 
-//import {console} from "hardhat/console.sol";
+// import {console} from "hardhat/console.sol";
 
 contract VaultFactory is
   IVaultFactory,
@@ -48,8 +48,8 @@ contract VaultFactory is
     vault = TimeControlledNFT(vault_);
   }
 
-  function version() public pure virtual returns (uint256) {
-    return 1e6;
+  function version() external pure virtual returns (uint256) {
+    return 1_000_000;
   }
 
   // solhint-disable-next-line no-empty-blocks
@@ -85,11 +85,14 @@ contract VaultFactory is
     } else if (stableCoins[stableCoin]) {
       delete stableCoins[stableCoin];
       // no risk of going out of cash because the factory will support just a couple of stable coins
-      for (uint256 i = 0; i < _stableCoins.length; i++) {
+      for (uint256 i; i < _stableCoins.length; ) {
         if (_stableCoins[i] == stableCoin) {
           _stableCoins[i] = _stableCoins[_stableCoins.length - 1];
           _stableCoins.pop();
           break;
+        }
+        unchecked {
+          i++;
         }
       }
       emit StableCoinSet(stableCoin, active);
@@ -109,7 +112,7 @@ contract VaultFactory is
     return price - discount;
   }
 
-  function buyVaults(address stableCoin, uint256 amount) external virtual override whenNotPaused nonReentrant {
+  function buyVaults(address stableCoin, uint256 amount) external virtual override nonReentrant whenNotPaused {
     uint256 payment = finalPrice(stableCoin) * amount;
     if (payment > ERC20(stableCoin).balanceOf(_msgSender())) revert InsufficientFunds();
     vault.safeMintAndActivate(_msgSender(), amount);
@@ -121,20 +124,26 @@ contract VaultFactory is
     address stableCoin,
     address[] memory tos,
     uint256[] memory amounts
-  ) external virtual override whenNotPaused nonReentrant {
+  ) external virtual override nonReentrant whenNotPaused {
     if (tos.length != amounts.length) revert InvalidArguments();
     uint256 amount = 0;
-    for (uint256 i = 0; i < tos.length; i++) {
-      if (tos[i] == address(0)) {
-        revert ZeroAddress();
+    for (uint256 i; i < tos.length; ) {
+      unchecked {
+        if (tos[i] == address(0)) {
+          revert ZeroAddress();
+        }
+        amount += amounts[i];
+        i++;
       }
-      amount += amounts[i];
     }
     uint256 payment = finalPrice(stableCoin) * amount;
     if (payment > ERC20(stableCoin).balanceOf(_msgSender())) revert InsufficientFunds();
-    for (uint256 i = 0; i < tos.length; i++) {
-      if (amounts[i] > 0) {
+    for (uint256 i; i < tos.length; ) {
+      if (amounts[i] != 0) {
         vault.safeMintAndActivate(tos[i], amounts[i]);
+      }
+      unchecked {
+        i++;
       }
     }
     // we manage only trusted stable coins, so no risk of reentrancy

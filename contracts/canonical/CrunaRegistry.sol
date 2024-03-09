@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.20;
 
 // Modified registry based on CrunaRegistry
 // https://github.com/erc6551/reference/blob/main/src/CrunaRegistry.sol
@@ -7,7 +7,7 @@ pragma solidity ^0.8.4;
 // We deploy our own registry to avoid misleading observers that may believe
 // that managers and plugins are accounts.
 
-//import {console} from "hardhat/console.sol";
+// import {console} from "hardhat/console.sol";
 
 import {ICrunaRegistry} from "./ICrunaRegistry.sol";
 
@@ -23,7 +23,7 @@ contract CrunaRegistry is ICrunaRegistry {
     uint256 chainId,
     address tokenContract,
     uint256 tokenId
-  ) external returns (address) {
+  ) external override returns (address) {
     // solhint-disable-next-line no-inline-assembly
     assembly {
       // Memory Layout:
@@ -99,7 +99,7 @@ contract CrunaRegistry is ICrunaRegistry {
     uint256 chainId,
     address tokenContract,
     uint256 tokenId
-  ) external view returns (address) {
+  ) external view override returns (address) {
     // solhint-disable-next-line no-inline-assembly
     assembly {
       // Silence unused variable warnings

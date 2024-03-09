@@ -3,38 +3,18 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {ICrunaPlugin} from "../plugins/ICrunaPlugin.sol";
+import {CrunaPluginBase} from "../plugins/CrunaPluginBase.sol";
 
-import {INamed} from "../utils/INamed.sol";
+import {IVersioned} from "../utils/IVersioned.sol";
 import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
-import {CrunaProtectedNFT} from "../token/CrunaProtectedNFT.sol";
 
-//import {console} from "hardhat/console.sol";
+// import {console} from "hardhat/console.sol";
 
-interface ICrunaManager is ITokenLinkedContract, INamed {
-  event EmitEventFailed(EventAction action);
-
-  event ProtectorChange(address indexed protector, bool status);
-
-  event SafeRecipientChange(address indexed recipient, bool status);
-
-  event PluginStatusChange(string indexed name, bytes4 salt, address plugin_, bool status);
-
-  event PluginAuthorizationChange(string indexed name, bytes4 salt, address plugin_, bool status, uint256 lockTime);
-
-  // Emitted when  protectors and safe recipients are removed and all plugins are disabled (if they require it)
-  // This event overrides any specific ProtectorChange, SafeRecipientChange and PluginStatusChange event
-  event Reset();
-
-  event PluginTrusted(string indexed name, bytes4 salt);
-
-  event ImplementationUpgraded(address implementation_, uint256 currentVersion, uint256 newVersion);
-
-  enum EventAction {
-    ProtectorChange,
-    SafeRecipientChange,
-    PluginStatusChange,
-    Reset
+interface ICrunaManager is ITokenLinkedContract, IVersioned {
+  enum PluginStatus {
+    Unplugged,
+    PluggedAndActive,
+    PluggedAndInactive
   }
 
   struct CrunaPlugin {
@@ -47,18 +27,68 @@ interface ICrunaManager is ITokenLinkedContract, INamed {
     bytes4 salt;
   }
 
-  struct PluginStatus {
+  struct PluginElement {
     string name;
     bytes4 salt;
     // redundant to optimize gas usage
     bool active;
   }
 
+  event EmitLockedEventFailed();
+
+  event ProtectorChange(address indexed protector, bool status);
+
+  event ProtectorsAndSafeRecipientsImported(address[] protectors, address[] safeRecipients, uint256 fromTokenId);
+
+  event SafeRecipientChange(address indexed recipient, bool status);
+
+  event PluginStatusChange(string indexed name, bytes4 salt, address plugin_, PluginStatus status);
+
+  event PluginAuthorizationChange(string indexed name, bytes4 salt, address plugin_, bool status, uint256 lockTime);
+
+  // Emitted when  protectors and safe recipients are removed and all plugins are disabled (if they require it)
+  // This event overrides any specific ProtectorChange, SafeRecipientChange and PluginStatusChange event
+  event Reset();
+
+  event PluginTrusted(string indexed name, bytes4 salt);
+
+  event ImplementationUpgraded(address indexed implementation_, uint256 currentVersion, uint256 newVersion);
+
+  event PluginResetAttempt(bytes4 _nameId, bytes4 salt, bool success);
+
+  error UntrustedImplementation();
+  error InvalidVersion();
+  error PluginRequiresUpdatedManager(uint256 requiredVersion);
+  error Forbidden();
+  error NotAManager();
+  error ProtectorNotFound();
+  error ProtectorAlreadySetByYou();
+  error ProtectorsAlreadySet();
+  error CannotBeYourself();
+  error NotTheAuthorizedPlugin();
+  error PluginNumberOverflow();
+  error PluginAlreadyPlugged();
+  error PluginNotFound();
+  error PluginNotFoundOrDisabled();
+  error PluginNotDisabled();
+  error PluginAlreadyDisabled();
+  error PluginNotAuthorizedToManageTransfer();
+  error PluginAlreadyAuthorized();
+  error PluginAlreadyUnauthorized();
+  error NotATransferPlugin();
+  error InvalidImplementation();
+  error InvalidTimeLock();
+  error InvalidValidity();
+  error InvalidAccountStatus();
+  error UntrustedImplementationsNotAllowedToMakeTransfers();
+  error StillUntrusted();
+  error PluginAlreadyTrusted();
+  error CannotimportProtectorsAndSafeRecipientsFromYourself();
+  error NotTheSameOwner();
+  error SafeRecipientsAlreadySet();
+  error NothingToImport();
+
   function upgrade(address implementation_) external;
-
-  //  function getImplementation() external view returns (address);
-
-  function vault() external view returns (CrunaProtectedNFT);
 
   function plug(
     string memory name,
@@ -74,7 +104,6 @@ interface ICrunaManager is ITokenLinkedContract, INamed {
   function disablePlugin(
     string memory name,
     bytes4 salt,
-    bool resetPlugin,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
@@ -83,7 +112,6 @@ interface ICrunaManager is ITokenLinkedContract, INamed {
   function reEnablePlugin(
     string memory name,
     bytes4 salt,
-    bool resetPlugin,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
@@ -95,17 +123,11 @@ interface ICrunaManager is ITokenLinkedContract, INamed {
 
   // simulate ERC-721
 
-  // @dev Return the protectors
-  // @return The addresses of active protectors set for the tokensOwner
-  //   The contract can implement intermediate statuses, like "pending" and "resigned", but the interface
-  //   only requires a list of the "active" protectors
-  function listProtectors() external view returns (address[] memory);
-
   // @dev Check if an address is a protector
   // @param protector_ The protector address
   // @return True if the protector is active for the tokensOwner.
   //   Pending protectors are not returned here
-  function isAProtector(address protector_) external view returns (bool);
+  function isProtector(address protector_) external view returns (bool);
 
   // @dev Set a protector for the token
   // @param protector_ The protector address
@@ -120,6 +142,10 @@ interface ICrunaManager is ITokenLinkedContract, INamed {
     uint256 validFor,
     bytes calldata signature
   ) external;
+
+  function countProtectors() external view returns (uint256);
+
+  function countSafeRecipients() external view returns (uint256);
 
   // @dev Imports the protects/safe-recipients from another tokenId owned by the same owner
   function importProtectorsAndSafeRecipientsFrom(uint256 tokenId) external;
@@ -185,11 +211,13 @@ interface ICrunaManager is ITokenLinkedContract, INamed {
     bytes calldata signature
   ) external;
 
-  function pluginAddress(bytes4 _nameId, bytes4 salt) external view returns (address);
+  function pluginAddress(bytes4 _nameId, bytes4 salt) external view returns (address payable);
 
-  function plugin(bytes4 _nameId, bytes4 salt) external view returns (ICrunaPlugin);
+  function plugin(bytes4 _nameId, bytes4 salt) external view returns (CrunaPluginBase);
 
-  function trustPlugin(string memory name, bytes4) external;
+  function unplug(string memory name, bytes4, uint256 timestamp, uint256 validFor, bytes calldata signature) external;
+
+  function trustPlugin(string memory name, bytes4 salt) external;
 
   function countPlugins() external view returns (uint256, uint256);
 

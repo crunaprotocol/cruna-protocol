@@ -8,7 +8,7 @@ import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 
 import {ITokenLinkedContract} from "./ITokenLinkedContract.sol";
 
-//import {console} from "hardhat/console.sol";
+// import {console} from "hardhat/console.sol";
 
 abstract contract TokenLinkedContract is ITokenLinkedContract {
   function token() public view virtual override returns (uint256, address, uint256) {

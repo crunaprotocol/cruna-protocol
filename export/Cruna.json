@@ -7,17 +7,17 @@
     },
     {
       "inputs": [],
+      "name": "ActorNotFound",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "CannotBeYourself",
       "type": "error"
     },
     {
       "inputs": [],
       "name": "CannotimportProtectorsAndSafeRecipientsFromYourself",
-      "type": "error"
-    },
-    {
-      "inputs": [],
-      "name": "ControllerAlreadySet",
       "type": "error"
     },
     {
@@ -50,6 +50,11 @@
     {
       "inputs": [],
       "name": "Forbidden",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "IndexOutOfBounds",
       "type": "error"
     },
     {
@@ -105,11 +110,6 @@
     {
       "inputs": [],
       "name": "NotTheAuthorizedPlugin",
-      "type": "error"
-    },
-    {
-      "inputs": [],
-      "name": "NotTheDeployer",
       "type": "error"
     },
     {
@@ -170,6 +170,11 @@
     {
       "inputs": [],
       "name": "PluginNotFoundOrDisabled",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "PluginNumberOverflow",
       "type": "error"
     },
     {
@@ -246,7 +251,7 @@
     },
     {
       "inputs": [],
-      "name": "UntrustedImplementationsCanMakeTransfersOnlyOnTestnet",
+      "name": "UntrustedImplementationsNotAllowedToMakeTransfers",
       "type": "error"
     },
     {
@@ -267,22 +272,15 @@
     },
     {
       "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "enum ICrunaManager.EventAction",
-          "name": "action",
-          "type": "uint8"
-        }
-      ],
-      "name": "EmitEventFailed",
+      "inputs": [],
+      "name": "EmitLockedEventFailed",
       "type": "event"
     },
     {
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "address",
           "name": "implementation_",
           "type": "address"
@@ -344,6 +342,31 @@
       "anonymous": false,
       "inputs": [
         {
+          "indexed": false,
+          "internalType": "bytes4",
+          "name": "_nameId",
+          "type": "bytes4"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes4",
+          "name": "salt",
+          "type": "bytes4"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "name": "PluginResetAttempt",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
           "indexed": true,
           "internalType": "string",
           "name": "name",
@@ -363,9 +386,9 @@
         },
         {
           "indexed": false,
-          "internalType": "bool",
+          "internalType": "enum ICrunaManager.PluginStatus",
           "name": "status",
-          "type": "bool"
+          "type": "uint8"
         }
       ],
       "name": "PluginStatusChange",
@@ -400,7 +423,7 @@
           "type": "bytes32"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "address",
           "name": "signer",
           "type": "address"
@@ -430,6 +453,31 @@
     },
     {
       "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "protectors",
+          "type": "address[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "safeRecipients",
+          "type": "address[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "fromTokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "ProtectorsAndSafeRecipientsImported",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
       "inputs": [],
       "name": "Reset",
       "type": "event"
@@ -454,97 +502,43 @@
       "type": "event"
     },
     {
-      "inputs": [],
-      "name": "MAX_ACTORS",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "PROTECTOR",
-      "outputs": [
-        {
-          "internalType": "bytes4",
-          "name": "",
-          "type": "bytes4"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "SAFE_RECIPIENT",
-      "outputs": [
-        {
-          "internalType": "bytes4",
-          "name": "",
-          "type": "bytes4"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes4",
-          "name": "role",
-          "type": "bytes4"
-        }
-      ],
-      "name": "actorCount",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "actor_",
-          "type": "address"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "role",
-          "type": "bytes4"
-        }
-      ],
-      "name": "actorIndex",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "",
+          "name": "index",
           "type": "uint256"
         }
       ],
       "name": "allPlugins",
       "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "bytes4",
+              "name": "salt",
+              "type": "bytes4"
+            },
+            {
+              "internalType": "bool",
+              "name": "active",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct ICrunaManager.PluginElement",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
         {
           "internalType": "string",
           "name": "name",
@@ -553,27 +547,6 @@
         {
           "internalType": "bytes4",
           "name": "salt",
-          "type": "bytes4"
-        },
-        {
-          "internalType": "bool",
-          "name": "active",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "",
           "type": "bytes4"
         },
         {
@@ -640,12 +613,12 @@
     },
     {
       "inputs": [],
-      "name": "crunaGuardian",
+      "name": "countProtectors",
       "outputs": [
         {
-          "internalType": "contract ICrunaGuardian",
+          "internalType": "uint256",
           "name": "",
-          "type": "address"
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -653,12 +626,12 @@
     },
     {
       "inputs": [],
-      "name": "crunaRegistry",
+      "name": "countSafeRecipients",
       "outputs": [
         {
-          "internalType": "contract ICrunaRegistry",
+          "internalType": "uint256",
           "name": "",
-          "type": "address"
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -673,13 +646,8 @@
         },
         {
           "internalType": "bytes4",
-          "name": "",
+          "name": "salt",
           "type": "bytes4"
-        },
-        {
-          "internalType": "bool",
-          "name": "resetPlugin",
-          "type": "bool"
         },
         {
           "internalType": "uint256",
@@ -746,19 +714,6 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "erc6551Registry",
-      "outputs": [
-        {
-          "internalType": "contract IERC6551Registry",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
           "internalType": "address",
@@ -772,25 +727,6 @@
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes4",
-          "name": "role",
-          "type": "bytes4"
-        }
-      ],
-      "name": "getActors",
-      "outputs": [
-        {
-          "internalType": "address[]",
-          "name": "",
-          "type": "address[]"
         }
       ],
       "stateMutability": "view",
@@ -864,12 +800,17 @@
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "protector_",
-          "type": "address"
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes4",
+          "name": "salt",
+          "type": "bytes4"
         }
       ],
-      "name": "isAProtector",
+      "name": "isPluginActive",
       "outputs": [
         {
           "internalType": "bool",
@@ -883,17 +824,12 @@
     {
       "inputs": [
         {
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "",
-          "type": "bytes4"
+          "internalType": "address",
+          "name": "protector_",
+          "type": "address"
         }
       ],
-      "name": "isPluginActive",
+      "name": "isProtector",
       "outputs": [
         {
           "internalType": "bool",
@@ -956,19 +892,6 @@
           "internalType": "string[]",
           "name": "",
           "type": "string[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "listProtectors",
-      "outputs": [
-        {
-          "internalType": "address[]",
-          "name": "",
-          "type": "address[]"
         }
       ],
       "stateMutability": "view",
@@ -1068,7 +991,7 @@
         },
         {
           "internalType": "bytes4",
-          "name": "",
+          "name": "salt",
           "type": "bytes4"
         },
         {
@@ -1101,7 +1024,7 @@
         },
         {
           "internalType": "bytes4",
-          "name": "",
+          "name": "salt",
           "type": "bytes4"
         }
       ],
@@ -1120,19 +1043,19 @@
       "inputs": [
         {
           "internalType": "bytes4",
-          "name": "_nameId",
+          "name": "nameId_",
           "type": "bytes4"
         },
         {
           "internalType": "bytes4",
-          "name": "",
+          "name": "salt",
           "type": "bytes4"
         }
       ],
       "name": "plugin",
       "outputs": [
         {
-          "internalType": "contract ICrunaPlugin",
+          "internalType": "contract CrunaPluginBase",
           "name": "",
           "type": "address"
         }
@@ -1144,19 +1067,19 @@
       "inputs": [
         {
           "internalType": "bytes4",
-          "name": "_nameId",
+          "name": "nameId_",
           "type": "bytes4"
         },
         {
           "internalType": "bytes4",
-          "name": "",
+          "name": "salt",
           "type": "bytes4"
         }
       ],
       "name": "pluginAddress",
       "outputs": [
         {
-          "internalType": "address",
+          "internalType": "address payable",
           "name": "",
           "type": "address"
         }
@@ -1173,7 +1096,7 @@
         },
         {
           "internalType": "bytes4",
-          "name": "",
+          "name": "salt",
           "type": "bytes4"
         }
       ],
@@ -1196,52 +1119,54 @@
     {
       "inputs": [
         {
-          "internalType": "bytes4",
-          "name": "",
-          "type": "bytes4"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "",
-          "type": "bytes4"
+          "internalType": "bytes8",
+          "name": "key",
+          "type": "bytes8"
         }
       ],
       "name": "pluginsById",
       "outputs": [
         {
-          "internalType": "address",
-          "name": "proxyAddress",
-          "type": "address"
-        },
-        {
-          "internalType": "bool",
-          "name": "canManageTransfer",
-          "type": "bool"
-        },
-        {
-          "internalType": "bool",
-          "name": "canBeReset",
-          "type": "bool"
-        },
-        {
-          "internalType": "bool",
-          "name": "active",
-          "type": "bool"
-        },
-        {
-          "internalType": "bool",
-          "name": "isERC6551Account",
-          "type": "bool"
-        },
-        {
-          "internalType": "bool",
-          "name": "trusted",
-          "type": "bool"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "salt",
-          "type": "bytes4"
+          "components": [
+            {
+              "internalType": "address",
+              "name": "proxyAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "bool",
+              "name": "canManageTransfer",
+              "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "canBeReset",
+              "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "active",
+              "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "isERC6551Account",
+              "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "trusted",
+              "type": "bool"
+            },
+            {
+              "internalType": "bytes4",
+              "name": "salt",
+              "type": "bytes4"
+            }
+          ],
+          "internalType": "struct ICrunaManager.CrunaPlugin",
+          "name": "",
+          "type": "tuple"
         }
       ],
       "stateMutability": "view",
@@ -1251,7 +1176,7 @@
       "inputs": [
         {
           "internalType": "bytes32",
-          "name": "",
+          "name": "hash",
           "type": "bytes32"
         }
       ],
@@ -1385,13 +1310,8 @@
         },
         {
           "internalType": "bytes4",
-          "name": "",
+          "name": "salt",
           "type": "bytes4"
-        },
-        {
-          "internalType": "bool",
-          "name": "resetPlugin",
-          "type": "bool"
         },
         {
           "internalType": "uint256",
@@ -1552,14 +1472,9 @@
     {
       "inputs": [
         {
-          "internalType": "bytes4",
-          "name": "",
-          "type": "bytes4"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "",
-          "type": "bytes4"
+          "internalType": "bytes8",
+          "name": "key",
+          "type": "bytes8"
         }
       ],
       "name": "timeLocks",
@@ -1631,11 +1546,44 @@
         },
         {
           "internalType": "bytes4",
-          "name": "",
+          "name": "salt",
           "type": "bytes4"
         }
       ],
       "name": "trustPlugin",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes4",
+          "name": "salt",
+          "type": "bytes4"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "validFor",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
+        }
+      ],
+      "name": "unplug",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -1657,7 +1605,7 @@
       "inputs": [
         {
           "internalType": "bytes32",
-          "name": "",
+          "name": "hash",
           "type": "bytes32"
         }
       ],
@@ -1835,17 +1783,17 @@
     },
     {
       "inputs": [],
+      "name": "ActorNotFound",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "BeneficiaryNotSet",
       "type": "error"
     },
     {
       "inputs": [],
-      "name": "CandidateNotFound",
-      "type": "error"
-    },
-    {
-      "inputs": [],
-      "name": "ControllerAlreadySet",
+      "name": "CannotReceiveFunds",
       "type": "error"
     },
     {
@@ -1927,11 +1875,6 @@
     },
     {
       "inputs": [],
-      "name": "NotExpiredYet",
-      "type": "error"
-    },
-    {
-      "inputs": [],
       "name": "NotPermittedWhenProtectorsAreActive",
       "type": "error"
     },
@@ -1942,12 +1885,12 @@
     },
     {
       "inputs": [],
-      "name": "NotTheDeployer",
+      "name": "NotTheTokenOwner",
       "type": "error"
     },
     {
       "inputs": [],
-      "name": "NotTheTokenOwner",
+      "name": "PluginMustBeReset",
       "type": "error"
     },
     {
@@ -1963,27 +1906,12 @@
     },
     {
       "inputs": [],
-      "name": "QuorumAlreadyReached",
-      "type": "error"
-    },
-    {
-      "inputs": [],
       "name": "QuorumCannotBeGreaterThanSentinels",
       "type": "error"
     },
     {
       "inputs": [],
       "name": "QuorumCannotBeZero",
-      "type": "error"
-    },
-    {
-      "inputs": [],
-      "name": "QuorumNotReached",
-      "type": "error"
-    },
-    {
-      "inputs": [],
-      "name": "RequestAlreadyApproved",
       "type": "error"
     },
     {
@@ -2015,11 +1943,6 @@
     {
       "inputs": [],
       "name": "TooManyActors",
-      "type": "error"
-    },
-    {
-      "inputs": [],
-      "name": "TooManySentinels",
       "type": "error"
     },
     {
@@ -2108,7 +2031,7 @@
           "type": "bytes32"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "address",
           "name": "signer",
           "type": "address"
@@ -2207,75 +2130,6 @@
       "type": "event"
     },
     {
-      "inputs": [],
-      "name": "MAX_ACTORS",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "SENTINEL",
-      "outputs": [
-        {
-          "internalType": "bytes4",
-          "name": "",
-          "type": "bytes4"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes4",
-          "name": "role",
-          "type": "bytes4"
-        }
-      ],
-      "name": "actorCount",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "actor_",
-          "type": "address"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "role",
-          "type": "bytes4"
-        }
-      ],
-      "name": "actorIndex",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
           "internalType": "uint8",
@@ -2320,25 +2174,12 @@
     },
     {
       "inputs": [],
-      "name": "crunaGuardian",
+      "name": "countSentinels",
       "outputs": [
         {
-          "internalType": "contract ICrunaGuardian",
+          "internalType": "uint256",
           "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "crunaRegistry",
-      "outputs": [
-        {
-          "internalType": "contract ICrunaRegistry",
-          "name": "",
-          "type": "address"
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -2382,38 +2223,6 @@
           "internalType": "uint256[]",
           "name": "extensions",
           "type": "uint256[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "erc6551Registry",
-      "outputs": [
-        {
-          "internalType": "contract IERC6551Registry",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes4",
-          "name": "role",
-          "type": "bytes4"
-        }
-      ],
-      "name": "getActors",
-      "outputs": [
-        {
-          "internalType": "address[]",
-          "name": "",
-          "type": "address[]"
         }
       ],
       "stateMutability": "view",
@@ -2504,6 +2313,13 @@
     },
     {
       "inputs": [],
+      "name": "init",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "isERC6551Account",
       "outputs": [
         {
@@ -2538,7 +2354,7 @@
           "type": "bytes4"
         }
       ],
-      "stateMutability": "pure",
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -2558,7 +2374,7 @@
       "inputs": [
         {
           "internalType": "bytes32",
-          "name": "",
+          "name": "hash",
           "type": "bytes32"
         }
       ],
@@ -2749,6 +2565,13 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "resetOnTransfer",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -2865,7 +2688,7 @@
       "inputs": [
         {
           "internalType": "bytes32",
-          "name": "",
+          "name": "hash",
           "type": "bytes32"
         }
       ],
@@ -2905,10 +2728,6 @@
       ],
       "stateMutability": "pure",
       "type": "function"
-    },
-    {
-      "stateMutability": "payable",
-      "type": "receive"
     }
   ],
   "TimeControlledNFT": [
@@ -3074,11 +2893,6 @@
     },
     {
       "inputs": [],
-      "name": "ErrorCreatingManager",
-      "type": "error"
-    },
-    {
-      "inputs": [],
       "name": "ExecutorAlreadyExists",
       "type": "error"
     },
@@ -3094,12 +2908,12 @@
     },
     {
       "inputs": [],
-      "name": "InvalidMaxTokenId",
+      "name": "InvalidIndex",
       "type": "error"
     },
     {
       "inputs": [],
-      "name": "InvalidNextTokenId",
+      "name": "InvalidMaxTokenId",
       "type": "error"
     },
     {
@@ -3155,16 +2969,6 @@
     {
       "inputs": [],
       "name": "ProposerDoesNotExist",
-      "type": "error"
-    },
-    {
-      "inputs": [],
-      "name": "RegistryNotFound",
-      "type": "error"
-    },
-    {
-      "inputs": [],
-      "name": "SupplyOverflow",
       "type": "error"
     },
     {
@@ -3437,7 +3241,7 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "address",
           "name": "newManagerProxy",
           "type": "address"
@@ -3644,19 +3448,6 @@
     },
     {
       "inputs": [],
-      "name": "NAME_HASH",
-      "outputs": [
-        {
-          "internalType": "bytes4",
-          "name": "",
-          "type": "bytes4"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "PROPOSER_ROLE",
       "outputs": [
         {
@@ -3772,32 +3563,6 @@
     },
     {
       "inputs": [],
-      "name": "crunaGuardian",
-      "outputs": [
-        {
-          "internalType": "contract ICrunaGuardian",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "crunaRegistry",
-      "outputs": [
-        {
-          "internalType": "contract ICrunaRegistry",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "defaultLocked",
       "outputs": [
         {
@@ -3878,19 +3643,6 @@
       "name": "emitLockedEvent",
       "outputs": [],
       "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "erc6551Registry",
-      "outputs": [
-        {
-          "internalType": "contract IERC6551Registry",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -4199,14 +3951,14 @@
           "type": "bool"
         },
         {
-          "internalType": "uint256",
+          "internalType": "uint112",
           "name": "nextTokenId_",
-          "type": "uint256"
+          "type": "uint112"
         },
         {
-          "internalType": "uint256",
+          "internalType": "uint112",
           "name": "maxTokenId_",
-          "type": "uint256"
+          "type": "uint112"
         }
       ],
       "name": "init",
@@ -4423,26 +4175,33 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "",
+          "name": "index",
           "type": "uint256"
         }
       ],
       "name": "managerHistory",
       "outputs": [
         {
-          "internalType": "uint112",
-          "name": "firstTokenId",
-          "type": "uint112"
-        },
-        {
-          "internalType": "uint112",
-          "name": "lastTokenId",
-          "type": "uint112"
-        },
-        {
-          "internalType": "address",
-          "name": "managerAddress",
-          "type": "address"
+          "components": [
+            {
+              "internalType": "uint112",
+              "name": "firstTokenId",
+              "type": "uint112"
+            },
+            {
+              "internalType": "uint112",
+              "name": "lastTokenId",
+              "type": "uint112"
+            },
+            {
+              "internalType": "address",
+              "name": "managerAddress",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct ICrunaProtectedNFT.ManagerHistory",
+          "name": "",
+          "type": "tuple"
         }
       ],
       "stateMutability": "view",
@@ -4485,34 +4244,41 @@
       "name": "nftConf",
       "outputs": [
         {
-          "internalType": "bool",
-          "name": "progressiveTokenIds",
-          "type": "bool"
-        },
-        {
-          "internalType": "bool",
-          "name": "allowUntrustedTransfers",
-          "type": "bool"
-        },
-        {
-          "internalType": "uint112",
-          "name": "nextTokenId",
-          "type": "uint112"
-        },
-        {
-          "internalType": "uint112",
-          "name": "maxTokenId",
-          "type": "uint112"
-        },
-        {
-          "internalType": "uint8",
-          "name": "managerHistoryLength",
-          "type": "uint8"
-        },
-        {
-          "internalType": "uint8",
-          "name": "unusedField",
-          "type": "uint8"
+          "components": [
+            {
+              "internalType": "bool",
+              "name": "progressiveTokenIds",
+              "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "allowUntrustedTransfers",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint112",
+              "name": "nextTokenId",
+              "type": "uint112"
+            },
+            {
+              "internalType": "uint112",
+              "name": "maxTokenId",
+              "type": "uint112"
+            },
+            {
+              "internalType": "uint8",
+              "name": "managerHistoryLength",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "unusedField",
+              "type": "uint8"
+            }
+          ],
+          "internalType": "struct ICrunaProtectedNFT.NftConf",
+          "name": "",
+          "type": "tuple"
         }
       ],
       "stateMutability": "view",
@@ -4890,9 +4656,9 @@
     {
       "inputs": [
         {
-          "internalType": "uint256",
+          "internalType": "uint112",
           "name": "maxTokenId_",
-          "type": "uint256"
+          "type": "uint112"
         }
       ],
       "name": "setMaxTokenId",
@@ -5418,13 +5184,13 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "bytes4",
           "name": "nameId",
           "type": "bytes4"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "address",
           "name": "implementation",
           "type": "address"
@@ -6439,7 +6205,7 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "address",
           "name": "stableCoin",
           "type": "address"
