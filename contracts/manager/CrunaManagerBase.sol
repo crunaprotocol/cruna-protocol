@@ -21,25 +21,20 @@ interface INamedAndVersioned {
   @dev Base contract for managers and plugins
 */
 abstract contract CrunaManagerBase is ICrunaManager, CommonBase {
-  function nameId() public view virtual override returns (bytes4) {
-    // In this case, we do not use _hashString because the keccak256 is calculated at compile time
-    return bytes4(keccak256("CrunaManager"));
-  }
-
-  function version() public pure virtual override returns (uint256) {
-    return 1_000_000;
+  function version() external pure virtual override returns (uint256) {
+    return _version();
   }
 
   // @dev Upgrade the implementation of the manager
   function upgrade(address implementation_) external virtual override {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     if (implementation_ == address(0)) revert ZeroAddress();
-    uint256 requires = Canonical.crunaGuardian().trustedImplementation(nameId(), implementation_);
+    uint256 requires = Canonical.crunaGuardian().trustedImplementation(bytes4(keccak256("CrunaManager")), implementation_);
     if (0 == requires) revert UntrustedImplementation();
     INamedAndVersioned impl = INamedAndVersioned(implementation_);
-    uint256 currentVersion = version();
+    uint256 currentVersion = _version();
     uint256 newVersion = impl.version();
-    if (newVersion <= version()) revert InvalidVersion();
+    if (newVersion <= _version()) revert InvalidVersion();
     if (impl.nameId() != _stringToBytes4("CrunaManager")) revert NotAManager();
     INamedAndVersioned manager = INamedAndVersioned(_vault().managerOf(tokenId()));
     if (manager.version() < requires) revert PluginRequiresUpdatedManager(requires);
@@ -51,6 +46,14 @@ abstract contract CrunaManagerBase is ICrunaManager, CommonBase {
 
   // must be implemented by the manager
   function migrate(uint256 previousVersion) external virtual;
+
+  function _nameId() internal view virtual override returns (bytes4) {
+    return bytes4(keccak256("CrunaManager"));
+  }
+
+  function _version() internal pure virtual returns (uint256) {
+    return 1_000_000;
+  }
 
   // @dev This empty reserved space is put in place to allow future versions to add new
   // variables without shifting down storage in the inheritance chain.

@@ -18,10 +18,18 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
   uint256 internal constant _TIMESTAMP_MULTIPLIER = 1e7;
   uint256 internal constant _TIME_VALIDATION_MULTIPLIER = 1e17;
 
-  mapping(bytes32 => address) public preApprovals;
-  mapping(bytes32 => bool) public usedSignatures;
+  mapping(bytes32 => address) private _preApprovals;
+  mapping(bytes32 => bool) private _usedSignatures;
 
   constructor() EIP712("Cruna", "1") {}
+
+  function preApprovals(bytes32 hash) external view override returns (address) {
+    return _preApprovals[hash];
+  }
+
+  function usedSignatures(bytes32 hash) external view override returns (bool) {
+    return _usedSignatures[hash];
+  }
 
   // @dev This function validates a signature trying to be as flexible as possible.
   //   As long as called inside the same contract, the cost adding some more parameters is negligible. Instead, calling it from other contracts can be expensive.
@@ -55,7 +63,7 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
     if (65 == signature.length) {
       return (_hashTypedDataV4(hash).recover(signature), hash);
     }
-    return (preApprovals[hash], hash);
+    return (_preApprovals[hash], hash);
   }
 
   function preApprove(
@@ -71,7 +79,7 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
   ) external override {
     if (!_canPreApprove(selector, actor, _msgSender())) revert NotAuthorized();
     bytes32 hash = _hashData(selector, owner, actor, tokenAddress, tokenId, extra, extra2, extra3, timeValidation);
-    preApprovals[hash] = _msgSender();
+    _preApprovals[hash] = _msgSender();
     emit PreApproved(hash, _msgSender());
   }
 
@@ -109,8 +117,8 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
     ) {
       if (_isProtected()) revert NotPermittedWhenProtectorsAreActive();
     } else {
-      if (usedSignatures[_hashBytes(signature)]) revert SignatureAlreadyUsed();
-      usedSignatures[_hashBytes(signature)] = true;
+      if (_usedSignatures[_hashBytes(signature)]) revert SignatureAlreadyUsed();
+      _usedSignatures[_hashBytes(signature)] = true;
       (address signer, bytes32 hash) = recoverSigner(
         selector,
         owner,
@@ -126,7 +134,7 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
       if (timeValidationAndSetProtector > _TIME_VALIDATION_MULTIPLIER && !_isProtected()) {
         if (signer != actor) revert WrongDataOrNotSignedByProtector();
       } else if (!_isProtector(signer)) revert WrongDataOrNotSignedByProtector();
-      delete preApprovals[hash];
+      delete _preApprovals[hash];
     }
   }
 

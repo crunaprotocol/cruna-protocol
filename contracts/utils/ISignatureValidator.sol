@@ -12,6 +12,10 @@ interface ISignatureValidator {
   error WrongDataOrNotSignedByProtector();
   error SignatureAlreadyUsed();
 
+  function preApprovals(bytes32 hash) external view returns (address);
+
+  function usedSignatures(bytes32 hash) external view returns (bool);
+
   // @dev This function validates a signature trying to be as flexible as possible.
   //   As long as called inside the same contract, the cost adding some more parameters is negligible. Instead, calling it from other contracts can be expensive.
   // @param selector The selector of the function being called.

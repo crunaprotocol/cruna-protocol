@@ -41,8 +41,8 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
   }
 
   // override if function is not 1.0.0
-  function version() public pure virtual override returns (uint256) {
-    return 1_000_000;
+  function version() external pure virtual override returns (uint256) {
+    return _version();
   }
 
   // @dev Upgrade the implementation of the plugin
@@ -52,25 +52,29 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
   function upgrade(address implementation_) external virtual override {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     if (implementation_ == address(0)) revert ZeroAddress();
-    uint256 requires = Canonical.crunaGuardian().trustedImplementation(nameId(), implementation_);
+    uint256 requires = Canonical.crunaGuardian().trustedImplementation(_nameId(), implementation_);
     if (0 == requires) {
       // The new implementation is not trusted.
       // If current implementation is trusted, the new implementation must be trusted too
-      if (Canonical.crunaGuardian().trustedImplementation(nameId(), implementation()) != 0) revert UntrustedImplementation();
+      if (Canonical.crunaGuardian().trustedImplementation(_nameId(), implementation()) != 0) revert UntrustedImplementation();
     }
     IVersioned impl = IVersioned(implementation_);
-    uint256 _version = impl.version();
-    if (_version <= version()) revert InvalidVersion();
+    uint256 version_ = impl.version();
+    if (version_ <= _version()) revert InvalidVersion();
     if (_conf.manager.version() < requires) revert PluginRequiresUpdatedManager(requires);
     StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
+  }
+
+  function resetOnTransfer() external override ifMustNotBeReset onlyManager {
+    _conf.mustBeReset = 1;
   }
 
   function _canPreApprove(bytes4, address, address signer) internal view virtual override returns (bool) {
     return _conf.manager.isProtector(signer);
   }
 
-  function resetOnTransfer() external override ifMustNotBeReset onlyManager {
-    _conf.mustBeReset = 1;
+  function _version() internal pure virtual returns (uint256) {
+    return 1_000_000;
   }
 
   // @dev This empty reserved space is put in place to allow future versions to add new

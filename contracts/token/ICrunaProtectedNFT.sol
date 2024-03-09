@@ -49,6 +49,11 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
   error InvalidTokenId();
   error NftNotInitiated();
   error InvalidMaxTokenId();
+  error InvalidIndex();
+
+  function nftConf() external view returns (NftConf memory);
+
+  function managerHistory(uint256 index) external view returns (ManagerHistory memory);
 
   function setMaxTokenId(uint112 maxTokenId_) external;
 

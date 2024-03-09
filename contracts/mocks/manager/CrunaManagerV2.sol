@@ -8,7 +8,7 @@ import {CrunaManager} from "../../manager/CrunaManager.sol";
 contract CrunaManagerV2 is CrunaManager {
   bool public migrated;
 
-  function version() public pure virtual override returns (uint256) {
+  function version() external pure virtual override returns (uint256) {
     return 1_002_000;
   }
 

@@ -28,10 +28,6 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     return true;
   }
 
-  function nameId() public pure virtual override returns (bytes4) {
-    return bytes4(keccak256("InheritanceCrunaPlugin"));
-  }
-
   // sentinels and beneficiaries
   // @dev see {IInheritanceCrunaPlugin.sol-setSentinel}
   function setSentinel(
@@ -40,31 +36,8 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
-  ) public virtual override onlyTokenOwner ifMustNotBeReset {
-    if (validFor > _MAX_VALID_FOR) revert InvalidValidity();
-    _validateAndCheckSignature(
-      this.setSentinel.selector,
-      owner(),
-      sentinel,
-      tokenAddress(),
-      tokenId(),
-      status ? 1 : 0,
-      0,
-      0,
-      timestamp * _TIMESTAMP_MULTIPLIER + validFor,
-      signature
-    );
-    if (!status) {
-      _removeActor(sentinel, _SENTINEL);
-      uint256 shares = _actorCount(_SENTINEL);
-      if (_inheritanceConf.quorum > shares) {
-        _inheritanceConf.quorum = uint8(shares);
-      }
-    } else {
-      // will revert if more than 16 sentinels
-      _addActor(sentinel, _SENTINEL);
-    }
-    emit SentinelUpdated(_msgSender(), sentinel, status);
+  ) external virtual override onlyTokenOwner ifMustNotBeReset {
+    _setSentinel(sentinel, status, timestamp, validFor, signature);
   }
 
   // @dev see {IInheritanceCrunaPlugin.sol-setSentinels}
@@ -74,7 +47,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   ) external virtual override onlyTokenOwner ifMustNotBeReset {
     uint256 len = sentinels.length;
     for (uint256 i; i < len; ) {
-      setSentinel(sentinels[i], true, 0, 0, emptySignature);
+      _setSentinel(sentinels[i], true, 0, 0, emptySignature);
       unchecked {
         i++;
       }
@@ -179,7 +152,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     if (_inheritanceConf.beneficiary != _msgSender()) revert NotTheBeneficiary();
     _checkIfStillAlive();
     _reset();
-    _conf.manager.managedTransfer(nameId(), _msgSender());
+    _conf.manager.managedTransfer(_nameId(), _msgSender());
   }
 
   function reset() external override onlyManager {
@@ -190,12 +163,49 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     return true;
   }
 
+  function _nameId() internal pure virtual override returns (bytes4) {
+    return bytes4(keccak256("InheritanceCrunaPlugin"));
+  }
+
   function _isProtected() internal view virtual override returns (bool) {
     return _conf.manager.hasProtectors();
   }
 
   function _isProtector(address protector) internal view virtual override returns (bool) {
     return _conf.manager.isProtector(protector);
+  }
+
+  function _setSentinel(
+    address sentinel,
+    bool status,
+    uint256 timestamp,
+    uint256 validFor,
+    bytes calldata signature
+  ) internal virtual onlyTokenOwner ifMustNotBeReset {
+    if (validFor > _MAX_VALID_FOR) revert InvalidValidity();
+    _validateAndCheckSignature(
+      this.setSentinel.selector,
+      owner(),
+      sentinel,
+      tokenAddress(),
+      tokenId(),
+      status ? 1 : 0,
+      0,
+      0,
+      timestamp * _TIMESTAMP_MULTIPLIER + validFor,
+      signature
+    );
+    if (!status) {
+      _removeActor(sentinel, _SENTINEL);
+      uint256 shares = _actorCount(_SENTINEL);
+      if (_inheritanceConf.quorum > shares) {
+        _inheritanceConf.quorum = uint8(shares);
+      }
+    } else {
+      // will revert if more than 16 sentinels
+      _addActor(sentinel, _SENTINEL);
+    }
+    emit SentinelUpdated(_msgSender(), sentinel, status);
   }
 
   function _configureInheritance(

@@ -96,7 +96,7 @@ describe("Sentinel and Inheritance", function () {
 
     await expect((await manager.pluginsById(PLUGIN_ID + "00000000")).proxyAddress).to.equal(addr0);
     await expect((await manager.pluginsById(PLUGIN_ID + "00000000")).proxyAddress).equal(addr0);
-    await expect(manager.allPlugins(0)).revertedWith("");
+    await expect(manager.allPlugins(0)).revertedWith("IndexOutOfBounds");
 
     if (withProtectors) {
       ts = (await getTimestamp()) - 100;

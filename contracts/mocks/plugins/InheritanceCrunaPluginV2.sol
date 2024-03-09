@@ -8,7 +8,7 @@ import {CrunaPluginBase} from "../../plugins/CrunaPluginBase.sol";
 contract InheritanceCrunaPluginV2 is InheritanceCrunaPlugin {
   uint256 public constant SOME_VARIABLE = 3;
 
-  function version() public pure virtual override(IVersioned, CrunaPluginBase) returns (uint256) {
+  function _version() internal pure virtual override returns (uint256) {
     return 1_000_002;
   }
 }

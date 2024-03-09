@@ -4,8 +4,8 @@ pragma solidity ^0.8.20;
 import {TimelockController} from "@openzeppelin/contracts/governance/TimelockController.sol";
 
 contract FlexiTimelockController is TimelockController {
-  uint256 public totalProposers;
-  uint256 public totalExecutors;
+  uint256 private _totalProposers;
+  uint256 private _totalExecutors;
 
   error MustCallThroughTimeController();
   error ProposerAlreadyExists();
@@ -28,8 +28,16 @@ contract FlexiTimelockController is TimelockController {
     address[] memory executors,
     address admin
   ) TimelockController(minDelay, proposers, executors, admin) {
-    totalProposers = proposers.length;
-    totalExecutors = executors.length;
+    _totalProposers = proposers.length;
+    _totalExecutors = executors.length;
+  }
+
+  function totalProposers() external view returns (uint256) {
+    return _totalProposers;
+  }
+
+  function totalExecutors() external view returns (uint256) {
+    return _totalExecutors;
   }
 
   /**
@@ -39,7 +47,7 @@ contract FlexiTimelockController is TimelockController {
   function addProposer(address proposer) external onlyThroughTimeController {
     if (hasRole(PROPOSER_ROLE, proposer)) revert ProposerAlreadyExists();
     _grantRole(PROPOSER_ROLE, proposer);
-    totalProposers++;
+    _totalProposers++;
   }
 
   /**
@@ -49,7 +57,7 @@ contract FlexiTimelockController is TimelockController {
   function removeProposer(address proposer) external onlyThroughTimeController {
     if (!hasRole(PROPOSER_ROLE, proposer)) revert ProposerDoesNotExist();
     _revokeRole(PROPOSER_ROLE, proposer);
-    totalProposers--;
+    _totalProposers--;
   }
 
   /**
@@ -59,7 +67,7 @@ contract FlexiTimelockController is TimelockController {
   function addExecutor(address executor) external onlyThroughTimeController {
     if (hasRole(EXECUTOR_ROLE, executor)) revert ExecutorAlreadyExists();
     _grantRole(EXECUTOR_ROLE, executor);
-    totalExecutors++;
+    _totalExecutors++;
   }
 
   /**
@@ -69,6 +77,6 @@ contract FlexiTimelockController is TimelockController {
   function removeExecutor(address executor) external onlyThroughTimeController {
     if (!hasRole(EXECUTOR_ROLE, executor)) revert ExecutorDoesNotExist();
     _revokeRole(EXECUTOR_ROLE, executor);
-    totalExecutors--;
+    _totalExecutors--;
   }
 }

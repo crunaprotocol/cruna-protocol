@@ -32,8 +32,12 @@ abstract contract CommonBase is ICommonBase, INamed, Context, Actor, TokenLinked
     _;
   }
 
+  function nameId() external view override returns (bytes4) {
+    return _nameId();
+  }
+
   // must be overridden
-  function nameId() public view virtual override returns (bytes4) {
+  function _nameId() internal view virtual returns (bytes4) {
     return bytes4(0);
   }
 

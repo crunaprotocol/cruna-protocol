@@ -9,7 +9,7 @@ contract InheritanceCrunaPluginV3 is InheritanceCrunaPlugin {
   uint256 public constant SOME_VARIABLE = 3;
   bool public constant SOME_OTHER_VARIABLE = true;
 
-  function version() public pure virtual override(IVersioned, CrunaPluginBase) returns (uint256) {
+  function _version() internal pure virtual override returns (uint256) {
     return 1_000_003;
   }
 

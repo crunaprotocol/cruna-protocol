@@ -23,7 +23,7 @@ contract CrunaGuardian is ICrunaGuardian, IVersioned, FlexiTimelockController {
     address admin
   ) FlexiTimelockController(minDelay, proposers, executors, admin) {}
 
-  function version() public pure virtual returns (uint256) {
+  function version() external pure virtual returns (uint256) {
     return 1_000_000;
   }
 

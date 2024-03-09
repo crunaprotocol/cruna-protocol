@@ -21,53 +21,61 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   using Strings for uint256;
   using ExcessivelySafeCall for address;
 
-  PluginElement[] public allPlugins;
-  mapping(bytes8 => CrunaPlugin) public pluginsById;
-  mapping(bytes8 => uint256) public timeLocks;
+  PluginElement[] private _allPlugins;
+  mapping(bytes8 => CrunaPlugin) private _pluginsById;
+  mapping(bytes8 => uint256) private _timeLocks;
+
+  error IndexOutOfBounds();
+
+  function pluginsById(bytes8 key) external view returns (CrunaPlugin memory) {
+    return _pluginsById[key];
+  }
+
+  function allPlugins(uint256 index) external view returns (PluginElement memory) {
+    if (index >= _allPlugins.length) revert IndexOutOfBounds();
+    return _allPlugins[index];
+  }
+
+  function timeLocks(bytes8 key) external view returns (uint256) {
+    return _timeLocks[key];
+  }
 
   function migrate(uint256) external virtual override {
     if (_msgSender() != address(this)) revert Forbidden();
     // nothing, for now
   }
 
-  function nameId() public view virtual override returns (bytes4) {
-    return bytes4(keccak256("CrunaManager"));
-  }
-
   /// @dev Counts the protectors.
-  function countActiveProtectors() public view virtual override returns (uint256) {
+  function countActiveProtectors() external view virtual override returns (uint256) {
     return _actors[ManagerConstants.protectorId()].length;
   }
 
   /// @dev Find a specific protector
-  function findProtectorIndex(address protector_) public view virtual override returns (uint256) {
+  function findProtectorIndex(address protector_) external view virtual override returns (uint256) {
     return _actorIndex(protector_, ManagerConstants.protectorId());
   }
 
   /// @dev Returns true if the address is a protector.
   /// @param protector_ The protector address.
-  function isProtector(address protector_) public view virtual override returns (bool) {
+  function isProtector(address protector_) external view virtual override returns (bool) {
     return _isActiveActor(protector_, ManagerConstants.protectorId());
   }
 
-  //  /// @dev Returns the list of protectors.
-  //  function listProtectors() public view virtual override returns (address[] memory) {
-  //    return _getActors( ManagerConstants.sol.protectorId());
-  //  }
-
-  function hasProtectors() public view virtual override returns (bool) {
+  function hasProtectors() external view virtual override returns (bool) {
     return _actorCount(ManagerConstants.protectorId()) != 0;
   }
 
   function isTransferable(address to) external view override returns (bool) {
-    return !hasProtectors() || isSafeRecipient(to);
+    return
+      _actors[ManagerConstants.protectorId()].length == 0 ||
+      _actorIndex(to, ManagerConstants.safeRecipientId()) != ManagerConstants.maxActors();
   }
 
   function locked() external view override returns (bool) {
-    return hasProtectors();
+    return _actors[ManagerConstants.protectorId()].length > 0;
   }
 
-  function version() public pure virtual override returns (uint256) {
+  function version() external pure virtual override returns (uint256) {
     // 1.0.1
     return 1_000_001;
   }
@@ -91,7 +99,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       _msgSender()
     );
     emit ProtectorChange(protector_, status);
-    _emitLockeEvent(countActiveProtectors(), status);
+    _emitLockeEvent(_actors[ManagerConstants.protectorId()].length, status);
   }
 
   function importProtectorsAndSafeRecipientsFrom(uint256 otherTokenId) external virtual override onlyTokenOwner {
@@ -153,7 +161,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   }
 
   // @dev see {ICrunaManager.sol-isSafeRecipient}
-  function isSafeRecipient(address recipient) public view virtual override returns (bool) {
+  function isSafeRecipient(address recipient) external view virtual override returns (bool) {
     return _actorIndex(recipient, ManagerConstants.safeRecipientId()) != ManagerConstants.maxActors();
   }
 
@@ -181,14 +189,14 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     uint256 validFor,
     bytes calldata signature
   ) external virtual override nonReentrant onlyTokenOwner {
-    if (allPlugins.length == 16) {
+    if (_allPlugins.length == 16) {
       // We do not allow more than 16 plugins to avoid risks of going out-of-gas while
       // looping through allPlugins.
       revert PluginNumberOverflow();
     }
-    bytes4 _nameId = _stringToBytes4(name);
-    if (pluginsById[_combineBytes4(_nameId, salt)].proxyAddress != address(0)) revert PluginAlreadyPlugged();
-    uint256 requires = Canonical.crunaGuardian().trustedImplementation(_nameId, proxyAddress_);
+    bytes4 nameId_ = _stringToBytes4(name);
+    if (_pluginsById[_combineBytes4(nameId_, salt)].proxyAddress != address(0)) revert PluginAlreadyPlugged();
+    uint256 requires = Canonical.crunaGuardian().trustedImplementation(nameId_, proxyAddress_);
     if (requires == 0)
       if (canManageTransfer)
         if (!_vault().allowUntrustedTransfers()) {
@@ -196,7 +204,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
           // If later it is upgraded with a trusted implementation, it can be explicitly trusted using trustPlugin.
           revert UntrustedImplementationsNotAllowedToMakeTransfers();
         }
-    if (requires > version()) revert PluginRequiresUpdatedManager(requires);
+    if (requires > _version()) revert PluginRequiresUpdatedManager(requires);
     _preValidateAndCheckSignature(
       this.plug.selector,
       proxyAddress_,
@@ -210,11 +218,11 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     // but the existing address will be returned by the registry.
     address pluginAddress_ = _vault().deployPlugin(proxyAddress_, salt, tokenId(), isERC6551Account);
     CrunaPluginBase plugin_ = CrunaPluginBase(payable(pluginAddress_));
-    if (plugin_.nameId() != _nameId) revert InvalidImplementation();
+    if (plugin_.nameId() != nameId_) revert InvalidImplementation();
     if (plugin_.isERC6551Account() != isERC6551Account) revert InvalidAccountStatus();
     plugin_.init();
-    allPlugins.push(PluginElement({name: name, active: true, salt: salt}));
-    pluginsById[_combineBytes4(_nameId, salt)] = CrunaPlugin({
+    _allPlugins.push(PluginElement({name: name, active: true, salt: salt}));
+    _pluginsById[_combineBytes4(nameId_, salt)] = CrunaPlugin({
       proxyAddress: proxyAddress_,
       canManageTransfer: canManageTransfer,
       canBeReset: plugin_.requiresResetOnTransfer(),
@@ -233,12 +241,12 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     uint256 validFor,
     bytes calldata signature
   ) external virtual override nonReentrant onlyTokenOwner {
-    bytes4 _nameId = _stringToBytes4(name);
-    bytes8 _key = _combineBytes4(_nameId, salt);
-    if (pluginsById[_key].proxyAddress == address(0)) revert PluginNotFound();
+    bytes4 nameId_ = _stringToBytes4(name);
+    bytes8 _key = _combineBytes4(nameId_, salt);
+    if (_pluginsById[_key].proxyAddress == address(0)) revert PluginNotFound();
     _preValidateAndCheckSignature(
       this.unplug.selector,
-      pseudoAddress(name, salt),
+      _pseudoAddress(name, salt),
       0,
       // in v2 we will user extra3 for the salt, like:
       // uint256(bytes32(salt)),
@@ -248,34 +256,34 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       validFor,
       signature
     );
-    uint256 len = allPlugins.length;
-    address pluginAddress_ = _pluginAddress(_nameId, salt);
+    uint256 len = _allPlugins.length;
+    address pluginAddress_ = _pluginAddress(nameId_, salt);
     for (uint256 i; i < len; ) {
       unchecked {
-        if (_hashString(allPlugins[i].name) == _hashString(name)) {
-          if (pluginsById[_key].canBeReset) {
-            _resetPlugin(_nameId, salt);
+        if (_hashString(_allPlugins[i].name) == _hashString(name)) {
+          if (_pluginsById[_key].canBeReset) {
+            _resetPlugin(nameId_, salt);
           }
-          allPlugins[i] = allPlugins[allPlugins.length - 1];
-          allPlugins.pop();
+          _allPlugins[i] = _allPlugins[_allPlugins.length - 1];
+          _allPlugins.pop();
           break;
         }
         i++;
       }
     }
-    delete pluginsById[_key];
+    delete _pluginsById[_key];
     emit PluginStatusChange(name, salt, pluginAddress_, PluginStatus.Unplugged);
   }
 
   // To set as trusted a plugin that initially was not trusted
   // No need for extra protection because the CrunaGuardian absolves that role
   function trustPlugin(string memory name, bytes4 salt) external virtual override onlyTokenOwner {
-    bytes4 _nameId = _stringToBytes4(name);
-    bytes8 _key = _combineBytes4(_nameId, salt);
-    if (pluginsById[_key].proxyAddress == address(0)) revert PluginNotFound();
-    if (pluginsById[_key].trusted) revert PluginAlreadyTrusted();
-    if (Canonical.crunaGuardian().trustedImplementation(_nameId, pluginsById[_key].proxyAddress) != 0) {
-      pluginsById[_key].trusted = true;
+    bytes4 nameId_ = _stringToBytes4(name);
+    bytes8 _key = _combineBytes4(nameId_, salt);
+    if (_pluginsById[_key].proxyAddress == address(0)) revert PluginNotFound();
+    if (_pluginsById[_key].trusted) revert PluginAlreadyTrusted();
+    if (Canonical.crunaGuardian().trustedImplementation(nameId_, _pluginsById[_key].proxyAddress) != 0) {
+      _pluginsById[_key].trusted = true;
       emit PluginTrusted(name, salt);
     } else revert StillUntrusted();
   }
@@ -291,86 +299,66 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     uint256 validFor,
     bytes calldata signature
   ) external virtual override onlyTokenOwner {
-    bytes4 _nameId = _stringToBytes4(name);
-    _isPluginAuthorizable(_nameId, salt);
+    bytes4 nameId_ = _stringToBytes4(name);
+    _isPluginAuthorizable(nameId_, salt);
     _preValidateAndCheckSignature(
       this.authorizePluginToTransfer.selector,
-      pseudoAddress(name, salt),
+      _pseudoAddress(name, salt),
       authorized ? 1 : 0,
       timeLock,
       timestamp,
       validFor,
       signature
     );
-    bytes8 _key = _combineBytes4(_nameId, salt);
+    bytes8 _key = _combineBytes4(nameId_, salt);
     if (authorized) {
       if (timeLock != 0) revert InvalidTimeLock();
-      if (pluginsById[_key].canManageTransfer) revert PluginAlreadyAuthorized();
-      delete timeLocks[_key];
+      if (_pluginsById[_key].canManageTransfer) revert PluginAlreadyAuthorized();
+      delete _timeLocks[_key];
     } else {
       if (timeLock == 0 || timeLock > 30 days) revert InvalidTimeLock();
-      if (!pluginsById[_key].canManageTransfer) revert PluginAlreadyUnauthorized();
-      timeLocks[_key] = block.timestamp + timeLock;
+      if (!_pluginsById[_key].canManageTransfer) revert PluginAlreadyUnauthorized();
+      _timeLocks[_key] = block.timestamp + timeLock;
     }
-    pluginsById[_key].canManageTransfer = authorized;
-    emit PluginAuthorizationChange(name, salt, _pluginAddress(_nameId, salt), authorized, timeLock);
+    _pluginsById[_key].canManageTransfer = authorized;
+    emit PluginAuthorizationChange(name, salt, _pluginAddress(nameId_, salt), authorized, timeLock);
   }
 
-  function pluginAddress(bytes4 _nameId, bytes4 salt) external view virtual override returns (address payable) {
-    return _pluginAddress(_nameId, salt);
+  function pluginAddress(bytes4 nameId_, bytes4 salt) external view virtual override returns (address payable) {
+    return _pluginAddress(nameId_, salt);
   }
 
-  function plugin(bytes4 _nameId, bytes4 salt) external view virtual override returns (CrunaPluginBase) {
-    return _plugin(_nameId, salt);
+  function plugin(bytes4 nameId_, bytes4 salt) external view virtual override returns (CrunaPluginBase) {
+    return _plugin(nameId_, salt);
   }
 
-  function countPlugins() public view virtual override returns (uint256, uint256) {
-    uint256 active;
-    uint256 disabled;
-    uint256 len = allPlugins.length;
-    for (uint256 i; i < len; ) {
-      unchecked {
-        if (allPlugins[i].active) active++;
-        else disabled++;
-        i++;
-      }
-    }
-    return (active, disabled);
+  function countPlugins() external view virtual override returns (uint256, uint256) {
+    return _countPlugins();
   }
 
-  function plugged(string memory name, bytes4 salt) public view virtual returns (bool) {
-    bytes4 _nameId = _stringToBytes4(name);
-    return pluginsById[_combineBytes4(_nameId, salt)].proxyAddress != address(0);
+  function plugged(string memory name, bytes4 salt) external view virtual returns (bool) {
+    bytes4 nameId_ = _stringToBytes4(name);
+    return _pluginsById[_combineBytes4(nameId_, salt)].proxyAddress != address(0);
   }
 
-  function pluginIndex(string memory name, bytes4 salt) public view virtual returns (bool, uint256) {
-    uint256 len = allPlugins.length;
-    for (uint256 i; i < len; ) {
-      if (_hashString(name) == _hashString(allPlugins[i].name))
-        if (allPlugins[i].salt == salt) {
-          return (true, i);
-        }
-      unchecked {
-        i++;
-      }
-    }
-    return (false, 0);
+  function pluginIndex(string memory name, bytes4 salt) external view virtual returns (bool, uint256) {
+    return _pluginIndex(name, salt);
   }
 
-  function isPluginActive(string memory name, bytes4 salt) public view virtual returns (bool) {
-    bytes4 _nameId = _stringToBytes4(name);
-    bytes8 _key = _combineBytes4(_nameId, salt);
-    if (pluginsById[_key].proxyAddress == address(0)) revert PluginNotFound();
-    return pluginsById[_key].active;
+  function isPluginActive(string memory name, bytes4 salt) external view virtual returns (bool) {
+    bytes4 nameId_ = _stringToBytes4(name);
+    bytes8 _key = _combineBytes4(nameId_, salt);
+    if (_pluginsById[_key].proxyAddress == address(0)) revert PluginNotFound();
+    return _pluginsById[_key].active;
   }
 
   function listPlugins(bool active) external view virtual returns (string[] memory) {
-    (uint256 actives, uint256 disabled) = countPlugins();
+    (uint256 actives, uint256 disabled) = _countPlugins();
     string[] memory _plugins = new string[](active ? actives : disabled);
-    uint256 len = allPlugins.length;
+    uint256 len = _allPlugins.length;
     for (uint256 i; i < len; ) {
-      if (allPlugins[i].active == active) {
-        _plugins[i] = allPlugins[i].name;
+      if (_allPlugins[i].active == active) {
+        _plugins[i] = _allPlugins[i].name;
       }
 
       unchecked {
@@ -384,8 +372,8 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
    * @dev It returns a pseudo address created from the name of a plugin and the salt used to deploy it.
    * Notice that abi.encodePacked does not risk to create collisions because the salt is a bytes4.
    */
-  function pseudoAddress(string memory name, bytes4 _salt) public view virtual returns (address) {
-    return address(uint160(uint256(keccak256(abi.encodePacked(name, _salt)))));
+  function pseudoAddress(string memory name, bytes4 _salt) external view virtual returns (address) {
+    return _pseudoAddress(name, _salt);
   }
 
   function disablePlugin(
@@ -396,11 +384,19 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     bytes calldata signature
   ) external virtual override nonReentrant onlyTokenOwner {
     uint256 i = _isPluginEnabled(name, salt);
-    _preValidateAndCheckSignature(this.disablePlugin.selector, pseudoAddress(name, salt), 0, 0, timestamp, validFor, signature);
-    delete allPlugins[i].active;
-    bytes4 _nameId = _stringToBytes4(name);
-    delete pluginsById[_combineBytes4(_nameId, salt)].active;
-    emit PluginStatusChange(name, salt, _pluginAddress(_nameId, salt), PluginStatus.PluggedAndInactive);
+    _preValidateAndCheckSignature(
+      this.disablePlugin.selector,
+      _pseudoAddress(name, salt),
+      0,
+      0,
+      timestamp,
+      validFor,
+      signature
+    );
+    delete _allPlugins[i].active;
+    bytes4 nameId_ = _stringToBytes4(name);
+    delete _pluginsById[_combineBytes4(nameId_, salt)].active;
+    emit PluginStatusChange(name, salt, _pluginAddress(nameId_, salt), PluginStatus.PluggedAndInactive);
   }
 
   function reEnablePlugin(
@@ -413,17 +409,17 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     uint256 i = _isPluginDisabled(name, salt);
     _preValidateAndCheckSignature(
       this.reEnablePlugin.selector,
-      pseudoAddress(name, salt),
+      _pseudoAddress(name, salt),
       0,
       0,
       timestamp,
       validFor,
       signature
     );
-    allPlugins[i].active = true;
-    bytes4 _nameId = _stringToBytes4(name);
-    pluginsById[_combineBytes4(_nameId, salt)].active = true;
-    emit PluginStatusChange(name, salt, _pluginAddress(_nameId, salt), PluginStatus.PluggedAndActive);
+    _allPlugins[i].active = true;
+    bytes4 nameId_ = _stringToBytes4(name);
+    _pluginsById[_combineBytes4(nameId_, salt)].active = true;
+    emit PluginStatusChange(name, salt, _pluginAddress(nameId_, salt), PluginStatus.PluggedAndActive);
   }
 
   // @dev See {IProtected721-managedTransfer}.
@@ -431,14 +427,14 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   function managedTransfer(bytes4 pluginNameId, address to) external virtual override nonReentrant {
     // find the plugin
     bytes8 _key;
-    uint256 len = allPlugins.length;
+    uint256 len = _allPlugins.length;
     bytes4 salt;
     for (uint256 i; i < len; ) {
-      bytes4 _nameId = _stringToBytes4(allPlugins[i].name);
-      if (_nameId == pluginNameId) {
-        bytes8 key_ = _combineBytes4(_nameId, allPlugins[i].salt);
-        if (_pluginAddress(pluginNameId, allPlugins[i].salt) == _msgSender()) {
-          salt = allPlugins[i].salt;
+      bytes4 nameId_ = _stringToBytes4(_allPlugins[i].name);
+      if (nameId_ == pluginNameId) {
+        bytes8 key_ = _combineBytes4(nameId_, _allPlugins[i].salt);
+        if (_pluginAddress(pluginNameId, _allPlugins[i].salt) == _msgSender()) {
+          salt = _allPlugins[i].salt;
           _key = key_;
           break;
         }
@@ -447,11 +443,11 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
         i++;
       }
     }
-    if (_key == bytes8(0) || !pluginsById[_key].active) revert PluginNotFoundOrDisabled();
+    if (_key == bytes8(0) || !_pluginsById[_key].active) revert PluginNotFoundOrDisabled();
     if (_pluginAddress(pluginNameId, salt) != _msgSender()) revert NotTheAuthorizedPlugin();
     _removeLockIfExpired(pluginNameId, salt);
-    if (!pluginsById[_key].canManageTransfer) revert PluginNotAuthorizedToManageTransfer();
-    if (!pluginsById[_key].trusted)
+    if (!_pluginsById[_key].canManageTransfer) revert PluginNotAuthorizedToManageTransfer();
+    if (!_pluginsById[_key].trusted)
       if (!_vault().allowUntrustedTransfers()) revert UntrustedImplementationsNotAllowedToMakeTransfers();
     _resetOnTransfer(pluginNameId, salt);
     // In theory, the vault may revert, blocking the entire process
@@ -470,24 +466,46 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   ) external override onlyTokenOwner {
     _preValidateAndCheckSignature(this.protectedTransfer.selector, to, 0, 0, timestamp, validFor, signature);
     _resetOnTransfer(bytes4(0), bytes4(0));
-    _vault().managedTransfer(nameId(), tokenId, to);
+    _vault().managedTransfer(_nameId(), tokenId, to);
   }
 
-  function _plugin(bytes4 _nameId, bytes4 salt) internal view virtual returns (CrunaPluginBase) {
-    return CrunaPluginBase(_pluginAddress(_nameId, salt));
+  function _plugin(bytes4 nameId_, bytes4 salt) internal view virtual returns (CrunaPluginBase) {
+    return CrunaPluginBase(_pluginAddress(nameId_, salt));
   }
 
-  function _pluginAddress(bytes4 _nameId, bytes4 salt) internal view virtual returns (address payable) {
+  function _pluginAddress(bytes4 nameId_, bytes4 salt) internal view virtual returns (address payable) {
     return
       payable(
         Canonical.crunaRegistry().tokenLinkedContract(
-          pluginsById[_combineBytes4(_nameId, salt)].proxyAddress,
+          _pluginsById[_combineBytes4(nameId_, salt)].proxyAddress,
           salt,
           block.chainid,
           tokenAddress(),
           tokenId()
         )
       );
+  }
+
+  function _nameId() internal view virtual override returns (bytes4) {
+    return bytes4(keccak256("CrunaManager"));
+  }
+
+  function _pseudoAddress(string memory name, bytes4 _salt) internal view virtual returns (address) {
+    return address(uint160(uint256(keccak256(abi.encodePacked(name, _salt)))));
+  }
+
+  function _countPlugins() internal view virtual returns (uint256, uint256) {
+    uint256 active;
+    uint256 disabled;
+    uint256 len = _allPlugins.length;
+    for (uint256 i; i < len; ) {
+      unchecked {
+        if (_allPlugins[i].active) active++;
+        else disabled++;
+        i++;
+      }
+    }
+    return (active, disabled);
   }
 
   function _combineBytes4(bytes4 a, bytes4 b) internal pure returns (bytes8) {
@@ -543,22 +561,22 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     if (!status) {
       if (timestamp != 0)
         if (timestamp > _TIME_VALIDATION_MULTIPLIER - 1)
-          if (!isProtector(actor)) revert ProtectorNotFound();
+          if (!_isActiveActor(actor, ManagerConstants.protectorId())) revert ProtectorNotFound();
       _removeActor(actor, role_);
     } else {
       if (timestamp != 0)
         if (timestamp > _TIME_VALIDATION_MULTIPLIER - 1)
-          if (isProtector(actor)) revert ProtectorAlreadySetByYou();
+          if (_isActiveActor(actor, ManagerConstants.protectorId())) revert ProtectorAlreadySetByYou();
       _addActor(actor, role_);
     }
   }
 
-  function _isPluginAuthorizable(bytes4 _nameId, bytes4 salt) internal view virtual {
-    bytes8 _key = _combineBytes4(_nameId, salt);
-    if (pluginsById[_key].proxyAddress == address(0)) revert PluginNotFound();
-    if (!pluginsById[_key].trusted)
+  function _isPluginAuthorizable(bytes4 nameId_, bytes4 salt) internal view virtual {
+    bytes8 _key = _combineBytes4(nameId_, salt);
+    if (_pluginsById[_key].proxyAddress == address(0)) revert PluginNotFound();
+    if (!_pluginsById[_key].trusted)
       if (!_vault().allowUntrustedTransfers()) revert UntrustedImplementationsNotAllowedToMakeTransfers();
-    CrunaPluginBase plugin_ = _plugin(_nameId, salt);
+    CrunaPluginBase plugin_ = _plugin(nameId_, salt);
     if (!plugin_.requiresToManageTransfer()) revert NotATransferPlugin();
   }
 
@@ -583,10 +601,24 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     }
   }
 
+  function _pluginIndex(string memory name, bytes4 salt) internal view virtual returns (bool, uint256) {
+    uint256 len = _allPlugins.length;
+    for (uint256 i; i < len; ) {
+      if (_hashString(name) == _hashString(_allPlugins[i].name))
+        if (_allPlugins[i].salt == salt) {
+          return (true, i);
+        }
+      unchecked {
+        i++;
+      }
+    }
+    return (false, 0);
+  }
+
   function _isPluginEnabled(string memory name, bytes4 salt) internal view virtual returns (uint256) {
-    (bool plugged_, uint256 i) = pluginIndex(name, salt);
+    (bool plugged_, uint256 i) = _pluginIndex(name, salt);
     if (!plugged_) revert PluginNotFound();
-    if (!allPlugins[i].active) revert PluginAlreadyDisabled();
+    if (!_allPlugins[i].active) revert PluginAlreadyDisabled();
     return i;
   }
 
@@ -615,19 +647,19 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   }
 
   function _isPluginDisabled(string memory name, bytes4 salt) internal view virtual returns (uint256) {
-    (bool plugged_, uint256 i) = pluginIndex(name, salt);
+    (bool plugged_, uint256 i) = _pluginIndex(name, salt);
     if (!plugged_) revert PluginNotFound();
-    if (allPlugins[i].active) revert PluginNotDisabled();
+    if (_allPlugins[i].active) revert PluginNotDisabled();
     return i;
   }
 
-  function _resetPlugin(bytes4 _nameId, bytes4 salt) internal virtual {
-    CrunaPluginBase plugin_ = _plugin(_nameId, salt);
+  function _resetPlugin(bytes4 nameId_, bytes4 salt) internal virtual {
+    CrunaPluginBase plugin_ = _plugin(nameId_, salt);
     plugin_.reset();
   }
 
-  function _resetPluginOnTransfer(bytes4 _nameId, bytes4 salt) internal virtual {
-    address plugin_ = _pluginAddress(_nameId, salt);
+  function _resetPluginOnTransfer(bytes4 nameId_, bytes4 salt) internal virtual {
+    address plugin_ = _pluginAddress(nameId_, salt);
     // solhint-disable-next-line avoid-low-level-calls
     (bool success, ) = plugin_.excessivelySafeCall(
       ManagerConstants.gasToResetPlugin(),
@@ -636,14 +668,14 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       abi.encodeWithSignature("resetOnTransfer()")
     );
     // Optionally log success/failure
-    emit PluginResetAttempt(_nameId, salt, success);
+    emit PluginResetAttempt(nameId_, salt, success);
   }
 
-  function _removeLockIfExpired(bytes4 _nameId, bytes4 salt) internal virtual {
-    bytes8 _key = _combineBytes4(_nameId, salt);
-    if (timeLocks[_key] < block.timestamp) {
-      delete timeLocks[_key];
-      pluginsById[_key].canManageTransfer = true;
+  function _removeLockIfExpired(bytes4 nameId_, bytes4 salt) internal virtual {
+    bytes8 _key = _combineBytes4(nameId_, salt);
+    if (_timeLocks[_key] < block.timestamp) {
+      delete _timeLocks[_key];
+      _pluginsById[_key].canManageTransfer = true;
     }
   }
 
@@ -651,12 +683,12 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     _deleteActors(ManagerConstants.protectorId());
     _deleteActors(ManagerConstants.safeRecipientId());
     // disable all plugins
-    uint256 len = allPlugins.length;
+    uint256 len = _allPlugins.length;
     for (uint256 i; i < len; ) {
-      bytes4 _nameId = _stringToBytes4(allPlugins[i].name);
-      if (_nameId != nameId_ || allPlugins[i].salt != salt) {
-        if (pluginsById[_combineBytes4(_nameId, allPlugins[i].salt)].canBeReset)
-          _resetPluginOnTransfer(_nameId, allPlugins[i].salt);
+      bytes4 _nameId_ = _stringToBytes4(_allPlugins[i].name);
+      if (_nameId_ != nameId_ || _allPlugins[i].salt != salt) {
+        if (_pluginsById[_combineBytes4(_nameId_, _allPlugins[i].salt)].canBeReset)
+          _resetPluginOnTransfer(_nameId_, _allPlugins[i].salt);
       }
       unchecked {
         i++;

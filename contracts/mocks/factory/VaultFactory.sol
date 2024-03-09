@@ -48,7 +48,7 @@ contract VaultFactory is
     vault = TimeControlledNFT(vault_);
   }
 
-  function version() public pure virtual returns (uint256) {
+  function version() external pure virtual returns (uint256) {
     return 1_000_000;
   }
 

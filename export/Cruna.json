@@ -54,6 +54,11 @@
     },
     {
       "inputs": [],
+      "name": "IndexOutOfBounds",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "InvalidAccountStatus",
       "type": "error"
     },
@@ -500,26 +505,33 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "",
+          "name": "index",
           "type": "uint256"
         }
       ],
       "name": "allPlugins",
       "outputs": [
         {
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "salt",
-          "type": "bytes4"
-        },
-        {
-          "internalType": "bool",
-          "name": "active",
-          "type": "bool"
+          "components": [
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "bytes4",
+              "name": "salt",
+              "type": "bytes4"
+            },
+            {
+              "internalType": "bool",
+              "name": "active",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct ICrunaManager.PluginElement",
+          "name": "",
+          "type": "tuple"
         }
       ],
       "stateMutability": "view",
@@ -1031,7 +1043,7 @@
       "inputs": [
         {
           "internalType": "bytes4",
-          "name": "_nameId",
+          "name": "nameId_",
           "type": "bytes4"
         },
         {
@@ -1055,7 +1067,7 @@
       "inputs": [
         {
           "internalType": "bytes4",
-          "name": "_nameId",
+          "name": "nameId_",
           "type": "bytes4"
         },
         {
@@ -1108,46 +1120,53 @@
       "inputs": [
         {
           "internalType": "bytes8",
-          "name": "",
+          "name": "key",
           "type": "bytes8"
         }
       ],
       "name": "pluginsById",
       "outputs": [
         {
-          "internalType": "address",
-          "name": "proxyAddress",
-          "type": "address"
-        },
-        {
-          "internalType": "bool",
-          "name": "canManageTransfer",
-          "type": "bool"
-        },
-        {
-          "internalType": "bool",
-          "name": "canBeReset",
-          "type": "bool"
-        },
-        {
-          "internalType": "bool",
-          "name": "active",
-          "type": "bool"
-        },
-        {
-          "internalType": "bool",
-          "name": "isERC6551Account",
-          "type": "bool"
-        },
-        {
-          "internalType": "bool",
-          "name": "trusted",
-          "type": "bool"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "salt",
-          "type": "bytes4"
+          "components": [
+            {
+              "internalType": "address",
+              "name": "proxyAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "bool",
+              "name": "canManageTransfer",
+              "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "canBeReset",
+              "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "active",
+              "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "isERC6551Account",
+              "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "trusted",
+              "type": "bool"
+            },
+            {
+              "internalType": "bytes4",
+              "name": "salt",
+              "type": "bytes4"
+            }
+          ],
+          "internalType": "struct ICrunaManager.CrunaPlugin",
+          "name": "",
+          "type": "tuple"
         }
       ],
       "stateMutability": "view",
@@ -1157,7 +1176,7 @@
       "inputs": [
         {
           "internalType": "bytes32",
-          "name": "",
+          "name": "hash",
           "type": "bytes32"
         }
       ],
@@ -1454,7 +1473,7 @@
       "inputs": [
         {
           "internalType": "bytes8",
-          "name": "",
+          "name": "key",
           "type": "bytes8"
         }
       ],
@@ -1586,7 +1605,7 @@
       "inputs": [
         {
           "internalType": "bytes32",
-          "name": "",
+          "name": "hash",
           "type": "bytes32"
         }
       ],
@@ -2335,7 +2354,7 @@
           "type": "bytes4"
         }
       ],
-      "stateMutability": "pure",
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -2355,7 +2374,7 @@
       "inputs": [
         {
           "internalType": "bytes32",
-          "name": "",
+          "name": "hash",
           "type": "bytes32"
         }
       ],
@@ -2669,7 +2688,7 @@
       "inputs": [
         {
           "internalType": "bytes32",
-          "name": "",
+          "name": "hash",
           "type": "bytes32"
         }
       ],
@@ -2885,6 +2904,11 @@
     {
       "inputs": [],
       "name": "FailedInnerCall",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidIndex",
       "type": "error"
     },
     {
@@ -4151,26 +4175,33 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "",
+          "name": "index",
           "type": "uint256"
         }
       ],
       "name": "managerHistory",
       "outputs": [
         {
-          "internalType": "uint112",
-          "name": "firstTokenId",
-          "type": "uint112"
-        },
-        {
-          "internalType": "uint112",
-          "name": "lastTokenId",
-          "type": "uint112"
-        },
-        {
-          "internalType": "address",
-          "name": "managerAddress",
-          "type": "address"
+          "components": [
+            {
+              "internalType": "uint112",
+              "name": "firstTokenId",
+              "type": "uint112"
+            },
+            {
+              "internalType": "uint112",
+              "name": "lastTokenId",
+              "type": "uint112"
+            },
+            {
+              "internalType": "address",
+              "name": "managerAddress",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct ICrunaProtectedNFT.ManagerHistory",
+          "name": "",
+          "type": "tuple"
         }
       ],
       "stateMutability": "view",
@@ -4213,34 +4244,41 @@
       "name": "nftConf",
       "outputs": [
         {
-          "internalType": "bool",
-          "name": "progressiveTokenIds",
-          "type": "bool"
-        },
-        {
-          "internalType": "bool",
-          "name": "allowUntrustedTransfers",
-          "type": "bool"
-        },
-        {
-          "internalType": "uint112",
-          "name": "nextTokenId",
-          "type": "uint112"
-        },
-        {
-          "internalType": "uint112",
-          "name": "maxTokenId",
-          "type": "uint112"
-        },
-        {
-          "internalType": "uint8",
-          "name": "managerHistoryLength",
-          "type": "uint8"
-        },
-        {
-          "internalType": "uint8",
-          "name": "unusedField",
-          "type": "uint8"
+          "components": [
+            {
+              "internalType": "bool",
+              "name": "progressiveTokenIds",
+              "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "allowUntrustedTransfers",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint112",
+              "name": "nextTokenId",
+              "type": "uint112"
+            },
+            {
+              "internalType": "uint112",
+              "name": "maxTokenId",
+              "type": "uint112"
+            },
+            {
+              "internalType": "uint8",
+              "name": "managerHistoryLength",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "unusedField",
+              "type": "uint8"
+            }
+          ],
+          "internalType": "struct ICrunaProtectedNFT.NftConf",
+          "name": "",
+          "type": "tuple"
         }
       ],
       "stateMutability": "view",

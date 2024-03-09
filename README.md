@@ -171,27 +171,27 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   Canonical.sol                       |    66.67 |      100 |    66.67 |    66.67 
   ExcessivelySafeCall.sol             |      100 |      100 |      100 |      100 
   ManagerConstants.sol                |       80 |      100 |       80 |       80 
- manager/                             |    96.05 |    65.98 |    95.08 |    95.19 
+ manager/                             |    95.34 |    66.33 |    92.65 |     94.6 
   Actor.sol                           |      100 |    57.14 |      100 |      100 
-  CrunaManager.sol                    |    96.35 |    66.67 |    97.96 |     95.2 
-  CrunaManagerBase.sol                |     87.5 |    66.67 |    33.33 |    88.24 
+  CrunaManager.sol                    |    95.48 |    67.06 |    94.55 |    94.49 
+  CrunaManagerBase.sol                |    88.24 |    66.67 |       50 |    88.89 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   ICrunaManager.sol                   |      100 |      100 |      100 |      100 
- plugins/                             |    94.12 |    59.09 |    77.78 |    90.91 
-  CrunaPluginBase.sol                 |    94.12 |    59.09 |    77.78 |    90.91 
+ plugins/                             |    94.44 |    59.09 |       80 |     91.3 
+  CrunaPluginBase.sol                 |    94.44 |    59.09 |       80 |     91.3 
   ICrunaPlugin.sol                    |      100 |      100 |      100 |      100 
- plugins/inheritance/                 |    91.01 |    65.85 |       96 |    88.33 
+ plugins/inheritance/                 |    91.11 |    65.12 |    96.15 |    88.43 
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
-  InheritanceCrunaPlugin.sol          |    91.01 |    65.85 |    95.83 |    88.33 
+  InheritanceCrunaPlugin.sol          |    91.11 |    65.12 |       96 |    88.43 
   InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
- token/                               |    92.42 |    58.82 |     96.3 |    92.11 
-  CrunaProtectedNFT.sol               |     91.8 |    56.67 |    95.45 |    91.67 
+ token/                               |    93.06 |    58.57 |    96.88 |    92.68 
+  CrunaProtectedNFT.sol               |    92.54 |    56.45 |     96.3 |    92.31 
   CrunaProtectedNFTOwnable.sol        |      100 |       50 |      100 |      100 
   CrunaProtectedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaProtectedNFT.sol              |      100 |      100 |      100 |      100 
   IManagedNFT.sol                     |      100 |      100 |      100 |      100 
- utils/                               |    94.23 |       72 |     96.3 |    96.92 
-  CommonBase.sol                      |       80 |      100 |    83.33 |    85.71 
+ utils/                               |    91.23 |       72 |    90.63 |    94.29 
+  CommonBase.sol                      |    83.33 |      100 |    85.71 |     87.5 
   ERC6551AccountProxy.sol             |       90 |       75 |      100 |    90.91 
   FlexiTimelockController.sol         |      100 |       50 |      100 |      100 
   ICommonBase.sol                     |      100 |      100 |      100 |      100 
@@ -200,10 +200,10 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   ISignatureValidator.sol             |      100 |      100 |      100 |      100 
   ITokenLinkedContract.sol            |      100 |      100 |      100 |      100 
   IVersioned.sol                      |      100 |      100 |      100 |      100 
-  SignatureValidator.sol              |      100 |       90 |      100 |      100 
+  SignatureValidator.sol              |       90 |       90 |    77.78 |    91.67 
   TokenLinkedContract.sol             |       90 |       50 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    94.03 |    64.93 |    92.68 |    92.53 
+All files                             |    93.47 |    64.88 |    91.26 |    92.13 
 --------------------------------------|----------|----------|----------|----------
 ```
 
