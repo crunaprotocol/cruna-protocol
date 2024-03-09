@@ -12,9 +12,8 @@ import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
 
 interface ICrunaManager is ITokenLinkedContract, IVersioned {
   enum PluginStatus {
-    Unplugged,
-    PluggedAndActive,
-    PluggedAndInactive
+    Active,
+    Inactive
   }
 
   struct CrunaPlugin {
@@ -34,6 +33,16 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
     bool active;
   }
 
+  enum PluginChange {
+    Plug,
+    Unplug,
+    Disable,
+    ReEnable,
+    Authorize,
+    DeAuthorize,
+    UnplugForever
+  }
+
   event EmitLockedEventFailed();
 
   event ProtectorChange(address indexed protector, bool status);
@@ -42,7 +51,7 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
 
   event SafeRecipientChange(address indexed recipient, bool status);
 
-  event PluginStatusChange(string indexed name, bytes4 salt, address plugin_, PluginStatus status);
+  event PluginStatusChange(string indexed name, bytes4 salt, address plugin_, PluginChange change);
 
   event PluginAuthorizationChange(string indexed name, bytes4 salt, address plugin_, bool status, uint256 lockTime);
 
@@ -54,7 +63,7 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
 
   event ImplementationUpgraded(address indexed implementation_, uint256 currentVersion, uint256 newVersion);
 
-  event PluginResetAttempt(bytes4 _nameId, bytes4 salt, bool success);
+  event PluginResetAttemptFailed(bytes4 _nameId, bytes4 salt);
 
   error UntrustedImplementation();
   error InvalidVersion();
@@ -87,6 +96,7 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   error NotTheSameOwner();
   error SafeRecipientsAlreadySet();
   error NothingToImport();
+  error UnsupportedPluginChange();
 
   function upgrade(address implementation_) external;
 
@@ -101,17 +111,11 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
     bytes calldata signature
   ) external;
 
-  function disablePlugin(
+  function changePluginStatus(
     string memory name,
     bytes4 salt,
-    uint256 timestamp,
-    uint256 validFor,
-    bytes calldata signature
-  ) external;
-
-  function reEnablePlugin(
-    string memory name,
-    bytes4 salt,
+    PluginChange change,
+    uint256 timeLock_,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
@@ -199,23 +203,9 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
 
   function managedTransfer(bytes4 pluginNameId, address to) external;
 
-  // @dev blocks a plugin for a maximum of 30 days from transferring the NFT
-  //   If the plugins must be blocked for more time, disable it
-  function authorizePluginToTransfer(
-    string memory name,
-    bytes4 salt,
-    bool authorized,
-    uint256 timeLock,
-    uint256 timestamp,
-    uint256 validFor,
-    bytes calldata signature
-  ) external;
-
   function pluginAddress(bytes4 _nameId, bytes4 salt) external view returns (address payable);
 
   function plugin(bytes4 _nameId, bytes4 salt) external view returns (CrunaPluginBase);
-
-  function unplug(string memory name, bytes4, uint256 timestamp, uint256 validFor, bytes calldata signature) external;
 
   function trustPlugin(string memory name, bytes4 salt) external;
 

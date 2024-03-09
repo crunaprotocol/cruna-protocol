@@ -31,6 +31,7 @@ async function main() {
       "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31",
     );
     await deployUtils.deployContractViaNickSFactory(deployer, "CrunaRegistry", undefined, undefined, salt);
+
     await deployUtils.deployContractViaNickSFactory(
       deployer,
       "CrunaGuardian",
@@ -40,7 +41,22 @@ async function main() {
     );
   } else {
     await deployUtils.deployBytecodeViaNickSFactory(deployer, "CrunaRegistry", canonicalBytecodes.CrunaRegistry);
-    await deployUtils.deployBytecodeViaNickSFactory(deployer, "CrunaGuardian", canonicalBytecodes.CrunaGuardian);
+
+    if (process.env.RECODE_GUARDIAN) {
+      // This is supposed to happen only during development when there can be breaking changes.
+      // It should not happen later, after the first guardian as been deployed, except if very serious
+      // issues are found.
+      canonicalBytecodes.CrunaGuardian = await deployUtils.getBytecodeToBeDeployedViaNickSFactory(deployer, "CrunaManager", ["uint256", "address[]", "address[]", "address"],
+          [delay, [proposerAddress], [executorAddress], deployer.address],
+          salt);
+      const guardian = await deployUtils.deployBytecodeViaNickSFactory(deployer, "CrunaGuardian", canonicalBytecodes.CrunaGuardian);
+      fs.writeFileSync(path.resolve(__dirname, "../contracts/canonicalBytecodes.json"), JSON.stringify(canonicalBytecodes, null, 2));
+      let canonical = fs.readFileSync(path.resolve(__dirname, "../libs-canonical/not-localhost/Canonical.sol"), "urf8");
+      canonical =  canonical.replace(/ICrunaGuardian\([]\)/, `ICrunaGuardian(${guardian.address})`);
+    } else {
+      await deployUtils.deployBytecodeViaNickSFactory(deployer, "CrunaGuardian", canonicalBytecodes.CrunaGuardian);
+    }
+
   }
 }
 
