@@ -13,7 +13,7 @@ if [[ $version == "" ]]; then
   exit 1
 fi
 
-cp canonical-addresses/not-localhost/CanonicalAddresses.sol contracts/canonical/.
+cp libs-canonical/not-localhost/Canonical.sol contracts/libs/.
 cp README.md contracts/README.md
 cd contracts
 
@@ -29,4 +29,4 @@ fi
 rm README.md
 
 cd ..
-cp canonical-addresses/localhost/CanonicalAddresses.sol contracts/canonical/.
+cp libs-canonical/localhost/Canonical.sol contracts/libs/.

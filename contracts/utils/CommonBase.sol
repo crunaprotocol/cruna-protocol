@@ -8,7 +8,6 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {TokenLinkedContract} from "../utils/TokenLinkedContract.sol";
 import {CrunaProtectedNFT} from "../token/CrunaProtectedNFT.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
-import {CanonicalAddresses} from "../canonical/CanonicalAddresses.sol";
 import {INamed} from "../utils/INamed.sol";
 
 import {ICommonBase} from "./ICommonBase.sol";
@@ -20,17 +19,7 @@ import {Actor} from "../manager/Actor.sol";
   @title CrunaManagerBase.sol
   @dev Base contract for managers and plugins
 */
-abstract contract CommonBase is
-  ICommonBase,
-  INamed,
-  Context,
-  CanonicalAddresses,
-  Actor,
-  TokenLinkedContract,
-  SignatureValidator
-{
-  bytes4 internal constant _BYTES4_ZERO = bytes4(0);
-
+abstract contract CommonBase is ICommonBase, INamed, Context, Actor, TokenLinkedContract, SignatureValidator {
   /**
    * @dev Storage slot with the address of the current implementation.
    * This is the keccak-256 hash of "eip1967.proxy.implementation" subtracted by 1, and is
@@ -45,7 +34,7 @@ abstract contract CommonBase is
 
   // must be overridden
   function nameId() public view virtual override returns (bytes4) {
-    return _BYTES4_ZERO;
+    return bytes4(0);
   }
 
   function vault() external view virtual returns (CrunaProtectedNFT) {

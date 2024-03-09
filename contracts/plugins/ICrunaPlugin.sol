@@ -12,11 +12,22 @@ import {CrunaManager} from "../manager/CrunaManager.sol";
    the primary manage, which is CrunaManager.sol
 */
 interface ICrunaPlugin is ITokenLinkedContract, IVersioned {
+  struct Conf {
+    CrunaManager manager;
+    // When mustReset is true, the plugin must be reset before being used again.
+    // This strategy is needed during transfers to avoid gas issues, because actually resetting the
+    // data can be expensive. As a trade-off, the receiver of the protected NFT must reset the plugin.
+    uint32 mustBeReset;
+  }
+
   error UntrustedImplementation();
   error InvalidVersion();
   error PluginRequiresUpdatedManager(uint256 requiredVersion);
   error Forbidden();
   error CannotReceiveFunds();
+  error PluginMustBeReset();
+
+  function init() external;
 
   // function called in the dashboard to know if the plugin is asking the
   // right to make a managed transfer of the vault
@@ -28,6 +39,9 @@ interface ICrunaPlugin is ITokenLinkedContract, IVersioned {
 
   // Reset the plugin to the factory settings
   function reset() external;
+
+  // here is were _conf.mustBeReset is set to 1
+  function resetOnTransfer() external;
 
   // @dev Upgrade the implementation of the manager/plugin
   //   Notice that the owner can upgrade active or disable plugins

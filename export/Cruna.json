@@ -534,7 +534,7 @@
         },
         {
           "internalType": "bytes4",
-          "name": "",
+          "name": "salt",
           "type": "bytes4"
         },
         {
@@ -626,32 +626,6 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "crunaGuardian",
-      "outputs": [
-        {
-          "internalType": "contract ICrunaGuardian",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "crunaRegistry",
-      "outputs": [
-        {
-          "internalType": "contract ICrunaRegistry",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
           "internalType": "string",
@@ -660,7 +634,7 @@
         },
         {
           "internalType": "bytes4",
-          "name": "",
+          "name": "salt",
           "type": "bytes4"
         },
         {
@@ -722,19 +696,6 @@
           "internalType": "uint256[]",
           "name": "extensions",
           "type": "uint256[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "erc6551Registry",
-      "outputs": [
-        {
-          "internalType": "contract IERC6551Registry",
-          "name": "",
-          "type": "address"
         }
       ],
       "stateMutability": "view",
@@ -827,12 +788,17 @@
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "protector_",
-          "type": "address"
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes4",
+          "name": "salt",
+          "type": "bytes4"
         }
       ],
-      "name": "isAProtector",
+      "name": "isPluginActive",
       "outputs": [
         {
           "internalType": "bool",
@@ -846,17 +812,12 @@
     {
       "inputs": [
         {
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "",
-          "type": "bytes4"
+          "internalType": "address",
+          "name": "protector_",
+          "type": "address"
         }
       ],
-      "name": "isPluginActive",
+      "name": "isProtector",
       "outputs": [
         {
           "internalType": "bool",
@@ -1018,7 +979,7 @@
         },
         {
           "internalType": "bytes4",
-          "name": "",
+          "name": "salt",
           "type": "bytes4"
         },
         {
@@ -1051,7 +1012,7 @@
         },
         {
           "internalType": "bytes4",
-          "name": "",
+          "name": "salt",
           "type": "bytes4"
         }
       ],
@@ -1075,7 +1036,7 @@
         },
         {
           "internalType": "bytes4",
-          "name": "",
+          "name": "salt",
           "type": "bytes4"
         }
       ],
@@ -1099,7 +1060,7 @@
         },
         {
           "internalType": "bytes4",
-          "name": "",
+          "name": "salt",
           "type": "bytes4"
         }
       ],
@@ -1123,7 +1084,7 @@
         },
         {
           "internalType": "bytes4",
-          "name": "",
+          "name": "salt",
           "type": "bytes4"
         }
       ],
@@ -1330,7 +1291,7 @@
         },
         {
           "internalType": "bytes4",
-          "name": "",
+          "name": "salt",
           "type": "bytes4"
         },
         {
@@ -1566,7 +1527,7 @@
         },
         {
           "internalType": "bytes4",
-          "name": "",
+          "name": "salt",
           "type": "bytes4"
         }
       ],
@@ -1584,7 +1545,7 @@
         },
         {
           "internalType": "bytes4",
-          "name": "",
+          "name": "salt",
           "type": "bytes4"
         },
         {
@@ -1909,6 +1870,11 @@
       "type": "error"
     },
     {
+      "inputs": [],
+      "name": "PluginMustBeReset",
+      "type": "error"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -2202,32 +2168,6 @@
     },
     {
       "inputs": [],
-      "name": "crunaGuardian",
-      "outputs": [
-        {
-          "internalType": "contract ICrunaGuardian",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "crunaRegistry",
-      "outputs": [
-        {
-          "internalType": "contract ICrunaRegistry",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "eip712Domain",
       "outputs": [
         {
@@ -2264,19 +2204,6 @@
           "internalType": "uint256[]",
           "name": "extensions",
           "type": "uint256[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "erc6551Registry",
-      "outputs": [
-        {
-          "internalType": "contract IERC6551Registry",
-          "name": "",
-          "type": "address"
         }
       ],
       "stateMutability": "view",
@@ -2361,6 +2288,13 @@
     {
       "inputs": [],
       "name": "inherit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "init",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -2607,6 +2541,13 @@
     {
       "inputs": [],
       "name": "reset",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "resetOnTransfer",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -3598,32 +3539,6 @@
     },
     {
       "inputs": [],
-      "name": "crunaGuardian",
-      "outputs": [
-        {
-          "internalType": "contract ICrunaGuardian",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "crunaRegistry",
-      "outputs": [
-        {
-          "internalType": "contract ICrunaRegistry",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "defaultLocked",
       "outputs": [
         {
@@ -3704,19 +3619,6 @@
       "name": "emitLockedEvent",
       "outputs": [],
       "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "erc6551Registry",
-      "outputs": [
-        {
-          "internalType": "contract IERC6551Registry",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
       "type": "function"
     },
     {

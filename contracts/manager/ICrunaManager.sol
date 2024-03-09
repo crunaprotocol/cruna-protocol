@@ -127,7 +127,7 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   // @param protector_ The protector address
   // @return True if the protector is active for the tokensOwner.
   //   Pending protectors are not returned here
-  function isAProtector(address protector_) external view returns (bool);
+  function isProtector(address protector_) external view returns (bool);
 
   // @dev Set a protector for the token
   // @param protector_ The protector address

@@ -154,38 +154,38 @@ Moved to [CHANGELOG.md](CHANGELOG.md).
 ## Test coverage
 
 ```
-  37 passing
+  38 passing
 
 --------------------------------------|----------|----------|----------|----------
 File                                  |  % Stmts | % Branch |  % Funcs |  % Lines 
 --------------------------------------|----------|----------|----------|----------
- canonical/                           |      100 |       50 |    83.33 |       75 
-  CanonicalAddresses.sol              |      100 |      100 |      100 |      100 
+ canonical/                           |      100 |       50 |    66.67 |       60 
   CrunaGuardian.sol                   |      100 |       50 |      100 |       75 
   CrunaRegistry.sol                   |      100 |      100 |        0 |        0 
-  ICanonicalAddresses.sol             |      100 |      100 |      100 |      100 
   ICrunaGuardian.sol                  |      100 |      100 |      100 |      100 
   ICrunaRegistry.sol                  |      100 |      100 |      100 |      100 
  interfaces/                          |      100 |      100 |      100 |      100 
   IERC6454.sol                        |      100 |      100 |      100 |      100 
   IERC6982.sol                        |      100 |      100 |      100 |      100 
- libs/                                |       40 |        0 |    33.33 |    38.46 
-  ExcessivelySafeCall.sol             |       40 |        0 |    33.33 |    38.46 
- manager/                             |    93.49 |    65.66 |    94.83 |    91.73 
+ libs/                                |    83.33 |      100 |    77.78 |    84.62 
+  Canonical.sol                       |    66.67 |      100 |    66.67 |    66.67 
+  ExcessivelySafeCall.sol             |      100 |      100 |      100 |      100 
+  ManagerConstants.sol                |       80 |      100 |       80 |       80 
+ manager/                             |    96.05 |    65.98 |    95.08 |    95.19 
   Actor.sol                           |      100 |    57.14 |      100 |      100 
-  CrunaManager.sol                    |     93.3 |    66.43 |    97.83 |    91.08 
+  CrunaManager.sol                    |    96.35 |    66.67 |    97.96 |     95.2 
   CrunaManagerBase.sol                |     87.5 |    66.67 |    33.33 |    88.24 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   ICrunaManager.sol                   |      100 |      100 |      100 |      100 
- plugins/                             |    92.86 |    83.33 |    83.33 |    93.33 
-  CrunaPluginBase.sol                 |    92.86 |    83.33 |    83.33 |    93.33 
+ plugins/                             |    94.12 |    59.09 |    77.78 |    90.91 
+  CrunaPluginBase.sol                 |    94.12 |    59.09 |    77.78 |    90.91 
   ICrunaPlugin.sol                    |      100 |      100 |      100 |      100 
- plugins/inheritance/                 |    92.86 |    67.24 |       96 |    87.83 
+ plugins/inheritance/                 |    91.01 |    65.85 |       96 |    88.33 
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
-  InheritanceCrunaPlugin.sol          |    92.86 |    67.24 |    95.83 |    87.83 
+  InheritanceCrunaPlugin.sol          |    91.01 |    65.85 |    95.83 |    88.33 
   InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
- token/                               |    92.31 |    59.09 |     96.3 |       92 
-  CrunaProtectedNFT.sol               |    91.67 |     56.9 |    95.45 |    91.55 
+ token/                               |    92.42 |    58.82 |     96.3 |    92.11 
+  CrunaProtectedNFT.sol               |     91.8 |    56.67 |    95.45 |    91.67 
   CrunaProtectedNFTOwnable.sol        |      100 |       50 |      100 |      100 
   CrunaProtectedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaProtectedNFT.sol              |      100 |      100 |      100 |      100 
@@ -203,7 +203,7 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   SignatureValidator.sol              |      100 |       90 |      100 |      100 
   TokenLinkedContract.sol             |       90 |       50 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    92.24 |    65.56 |    93.04 |    89.87 
+All files                             |    94.03 |    64.93 |    92.68 |    92.53 
 --------------------------------------|----------|----------|----------|----------
 ```
 

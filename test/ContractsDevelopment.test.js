@@ -100,9 +100,6 @@ describe("Testing contract deployments", function () {
     expect(await manager.tokenId()).to.equal(nextTokenId);
     expect(await manager.vault()).to.equal(vault.address);
     expect(await manager.owner()).to.equal(bob.address);
-    expect(await manager.crunaRegistry()).to.equal(crunaRegistry.address);
-    expect(await manager.erc6551Registry()).to.equal(erc6551Registry.address);
-    expect(await manager.crunaGuardian()).to.equal(guardian.address);
   });
 
   it("should update the parameters", async function () {
