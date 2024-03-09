@@ -2,6 +2,7 @@ require("dotenv").config();
 const hre = require("hardhat");
 const ethers = hre.ethers;
 const path = require("path");
+const fs = require("fs-extra");
 const EthDeployUtils = require("eth-deploy-utils");
 const bytecodes = require("../test/helpers/bytecodes.json");
 let deployUtils;
@@ -49,7 +50,7 @@ async function main() {
       // and plugins will have to be upgraded by tokens' owners.
       canonicalBytecodes.CrunaGuardian = await deployUtils.getBytecodeToBeDeployedViaNickSFactory(
         deployer,
-        "CrunaManager",
+        "CrunaGuardian",
         ["uint256", "address[]", "address[]", "address"],
         [delay, [proposerAddress], [executorAddress], deployer.address],
         salt,
@@ -63,8 +64,9 @@ async function main() {
         path.resolve(__dirname, "../contracts/canonicalBytecodes.json"),
         JSON.stringify(canonicalBytecodes, null, 2),
       );
-      let canonical = fs.readFileSync(path.resolve(__dirname, "../libs-canonical/not-localhost/Canonical.sol"), "urf8");
-      canonical = canonical.replace(/ICrunaGuardian\([]\)/, `ICrunaGuardian(${guardian.address})`);
+      let canonical = fs.readFileSync(path.resolve(__dirname, "../libs-canonical/not-localhost/Canonical.sol"), "utf8");
+      canonical = canonical.replace(/ICrunaGuardian\([^)]+\)/, `ICrunaGuardian(${guardian.address})`);
+      fs.writeFileSync(path.resolve(__dirname, "../libs-canonical/not-localhost/Canonical.sol"), canonical);
     } else {
       await deployUtils.deployBytecodeViaNickSFactory(deployer, "CrunaGuardian", canonicalBytecodes.CrunaGuardian);
     }
