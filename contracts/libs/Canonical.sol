@@ -7,9 +7,7 @@ import {ICrunaGuardian} from "../canonical/ICrunaGuardian.sol";
 import {ICrunaRegistry} from "../canonical/CrunaRegistry.sol";
 
 /**
-  Canonical addresses for testing and deployment to localhost (using hardhat mnemonic).
-  The equivalents for testnet and mainnet are in the /canonical-addresses folder and managed
-  by scripts/set-canonical.js before tests and before deployments
+  Canonical for testing and deployment to localhost (using hardhat mnemonic).
 */
 
 library Canonical {
