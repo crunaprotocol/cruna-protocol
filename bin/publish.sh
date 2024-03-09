@@ -15,7 +15,6 @@ fi
 
 cp libs-canonical/not-localhost/Canonical.sol contracts/libs/.
 
-exit 1
 cp README.md contracts/README.md
 cd contracts
 
