@@ -3293,6 +3293,19 @@
       "inputs": [
         {
           "indexed": false,
+          "internalType": "uint112",
+          "name": "maxTokenId",
+          "type": "uint112"
+        }
+      ],
+      "name": "MaxTokenIdChange",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
           "internalType": "uint256",
           "name": "oldDuration",
           "type": "uint256"

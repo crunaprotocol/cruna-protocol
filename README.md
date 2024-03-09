@@ -154,7 +154,7 @@ Moved to [CHANGELOG.md](CHANGELOG.md).
 ## Test coverage
 
 ```
-  38 passing
+  50 passing
 
 --------------------------------------|----------|----------|----------|----------
 File                                  |  % Stmts | % Branch |  % Funcs |  % Lines 
@@ -184,8 +184,8 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
   InheritanceCrunaPlugin.sol          |    91.11 |    65.12 |       96 |    88.43 
   InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
- token/                               |    93.06 |    58.57 |    96.88 |    92.68 
-  CrunaProtectedNFT.sol               |    92.54 |    56.45 |     96.3 |    92.31 
+ token/                               |    93.15 |    62.86 |    96.88 |    92.77 
+  CrunaProtectedNFT.sol               |    92.65 |    61.29 |     96.3 |    92.41 
   CrunaProtectedNFTOwnable.sol        |      100 |       50 |      100 |      100 
   CrunaProtectedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaProtectedNFT.sol              |      100 |      100 |      100 |      100 
@@ -203,7 +203,7 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   SignatureValidator.sol              |       90 |       90 |    77.78 |    91.67 
   TokenLinkedContract.sol             |       90 |       50 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    93.47 |    64.88 |    91.26 |    92.13 
+All files                             |    93.48 |    65.58 |    91.26 |    92.14 
 --------------------------------------|----------|----------|----------|----------
 ```
 

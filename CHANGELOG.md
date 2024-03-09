@@ -1,5 +1,8 @@
 # Change log
 
+**0.1.9**
+- Minor change in `CrunaProtectedNFT`
+
 **0.1.8**
 - In manager, add `unplug` to unplug a plugin and delete any local variable
 - Remove `resetPlugin` from `disablePlugin` and `reEnablePlugin`
