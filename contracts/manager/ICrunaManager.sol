@@ -23,7 +23,7 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   /// @param trusted True if the plugin is trusted
   /// @param banned True if the plugin is banned during the unplug process
   /// @param unplugged True if the plugin has been unplugged
-  struct CrunaPlugin {
+  struct PluginConfig {
     address proxyAddress;
     bytes4 salt;
     uint32 timeLock;

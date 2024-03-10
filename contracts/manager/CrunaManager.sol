@@ -22,11 +22,11 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   using ExcessivelySafeCall for address;
 
   PluginElement[] private _allPlugins;
-  mapping(bytes8 => CrunaPlugin) private _pluginByKey;
+  mapping(bytes8 pluginKey => PluginConfig pluginDetails) private _pluginByKey;
 
   error IndexOutOfBounds();
 
-  function pluginByKey(bytes8 key) external view returns (CrunaPlugin memory) {
+  function pluginByKey(bytes8 key) external view returns (PluginConfig memory) {
     return _pluginByKey[key];
   }
 
@@ -229,8 +229,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     bytes8 _key,
     uint256 requires
   ) internal {
-    // If the plugin has been plugged before and later unplugged, the proxy won't be deployed again
-    // but the existing address will be returned by the registry.
+    // If the plugin has been plugged before and later unplugged, the proxy won't be deployed again.
     address pluginAddress_ = _vault().deployPlugin(proxyAddress_, salt, tokenId(), isERC6551Account);
     CrunaPluginBase plugin_ = CrunaPluginBase(payable(pluginAddress_));
     if (plugin_.nameId() != nameId_) revert InvalidImplementation();
@@ -240,7 +239,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     if (_pluginByKey[_key].unplugged) {
       if (_pluginByKey[_key].proxyAddress != proxyAddress_) revert InconsistentProxyAddresses();
     }
-    _pluginByKey[_key] = CrunaPlugin({
+    _pluginByKey[_key] = PluginConfig({
       proxyAddress: proxyAddress_,
       salt: salt,
       timeLock: 0,

@@ -18,8 +18,8 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
   uint256 internal constant _TIMESTAMP_MULTIPLIER = 1e7;
   uint256 internal constant _TIME_VALIDATION_MULTIPLIER = 1e17;
 
-  mapping(bytes32 => address) private _preApprovals;
-  mapping(bytes32 => bool) private _usedSignatures;
+  mapping(bytes32 operationsHash => address approver) private _preApprovals;
+  mapping(bytes32 signatureHash => bool used) private _usedSignatures;
 
   constructor() EIP712("Cruna", "1") {}
 

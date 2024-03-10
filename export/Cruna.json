@@ -1119,7 +1119,7 @@
               "type": "bool"
             }
           ],
-          "internalType": "struct ICrunaManager.CrunaPlugin",
+          "internalType": "struct ICrunaManager.PluginConfig",
           "name": "",
           "type": "tuple"
         }
