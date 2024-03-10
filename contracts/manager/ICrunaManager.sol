@@ -31,6 +31,7 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
 
   struct PluginElement {
     string name;
+    bytes4 nameId;
     bytes4 salt;
     // redundant to optimize gas usage
     bool active;
@@ -220,5 +221,5 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
 
   function isPluginActive(string memory name, bytes4 salt) external view returns (bool);
 
-  function listPlugins(bool active) external view returns (string[] memory);
+  function listPluginsKeys(bool active) external view returns (bytes8[] memory);
 }
