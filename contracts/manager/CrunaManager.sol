@@ -218,7 +218,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       signature
     );
     bytes8 _key = _combineBytes4(nameId_, salt);
-    if (_notPluggable[_key] != 0) revert PluginAsBeenMarkedAsNotPluggable();
+    if (_notPluggable[_key] != 0) revert PluginHasBeenMarkedAsNotPluggable();
     _plug(name, proxyAddress_, canManageTransfer, isERC6551Account, nameId_, salt, _key, requires);
   }
 

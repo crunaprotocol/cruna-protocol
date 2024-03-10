@@ -74,7 +74,7 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   error CannotBeYourself();
   error NotTheAuthorizedPlugin();
   error PluginNumberOverflow();
-  error PluginAsBeenMarkedAsNotPluggable();
+  error PluginHasBeenMarkedAsNotPluggable();
   error PluginAlreadyPlugged();
   error PluginNotFound();
   error PluginNotFoundOrDisabled();

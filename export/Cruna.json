@@ -154,7 +154,7 @@
     },
     {
       "inputs": [],
-      "name": "PluginAsBeenMarkedAsNotPluggable",
+      "name": "PluginHasBeenMarkedAsNotPluggable",
       "type": "error"
     },
     {

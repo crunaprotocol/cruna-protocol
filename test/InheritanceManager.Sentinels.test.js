@@ -1092,7 +1092,7 @@ describe.only("Sentinel and Inheritance", function () {
 
     await expect(
       manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, "0x00000000", 0, 0, 0),
-    ).revertedWith("PluginAsBeenMarkedAsNotPluggable");
+    ).revertedWith("PluginHasBeenMarkedAsNotPluggable");
   });
 
   it("should re-enable a plugin", async function () {
