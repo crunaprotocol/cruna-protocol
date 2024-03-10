@@ -24,7 +24,6 @@ interface ICrunaPlugin is ITokenLinkedContract, IVersioned {
   error InvalidVersion();
   error PluginRequiresUpdatedManager(uint256 requiredVersion);
   error Forbidden();
-  error CannotReceiveFunds();
   error PluginMustBeReset();
 
   function init() external;

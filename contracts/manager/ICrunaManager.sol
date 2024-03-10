@@ -95,7 +95,7 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   error UntrustedImplementationsNotAllowedToMakeTransfers();
   error StillUntrusted();
   error PluginAlreadyTrusted();
-  error CannotimportProtectorsAndSafeRecipientsFromYourself();
+  error CannotImportProtectorsAndSafeRecipientsFromYourself();
   error NotTheSameOwner();
   error SafeRecipientsAlreadySet();
   error NothingToImport();
