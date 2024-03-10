@@ -35,14 +35,14 @@ let text = "## Test coverage";
 
 coverage = result.join("\n");
 
-let p = path.resolve(__dirname, "../README.md");
+let p = path.resolve(__dirname, "../COVERAGE.md");
 
-let README = fs.readFileSync(p, "utf8").split(text);
+let readCoverage = fs.readFileSync(p, "utf8").split(text);
 
-let coverageSection = README[1].split("```");
+let coverageSection = readCoverage[1].split("```");
 
 coverageSection[1] = `\n${coverage}\n`;
 
-let readme = `${README[0]}${text}${coverageSection.join("```")}`;
+readCoverage = `${readCoverage[0]}${text}${coverageSection.join("```")}`;
 
-fs.writeFileSync(p, readme);
+fs.writeFileSync(p, readCoverage);

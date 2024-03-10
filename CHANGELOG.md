@@ -1,5 +1,9 @@
 # Change log
 
+**0.2.0**
+- Remove 'disablePlugin', 'reEnablePlugin', 'unplug' and 'authorizePluginToTransfer' from `CrunaManager` and replaced with a more efficient `changePluginStatus'
+- Introducing breaking changes, recalculating the bytecode for the `CrunaGuardian`, that is changing the Canonical reference. 
+
 **0.1.9**
 - Minor change in `CrunaProtectedNFT`
 

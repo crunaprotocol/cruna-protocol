@@ -34,7 +34,7 @@ contract CrunaGuardian is ICrunaGuardian, IVersioned, FlexiTimelockController {
     bool trusted,
     uint256 requires
   ) external onlyThroughTimeController {
-    if (requires == 0) {
+    if (requires == 0 || implementation == address(0)) {
       revert InvalidArguments();
     }
     if (trusted) {

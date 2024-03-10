@@ -21,6 +21,6 @@ library Canonical {
   }
 
   function crunaGuardian() internal pure returns (ICrunaGuardian) {
-    return ICrunaGuardian(0x8BDf0417F7Bbfd38Db30A5654BB2F827AD9e8EE2);
+    return ICrunaGuardian(0x4d43686bABf384FFF861E8e4E3b652763a8063E5);
   }
 }
