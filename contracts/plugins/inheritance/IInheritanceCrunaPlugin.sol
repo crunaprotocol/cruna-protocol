@@ -17,7 +17,7 @@ interface IInheritanceCrunaPlugin {
 
   struct Votes {
     address[] nominations;
-    mapping(address => address) favorites;
+    mapping(address voter => address beneficiary) favorites;
   }
 
   event SentinelUpdated(address indexed owner, address indexed sentinel, bool status);

@@ -8,7 +8,7 @@ pragma solidity ^0.8.20;
 // @dev This contract manages actors
 contract Actor {
   uint256 private constant _MAX_ACTORS = 16;
-  mapping(bytes4 => address[]) internal _actors;
+  mapping(bytes4 role => address[] actors) internal _actors;
 
   error ZeroAddress();
   error ActorAlreadyAdded();
@@ -28,7 +28,7 @@ contract Actor {
         return i;
       }
       unchecked {
-        i++;
+        ++i;
       }
     }
     return _MAX_ACTORS;
@@ -50,9 +50,11 @@ contract Actor {
 
   function _removeActorByIndex(uint256 i, bytes4 role) internal virtual {
     address[] storage actors = _actors[role];
-    if (actors.length == 0 || i + 1 > actors.length) revert ActorNotFound();
-    if (i + 1 != actors.length) {
-      actors[i] = actors[actors.length - 1];
+    unchecked {
+      if (actors.length == 0 || i + 1 > actors.length) revert ActorNotFound();
+      if (i != actors.length - 1) {
+        actors[i] = actors[actors.length - 1];
+      }
     }
     actors.pop();
   }

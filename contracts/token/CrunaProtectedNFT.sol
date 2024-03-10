@@ -42,7 +42,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
    * @dev internal variable used to make protected NFT temporarily transferable.
    * It is set before the transfer and removed after it, during the manager transfer process.
    */
-  mapping(uint256 => bool) internal _approvedTransfers;
+  mapping(uint256 tokenId => bool approved) internal _approvedTransfers;
 
   /**
    * @dev This modifier will only allow the manager of a certain tokenId to call the function.
@@ -218,7 +218,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
         (_managerHistory[i].lastTokenId == 0 || _tokenId <= _managerHistory[i].lastTokenId)
       ) return _managerHistory[i].managerAddress;
       unchecked {
-        i++;
+        ++i;
       }
     }
     // should never happen
@@ -278,7 +278,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     for (uint256 i; i < amount; ) {
       unchecked {
         _mintAndActivate(to, tokenId++);
-        i++;
+        ++i;
       }
     }
     _nftConf.nextTokenId = uint112(tokenId);

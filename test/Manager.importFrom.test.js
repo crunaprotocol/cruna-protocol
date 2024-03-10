@@ -139,7 +139,7 @@ describe("CrunaManager : importProtectorsAndSafeRecipientsFrom ", function () {
     const manager3 = await ethers.getContractAt("CrunaManager", managerAddress3);
 
     await expect(manager3.connect(bob).importProtectorsAndSafeRecipientsFrom(tokenId3)).revertedWith(
-      "CannotimportProtectorsAndSafeRecipientsFromYourself",
+      "CannotImportProtectorsAndSafeRecipientsFromYourself",
     );
 
     await expect(manager3.connect(bob).importProtectorsAndSafeRecipientsFrom(tokenId))

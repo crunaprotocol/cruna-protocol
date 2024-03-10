@@ -11,23 +11,41 @@ import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
 // import {console} from "hardhat/console.sol";
 
 interface ICrunaManager is ITokenLinkedContract, IVersioned {
-  enum PluginStatus {
-    Active,
-    Inactive
-  }
-
-  struct CrunaPlugin {
+  /// @dev A struct to keep info about plugged and unplugged plugins
+  /// @param proxyAddress The address of the first implementation of the plugin
+  /// @param salt The salt used during the deployment of the plugin. It allows to
+  ///  have multiple instances of the same plugin
+  /// @param timeLock The time lock for when a plugin is temporarily unauthorized from making transfers
+  /// @param canManageTransfer True if the plugin can manage transfers
+  /// @param canBeReset True if the plugin requires a reset when the vault is transferred
+  /// @param active True if the plugin is active
+  /// @param isERC6551Account True if the plugin is an ERC6551 account
+  /// @param trusted True if the plugin is trusted
+  /// @param banned True if the plugin is banned during the unplug process
+  /// @param unplugged True if the plugin has been unplugged
+  struct PluginConfig {
     address proxyAddress;
+    bytes4 salt;
+    uint32 timeLock;
     bool canManageTransfer;
     bool canBeReset;
     bool active;
     bool isERC6551Account;
     bool trusted;
-    bytes4 salt;
+    bool banned;
+    bool unplugged;
   }
 
+  /// @dev The plugin element
+  /// @param nameId The bytes4 of the hash of the name of the plugin
+  /// All plugins' names must be unique, as well as their bytes4 Ids
+  /// An official registry will be set up to avoid collisions when plugins
+  /// development will be more active. Using the proxy address as a key is
+  /// not viable because plugins can be upgraded and the address can change.
+  /// @param salt The salt of the plugin
+  /// @param active True if the plugin is active
   struct PluginElement {
-    string name;
+    bytes4 nameId;
     bytes4 salt;
     // redundant to optimize gas usage
     bool active;
@@ -40,7 +58,8 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
     ReEnable,
     Authorize,
     DeAuthorize,
-    UnplugForever
+    UnplugForever,
+    Reset
   }
 
   event EmitLockedEventFailed();
@@ -74,9 +93,10 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   error CannotBeYourself();
   error NotTheAuthorizedPlugin();
   error PluginNumberOverflow();
-  error PluginAsBeenMarkedAsNotPluggable();
+  error PluginHasBeenMarkedAsNotPluggable();
   error PluginAlreadyPlugged();
   error PluginNotFound();
+  error InconsistentProxyAddresses();
   error PluginNotFoundOrDisabled();
   error PluginNotDisabled();
   error PluginAlreadyDisabled();
@@ -91,7 +111,7 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   error UntrustedImplementationsNotAllowedToMakeTransfers();
   error StillUntrusted();
   error PluginAlreadyTrusted();
-  error CannotimportProtectorsAndSafeRecipientsFromYourself();
+  error CannotImportProtectorsAndSafeRecipientsFromYourself();
   error NotTheSameOwner();
   error SafeRecipientsAlreadySet();
   error NothingToImport();
@@ -216,5 +236,5 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
 
   function isPluginActive(string memory name, bytes4 salt) external view returns (bool);
 
-  function listPlugins(bool active) external view returns (string[] memory);
+  function listPluginsKeys(bool active) external view returns (bytes8[] memory);
 }

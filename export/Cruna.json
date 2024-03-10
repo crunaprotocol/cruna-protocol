@@ -17,7 +17,7 @@
     },
     {
       "inputs": [],
-      "name": "CannotimportProtectorsAndSafeRecipientsFromYourself",
+      "name": "CannotImportProtectorsAndSafeRecipientsFromYourself",
       "type": "error"
     },
     {
@@ -50,6 +50,11 @@
     {
       "inputs": [],
       "name": "Forbidden",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InconsistentProxyAddresses",
       "type": "error"
     },
     {
@@ -154,7 +159,7 @@
     },
     {
       "inputs": [],
-      "name": "PluginAsBeenMarkedAsNotPluggable",
+      "name": "PluginHasBeenMarkedAsNotPluggable",
       "type": "error"
     },
     {
@@ -469,21 +474,15 @@
       "type": "event"
     },
     {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "index",
-          "type": "uint256"
-        }
-      ],
+      "inputs": [],
       "name": "allPlugins",
       "outputs": [
         {
           "components": [
             {
-              "internalType": "string",
-              "name": "name",
-              "type": "string"
+              "internalType": "bytes4",
+              "name": "nameId",
+              "type": "bytes4"
             },
             {
               "internalType": "bytes4",
@@ -496,9 +495,9 @@
               "type": "bool"
             }
           ],
-          "internalType": "struct ICrunaManager.PluginElement",
+          "internalType": "struct ICrunaManager.PluginElement[]",
           "name": "",
-          "type": "tuple"
+          "type": "tuple[]"
         }
       ],
       "stateMutability": "view",
@@ -820,12 +819,12 @@
           "type": "bool"
         }
       ],
-      "name": "listPlugins",
+      "name": "listPluginsKeys",
       "outputs": [
         {
-          "internalType": "string[]",
+          "internalType": "bytes8[]",
           "name": "",
-          "type": "string[]"
+          "type": "bytes8[]"
         }
       ],
       "stateMutability": "view",
@@ -1024,27 +1023,34 @@
     {
       "inputs": [
         {
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "salt",
-          "type": "bytes4"
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
         }
       ],
-      "name": "pluginIndex",
+      "name": "pluginByIndex",
       "outputs": [
         {
-          "internalType": "bool",
+          "components": [
+            {
+              "internalType": "bytes4",
+              "name": "nameId",
+              "type": "bytes4"
+            },
+            {
+              "internalType": "bytes4",
+              "name": "salt",
+              "type": "bytes4"
+            },
+            {
+              "internalType": "bool",
+              "name": "active",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct ICrunaManager.PluginElement",
           "name": "",
-          "type": "bool"
-        },
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
+          "type": "tuple"
         }
       ],
       "stateMutability": "view",
@@ -1058,7 +1064,7 @@
           "type": "bytes8"
         }
       ],
-      "name": "pluginsById",
+      "name": "pluginByKey",
       "outputs": [
         {
           "components": [
@@ -1066,6 +1072,16 @@
               "internalType": "address",
               "name": "proxyAddress",
               "type": "address"
+            },
+            {
+              "internalType": "bytes4",
+              "name": "salt",
+              "type": "bytes4"
+            },
+            {
+              "internalType": "uint32",
+              "name": "timeLock",
+              "type": "uint32"
             },
             {
               "internalType": "bool",
@@ -1093,14 +1109,48 @@
               "type": "bool"
             },
             {
-              "internalType": "bytes4",
-              "name": "salt",
-              "type": "bytes4"
+              "internalType": "bool",
+              "name": "banned",
+              "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "unplugged",
+              "type": "bool"
             }
           ],
-          "internalType": "struct ICrunaManager.CrunaPlugin",
+          "internalType": "struct ICrunaManager.PluginConfig",
           "name": "",
           "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes4",
+          "name": "salt",
+          "type": "bytes4"
+        }
+      ],
+      "name": "pluginIndex",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -1371,25 +1421,6 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "bytes8",
-          "name": "key",
-          "type": "bytes8"
-        }
-      ],
-      "name": "timeLocks",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [],
       "name": "token",
       "outputs": [
@@ -1657,11 +1688,6 @@
     {
       "inputs": [],
       "name": "BeneficiaryNotSet",
-      "type": "error"
-    },
-    {
-      "inputs": [],
-      "name": "CannotReceiveFunds",
       "type": "error"
     },
     {
