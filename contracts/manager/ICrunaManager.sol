@@ -11,11 +11,18 @@ import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
 // import {console} from "hardhat/console.sol";
 
 interface ICrunaManager is ITokenLinkedContract, IVersioned {
-  enum PluginStatus {
-    Active,
-    Inactive
-  }
-
+  /// @dev A struct to keep info about plugged and unplugged plugins
+  /// @param proxyAddress The address of the first implementation of the plugin
+  /// @param salt The salt used during the deployment of the plugin. It allows to
+  ///  have multiple instances of the same plugin
+  /// @param timeLock The time lock for when a plugin is temporarily unauthorized from making transfers
+  /// @param canManageTransfer True if the plugin can manage transfers
+  /// @param canBeReset True if the plugin requires a reset when the vault is transferred
+  /// @param active True if the plugin is active
+  /// @param isERC6551Account True if the plugin is an ERC6551 account
+  /// @param trusted True if the plugin is trusted
+  /// @param banned True if the plugin is banned during the unplug process
+  /// @param unplugged True if the plugin has been unplugged
   struct CrunaPlugin {
     address proxyAddress;
     bytes4 salt;
@@ -29,7 +36,14 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
     bool unplugged;
   }
 
+  /// @dev The plugin element
+  /// @param nameId The bytes4 of the hash of the name of the plugin
+  /// @param salt The salt of the plugin
+  /// @param active True if the plugin is active
   struct PluginElement {
+    // All plugins' names must be unique, as well as their bytes4 Ids
+    // An official registry will be set up to avoid collisions when plugins
+    // development will be more active
     bytes4 nameId;
     bytes4 salt;
     // redundant to optimize gas usage

@@ -614,13 +614,6 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     return (false, 0);
   }
 
-  function _pluginStatus(string memory name, bytes4 salt) internal view virtual returns (PluginStatus) {
-    (bool plugged_, uint256 i) = _pluginIndex(_stringToBytes4(name), salt);
-    if (!plugged_) revert PluginNotFound();
-    if (_allPlugins[i].active) return PluginStatus.Active;
-    return PluginStatus.Inactive;
-  }
-
   function _preValidateAndCheckSignature(
     bytes4 selector,
     address actor,
