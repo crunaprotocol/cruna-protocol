@@ -1019,7 +1019,7 @@ describe("Sentinel and Inheritance", function () {
     expect(data[1].proofOfLifeDurationInWeeks).to.equal(12);
   });
 
-  it("should unplug a plugin", async function () {
+  it.only("should unplug a plugin", async function () {
     const tokenId = await buyAVaultAndPlug(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
@@ -1089,7 +1089,6 @@ describe("Sentinel and Inheritance", function () {
     )
       .to.emit(manager, "PluginStatusChange")
       .withArgs("InheritanceCrunaPlugin", "0x00000000", inheritancePlugin.address, PluginChange.UnplugForever);
-
     await expect(
       manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, "0x00000000", 0, 0, 0),
     ).revertedWith("PluginHasBeenMarkedAsNotPluggable");

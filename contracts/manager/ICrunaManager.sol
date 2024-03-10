@@ -18,12 +18,13 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
 
   struct CrunaPlugin {
     address proxyAddress;
+    bytes4 salt;
+    uint32 timeLock;
     bool canManageTransfer;
     bool canBeReset;
     bool active;
     bool isERC6551Account;
     bool trusted;
-    bytes4 salt;
   }
 
   struct PluginElement {
