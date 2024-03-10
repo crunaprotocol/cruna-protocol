@@ -233,19 +233,19 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   function _quorumReached() internal view virtual returns (address) {
     address[] memory sentinels = _getActors(_SENTINEL);
     uint256 len = _votes.nominations.length;
-    for (uint256 k; k < len; ) {
+    for (uint256 i; i < len; ) {
       unchecked {
         uint256 votes;
         uint256 len2 = sentinels.length;
-        for (uint256 i; i < len2; i++) {
-          if (_votes.favorites[sentinels[i]] == _votes.nominations[k]) {
+        for (uint256 j; j < len2; j++) {
+          if (_votes.favorites[sentinels[j]] == _votes.nominations[i]) {
             votes++;
             if (votes == _inheritanceConf.quorum) {
-              return _votes.nominations[k];
+              return _votes.nominations[i];
             }
           }
         }
-        k++;
+        i++;
       }
     }
     return address(0);

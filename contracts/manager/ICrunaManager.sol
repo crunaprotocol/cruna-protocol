@@ -38,12 +38,13 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
 
   /// @dev The plugin element
   /// @param nameId The bytes4 of the hash of the name of the plugin
+  /// All plugins' names must be unique, as well as their bytes4 Ids
+  /// An official registry will be set up to avoid collisions when plugins
+  /// development will be more active. Using the proxy address as a key is
+  /// not viable because plugins can be upgraded and the address can change.
   /// @param salt The salt of the plugin
   /// @param active True if the plugin is active
   struct PluginElement {
-    // All plugins' names must be unique, as well as their bytes4 Ids
-    // An official registry will be set up to avoid collisions when plugins
-    // development will be more active
     bytes4 nameId;
     bytes4 salt;
     // redundant to optimize gas usage
@@ -95,6 +96,7 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   error PluginHasBeenMarkedAsNotPluggable();
   error PluginAlreadyPlugged();
   error PluginNotFound();
+  error InconsistentProxyAddresses();
   error PluginNotFoundOrDisabled();
   error PluginNotDisabled();
   error PluginAlreadyDisabled();

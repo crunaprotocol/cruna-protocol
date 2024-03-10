@@ -72,7 +72,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   }
 
   function locked() external view override returns (bool) {
-    return _actors[ManagerConstants.protectorId()].length > 0;
+    return _actors[ManagerConstants.protectorId()].length != 0;
   }
 
   function version() external pure virtual override returns (uint256) {
@@ -237,9 +237,9 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     if (plugin_.isERC6551Account() != isERC6551Account) revert InvalidAccountStatus();
     plugin_.init();
     _allPlugins.push(PluginElement({active: true, salt: salt, nameId: nameId_}));
-    if (_pluginByKey[_key].proxyAddress != proxyAddress_) {
-      // we set the properties one property at time because if the plugin has been unplugged, the
-      // properties already exists
+    if (_pluginByKey[_key].unplugged) {
+      if (_pluginByKey[_key].proxyAddress != proxyAddress_) revert InconsistentProxyAddresses();
+    } else {
       _pluginByKey[_key].proxyAddress = proxyAddress_;
       _pluginByKey[_key].salt = salt;
     }

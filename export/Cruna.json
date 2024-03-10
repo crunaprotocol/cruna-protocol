@@ -54,6 +54,11 @@
     },
     {
       "inputs": [],
+      "name": "InconsistentProxyAddresses",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "IndexOutOfBounds",
       "type": "error"
     },
