@@ -475,11 +475,6 @@
         {
           "components": [
             {
-              "internalType": "string",
-              "name": "name",
-              "type": "string"
-            },
-            {
               "internalType": "bytes4",
               "name": "nameId",
               "type": "bytes4"
@@ -1032,11 +1027,6 @@
       "outputs": [
         {
           "components": [
-            {
-              "internalType": "string",
-              "name": "name",
-              "type": "string"
-            },
             {
               "internalType": "bytes4",
               "name": "nameId",

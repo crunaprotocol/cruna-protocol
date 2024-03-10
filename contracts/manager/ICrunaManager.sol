@@ -30,7 +30,6 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   }
 
   struct PluginElement {
-    string name;
     bytes4 nameId;
     bytes4 salt;
     // redundant to optimize gas usage

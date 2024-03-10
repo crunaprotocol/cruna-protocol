@@ -236,7 +236,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     if (plugin_.nameId() != nameId_) revert InvalidImplementation();
     if (plugin_.isERC6551Account() != isERC6551Account) revert InvalidAccountStatus();
     plugin_.init();
-    _allPlugins.push(PluginElement({name: name, active: true, salt: salt, nameId: nameId_}));
+    _allPlugins.push(PluginElement({active: true, salt: salt, nameId: nameId_}));
     if (_pluginByKey[_key].proxyAddress != proxyAddress_) {
       // we set the properties one property at time because if the plugin has been unplugged, the
       // properties already exists
@@ -263,7 +263,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     bytes calldata signature
   ) external virtual override nonReentrant onlyTokenOwner {
     bytes4 nameId_ = _stringToBytes4(name);
-    (bool plugged_, uint256 i) = _pluginIndexById(nameId_, salt);
+    (bool plugged_, uint256 i) = _pluginIndex(nameId_, salt);
     if (!plugged_) revert PluginNotFound();
     _preValidateAndCheckSignature(
       this.changePluginStatus.selector,
@@ -324,7 +324,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   }
 
   function pluginIndex(string memory name, bytes4 salt) external view virtual returns (bool, uint256) {
-    return _pluginIndex(name, salt);
+    return _pluginIndex(_stringToBytes4(name), salt);
   }
 
   function isPluginActive(string memory name, bytes4 salt) external view virtual returns (bool) {
@@ -586,7 +586,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   function _getKeyAndSalt(bytes4 pluginNameId) internal view returns (bytes8, bytes4) {
     uint256 len = _allPlugins.length;
     for (uint256 i; i < len; ) {
-      bytes4 nameId_ = _stringToBytes4(_allPlugins[i].name);
+      bytes4 nameId_ = _allPlugins[i].nameId;
       if (nameId_ == pluginNameId) {
         bytes8 key_ = _combineBytes4(nameId_, _allPlugins[i].salt);
         if (_pluginAddress(pluginNameId, _allPlugins[i].salt) == _msgSender()) {
@@ -600,24 +600,10 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     return (bytes8(0), bytes4(0));
   }
 
-  function _pluginIndex(string memory name, bytes4 salt) internal view virtual returns (bool, uint256) {
+  function _pluginIndex(bytes4 nameId_, bytes4 salt) internal view virtual returns (bool, uint256) {
     uint256 len = _allPlugins.length;
     for (uint256 i; i < len; ) {
-      if (_hashString(name) == _hashString(_allPlugins[i].name))
-        if (_allPlugins[i].salt == salt) {
-          return (true, i);
-        }
-      unchecked {
-        i++;
-      }
-    }
-    return (false, 0);
-  }
-
-  function _pluginIndexById(bytes4 nameId_, bytes4 salt) internal view virtual returns (bool, uint256) {
-    uint256 len = _allPlugins.length;
-    for (uint256 i; i < len; ) {
-      if (nameId_ == _stringToBytes4(_allPlugins[i].name))
+      if (nameId_ == _allPlugins[i].nameId)
         if (_allPlugins[i].salt == salt) {
           return (true, i);
         }
@@ -629,7 +615,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   }
 
   function _pluginStatus(string memory name, bytes4 salt) internal view virtual returns (PluginStatus) {
-    (bool plugged_, uint256 i) = _pluginIndex(name, salt);
+    (bool plugged_, uint256 i) = _pluginIndex(_stringToBytes4(name), salt);
     if (!plugged_) revert PluginNotFound();
     if (_allPlugins[i].active) return PluginStatus.Active;
     return PluginStatus.Inactive;
@@ -692,7 +678,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     // disable all plugins
     uint256 len = _allPlugins.length;
     for (uint256 i; i < len; ) {
-      bytes4 _nameId_ = _stringToBytes4(_allPlugins[i].name);
+      bytes4 _nameId_ = _allPlugins[i].nameId;
       if (_nameId_ != nameId_ || _allPlugins[i].salt != salt) {
         if (_pluginByKey[_combineBytes4(_nameId_, _allPlugins[i].salt)].canBeReset)
           _resetPluginOnTransfer(_nameId_, _allPlugins[i].salt);

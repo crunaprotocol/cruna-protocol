@@ -164,7 +164,7 @@ describe("Sentinel and Inheritance", function () {
     }
 
     await expect((await manager.pluginByKey(PLUGIN_ID + "00000000")).proxyAddress).not.equal(addr0);
-    await expect((await manager.pluginByIndex(0)).name).equal("InheritanceCrunaPlugin");
+    await expect((await manager.pluginByIndex(0)).nameId).equal(PLUGIN_ID);
     await expect((await manager.pluginByIndex(0)).active).to.be.true;
     const count = await manager.countPlugins();
     await expect(count[0]).equal(1);
