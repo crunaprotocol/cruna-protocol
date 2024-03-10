@@ -85,17 +85,21 @@ contract VaultFactory is
     } else if (stableCoins[stableCoin]) {
       delete stableCoins[stableCoin];
       // no risk of going out of cash because the factory will support just a couple of stable coins
-      for (uint256 i; i < _stableCoins.length; ) {
+      uint256 len = _stableCoins.length;
+      for (uint256 i; i < len; ) {
         if (_stableCoins[i] == stableCoin) {
-          _stableCoins[i] = _stableCoins[_stableCoins.length - 1];
+          // since if found the stableCoin, len is > 0
+          if (i != len - 1) {
+            _stableCoins[i] = _stableCoins[len - 1];
+          }
           _stableCoins.pop();
+          emit StableCoinSet(stableCoin, active);
           break;
         }
         unchecked {
           i++;
         }
       }
-      emit StableCoinSet(stableCoin, active);
     }
   }
 

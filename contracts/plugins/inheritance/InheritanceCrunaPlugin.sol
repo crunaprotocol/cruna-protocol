@@ -268,7 +268,10 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     for (uint256 i; i < len; ) {
       unchecked {
         if (beneficiary == _votes.nominations[i]) {
-          _votes.nominations[i] = _votes.nominations[_votes.nominations.length - 1];
+          // len is > 0
+          if (i != len - 1) {
+            _votes.nominations[i] = _votes.nominations[len - 1];
+          }
           _votes.nominations.pop();
           break;
         }

@@ -464,7 +464,10 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
         _resetPlugin(nameId_, salt);
       }
     }
-    _allPlugins[i] = _allPlugins[_allPlugins.length - 1];
+    // _allPlugins.length is > 0 because we are unplugging an existing plugin
+    if (i != _allPlugins.length - 1) {
+      _allPlugins[i] = _allPlugins[_allPlugins.length - 1];
+    }
     _allPlugins.pop();
     delete _pluginsById[_key];
   }
