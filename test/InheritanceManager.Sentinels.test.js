@@ -25,7 +25,7 @@ const {
   setFakeCanonicalIfCoverage,
 } = require("./helpers");
 
-describe.only("Sentinel and Inheritance", function () {
+describe("Sentinel and Inheritance", function () {
   let crunaRegistry, proxy, managerImpl, guardian, erc6551Registry;
 
   let vault, inheritancePluginProxy, inheritancePluginImpl, validatorMock;

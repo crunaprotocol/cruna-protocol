@@ -275,19 +275,18 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     );
     bytes8 _key = _combineBytes4(nameId_, salt);
     if (change == PluginChange.Disable) {
+      emit PluginStatusChange(name, salt, _pluginAddress(nameId_, salt), uint256(change));
       _disablePlugin(i, _key);
     } else if (change == PluginChange.ReEnable) {
+      emit PluginStatusChange(name, salt, _pluginAddress(nameId_, salt), uint256(change));
       _reEnablePlugin(i, _key);
     } else if (change == PluginChange.Authorize || change == PluginChange.DeAuthorize) {
-      _authorizePluginToTransfer(nameId_, salt, _key, change, timeLock_);
       emit PluginStatusChange(name, salt, _pluginAddress(nameId_, salt), timeLock_ * 1e3 + uint256(change));
-      return;
+      _authorizePluginToTransfer(nameId_, salt, _key, change, timeLock_);
     } else if (change == PluginChange.Unplug || change == PluginChange.UnplugForever) {
       emit PluginStatusChange(name, salt, _pluginAddress(nameId_, salt), uint256(change));
       _unplugPlugin(i, nameId_, salt, _key, change);
-      return;
     } else revert UnsupportedPluginChange();
-    emit PluginStatusChange(name, salt, _pluginAddress(nameId_, salt), uint256(change));
   }
 
   // To set as trusted a plugin that initially was not trusted
