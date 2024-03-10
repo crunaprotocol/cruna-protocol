@@ -239,17 +239,19 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     _allPlugins.push(PluginElement({active: true, salt: salt, nameId: nameId_}));
     if (_pluginByKey[_key].unplugged) {
       if (_pluginByKey[_key].proxyAddress != proxyAddress_) revert InconsistentProxyAddresses();
-    } else {
-      _pluginByKey[_key].proxyAddress = proxyAddress_;
-      _pluginByKey[_key].salt = salt;
     }
-    _pluginByKey[_key].canManageTransfer = canManageTransfer;
-    _pluginByKey[_key].canBeReset = plugin_.requiresResetOnTransfer();
-    _pluginByKey[_key].active = true;
-    _pluginByKey[_key].trusted = requires != 0;
-    _pluginByKey[_key].isERC6551Account = isERC6551Account;
-    // if previously unplugged, the flag is removed
-    delete _pluginByKey[_key].unplugged;
+    _pluginByKey[_key] = CrunaPlugin({
+      proxyAddress: proxyAddress_,
+      salt: salt,
+      timeLock: 0,
+      canManageTransfer: canManageTransfer,
+      canBeReset: plugin_.requiresResetOnTransfer(),
+      active: true,
+      isERC6551Account: isERC6551Account,
+      trusted: requires != 0,
+      banned: false,
+      unplugged: false
+    });
     emit PluginStatusChange(name, salt, pluginAddress_, uint256(PluginChange.Plug));
   }
 
