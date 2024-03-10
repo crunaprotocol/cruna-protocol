@@ -97,7 +97,7 @@ contract VaultFactory is
           break;
         }
         unchecked {
-          i++;
+          ++i;
         }
       }
     }
@@ -137,7 +137,7 @@ contract VaultFactory is
           revert ZeroAddress();
         }
         amount += amounts[i];
-        i++;
+        ++i;
       }
     }
     uint256 payment = finalPrice(stableCoin) * amount;
@@ -147,7 +147,7 @@ contract VaultFactory is
         vault.safeMintAndActivate(tos[i], amounts[i]);
       }
       unchecked {
-        i++;
+        ++i;
       }
     }
     // we manage only trusted stable coins, so no risk of reentrancy

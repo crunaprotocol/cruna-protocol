@@ -218,7 +218,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
         (_managerHistory[i].lastTokenId == 0 || _tokenId <= _managerHistory[i].lastTokenId)
       ) return _managerHistory[i].managerAddress;
       unchecked {
-        i++;
+        ++i;
       }
     }
     // should never happen
@@ -278,7 +278,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     for (uint256 i; i < amount; ) {
       unchecked {
         _mintAndActivate(to, tokenId++);
-        i++;
+        ++i;
       }
     }
     _nftConf.nextTokenId = uint112(tokenId);

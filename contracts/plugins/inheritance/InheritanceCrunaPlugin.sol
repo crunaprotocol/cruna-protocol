@@ -49,7 +49,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     for (uint256 i; i < len; ) {
       _setSentinel(sentinels[i], true, 0, 0, emptySignature);
       unchecked {
-        i++;
+        ++i;
       }
     }
   }
@@ -98,7 +98,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     for (uint256 i; i < len; ) {
       votes[i] = _votes.favorites[votes[i]];
       unchecked {
-        i++;
+        ++i;
       }
     }
     return votes;
@@ -245,7 +245,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
             }
           }
         }
-        i++;
+        ++i;
       }
     }
     return address(0);
@@ -258,7 +258,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
         return true;
       }
       unchecked {
-        i++;
+        ++i;
       }
     }
     return false;
@@ -276,7 +276,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
           _votes.nominations.pop();
           break;
         }
-        i++;
+        ++i;
       }
     }
   }
@@ -289,7 +289,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
       for (uint256 i; i < len; ) {
         delete _votes.favorites[_sentinels[i]];
         unchecked {
-          i++;
+          ++i;
         }
       }
     }

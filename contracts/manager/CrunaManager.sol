@@ -117,7 +117,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       if (otherProtectors[i] == _msgSender()) revert CannotBeYourself();
       _addActor(otherProtectors[i], ManagerConstants.protectorId());
       unchecked {
-        i++;
+        ++i;
       }
     }
     address[] memory otherSafeRecipients = otherManager.getSafeRecipients();
@@ -125,7 +125,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     for (uint256 i; i < len; ) {
       _addActor(otherSafeRecipients[i], ManagerConstants.safeRecipientId());
       unchecked {
-        i++;
+        ++i;
       }
     }
     emit ProtectorsAndSafeRecipientsImported(otherProtectors, otherSafeRecipients, otherTokenId);
@@ -347,7 +347,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
         _keys[i] = _combineBytes4(_allPlugins[i].nameId, _allPlugins[i].salt);
       }
       unchecked {
-        i++;
+        ++i;
       }
     }
     return _keys;
@@ -424,7 +424,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       unchecked {
         if (_allPlugins[i].active) active++;
         else disabled++;
-        i++;
+        ++i;
       }
     }
     return (active, disabled);
@@ -594,7 +594,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
         }
       }
       unchecked {
-        i++;
+        ++i;
       }
     }
     return (bytes8(0), bytes4(0));
@@ -608,7 +608,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
           return (true, i);
         }
       unchecked {
-        i++;
+        ++i;
       }
     }
     return (false, 0);
@@ -677,7 +677,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
           _resetPluginOnTransfer(_nameId_, _allPlugins[i].salt);
       }
       unchecked {
-        i++;
+        ++i;
       }
     }
     emit Reset();

@@ -28,7 +28,7 @@ contract Actor {
         return i;
       }
       unchecked {
-        i++;
+        ++i;
       }
     }
     return _MAX_ACTORS;
