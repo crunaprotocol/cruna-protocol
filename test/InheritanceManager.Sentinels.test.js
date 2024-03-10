@@ -48,6 +48,7 @@ describe("Sentinel and Inheritance", function () {
     Authorize: 4,
     DeAuthorize: 5,
     UnplugForever: 6,
+    Reset: 7,
   };
 
   before(async function () {
@@ -760,7 +761,9 @@ describe("Sentinel and Inheritance", function () {
       .changePluginStatus("InheritanceCrunaPlugin", "0x00000000", PluginChange.DeAuthorize, 20 * days, 0, 0, 0);
 
     const ts = await getTimestamp();
-    expect(await manager.timeLocks(bytes4(keccak256("InheritanceCrunaPlugin")) + "00000000")).to.equal(ts + 20 * days);
+    expect((await manager.pluginsById(bytes4(keccak256("InheritanceCrunaPlugin")) + "00000000")).timeLock).to.equal(
+      ts + 20 * days,
+    );
 
     await increaseBlockTimestampBy(10 * days);
 
@@ -959,7 +962,7 @@ describe("Sentinel and Inheritance", function () {
     expect(data[1].extendedProofOfLife).to.equal(0);
   });
 
-  it("should disable and reset a plugin", async function () {
+  it("should disable a plugin", async function () {
     const tokenId = await buyAVaultAndPlug(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
@@ -1019,7 +1022,7 @@ describe("Sentinel and Inheritance", function () {
     expect(data[1].proofOfLifeDurationInWeeks).to.equal(12);
   });
 
-  it.only("should unplug a plugin", async function () {
+  it("should unplug a plugin", async function () {
     const tokenId = await buyAVaultAndPlug(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
@@ -1092,6 +1095,56 @@ describe("Sentinel and Inheritance", function () {
     await expect(
       manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, "0x00000000", 0, 0, 0),
     ).revertedWith("PluginHasBeenMarkedAsNotPluggable");
+  });
+
+  it("should reset a plugin", async function () {
+    const tokenId = await buyAVaultAndPlug(bob);
+    const managerAddress = await vault.managerOf(tokenId);
+    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+
+    const nameId = bytes4(keccak256("InheritanceCrunaPlugin"));
+    const inheritancePluginAddress = await manager.plugin(nameId, "0x00000000");
+
+    const inheritancePlugin = await ethers.getContractAt("InheritanceCrunaPlugin", inheritancePluginAddress);
+
+    await inheritancePlugin
+      .connect(bob)
+      .setSentinels([alice.address, fred.address, otto.address, mark.address, jerry.address], 0);
+
+    let data = await inheritancePlugin.getSentinelsAndInheritanceData();
+    expect(data[0].length).to.equal(5);
+    expect(data[0][0]).to.equal(alice.address);
+    expect(data[0][1]).to.equal(fred.address);
+    expect(data[0][2]).to.equal(otto.address);
+    expect(data[0][3]).to.equal(mark.address);
+    expect(data[0][4]).to.equal(jerry.address);
+    expect(data[1].quorum).to.equal(0);
+    expect(data[1].proofOfLifeDurationInWeeks).to.equal(0);
+    expect(data[1].lastProofOfLife).to.equal(0);
+    expect(data[1].beneficiary).to.equal(addr0);
+    expect(data[1].extendedProofOfLife).to.equal(0);
+
+    await expect(inheritancePlugin.connect(bob).configureInheritance(3, 12, 4, beneficiary1.address, 0, 0, 0))
+      .to.emit(inheritancePlugin, "InheritanceConfigured")
+      .withArgs(bob.address, 3, 12, 4, beneficiary1.address);
+
+    let lastTs = await getTimestamp();
+
+    data = await inheritancePlugin.getSentinelsAndInheritanceData();
+    expect(data[1].quorum).to.equal(3);
+    expect(data[1].proofOfLifeDurationInWeeks).to.equal(12);
+    expect(data[1].lastProofOfLife).to.equal(lastTs);
+
+    await expect(
+      manager.connect(bob).changePluginStatus("InheritanceCrunaPlugin", "0x00000000", PluginChange.Reset, 0, 0, 0, 0),
+    )
+      .to.emit(manager, "PluginStatusChange")
+      .withArgs("InheritanceCrunaPlugin", "0x00000000", inheritancePlugin.address, PluginChange.Reset);
+
+    data = await inheritancePlugin.getSentinelsAndInheritanceData();
+    expect(data[0].length).to.equal(0);
+    expect(data[1].quorum).to.equal(0);
+    expect(data[1].proofOfLifeDurationInWeeks).to.equal(0);
   });
 
   it("should re-enable a plugin", async function () {

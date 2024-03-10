@@ -1101,6 +1101,16 @@
               "internalType": "bool",
               "name": "trusted",
               "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "banned",
+              "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "unplugged",
+              "type": "bool"
             }
           ],
           "internalType": "struct ICrunaManager.CrunaPlugin",

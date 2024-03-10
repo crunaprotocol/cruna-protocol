@@ -23,7 +23,6 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
 
   PluginElement[] private _allPlugins;
   mapping(bytes8 => CrunaPlugin) private _pluginsById;
-  mapping(bytes8 => bool) private _banned;
 
   error IndexOutOfBounds();
 
@@ -191,7 +190,8 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       revert PluginNumberOverflow();
     }
     bytes4 nameId_ = _stringToBytes4(name);
-    if (_pluginsById[_combineBytes4(nameId_, salt)].proxyAddress != address(0)) revert PluginAlreadyPlugged();
+    bytes8 _key = _combineBytes4(nameId_, salt);
+    if (_pluginsById[_key].proxyAddress != address(0) && !_pluginsById[_key].unplugged) revert PluginAlreadyPlugged();
     uint256 requires = Canonical.crunaGuardian().trustedImplementation(nameId_, proxyAddress_);
     if (requires == 0)
       if (canManageTransfer)
@@ -210,8 +210,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       validFor,
       signature
     );
-    bytes8 _key = _combineBytes4(nameId_, salt);
-    if (_banned[_key]) revert PluginHasBeenMarkedAsNotPluggable();
+    if (_pluginsById[_key].banned) revert PluginHasBeenMarkedAsNotPluggable();
     _plug(name, proxyAddress_, canManageTransfer, isERC6551Account, nameId_, salt, _key, requires);
   }
 
@@ -233,16 +232,18 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     if (plugin_.isERC6551Account() != isERC6551Account) revert InvalidAccountStatus();
     plugin_.init();
     _allPlugins.push(PluginElement({name: name, active: true, salt: salt}));
-    _pluginsById[_key] = CrunaPlugin({
-      proxyAddress: proxyAddress_,
-      canManageTransfer: canManageTransfer,
-      canBeReset: plugin_.requiresResetOnTransfer(),
-      active: true,
-      trusted: requires != 0,
-      isERC6551Account: isERC6551Account,
-      salt: salt,
-      timeLock: 0
-    });
+    if (_pluginsById[_key].proxyAddress != proxyAddress_) {
+      // we set the properties one property at time because if the plugin has been unplugged, the
+      // properties already exists
+      _pluginsById[_key].proxyAddress = proxyAddress_;
+      _pluginsById[_key].salt = salt;
+    }
+    _pluginsById[_key].canManageTransfer = canManageTransfer;
+    _pluginsById[_key].canBeReset = plugin_.requiresResetOnTransfer();
+    _pluginsById[_key].active = true;
+    _pluginsById[_key].trusted = requires != 0;
+    _pluginsById[_key].isERC6551Account = isERC6551Account;
+    _pluginsById[_key].unplugged = false;
     emit PluginStatusChange(name, salt, pluginAddress_, uint256(PluginChange.Plug));
   }
 
@@ -269,18 +270,21 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     );
     bytes8 _key = _combineBytes4(nameId_, salt);
     if (change == PluginChange.Disable) {
-      emit PluginStatusChange(name, salt, _pluginAddress(nameId_, salt), uint256(change));
       _disablePlugin(i, _key);
     } else if (change == PluginChange.ReEnable) {
-      emit PluginStatusChange(name, salt, _pluginAddress(nameId_, salt), uint256(change));
       _reEnablePlugin(i, _key);
     } else if (change == PluginChange.Authorize || change == PluginChange.DeAuthorize) {
       emit PluginStatusChange(name, salt, _pluginAddress(nameId_, salt), timeLock_ * 1e3 + uint256(change));
       _authorizePluginToTransfer(nameId_, salt, _key, change, timeLock_);
+      return;
     } else if (change == PluginChange.Unplug || change == PluginChange.UnplugForever) {
       emit PluginStatusChange(name, salt, _pluginAddress(nameId_, salt), uint256(change));
       _unplugPlugin(i, nameId_, salt, _key, change);
+      return;
+    } else if (change == PluginChange.Reset) {
+      _resetPlugin(nameId_, salt);
     } else revert UnsupportedPluginChange();
+    emit PluginStatusChange(name, salt, _pluginAddress(nameId_, salt), uint256(change));
   }
 
   // To set as trusted a plugin that initially was not trusted
@@ -451,7 +455,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
         // The plugin is somehow hostile (for example cause reverts trying to reset it)
         // We mark it as no not pluggable, to avoid re-plugging it in the future.
         // Notice that the same type of plugin can still be plugged using a different salt.
-        _banned[_key] = true;
+        _pluginsById[_key].banned = true;
       } else {
         // resets the plugin
         _resetPlugin(nameId_, salt);
@@ -462,7 +466,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       _allPlugins[i] = _allPlugins[_allPlugins.length - 1];
     }
     _allPlugins.pop();
-    delete _pluginsById[_key];
+    _pluginsById[_key].unplugged = true;
   }
 
   // @dev Id removing the authorization, it blocks a plugin for a maximum of 30 days from transferring

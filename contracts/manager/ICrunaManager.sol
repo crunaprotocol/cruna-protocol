@@ -25,6 +25,8 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
     bool active;
     bool isERC6551Account;
     bool trusted;
+    bool banned;
+    bool unplugged;
   }
 
   struct PluginElement {
@@ -41,7 +43,8 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
     ReEnable,
     Authorize,
     DeAuthorize,
-    UnplugForever
+    UnplugForever,
+    Reset
   }
 
   event EmitLockedEventFailed();
