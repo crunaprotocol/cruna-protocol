@@ -243,7 +243,8 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     _pluginsById[_key].active = true;
     _pluginsById[_key].trusted = requires != 0;
     _pluginsById[_key].isERC6551Account = isERC6551Account;
-    _pluginsById[_key].unplugged = false;
+    // if previously unplugged, the flag is removed
+    delete _pluginsById[_key].unplugged;
     emit PluginStatusChange(name, salt, pluginAddress_, uint256(PluginChange.Plug));
   }
 
