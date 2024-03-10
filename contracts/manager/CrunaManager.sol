@@ -343,8 +343,9 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     bytes8[] memory _keys = new bytes8[](active ? actives : disabled);
     uint256 len = _allPlugins.length;
     for (uint256 i; i < len; ) {
-      if (_allPlugins[i].active == active) {
-        _keys[i] = _combineBytes4(_allPlugins[i].nameId, _allPlugins[i].salt);
+      PluginElement memory plugin_ = _allPlugins[i];
+      if (plugin_.active == active) {
+        _keys[i] = _combineBytes4(plugin_.nameId, plugin_.salt);
       }
       unchecked {
         ++i;
@@ -586,11 +587,12 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   function _getKeyAndSalt(bytes4 pluginNameId) internal view returns (bytes8, bytes4) {
     uint256 len = _allPlugins.length;
     for (uint256 i; i < len; ) {
-      bytes4 nameId_ = _allPlugins[i].nameId;
+      PluginElement memory plugin_ = _allPlugins[i];
+      bytes4 nameId_ = plugin_.nameId;
       if (nameId_ == pluginNameId) {
-        bytes8 key_ = _combineBytes4(nameId_, _allPlugins[i].salt);
-        if (_pluginAddress(pluginNameId, _allPlugins[i].salt) == _msgSender()) {
-          return (key_, _allPlugins[i].salt);
+        bytes8 key_ = _combineBytes4(nameId_, plugin_.salt);
+        if (_pluginAddress(pluginNameId, plugin_.salt) == _msgSender()) {
+          return (key_, plugin_.salt);
         }
       }
       unchecked {
@@ -671,10 +673,10 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     // disable all plugins
     uint256 len = _allPlugins.length;
     for (uint256 i; i < len; ) {
-      bytes4 _nameId_ = _allPlugins[i].nameId;
-      if (_nameId_ != nameId_ || _allPlugins[i].salt != salt) {
-        if (_pluginByKey[_combineBytes4(_nameId_, _allPlugins[i].salt)].canBeReset)
-          _resetPluginOnTransfer(_nameId_, _allPlugins[i].salt);
+      PluginElement memory plugin_ = _allPlugins[i];
+      bytes4 _nameId_ = plugin_.nameId;
+      if (_nameId_ != nameId_ || plugin_.salt != salt) {
+        if (_pluginByKey[_combineBytes4(_nameId_, plugin_.salt)].canBeReset) _resetPluginOnTransfer(_nameId_, plugin_.salt);
       }
       unchecked {
         ++i;
