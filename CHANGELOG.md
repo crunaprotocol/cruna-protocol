@@ -1,5 +1,8 @@
 # Change log
 
+**0.2.4**
+- Increase coverage
+
 **0.2.3**
 - Move 'isProtected' and 'isProtector' from 'InheritanceCrunaPlugin' to 'CrunaPluginBase'
 

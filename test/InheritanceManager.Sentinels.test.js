@@ -501,9 +501,10 @@ describe("Sentinel and Inheritance", function () {
     const impl = await deployContract("SomeInheritancePlugin");
     const proxy = await deployContract("InheritanceCrunaPluginProxy", impl.address);
 
-    await expect(
-      manager.connect(bob).plug("SomeInheritancePlugin", proxy.address, false, false, "0x00000000", 0, 0, 0),
-    ).to.emit(manager, "PluginStatusChange");
+    await expect(manager.connect(bob).plug("SomeInheritancePlugin", proxy.address, false, true, "0x00000000", 0, 0, 0)).to.emit(
+      manager,
+      "PluginStatusChange",
+    );
 
     await expect(inheritancePlugin.connect(beneficiary1).inherit())
       .to.emit(vault, "ManagedTransfer")

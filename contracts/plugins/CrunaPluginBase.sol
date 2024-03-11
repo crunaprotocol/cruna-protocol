@@ -13,7 +13,7 @@ import {Canonical} from "../libs/Canonical.sol";
 // import {console} from "hardhat/console.sol";
 
 abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
-  Conf _conf;
+  Conf internal _conf;
 
   modifier ifMustNotBeReset() {
     if (_conf.mustBeReset == 1) revert PluginMustBeReset();
@@ -33,11 +33,6 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
 
   function manager() external view virtual override returns (CrunaManager) {
     return _conf.manager;
-  }
-
-  function isERC6551Account() external pure virtual returns (bool) {
-    // override if an account
-    return false;
   }
 
   // override if function is not 1.0.0

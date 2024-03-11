@@ -10,8 +10,8 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 
 import {IManagedNFT, ICrunaProtectedNFT} from "./ICrunaProtectedNFT.sol";
-import {IERC6454} from "../interfaces/IERC6454.sol";
-import {IERC6982} from "../interfaces/IERC6982.sol";
+import {IERC6454} from "../erc/IERC6454.sol";
+import {IERC6982} from "../erc/IERC6982.sol";
 import {ICrunaManager} from "../manager/ICrunaManager.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 import {Canonical} from "../libs/Canonical.sol";
@@ -35,6 +35,8 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
   using Strings for uint256;
   using Address for address;
 
+  address internal immutable _SELF = address(this);
+
   NftConf private _nftConf;
   ManagerHistory[] private _managerHistory;
 
@@ -42,7 +44,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
    * @dev internal variable used to make protected NFT temporarily transferable.
    * It is set before the transfer and removed after it, during the manager transfer process.
    */
-  mapping(uint256 tokenId => bool approved) _approvedTransfers;
+  mapping(uint256 tokenId => bool approved) internal _approvedTransfers;
 
   /**
    * @dev This modifier will only allow the manager of a certain tokenId to call the function.
@@ -237,7 +239,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
         implementation,
         salt,
         block.chainid,
-        address(this),
+        _SELF,
         tokenId
       );
   }
@@ -304,8 +306,8 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     bool isERC6551Account
   ) internal virtual returns (address) {
     if (isERC6551Account) {
-      return Canonical.erc6551Registry().createAccount(implementation, salt, block.chainid, address(this), tokenId);
+      return Canonical.erc6551Registry().createAccount(implementation, salt, block.chainid, _SELF, tokenId);
     }
-    return Canonical.crunaRegistry().createTokenLinkedContract(implementation, salt, block.chainid, address(this), tokenId);
+    return Canonical.crunaRegistry().createTokenLinkedContract(implementation, salt, block.chainid, _SELF, tokenId);
   }
 }

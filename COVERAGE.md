@@ -11,11 +11,11 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   CrunaRegistry.sol                   |      100 |      100 |        0 |        0 
   ICrunaGuardian.sol                  |      100 |      100 |      100 |      100 
   ICrunaRegistry.sol                  |      100 |      100 |      100 |      100 
- interfaces/                          |      100 |      100 |      100 |      100 
+ erc/                                 |      100 |      100 |      100 |      100 
   IERC6454.sol                        |      100 |      100 |      100 |      100 
   IERC6982.sol                        |      100 |      100 |      100 |      100 
- libs/                                |    91.67 |      100 |    88.89 |    92.31 
-  Canonical.sol                       |    66.67 |      100 |    66.67 |    66.67 
+ libs/                                |      100 |      100 |      100 |      100 
+  Canonical.sol                       |      100 |      100 |      100 |      100 
   ExcessivelySafeCall.sol             |      100 |      100 |      100 |      100 
   ManagerConstants.sol                |      100 |      100 |      100 |      100 
  manager/                             |    97.89 |    71.84 |    98.46 |    96.32 
@@ -24,15 +24,15 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   CrunaManagerBase.sol                |      100 |    66.67 |      100 |      100 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   ICrunaManager.sol                   |      100 |      100 |      100 |      100 
- plugins/                             |       95 |    68.18 |    91.67 |    96.15 
-  CrunaPluginBase.sol                 |       95 |    68.18 |    91.67 |    96.15 
+ plugins/                             |    94.74 |    68.18 |    90.91 |       96 
+  CrunaPluginBase.sol                 |    94.74 |    68.18 |    90.91 |       96 
   ICrunaPlugin.sol                    |      100 |      100 |      100 |      100 
- plugins/inheritance/                 |    89.89 |    63.64 |    95.83 |     87.6 
+ plugins/inheritance/                 |       90 |    63.64 |       96 |     87.7 
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
-  InheritanceCrunaPlugin.sol          |    89.89 |    63.64 |    95.65 |     87.6 
+  InheritanceCrunaPlugin.sol          |       90 |    63.64 |    95.83 |     87.7 
   InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
- token/                               |    97.26 |    64.29 |      100 |    97.59 
-  CrunaProtectedNFT.sol               |    97.06 |     62.9 |      100 |    97.47 
+ token/                               |    98.63 |    65.71 |      100 |     98.8 
+  CrunaProtectedNFT.sol               |    98.53 |    64.52 |      100 |    98.73 
   CrunaProtectedNFTOwnable.sol        |      100 |       50 |      100 |      100 
   CrunaProtectedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaProtectedNFT.sol              |      100 |      100 |      100 |      100 
@@ -50,6 +50,6 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   SignatureValidator.sol              |      100 |       90 |      100 |      100 
   TokenLinkedContract.sol             |       90 |       50 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    95.93 |    68.24 |    96.63 |    94.22 
+All files                             |    96.34 |    68.47 |    97.19 |    94.56 
 --------------------------------------|----------|----------|----------|----------
 ```

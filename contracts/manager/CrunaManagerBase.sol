@@ -8,13 +8,9 @@ import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 import {ICrunaManager} from "./ICrunaManager.sol";
 import {CommonBase} from "../utils/CommonBase.sol";
 import {Canonical} from "../libs/Canonical.sol";
+import {INamedAndVersioned} from "../utils/INamedAndVersioned.sol";
 
 // import {console} from "hardhat/console.sol";
-
-interface INamedAndVersioned {
-  function nameId() external view returns (bytes4);
-  function version() external view returns (uint256);
-}
 
 /**
   @title CrunaManagerBase.sol

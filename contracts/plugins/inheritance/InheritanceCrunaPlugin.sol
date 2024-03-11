@@ -21,11 +21,15 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
    */
   bytes4 private constant _SENTINEL = 0xd3eedd6d; // bytes4(keccak256("SENTINEL"))
 
-  InheritanceConf _inheritanceConf;
-  Votes _votes;
+  InheritanceConf internal _inheritanceConf;
+  Votes internal _votes;
 
   function requiresToManageTransfer() external pure override returns (bool) {
     return true;
+  }
+
+  function isERC6551Account() external pure virtual returns (bool) {
+    return false;
   }
 
   // sentinels and beneficiaries
