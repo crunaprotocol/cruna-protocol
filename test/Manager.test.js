@@ -104,7 +104,7 @@ describe("CrunaManager : Upgrades", function () {
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
 
-    expect(await manager.version()).to.equal(1000001);
+    expect(await manager.version()).to.equal(1000002);
     let signature = (
       await signRequest(
         selector,
@@ -166,7 +166,7 @@ describe("CrunaManager : Upgrades", function () {
     const initialManager = await ethers.getContractAt("CrunaManager", history.managerAddress);
 
     await expect(initialManager.migrate(1000000)).to.be.revertedWith("Forbidden");
-    expect(await initialManager.version()).to.equal(1000001);
+    expect(await initialManager.version()).to.equal(1000002);
     await expect(vault.upgradeDefaultManager(proxyV2.address)).to.be.revertedWith("UntrustedImplementation");
 
     await trustImplementation(
@@ -189,11 +189,11 @@ describe("CrunaManager : Upgrades", function () {
     const newManagerAddress = await vault.defaultManagerImplementation(secondTokenId);
     const newManager = await ethers.getContractAt("CrunaManagerV2", newManagerAddress);
 
-    expect(await newManager.version()).to.equal(1e6 + 2e3);
+    expect(await newManager.version()).to.equal(1002000);
 
     const oldManagerAddress = await vault.defaultManagerImplementation(tokenId);
     const oldManager = await ethers.getContractAt("CrunaManager", oldManagerAddress);
 
-    expect(await oldManager.version()).to.equal(1000001);
+    expect(await oldManager.version()).to.equal(1000002);
   });
 });

@@ -193,7 +193,7 @@ describe("Sentinel and Inheritance", function () {
     await trustImplementation(newGuardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true, 10);
 
     expect(await newGuardian.trustedImplementation(PLUGIN_ID, inheritancePluginProxy.address)).to.equal(10);
-    expect(await newGuardian.version()).to.equal(1e6);
+    expect(await newGuardian.version()).to.equal(1001000);
   });
 
   it("should plug the plugin", async function () {

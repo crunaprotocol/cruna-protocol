@@ -7,6 +7,7 @@ const deployUtils = new (require("eth-deploy-utils"))();
 const { artifacts } = hre;
 const bytecodes = require("./bytecodes.json");
 const { domainType } = require("./eip712");
+const canonicalBytecodes = require("../../contracts/canonicalBytecodes.json");
 
 function debug(...params) {
   if (process.env.NODE_ENV !== "test") {
@@ -75,27 +76,34 @@ const Helpers = {
   async deployCanonical(deployer, proposer, executor, delay) {
     await Helpers.deployNickSFactory(deployer);
 
-    const _CRUNA_REGISTRY = "0xFe4F407dee99B8B5660454613b79A2bC9e628750";
-    const _ERC6551_REGISTRY = "0x000000006551c19487814612e58FE06813775758";
-    const _CRUNA_GUARDIAN = "0x82AfcB8c199498264D3aB716CA2f17D73e417ebd";
+    const _CRUNA_REGISTRY = canonicalBytecodes.CrunaRegistry.address;
+    const _ERC6551_REGISTRY = canonicalBytecodes.ERC6551Registry.address;
+    const _CRUNA_GUARDIAN = bytecodes.CrunaGuardian.address;
 
     let erc6551RegistryAddress = (
       await thiz.deployBytecodeViaNickSFactory(
         deployer,
         "ERC6551Registry",
-        bytecodes.ERC6551Registry,
+        canonicalBytecodes.ERC6551Registry.bytecode,
         "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31",
       )
     ).address;
     await expect(erc6551RegistryAddress).to.be.equal(_ERC6551_REGISTRY);
 
-    let crunaRegistryAddress = (await thiz.deployBytecodeViaNickSFactory(deployer, "CrunaRegistry", bytecodes.CrunaRegistry))
-      .address;
+    let crunaRegistryAddress = (
+      await thiz.deployBytecodeViaNickSFactory(
+        deployer,
+        "CrunaRegistry",
+        canonicalBytecodes.CrunaRegistry.bytecode,
+        canonicalBytecodes.CrunaRegistry.salt,
+      )
+    ).address;
 
     await expect(crunaRegistryAddress).to.be.equal(_CRUNA_REGISTRY);
 
-    let crunaGuardianAddress = (await thiz.deployBytecodeViaNickSFactory(deployer, "CrunaGuardian", bytecodes.CrunaGuardian))
-      .address;
+    let crunaGuardianAddress = (
+      await thiz.deployBytecodeViaNickSFactory(deployer, "CrunaGuardian", bytecodes.CrunaGuardian.bytecode)
+    ).address;
     await expect(crunaGuardianAddress).to.be.equal(_CRUNA_GUARDIAN);
     // console.log(crunaRegistryAddress, erc6551RegistryAddress, crunaGuardianAddress);
     return [crunaRegistryAddress, erc6551RegistryAddress, crunaGuardianAddress];

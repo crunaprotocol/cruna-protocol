@@ -9,7 +9,7 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {IInheritanceCrunaPlugin} from "./IInheritanceCrunaPlugin.sol";
 import {ICrunaPlugin, CrunaPluginBase} from "../CrunaPluginBase.sol";
 
-//import {console} from "hardhat/console.sol";
+// import {console} from "hardhat/console.sol";
 
 contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaPluginBase {
   using ECDSA for bytes32;

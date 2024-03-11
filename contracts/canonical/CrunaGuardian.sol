@@ -7,13 +7,16 @@ import {FlexiTimelockController} from "../utils/FlexiTimelockController.sol";
 
 // import "hardhat/console.sol";
 
-/**
- * @dev Manages upgrade and cross-chain execution settings for accounts
+/** @title CrunaGuardian
+  @dev Manages a registry of trusted implementations and their required manager versions
+  It is used by
+  - manager and plugins to upgrade its own  implementation
+  - manager to trust a new plugin implementation and allow managed transfers
  */
 contract CrunaGuardian is ICrunaGuardian, IVersioned, FlexiTimelockController {
   error InvalidArguments();
 
-  mapping(bytes4 => mapping(address => uint256)) private _isTrustedImplementation;
+  mapping(bytes32 nameIdAndImplementationAddress => uint256 requiredManagerVersion) private _trustedImplementations;
 
   // when deployed to production, proposers and executors will be multi-sig wallets owned by the Cruna DAO
   constructor(
@@ -24,7 +27,8 @@ contract CrunaGuardian is ICrunaGuardian, IVersioned, FlexiTimelockController {
   ) FlexiTimelockController(minDelay, proposers, executors, admin) {}
 
   function version() external pure virtual returns (uint256) {
-    return 1_000_000;
+    // v1.1.0
+    return 1_001_000;
   }
 
   // @dev see {ICrunaGuardian.sol-setTrustedImplementation}
@@ -33,19 +37,20 @@ contract CrunaGuardian is ICrunaGuardian, IVersioned, FlexiTimelockController {
     address implementation,
     bool trusted,
     uint256 requires
-  ) external onlyThroughTimeController {
+  ) external override onlyThroughTimeController {
     if (requires == 0 || implementation == address(0)) {
       revert InvalidArguments();
     }
+    bytes32 _key = bytes32(nameId) | bytes32(uint256(uint160(implementation)));
     if (trusted) {
-      _isTrustedImplementation[nameId][implementation] = requires;
+      _trustedImplementations[_key] = requires;
     } else {
-      delete _isTrustedImplementation[nameId][implementation];
+      delete _trustedImplementations[_key];
     }
     emit TrustedImplementationUpdated(nameId, implementation, trusted, requires);
   }
 
-  function trustedImplementation(bytes4 nameId, address implementation) external view returns (uint256) {
-    return _isTrustedImplementation[nameId][implementation];
+  function trustedImplementation(bytes4 nameId, address implementation) external view override returns (uint256) {
+    return _trustedImplementations[bytes32(nameId) | bytes32(uint256(uint160(implementation)))];
   }
 }

@@ -2,8 +2,8 @@
 pragma solidity ^0.8.20;
 
 interface IVersioned {
-  // @dev It returns the version of the contract
-  //   It use a semantic version, where
-  //     1.2.3 => 1e6 + 2e3 + 3 => 1002003
+  /// @dev Returns the version of the contract.
+  /// The format is similar to semver, where any element takes 3 digits.
+  /// For example, version 1.2.14 is 1_002_014.
   function version() external view returns (uint256);
 }

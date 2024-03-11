@@ -14,70 +14,80 @@ import {CrunaPluginBase} from "../plugins/CrunaPluginBase.sol";
 import {Canonical} from "../libs/Canonical.sol";
 import {ManagerConstants} from "../libs/ManagerConstants.sol";
 
-//import {console} from "hardhat/console.sol";
+// import {console} from "hardhat/console.sol";
 
+/// @title CrunaManager
+/// @dev The manager of the Cruna NFT
+/// It is the only contract that can manage the NFT. It sets protectors and safe recipients,
+/// plugs and manages plugins, and has the ability to transfer the NFT if there are protectors.
 contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   using ECDSA for bytes32;
   using Strings for uint256;
   using ExcessivelySafeCall for address;
 
+  /// @dev The array of all plugged plugins. The max length is set to 16 to avoid gas issues.
   PluginElement[] private _allPlugins;
+
+  /// @dev The mapping of all plugins by key. A key is the combination of the nameId and the salt.
   mapping(bytes8 pluginKey => PluginConfig pluginDetails) private _pluginByKey;
 
-  error IndexOutOfBounds();
+  /// @dev see {IVersioned.sol-version}
+  function version() external pure virtual override returns (uint256) {
+    return 1_000_002;
+  }
 
+  /// @dev see {ICrunaManager.sol-getPluginByKey}
   function pluginByKey(bytes8 key) external view returns (PluginConfig memory) {
     return _pluginByKey[key];
   }
 
+  /// @dev see {ICrunaManager.sol-allPlugins}
   function allPlugins() external view returns (PluginElement[] memory) {
     return _allPlugins;
   }
 
+  /// @dev see {ICrunaManager.sol-pluginByIndex}
   function pluginByIndex(uint256 index) external view returns (PluginElement memory) {
     if (index >= _allPlugins.length) revert IndexOutOfBounds();
     return _allPlugins[index];
   }
 
-  // This is here for the future
-  function migrate(uint256) external virtual override {
+  /// @dev see {ICrunaManager.sol-migrate}
+  function migrate(uint256 /* version */) external virtual override {
     if (_msgSender() != address(this)) revert Forbidden();
-    // nothing, for now
+    // Nothing, for now, since this is the first version of the manager
   }
 
-  /// @dev Counts the protectors.
+  /// @dev see {ICrunaManager.sol-countActiveProtectors}
   function countActiveProtectors() external view virtual override returns (uint256) {
     return _actors[ManagerConstants.protectorId()].length;
   }
 
-  /// @dev Find a specific protector
+  /// @dev see {ICrunaManager.sol-findProtectorIndex}
   function findProtectorIndex(address protector_) external view virtual override returns (uint256) {
     return _actorIndex(protector_, ManagerConstants.protectorId());
   }
 
-  /// @dev Returns true if the address is a protector.
-  /// @param protector_ The protector address.
+  /// @dev see {ICrunaManager.sol-isProtector}
   function isProtector(address protector_) external view virtual override returns (bool) {
     return _isActiveActor(protector_, ManagerConstants.protectorId());
   }
 
+  /// @dev see {ICrunaManager.sol-hasProtectors}
   function hasProtectors() external view virtual override returns (bool) {
     return _actorCount(ManagerConstants.protectorId()) != 0;
   }
 
+  /// @dev see {ICrunaManager.sol-isTransferable}
   function isTransferable(address to) external view override returns (bool) {
     return
       _actors[ManagerConstants.protectorId()].length == 0 ||
       _actorIndex(to, ManagerConstants.safeRecipientId()) != ManagerConstants.maxActors();
   }
 
+  /// @dev see {ICrunaManager.sol-locked}
   function locked() external view override returns (bool) {
     return _actors[ManagerConstants.protectorId()].length != 0;
-  }
-
-  function version() external pure virtual override returns (uint256) {
-    // 1.0.1
-    return 1_000_001;
   }
 
   // @dev see {ICrunaManager.sol-setProtector}

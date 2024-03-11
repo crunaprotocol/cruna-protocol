@@ -13,7 +13,7 @@ import {ICrunaRegistry} from "../canonical/CrunaRegistry.sol";
 library Canonical {
 
   function crunaRegistry() internal pure returns (ICrunaRegistry) {
-    return ICrunaRegistry(0x714Bda695330B2410C0b52449b27b0D3B9e0e7C0);
+    return ICrunaRegistry(0xccCCCb5339Db00811C69f52C384030cB431FBE00);
   }
 
   function erc6551Registry() internal pure returns (IERC6551Registry) {
@@ -21,6 +21,6 @@ library Canonical {
   }
 
   function crunaGuardian() internal pure returns (ICrunaGuardian) {
-    return ICrunaGuardian(0x4d43686bABf384FFF861E8e4E3b652763a8063E5);
+    return ICrunaGuardian(0xCcCCcef4727755933fb5c381C231d44dB34c5442);
   }
 }

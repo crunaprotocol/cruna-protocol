@@ -116,6 +116,7 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   error SafeRecipientsAlreadySet();
   error NothingToImport();
   error UnsupportedPluginChange();
+  error IndexOutOfBounds();
 
   function upgrade(address implementation_) external;
 
@@ -140,24 +141,52 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
     bytes calldata signature
   ) external;
 
-  function isTransferable(address to) external view returns (bool);
+  /// @dev It returns the configuration of a plugin by key
+  /// @param key The key of the plugin
+  function pluginByKey(bytes8 key) external view returns (PluginConfig memory);
 
-  function locked() external view returns (bool);
+  /// @dev It returns the configuration of all currently plugged plugins
+  function allPlugins() external view returns (PluginElement[] memory);
 
-  // simulate ERC-721
+  /// @dev It returns an element of the array of all plugged plugins
+  /// @param index The index of the plugin in the array
+  function pluginByIndex(uint256 index) external view returns (PluginElement memory);
 
-  // @dev Check if an address is a protector
-  // @param protector_ The protector address
-  // @return True if the protector is active for the tokensOwner.
-  //   Pending protectors are not returned here
-  function isProtector(address protector_) external view returns (bool);
+  /// @dev During an upgrade allows the manager to perform adjustments if necessary.
+  /// The parameter is the version of the manager being replaced. This will allow the
+  /// new manager to know what to do to adjust the state of the new manager.
+  function migrate(uint256 /* version */) external;
 
-  // @dev Set a protector for the token
-  // @param protector_ The protector address
-  // @param active True to activate, false to deactivate
-  // @param timestamp The timestamp of the signature
-  // @param validFor The validity of the signature
-  // @param signature The signature of the tokensOwner
+  /// @dev Counts the protectors.
+  function countActiveProtectors() external view override returns (uint256);
+
+  /// @dev Find a specific protector
+  function findProtectorIndex(address protector_) external view override returns (uint256);
+
+  /// @dev Returns true if the address is a protector.
+  /// @param protector_ The protector address.
+  function isProtector(address protector_) external view override returns (bool);
+
+  /// @dev Returns true if there are protectors.
+  function hasProtectors() external view override returns (bool);
+
+  /// @dev Returns true if the token is transferable (since the NFT is ERC6454)
+  /// @param to The address of the recipient.
+  /// If the recipient is a safe recipient, it returns true.
+  function isTransferable(address to) external view override returns (bool);
+
+  /// @dev Returns true if the token is locked (since the NFT is ERC6982)
+  function locked() external view override returns (bool);
+
+  /// @dev Set a protector for the token
+  /// @param protector_ The protector address
+  /// @param active True to add a protector, false to remove it
+  /// @param timestamp The timestamp of the signature
+  /// @param validFor The validity of the signature
+  /// @param signature The signature of the protector
+  /// If no signature is required, the field timestamp must be 0
+  /// If the operations has been pre-approved by the protector, the signature should be replaced
+  /// by a shorter (invalid) one, to tell the signature validator to look for a pre-approval.
   function setProtector(
     address protector_,
     bool active,
@@ -170,28 +199,26 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
 
   function countSafeRecipients() external view returns (uint256);
 
-  // @dev Imports the protects/safe-recipients from another tokenId owned by the same owner
+  /// @dev Imports the protects/safe-recipients from another tokenId owned by the same owner
   function importProtectorsAndSafeRecipientsFrom(uint256 tokenId) external;
 
-  // @dev Finds a PROTECTOR
-  // @param protector_ The protector address
+  /// @dev Finds a PROTECTOR
+  /// @param protector_ The protector address
   function findProtectorIndex(address protector_) external view returns (uint256);
 
-  // @dev Return the number of active protectors
+  /// @dev Return the number of active protectors
   function countActiveProtectors() external view returns (uint256);
 
-  // @dev Return all the protectors
+  /// @dev Return all the protectors
   function getProtectors() external view returns (address[] memory);
 
   function hasProtectors() external view returns (bool);
 
-  // safe recipients
-
-  // @dev Set a safe recipient for the token
-  // @param recipient The recipient address
-  // @param status True if active
-  // @param timestamp The timestamp of the signature
-  // @param validFor The validity of the signature
+  /// @dev Set a safe recipient for the token
+  /// @param recipient The recipient address
+  /// @param status True if active
+  /// @param timestamp The timestamp of the signature
+  /// @param validFor The validity of the signature
   function setSafeRecipient(
     address recipient,
     bool status,
@@ -200,18 +227,18 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
     bytes calldata signature
   ) external;
 
-  // @dev Return if the address is a safeRecipient
+  /// @dev Return if the address is a safeRecipient
   function isSafeRecipient(address recipient) external view returns (bool);
 
-  // @dev Return all the safe recipients
+  /// @dev Return all the safe recipients
   function getSafeRecipients() external view returns (address[] memory);
 
-  // @dev Allow to transfer a token when at least 1 protector has been set.
-  //   This is necessary because when a protector is set, the token is not
-  //   transferable anymore.
-  // @param tokenId The id of the token.
-  // @param to The address of the recipient.
-  // @param timeValidation The timestamp of the signature combined with the validity of the signature.
+  /// @dev Allow to transfer a token when at least 1 protector has been set.
+  ///   This is necessary because when a protector is set, the token is not
+  ///   transferable anymore.
+  /// @param tokenId The id of the token.
+  /// @param to The address of the recipient.
+  /// @param timeValidation The timestamp of the signature combined with the validity of the signature.
   function protectedTransfer(
     uint256 tokenId,
     address to,
