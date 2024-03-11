@@ -56,15 +56,18 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
     if (0 == requires) {
       // The new implementation is not trusted.
       // If current implementation is trusted, the new implementation must be trusted too
-      if (Canonical.crunaGuardian().trustedImplementation(_nameId(), implementation()) != 0) revert UntrustedImplementation();
+      if (Canonical.crunaGuardian().trustedImplementation(_nameId(), implementation()) != 0)
+        revert UntrustedImplementation(implementation_);
     }
     IVersioned impl = IVersioned(implementation_);
     uint256 version_ = impl.version();
-    if (version_ <= _version()) revert InvalidVersion();
+    if (version_ <= _version()) revert InvalidVersion(version_);
     if (_conf.manager.version() < requires) revert PluginRequiresUpdatedManager(requires);
     StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
   }
 
+  /// @dev This sets the plugin as must be reset. It is the plugin's responsibility
+  /// to set itself as market for reset and act consequently.
   function resetOnTransfer() external override ifMustNotBeReset onlyManager {
     _conf.mustBeReset = 1;
   }

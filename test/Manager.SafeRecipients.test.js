@@ -143,6 +143,8 @@ describe("CrunaManager : Safe Recipients", function () {
       .to.emit(manager, "SafeRecipientChange")
       .withArgs(mark.address, true);
 
+    expect(await manager.isSafeRecipient(mark.address)).to.be.true;
+
     expect(await vault.isTransferable(tokenId, bob.address, mark.address)).to.be.true;
 
     // // remove Fred as a safe recipient

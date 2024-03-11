@@ -1,6 +1,6 @@
 {
   "name": "@cruna/protocol",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "The Cruna protocol",
   "publishConfig": {
     "access": "public"
@@ -9,7 +9,7 @@
     "/contracts/**/*.sol"
   ],
   "scripts": {
-    "clean": "rimraf artifacts cache coverage coverage.json",
+    "clean": "rimraf artifacts cache",
     "test": "NODE_ENV=test scripts/set-canonical.js && NODE_ENV=test npx hardhat test",
     "test:gas": "NODE_ENV=test scripts/set-canonical.js && NODE_ENV=test GAS_REPORT=yes npx hardhat test",
     "compile": "NODE_ENV=test npx hardhat compile",
@@ -55,7 +55,7 @@
     "case": "^1.6.3",
     "chai": "^4.4.1",
     "dotenv": "^16.4.5",
-    "eth-deploy-utils": "^1.0.0",
+    "eth-deploy-utils": "^1.0.2",
     "eth-sig-util": "^3.0.1",
     "ethereum-waffle": "^4.0.10",
     "ethereumjs-abi": "^0.6.8",

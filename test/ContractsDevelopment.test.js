@@ -36,6 +36,7 @@ describe("Testing contract deployments", function () {
 
   before(async function () {
     [deployer, proposer, executor, bob, alice, fred, mark, otto, proposer2, executor2] = await ethers.getSigners();
+
     chainId = await getChainId();
     [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
     crunaRegistry = await ethers.getContractAt("CrunaRegistry", CRUNA_REGISTRY);
@@ -45,7 +46,7 @@ describe("Testing contract deployments", function () {
 
   beforeEach(async function () {
     managerImpl = await deployContract("CrunaManager");
-    expect(await guardian.version()).to.equal(1000000);
+    expect(await guardian.version()).to.equal(1001000);
     proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
     proxy = await deployUtils.attach("CrunaManager", proxy.address);
     // sent 2 ETH to proxy
@@ -103,23 +104,17 @@ describe("Testing contract deployments", function () {
   });
 
   it("should update the parameters", async function () {
-    expect(await vault.totalProposers()).to.equal(1);
     await expect(proposeAndExecute(vault, proposer, executor, 10, "addProposer", proposer2.address))
       .to.emit(vault, "RoleGranted")
       .withArgs(await vault.PROPOSER_ROLE(), proposer2.address, vault.address);
-    expect(await vault.totalProposers()).to.equal(2);
-    expect(await vault.totalExecutors()).to.equal(1);
     await expect(proposeAndExecute(vault, proposer, executor, 10, "addExecutor", executor2.address))
       .to.emit(vault, "RoleGranted")
       .withArgs(await vault.EXECUTOR_ROLE(), executor2.address, vault.address);
-    expect(await vault.totalExecutors()).to.equal(2);
     await expect(proposeAndExecute(vault, proposer2, executor, 10, "removeProposer", proposer.address))
       .to.emit(vault, "RoleRevoked")
       .withArgs(await vault.PROPOSER_ROLE(), proposer.address, vault.address);
-    expect(await vault.totalProposers()).to.equal(1);
     await expect(proposeAndExecute(vault, proposer2, executor2, 10, "removeExecutor", executor.address))
       .to.emit(vault, "RoleRevoked")
       .withArgs(await vault.EXECUTOR_ROLE(), executor.address, vault.address);
-    expect(await vault.totalExecutors()).to.equal(1);
   });
 });

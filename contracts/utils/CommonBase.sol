@@ -36,10 +36,8 @@ abstract contract CommonBase is ICommonBase, INamed, Context, Actor, TokenLinked
     return _nameId();
   }
 
-  // must be overridden
-  function _nameId() internal view virtual returns (bytes4) {
-    return bytes4(0);
-  }
+  /// @dev Internal function that must be overridden by the contract
+  function _nameId() internal view virtual returns (bytes4);
 
   function vault() external view virtual returns (CrunaProtectedNFT) {
     return _vault();

@@ -1214,7 +1214,7 @@
             "type": "bytes32"
           }
         ],
-        "name": "usedSignatures",
+        "name": "isSignatureUsed",
         "outputs": [
           {
             "internalType": "bool",
@@ -2169,7 +2169,7 @@
             "type": "bytes32"
           }
         ],
-        "name": "usedSignatures",
+        "name": "isSignatureUsed",
         "outputs": [
           {
             "internalType": "bool",
@@ -3157,7 +3157,7 @@
             "type": "bytes32"
           }
         ],
-        "name": "usedSignatures",
+        "name": "isSignatureUsed",
         "outputs": [
           {
             "internalType": "bool",

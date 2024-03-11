@@ -4,8 +4,10 @@ root_dir=$(dirname $(realpath $(dirname "$0")))
 # if not run from the root, we cd into the root
 cd $root_dir
 
-npm run clean
-npm run compile
+if [[ "$3" == "" ]]; then
+  npm run clean
+  npm run compile
+fi
 
 if [[ "$2" == "localhost" ]]; then
   SKIP_CRYPTOENV=true npx hardhat run scripts/deploy-$1.js --network $2

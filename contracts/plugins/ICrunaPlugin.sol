@@ -20,8 +20,8 @@ interface ICrunaPlugin is ITokenLinkedContract, IVersioned {
     uint32 mustBeReset;
   }
 
-  error UntrustedImplementation();
-  error InvalidVersion();
+  error UntrustedImplementation(address implementation);
+  error InvalidVersion(uint256 version);
   error PluginRequiresUpdatedManager(uint256 requiredVersion);
   error Forbidden();
   error PluginMustBeReset();

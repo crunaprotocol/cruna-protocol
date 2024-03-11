@@ -37,12 +37,12 @@ coverage = result.join("\n");
 
 let p = path.resolve(__dirname, "../COVERAGE.md");
 
-let readCoverage = fs.readFileSync(p, "utf8").split(text);
+let readCoverage = fs.readFileSync(p, "utf8");
 
-let coverageSection = readCoverage[1].split("```");
+let coverageSection = readCoverage.split("```");
 
 coverageSection[1] = `\n${coverage}\n`;
 
-readCoverage = `${readCoverage[0]}${text}${coverageSection.join("```")}`;
+readCoverage = `${coverageSection.join("```")}`;
 
 fs.writeFileSync(p, readCoverage);

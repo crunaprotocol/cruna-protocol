@@ -84,7 +84,7 @@ describe("Sentinel and Inheritance", function () {
     ts = (await getTimestamp()) - 100;
   });
 
-  const buyAVaultAndPlug = async (bob, withProtectors, trust = true) => {
+  const buyAVaultAndPlug = async (bob, withProtectors, trust = true, salt = "0x00000000") => {
     const price = await factory.finalPrice(usdc.address);
     await usdc.connect(bob).approve(factory.address, price);
     const nextTokenId = (await vault.nftConf()).nextTokenId;
@@ -99,8 +99,8 @@ describe("Sentinel and Inheritance", function () {
       await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true, 10);
     }
 
-    await expect((await manager.pluginByKey(PLUGIN_ID + "00000000")).proxyAddress).to.equal(addr0);
-    await expect((await manager.pluginByKey(PLUGIN_ID + "00000000")).proxyAddress).equal(addr0);
+    await expect((await manager.pluginByKey(PLUGIN_ID + salt.substring(2))).proxyAddress).to.equal(addr0);
+    await expect((await manager.pluginByKey(PLUGIN_ID + salt.substring(2))).proxyAddress).equal(addr0);
     await expect(manager.pluginByIndex(0)).revertedWith("IndexOutOfBounds");
 
     if (withProtectors) {
@@ -126,6 +126,8 @@ describe("Sentinel and Inheritance", function () {
       // set Alice as Bob's protector
       await manager.connect(bob).setProtector(alice.address, true, ts, 3600, signature);
 
+      const bytes32Salt = salt + "0".repeat(56);
+
       signature = (
         await signRequest(
           await selectorId("ICrunaManager", "plug"),
@@ -135,7 +137,7 @@ describe("Sentinel and Inheritance", function () {
           nextTokenId,
           1,
           0,
-          0,
+          BigInt(bytes32Salt),
           ts,
           3600,
           chainId,
@@ -143,23 +145,24 @@ describe("Sentinel and Inheritance", function () {
           manager,
         )
       )[0];
+
+      expect(await vault.isDeployed(inheritancePluginProxy.address, ethers.constants.HashZero, nextTokenId, false)).to.be.false;
+
       await expect(
         manager
           .connect(bob)
-          .plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, trust, false, "0x00000000", ts, 3600, signature),
+          .plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, trust, false, salt, ts, 3600, signature),
       ).to.emit(manager, "PluginStatusChange");
+
+      expect(await vault.isDeployed(inheritancePluginProxy.address, ethers.constants.HashZero, nextTokenId, false)).to.be.true;
     } else {
       if (!trust) {
         await expect(
-          manager
-            .connect(bob)
-            .plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, "0x00000000", 0, 0, 0),
+          manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, salt, 0, 0, 0),
         ).revertedWith("UntrustedImplementationsNotAllowedToMakeTransfers");
       }
       await expect(
-        manager
-          .connect(bob)
-          .plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, trust, false, "0x00000000", 0, 0, 0),
+        manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, trust, false, salt, 0, 0, 0),
       ).to.emit(manager, "PluginStatusChange");
     }
 
@@ -172,11 +175,11 @@ describe("Sentinel and Inheritance", function () {
     await expect((await manager.listPluginsKeys(true))[0]).equal("0xfeda9a1500000000");
     await expect((await manager.listPluginsKeys(false)).length).equal(0);
 
-    expect(await manager.isPluginActive("InheritanceCrunaPlugin", "0x00000000")).to.be.true;
-    expect(await manager.plugged("InheritanceCrunaPlugin", "0x00000000")).to.be.true;
-    expect(await manager.plugged("InheritancePlugin2", "0x00000000")).to.be.false;
+    expect(await manager.isPluginActive("InheritanceCrunaPlugin", salt)).to.be.true;
+    expect(await manager.plugged("InheritanceCrunaPlugin", salt)).to.be.true;
+    expect(await manager.plugged("InheritancePlugin2", salt)).to.be.false;
 
-    const pluginAddress = await manager.plugin(PLUGIN_ID, "0x00000000");
+    const pluginAddress = await manager.plugin(PLUGIN_ID, salt);
     await expect(pluginAddress).to.not.equal(addr0);
     return nextTokenId;
   };
@@ -193,7 +196,7 @@ describe("Sentinel and Inheritance", function () {
     await trustImplementation(newGuardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true, 10);
 
     expect(await newGuardian.trustedImplementation(PLUGIN_ID, inheritancePluginProxy.address)).to.equal(10);
-    expect(await newGuardian.version()).to.equal(1e6);
+    expect(await newGuardian.version()).to.equal(1001000);
   });
 
   it("should plug the plugin", async function () {
@@ -489,6 +492,19 @@ describe("Sentinel and Inheritance", function () {
       "WaitingForBeneficiary",
     );
 
+    // we plug a few extra plugins before inheriting, to test the call to reset
+
+    await expect(
+      manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, false, false, "0x99999999", 0, 0, 0),
+    ).to.emit(manager, "PluginStatusChange");
+
+    const impl = await deployContract("SomeInheritancePlugin");
+    const proxy = await deployContract("InheritanceCrunaPluginProxy", impl.address);
+
+    await expect(
+      manager.connect(bob).plug("SomeInheritancePlugin", proxy.address, false, false, "0x00000000", 0, 0, 0),
+    ).to.emit(manager, "PluginStatusChange");
+
     await expect(inheritancePlugin.connect(beneficiary1).inherit())
       .to.emit(vault, "ManagedTransfer")
       .withArgs(PLUGIN_ID, tokenId);
@@ -741,6 +757,7 @@ describe("Sentinel and Inheritance", function () {
 
     await increaseBlockTimestampBy(10 * days);
     await inheritancePlugin.connect(beneficiary1).inherit();
+    expect(await vault.ownerOf(tokenId)).to.equal(beneficiary1.address);
   });
 
   it("should allow to inherit only after timeLock expires", async function () {

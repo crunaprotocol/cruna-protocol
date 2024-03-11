@@ -53,7 +53,18 @@
       "type": "error"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "currentAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "proposedAddress",
+          "type": "address"
+        }
+      ],
       "name": "InconsistentProxyAddresses",
       "type": "error"
     },
@@ -64,11 +75,22 @@
     },
     {
       "inputs": [],
-      "name": "InvalidAccountStatus",
+      "name": "InvalidERC6551Status",
       "type": "error"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "nameIdReturnedByPlugin",
+          "type": "bytes4"
+        },
+        {
+          "internalType": "bytes4",
+          "name": "proposedNameId",
+          "type": "bytes4"
+        }
+      ],
       "name": "InvalidImplementation",
       "type": "error"
     },
@@ -78,7 +100,13 @@
       "type": "error"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "timeLock",
+          "type": "uint256"
+        }
+      ],
       "name": "InvalidTimeLock",
       "type": "error"
     },
@@ -88,12 +116,24 @@
       "type": "error"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "version",
+          "type": "uint256"
+        }
+      ],
       "name": "InvalidVersion",
       "type": "error"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
+      ],
       "name": "NotAManager",
       "type": "error"
     },
@@ -113,12 +153,29 @@
       "type": "error"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "callingPlugin",
+          "type": "address"
+        }
+      ],
       "name": "NotTheAuthorizedPlugin",
       "type": "error"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "originSOwner",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
       "name": "NotTheSameOwner",
       "type": "error"
     },
@@ -199,12 +256,24 @@
       "type": "error"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "protector",
+          "type": "address"
+        }
+      ],
       "name": "ProtectorAlreadySetByYou",
       "type": "error"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "protector",
+          "type": "address"
+        }
+      ],
       "name": "ProtectorNotFound",
       "type": "error"
     },
@@ -251,6 +320,11 @@
     },
     {
       "inputs": [],
+      "name": "ToBeUsedOnlyWhenProtectorsAreActive",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "TooManyActors",
       "type": "error"
     },
@@ -260,7 +334,13 @@
       "type": "error"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "implementation",
+          "type": "address"
+        }
+      ],
       "name": "UntrustedImplementation",
       "type": "error"
     },
@@ -303,7 +383,7 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "currentVersion",
+          "name": "oldVersion",
           "type": "uint256"
         },
         {
@@ -353,7 +433,7 @@
         {
           "indexed": false,
           "internalType": "address",
-          "name": "plugin_",
+          "name": "pluginAddress",
           "type": "address"
         },
         {
@@ -548,19 +628,6 @@
     },
     {
       "inputs": [],
-      "name": "countActiveProtectors",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "countPlugins",
       "outputs": [
         {
@@ -705,6 +772,25 @@
       "type": "function"
     },
     {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
+        }
+      ],
+      "name": "hashSignature",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "implementation",
       "outputs": [
@@ -782,6 +868,25 @@
         }
       ],
       "name": "isSafeRecipient",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "hash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "isSignatureUsed",
       "outputs": [
         {
           "internalType": "bool",
@@ -1501,25 +1606,6 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "hash",
-          "type": "bytes32"
-        }
-      ],
-      "name": "usedSignatures",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [],
       "name": "vault",
       "outputs": [
@@ -1748,7 +1834,13 @@
       "type": "error"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "version",
+          "type": "uint256"
+        }
+      ],
       "name": "InvalidVersion",
       "type": "error"
     },
@@ -1840,7 +1932,13 @@
       "type": "error"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "implementation",
+          "type": "address"
+        }
+      ],
       "name": "UntrustedImplementation",
       "type": "error"
     },
@@ -2186,6 +2284,25 @@
       "type": "function"
     },
     {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
+        }
+      ],
+      "name": "hashSignature",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "implementation",
       "outputs": [
@@ -2223,6 +2340,25 @@
         }
       ],
       "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "hash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "isSignatureUsed",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -2579,25 +2715,6 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "hash",
-          "type": "bytes32"
-        }
-      ],
-      "name": "usedSignatures",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [],
       "name": "vault",
       "outputs": [
@@ -2941,7 +3058,13 @@
       "type": "error"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "implementation",
+          "type": "address"
+        }
+      ],
       "name": "UntrustedImplementation",
       "type": "error"
     },
@@ -4625,32 +4748,6 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "totalExecutors",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "totalProposers",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
           "internalType": "address",
@@ -5833,32 +5930,6 @@
           "internalType": "bool",
           "name": "",
           "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "totalExecutors",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "totalProposers",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
         }
       ],
       "stateMutability": "view",
