@@ -1,6 +1,6 @@
 {
   "name": "@cruna/protocol",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "The Cruna protocol",
   "publishConfig": {
     "access": "public"
@@ -38,7 +38,7 @@
     "nft"
   ],
   "dependencies": {
-    "@openzeppelin/contracts": "^5.0.1",
+    "@openzeppelin/contracts": "^5.0.2",
     "erc6551": "^0.3.1"
   }
 }

@@ -80,6 +80,14 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
     return 1_000_000;
   }
 
+  function _isProtected() internal view virtual override returns (bool) {
+    return _conf.manager.hasProtectors();
+  }
+
+  function _isProtector(address protector) internal view virtual override returns (bool) {
+    return _conf.manager.isProtector(protector);
+  }
+
   // @dev This empty reserved space is put in place to allow future versions to add new
   // variables without shifting down storage in the inheritance chain.
   // See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps

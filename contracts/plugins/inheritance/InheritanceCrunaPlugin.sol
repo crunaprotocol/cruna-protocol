@@ -168,14 +168,6 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     return bytes4(keccak256("InheritanceCrunaPlugin"));
   }
 
-  function _isProtected() internal view virtual override returns (bool) {
-    return _conf.manager.hasProtectors();
-  }
-
-  function _isProtector(address protector) internal view virtual override returns (bool) {
-    return _conf.manager.isProtector(protector);
-  }
-
   function _setSentinel(
     address sentinel,
     bool status,
