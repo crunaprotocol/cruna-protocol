@@ -22,19 +22,16 @@ async function main() {
 
   const canonicalPath = path.resolve(__dirname, `../libs-canonical/${chainId === 1337 ? "not-" : ""}localhost/Canonical.sol`);
 
-  const salt = "0xccccc0000000000000000000000000000000000000000000000000000003269a";
-
   // This is supposed to happen only during development when there are breaking changes.
   // It should not happen after the first guardian as been deployed, except if very serious
   // issues are found and a new guardian is needed. In that unfortunate case, all managers
   // and plugins will have to be upgraded by tokens' owners.
-  bytecodes.CrunaRegistry.salt = ethers.constants.HashZero;
-  bytecodes.CrunaRegistry.bytecode = await deployUtils.getBytecodeToBeDeployedViaNickSFactory(deployer, "CrunaRegistry", salt);
+  let salt = bytecodes.CrunaGuardian.salt;
+  bytecodes.CrunaRegistry.bytecode = await deployUtils.getBytecodeToBeDeployedViaNickSFactory(deployer, "CrunaRegistry");
 
   let canonical = fs.readFileSync(canonicalPath, "utf8");
   let newAddress = await deployUtils.getAddressOfContractDeployedWithBytecodeViaNickSFactory(
     deployer,
-    "CrunaRegistry",
     bytecodes.CrunaRegistry.bytecode,
     salt,
   );

@@ -24,26 +24,48 @@ async function main() {
     fs.writeFileSync(bytecodesPath, JSON.stringify({}));
   }
 
-  let salt = ethers.constants.HashZero;
+  let salt = "0xccccc" + "0".repeat(59);
+
   const bytecodes = JSON.parse(fs.readFileSync(bytecodesPath));
 
-  if (!bytecodes.CrunaManager || process.env.OVERRIDE) {
-    bytecodes.CrunaManager = await deployUtils.getBytecodeToBeDeployedViaNickSFactory(deployer, "CrunaManager", salt);
+  if (!bytecodes.CrunaManager) {
+    bytecodes.CrunaManager = {
+      salt,
+    };
+    bytecodes.CrunaManagerProxy = {
+      salt,
+    };
   }
 
-  let manager = await deployUtils.deployBytecodeViaNickSFactory(deployer, "CrunaManager", bytecodes.CrunaManager, salt);
+  if (!bytecodes.CrunaManager.bytecode || process.env.OVERRIDE) {
+    bytecodes.CrunaManager.bytecode = await deployUtils.getBytecodeToBeDeployedViaNickSFactory(deployer, "CrunaManager");
+  }
 
-  if (!bytecodes.CrunaManagerProxy || process.env.OVERRIDE) {
-    bytecodes.CrunaManagerProxy = await deployUtils.getBytecodeToBeDeployedViaNickSFactory(
+  let manager = await deployUtils.deployBytecodeViaNickSFactory(
+    deployer,
+    "CrunaManager",
+    bytecodes.CrunaManager.bytecode,
+    salt,
+  );
+
+  bytecodes.CrunaManager.address = manager.address;
+
+  if (!bytecodes.CrunaManagerProxy.bytecode || process.env.OVERRIDE) {
+    bytecodes.CrunaManagerProxy.bytecode = await deployUtils.getBytecodeToBeDeployedViaNickSFactory(
       deployer,
       "CrunaManagerProxy",
       ["address"],
       [manager.address],
-      salt,
     );
   }
 
-  let proxy = await deployUtils.deployBytecodeViaNickSFactory(deployer, "CrunaManagerProxy", bytecodes.CrunaManagerProxy, salt);
+  let proxy = await deployUtils.deployBytecodeViaNickSFactory(
+    deployer,
+    "CrunaManagerProxy",
+    bytecodes.CrunaManagerProxy.bytecode,
+    salt,
+  );
+  bytecodes.CrunaManagerProxy.address = proxy.address;
 
   fs.writeFileSync(bytecodesPath, JSON.stringify(bytecodes, null, 2));
 }

@@ -23,8 +23,6 @@ async function main() {
   let executorAddress = isLocalhost ? executor.address : process.env.EXECUTOR_ADDRESS;
   let delay = isLocalhost ? 10 : process.env.DELAY;
 
-  let salt = ethers.constants.HashZero;
-
   if (isLocalhost) {
     // on localhost, we deploy the factory if not deployed yet
     await deployUtils.deployNickSFactory(deployer);
@@ -38,7 +36,8 @@ async function main() {
 
   const canonicalPath = path.resolve(__dirname, `../libs-canonical/${isLocalhost ? "" : "not-"}localhost/Canonical.sol`);
 
-  bytecodes.CrunaGuardian.salt = salt;
+  let salt = bytecodes.CrunaGuardian.salt;
+
   // This is supposed to happen only during development when there are breaking changes.
   // It should not happen after the first guardian as been deployed, except if very serious
   // issues are found and a new guardian is needed. In that unfortunate case, all managers
@@ -48,7 +47,6 @@ async function main() {
     "CrunaGuardian",
     ["uint256", "address[]", "address[]", "address"],
     [delay, [proposerAddress], [executorAddress], deployer.address],
-    salt,
   );
 
   // const canon
