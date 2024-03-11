@@ -66,6 +66,8 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
     StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
   }
 
+  /// @dev This sets the plugin as must be reset. It is the plugin's responsibility
+  /// to set itself as market for reset and act consequently.
   function resetOnTransfer() external override ifMustNotBeReset onlyManager {
     _conf.mustBeReset = 1;
   }

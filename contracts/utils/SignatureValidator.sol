@@ -27,7 +27,11 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
     return _preApprovals[hash];
   }
 
-  function usedSignatures(bytes32 hash) external view override returns (bool) {
+  function hashSignature(bytes calldata signature) external pure override returns (bytes32) {
+    return _hashBytes(signature);
+  }
+
+  function isSignatureUsed(bytes32 hash) external view override returns (bool) {
     return _usedSignatures[hash];
   }
 

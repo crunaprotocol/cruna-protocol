@@ -628,19 +628,6 @@
     },
     {
       "inputs": [],
-      "name": "countActiveProtectors",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "countPlugins",
       "outputs": [
         {
@@ -785,6 +772,25 @@
       "type": "function"
     },
     {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
+        }
+      ],
+      "name": "hashSignature",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "implementation",
       "outputs": [
@@ -862,6 +868,25 @@
         }
       ],
       "name": "isSafeRecipient",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "hash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "isSignatureUsed",
       "outputs": [
         {
           "internalType": "bool",
@@ -1581,25 +1606,6 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "hash",
-          "type": "bytes32"
-        }
-      ],
-      "name": "usedSignatures",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [],
       "name": "vault",
       "outputs": [
@@ -2278,6 +2284,25 @@
       "type": "function"
     },
     {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
+        }
+      ],
+      "name": "hashSignature",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "implementation",
       "outputs": [
@@ -2315,6 +2340,25 @@
         }
       ],
       "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "hash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "isSignatureUsed",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -2668,25 +2712,6 @@
       "name": "upgrade",
       "outputs": [],
       "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "hash",
-          "type": "bytes32"
-        }
-      ],
-      "name": "usedSignatures",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
       "type": "function"
     },
     {

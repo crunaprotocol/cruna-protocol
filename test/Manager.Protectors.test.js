@@ -78,10 +78,13 @@ describe("CrunaManager : Protectors", function () {
 
   beforeEach(async function () {
     managerImpl = await deployContract("CrunaManager");
-    proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
+    proxy = await deployContract("InheritanceCrunaPluginProxy", managerImpl.address);
     proxy = await deployUtils.attach("CrunaManager", proxy.address);
 
     vault = await deployContract("OwnableNFT", deployer.address);
+
+    const IManagedNFT = await getInterfaceId("IManagedNFT");
+    expect(await vault.supportsInterface(IManagedNFT)).to.equal(true);
 
     await vault.init(proxy.address, true, false, 1, 0);
 
@@ -222,6 +225,8 @@ describe("CrunaManager : Protectors", function () {
       "SignatureAlreadyUsed",
     );
 
+    expect(await manager.countProtectors()).to.equal(1);
+
     // set a second protector
 
     signature = (
@@ -242,9 +247,15 @@ describe("CrunaManager : Protectors", function () {
       )
     )[0];
 
+    const signatureHash = await manager.hashSignature(signature);
+
+    expect(await manager.isSignatureUsed(signatureHash)).to.be.false;
+
     await expect(manager.connect(bob).setProtector(fred.address, true, ts, 3600, signature))
       .to.emit(manager, "ProtectorChange")
       .withArgs(fred.address, true);
+
+    expect(await manager.isSignatureUsed(signatureHash)).to.be.true;
 
     // Alice removes herself as protector
 
@@ -286,9 +297,13 @@ describe("CrunaManager : Protectors", function () {
       .to.emit(manager, "PreApproved")
       .withArgs(hash, fred.address);
 
+    expect(await manager.preApprovals(hash)).to.be.equal(fred.address);
+
     await expect(manager.connect(bob).setProtector(alice.address, true, ts, 3600, 0))
       .to.emit(manager, "ProtectorChange")
       .withArgs(alice.address, true);
+
+    expect(await manager.preApprovals(hash)).to.be.equal(addr0);
   });
 
   it("should add the first 3 protectors and remove one of them", async function () {

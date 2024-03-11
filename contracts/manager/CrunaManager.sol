@@ -60,11 +60,6 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     // Nothing, for now, since this is the first version of the manager
   }
 
-  /// @dev see {ICrunaManager.sol-countActiveProtectors}
-  function countActiveProtectors() external view virtual override returns (uint256) {
-    return _actors[ManagerConstants.protectorId()].length;
-  }
-
   /// @dev see {ICrunaManager.sol-findProtectorIndex}
   function findProtectorIndex(address protector_) external view virtual override returns (uint256) {
     return _actorIndex(protector_, ManagerConstants.protectorId());
@@ -230,6 +225,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       proxyAddress_,
       canManageTransfer ? 1 : 0,
       isERC6551Account ? 1 : 0,
+      uint256(bytes32(salt)),
       timestamp,
       validFor,
       signature
@@ -256,6 +252,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       _pseudoAddress(name, salt),
       uint256(change),
       timeLock_,
+      0,
       timestamp,
       validFor,
       signature
@@ -375,7 +372,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     bytes calldata signature
   ) external override onlyTokenOwner {
     if (timestamp == 0) revert ToBeUsedOnlyWhenProtectorsAreActive();
-    _preValidateAndCheckSignature(this.protectedTransfer.selector, to, 0, 0, timestamp, validFor, signature);
+    _preValidateAndCheckSignature(this.protectedTransfer.selector, to, 0, 0, 0, timestamp, validFor, signature);
     _resetOnTransfer(bytes4(0), bytes4(0));
     _vault().managedTransfer(_nameId(), tokenId, to);
   }
@@ -557,7 +554,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
   ) internal virtual {
     if (actor == address(0)) revert ZeroAddress();
     if (actor == sender) revert CannotBeYourself();
-    _preValidateAndCheckSignature(_functionSelector, actor, status ? 1 : 0, 0, timestamp, validFor, signature);
+    _preValidateAndCheckSignature(_functionSelector, actor, status ? 1 : 0, 0, 0, timestamp, validFor, signature);
     if (!status) {
       if (timestamp != 0)
         if (timestamp > _TIME_VALIDATION_MULTIPLIER - 1)
@@ -569,15 +566,6 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
           if (_isActiveActor(actor, ManagerConstants.protectorId())) revert ProtectorAlreadySetByYou(actor);
       _addActor(actor, role_);
     }
-  }
-
-  function _isPluginAuthorizable(bytes4 nameId_, bytes4 salt) internal view virtual {
-    bytes8 _key = _combineBytes4(nameId_, salt);
-    if (_pluginByKey[_key].proxyAddress == address(0)) revert PluginNotFound();
-    if (!_pluginByKey[_key].trusted)
-      if (!_vault().allowUntrustedTransfers()) revert UntrustedImplementationsNotAllowedToMakeTransfers();
-    CrunaPluginBase plugin_ = _plugin(nameId_, salt);
-    if (!plugin_.requiresToManageTransfer()) revert NotATransferPlugin();
   }
 
   function _emitLockeEvent(uint256 protectorsCount, bool status) internal virtual {
@@ -638,6 +626,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     address actor,
     uint256 extra,
     uint256 extra2,
+    uint256 extra3,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
@@ -651,7 +640,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       tokenId(),
       extra,
       extra2,
-      0,
+      extra3,
       timestamp * _TIMESTAMP_MULTIPLIER + validFor,
       signature
     );
@@ -672,6 +661,8 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       abi.encodeWithSignature("resetOnTransfer()")
     );
     if (!success) {
+      // This should never happen. But it can happen if the user replace CrunaPluginBase
+      // with its own implementation — not advised to do :-(
       emit PluginResetAttemptFailed(nameId_, salt);
     }
   }

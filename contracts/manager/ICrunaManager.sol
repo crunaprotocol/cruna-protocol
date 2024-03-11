@@ -236,9 +236,6 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
    */
   function migrate(uint256 /* version */) external;
 
-  /// @dev Counts the protectors.
-  function countActiveProtectors() external view returns (uint256);
-
   /**
    * @dev Find a specific protector
    */

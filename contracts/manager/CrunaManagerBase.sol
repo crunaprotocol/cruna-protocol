@@ -21,10 +21,6 @@ interface INamedAndVersioned {
   @dev Base contract for managers and plugins
 */
 abstract contract CrunaManagerBase is ICrunaManager, CommonBase {
-  function version() external pure virtual override returns (uint256) {
-    return _version();
-  }
-
   // @dev Upgrade the implementation of the manager
   function upgrade(address implementation_) external virtual override {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
@@ -46,10 +42,6 @@ abstract contract CrunaManagerBase is ICrunaManager, CommonBase {
 
   // must be implemented by the manager
   function migrate(uint256 previousVersion) external virtual;
-
-  function _nameId() internal view virtual override returns (bytes4) {
-    return bytes4(keccak256("CrunaManager"));
-  }
 
   function _version() internal pure virtual returns (uint256) {
     return 1_000_000;

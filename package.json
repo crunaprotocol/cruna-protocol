@@ -9,7 +9,7 @@
     "/contracts/**/*.sol"
   ],
   "scripts": {
-    "clean": "rimraf artifacts cache coverage coverage.json",
+    "clean": "rimraf artifacts cache",
     "test": "NODE_ENV=test scripts/set-canonical.js && NODE_ENV=test npx hardhat test",
     "test:gas": "NODE_ENV=test scripts/set-canonical.js && NODE_ENV=test GAS_REPORT=yes npx hardhat test",
     "compile": "NODE_ENV=test npx hardhat compile",
