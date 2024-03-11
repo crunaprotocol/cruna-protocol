@@ -45,7 +45,7 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
   error AlreadyInitiated();
   error NotTheTokenOwner();
   error CannotUpgradeToAnOlderVersion();
-  error UntrustedImplementation();
+  error UntrustedImplementation(address implementation);
   error NotAvailableIfTokenIdsAreNotProgressive();
   error InvalidTokenId();
   error NftNotInitiated();

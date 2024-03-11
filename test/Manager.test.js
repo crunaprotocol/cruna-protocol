@@ -130,7 +130,9 @@ describe("CrunaManager : Upgrades", function () {
 
     await expect(manager.upgrade(managerV2Impl.address)).to.be.revertedWith("NotTheTokenOwner");
 
-    await expect(manager.connect(bob).upgrade(managerV2Impl.address)).to.be.revertedWith("UntrustedImplementation");
+    await expect(manager.connect(bob).upgrade(managerV2Impl.address))
+      .to.be.revertedWith("UntrustedImplementation")
+      .withArgs(managerV2Impl.address);
 
     await trustImplementation(
       guardian,

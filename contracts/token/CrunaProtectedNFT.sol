@@ -119,7 +119,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     if (!_nftConf.progressiveTokenIds) revert NotAvailableIfTokenIdsAreNotProgressive();
     IVersionedManager newManager = IVersionedManager(newManagerProxy);
     if (Canonical.crunaGuardian().trustedImplementation(newManager.nameId(), newManager.DEFAULT_IMPLEMENTATION()) == 0)
-      revert UntrustedImplementation();
+      revert UntrustedImplementation(newManagerProxy);
     address lastEmitter = _managerHistory[_nftConf.managerHistoryLength - 1].managerAddress;
     if (newManager.version() <= IVersionedManager(lastEmitter).version()) revert CannotUpgradeToAnOlderVersion();
     _managerHistory[_nftConf.managerHistoryLength - 1].lastTokenId = _nftConf.nextTokenId - 1;
