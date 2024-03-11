@@ -21,8 +21,8 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
    */
   bytes4 private constant _SENTINEL = 0xd3eedd6d; // bytes4(keccak256("SENTINEL"))
 
-  InheritanceConf internal _inheritanceConf;
-  Votes internal _votes;
+  InheritanceConf _inheritanceConf;
+  Votes _votes;
 
   function requiresToManageTransfer() external pure override returns (bool) {
     return true;

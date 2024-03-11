@@ -14,9 +14,9 @@ import {ISignatureValidator} from "./ISignatureValidator.sol";
 abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
   using ECDSA for bytes32;
 
-  uint256 internal constant _MAX_VALID_FOR = 9_999_999;
-  uint256 internal constant _TIMESTAMP_MULTIPLIER = 1e7;
-  uint256 internal constant _TIME_VALIDATION_MULTIPLIER = 1e17;
+  uint256 constant _MAX_VALID_FOR = 9_999_999;
+  uint256 constant _TIMESTAMP_MULTIPLIER = 1e7;
+  uint256 constant _TIME_VALIDATION_MULTIPLIER = 1e17;
 
   mapping(bytes32 operationsHash => address approver) private _preApprovals;
   mapping(bytes32 signatureHash => bool used) private _usedSignatures;

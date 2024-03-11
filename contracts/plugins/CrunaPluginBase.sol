@@ -13,7 +13,7 @@ import {Canonical} from "../libs/Canonical.sol";
 // import {console} from "hardhat/console.sol";
 
 abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
-  Conf internal _conf;
+  Conf _conf;
 
   modifier ifMustNotBeReset() {
     if (_conf.mustBeReset == 1) revert PluginMustBeReset();

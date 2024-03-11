@@ -8,7 +8,7 @@ pragma solidity ^0.8.20;
 // @dev This contract manages actors
 contract Actor {
   uint256 private constant _MAX_ACTORS = 16;
-  mapping(bytes4 role => address[] actors) internal _actors;
+  mapping(bytes4 role => address[] actors) _actors;
 
   error ZeroAddress();
   error ActorAlreadyAdded();
