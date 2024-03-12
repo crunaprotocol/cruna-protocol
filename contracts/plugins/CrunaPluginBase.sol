@@ -26,7 +26,11 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
     _;
   }
 
-  /// @dev Verifies that the caller is the manager
+  /**
+    @dev Verifies that the caller is the manager
+      The manager is not a wallet, it is the contract, owned by the token, that can manage the token
+      and plug and manage plugins.
+  */
   modifier onlyManager() {
     if (_msgSender() != address(_conf.manager)) revert Forbidden();
     _;
