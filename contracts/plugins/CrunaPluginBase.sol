@@ -72,6 +72,7 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
   }
 
   /// @dev see {ICrunaPlugin.sol-resetOnTransfer}
+  // The manager is not a wallet, it is the NFT Manager contract, owned by the token.
   function resetOnTransfer() external override ifMustNotBeReset onlyManager {
     _conf.mustBeReset = 1;
   }
