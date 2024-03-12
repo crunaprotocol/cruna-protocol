@@ -3,24 +3,27 @@ pragma solidity ^0.8.20;
 
 // this is a reduction of IERC6551Account focusing purely on the bond between the NFT and the contract
 
-/// @dev the ERC-165 identifier for this interface is `0xfc0c546a`
+/**
+  @title ITokenLinkedContract
+*/
 interface ITokenLinkedContract {
   /**
-   * @dev Returns the identifier of the non-fungible token which owns the contract.
-   *
-   * The return value of this function MUST be constant - it MUST NOT change over time.
-   *
-   * @return chainId       The EIP-155 ID of the chain the token exists on
-   * @return tokenContract The contract address of the token
-   * @return tokenId       The ID of the token
-   */
+    @dev Returns the token linked to the contract
+    @return chainId The chainId of the token
+    @return tokenContract The address of the token contract
+    @return tokenId The tokenId of the token
+  */
   function token() external view returns (uint256 chainId, address tokenContract, uint256 tokenId);
 
+  /// @dev Returns the owner of the token
   function owner() external view returns (address);
 
+  /// @dev Returns the address of the token contract
   function tokenAddress() external view returns (address);
 
+  /// @dev Returns the tokenId of the token
   function tokenId() external view returns (uint256);
 
+  /// @dev Returns the implementation used when creating the contract
   function implementation() external view returns (address);
 }

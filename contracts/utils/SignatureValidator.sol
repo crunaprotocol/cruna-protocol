@@ -6,50 +6,66 @@ import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 import {ISignatureValidator} from "./ISignatureValidator.sol";
+import {ICrunaManager} from "../manager/ICrunaManager.sol";
 
 // import "hardhat/console.sol";
 
-// @dev This contract is used to validate signatures.
-//   It is based on EIP712 and supports typed messages V4.
+/**
+  @title SignatureValidator
+  @author Francesco Sullo <francesco@sullo.co>
+  @dev This contract is used to validate signatures.
+  It is based on EIP712 and supports typed messages V4.
+*/
 abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
   using ECDSA for bytes32;
 
-  uint256 internal constant _MAX_VALID_FOR = 9_999_999;
-  uint256 internal constant _TIMESTAMP_MULTIPLIER = 1e7;
-  uint256 internal constant _TIME_VALIDATION_MULTIPLIER = 1e17;
+  /**
+    The time validation is a uint256 with the following structure:
+      - the timestamp is multiplied by 10_000_000
+      - the validity is added to the timestamp
+    For example, if timestamp is 1710280592 and validFor is 3600
+    the timeValidation will be 17102805920003600
+  */
 
+  /// @dev The maximum validFor. If more than this it will conflict with the timestamp.
+  uint256 internal constant _MAX_VALID_FOR = 9_999_999;
+
+  /// @dev The multiplier for the timestamp in the timeValidation parameter.
+  uint256 internal constant _TIMESTAMP_MULTIPLIER = 10_000_000;
+
+  /**
+    @dev All the pre approvals
+    - operationsHash The hash of operations
+    - approver The protector approving it
+  */
   mapping(bytes32 operationsHash => address approver) private _preApprovals;
+
+  /**
+    @dev All the used signatures
+    - signatureHash The hash of the signature
+    - used If the signature has been used
+  */
   mapping(bytes32 signatureHash => bool used) private _usedSignatures;
 
+  /// @dev EIP712 constructor
   constructor() EIP712("Cruna", "1") {}
 
+  /// @dev See {ISignatureValidator.sol-preApprovals}
   function preApprovals(bytes32 hash) external view override returns (address) {
     return _preApprovals[hash];
   }
 
+  /// @dev see {ISignatureValidator.sol-hashSignature}
   function hashSignature(bytes calldata signature) external pure override returns (bytes32) {
     return _hashBytes(signature);
   }
 
+  /// @dev see {ISignatureValidator.sol-isSignatureUsed}
   function isSignatureUsed(bytes32 hash) external view override returns (bool) {
     return _usedSignatures[hash];
   }
 
-  // @dev This function validates a signature trying to be as flexible as possible.
-  //   As long as called inside the same contract, the cost adding some more parameters is negligible. Instead, calling it from other contracts can be expensive.
-  // @param selector The selector of the function being called.
-  // @param owner The owner of the token.
-  // @param actor The actor being authorized.
-  //   It can be address(0) if the parameter is not needed.
-  // @param tokenAddress The address of the token.
-  // @param tokenId The id of the token.
-  // @param extra The extra
-  // @param extra2 The extra2
-  // @param extra3 The extra3
-  // @param timeValidation A combination of timestamp and validity of the signature.
-  //   To be readable, the value is calculated as
-  //     timestamp * _TIMESTAMP_MULTIPLIER + validity
-  // @param Returns the signer of the signature.
+  /// @dev see {ISignatureValidator-recoverSigner}
   function recoverSigner(
     bytes4 selector,
     address owner,
@@ -70,6 +86,7 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
     return (_preApprovals[hash], hash);
   }
 
+  /// @dev see {ISignatureValidator-preApprove}
   function preApprove(
     bytes4 selector,
     address owner,
@@ -87,21 +104,51 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
     emit PreApproved(hash, _msgSender());
   }
 
-  // @dev Must be implemented by the contract using this base contract
+  /**
+    @dev Checks if someone can pre approve an operation.
+      Must be implemented by the contract using this base contract
+    @param selector The selector of the function being called.
+    @param actor The actor being authorized.
+    @param signer The signer of the operation (the protector)
+  */
   function _canPreApprove(bytes4 selector, address actor, address signer) internal view virtual returns (bool);
 
+  /**
+    @dev Validates the timeValidation parameter.
+    @param timeValidation The timeValidation parameter
+  */
   function _validate(uint256 timeValidation) internal view {
     uint256 timestamp = timeValidation / _TIMESTAMP_MULTIPLIER;
-    if (timestamp > block.timestamp || timestamp < block.timestamp - (timeValidation % _TIMESTAMP_MULTIPLIER))
-      revert TimestampInvalidOrExpired();
+    if (timestamp > 0)
+      if (timestamp > block.timestamp || timestamp < block.timestamp - (timeValidation % _TIMESTAMP_MULTIPLIER))
+        revert TimestampInvalidOrExpired();
   }
 
-  // @dev Must be implemented by the contract using this base contract
+  /**
+    @dev Checks if the NFT is protected.
+      Must be implemented by the contract using this base contract
+  */
   function _isProtected() internal view virtual returns (bool);
 
-  // @dev Must be implemented by the contract using this base contract
+  /**
+    @dev Checks if an address is a protector.
+      Must be implemented by the contract using this base contract
+  */
   function _isProtector(address protector) internal view virtual returns (bool);
 
+  /**
+    @dev Validates and checks the signature.
+    @param selector The selector of the function being called.
+    @param owner The owner of the token.
+    @param actor The actor being authorized.
+    @param tokenAddress The address of the token.
+    @param tokenId The id of the token.
+    @param extra The extra
+    @param extra2 The extra2
+    @param extra3 The extra3
+    @param timeValidation A combination of timestamp and validity of the signature.
+    @param signature The signature.
+  */
   function _validateAndCheckSignature(
     bytes4 selector,
     address owner,
@@ -112,13 +159,10 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
     uint256 extra2,
     uint256 extra3,
     // we encode here the isProtector to avoid too many variables, when setting the first protector
-    uint256 timeValidationAndSetProtector,
+    uint256 timeValidation,
     bytes calldata signature
   ) internal virtual {
-    if (
-      timeValidationAndSetProtector < _TIME_VALIDATION_MULTIPLIER &&
-      timeValidationAndSetProtector % _TIME_VALIDATION_MULTIPLIER < _TIMESTAMP_MULTIPLIER
-    ) {
+    if (timeValidation < _TIMESTAMP_MULTIPLIER) {
       if (_isProtected()) revert NotPermittedWhenProtectorsAreActive();
     } else {
       if (_usedSignatures[_hashBytes(signature)]) revert SignatureAlreadyUsed();
@@ -132,16 +176,28 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
         extra,
         extra2,
         extra3,
-        timeValidationAndSetProtector % _TIME_VALIDATION_MULTIPLIER,
+        timeValidation,
         signature
       );
-      if (timeValidationAndSetProtector > _TIME_VALIDATION_MULTIPLIER && !_isProtected()) {
+      if (selector == ICrunaManager.setProtector.selector && !_isProtected()) {
         if (signer != actor) revert WrongDataOrNotSignedByProtector();
       } else if (!_isProtector(signer)) revert WrongDataOrNotSignedByProtector();
       delete _preApprovals[hash];
     }
   }
 
+  /**
+    @dev Hashes the data.
+    @param selector The selector of the function being called.
+    @param owner The owner of the token.
+    @param actor The actor being authorized.
+    @param tokenAddress The address of the token.
+    @param tokenId The id of the token.
+    @param extra The extra
+    @param extra2 The extra2
+    @param extra3 The extra3
+    @param timeValidation A combination of timestamp and validity of the signature.
+  */
   function _hashData(
     bytes4 selector,
     address owner,
@@ -172,6 +228,10 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
       );
   }
 
+  /**
+    @dev Util to hash the bytes of the signature saving gas in comparison with using keccak256.
+    @param signature The signature.
+  */
   function _hashBytes(bytes memory signature) internal pure returns (bytes32 hash) {
     // solhint-disable-next-line no-inline-assembly
     assembly {

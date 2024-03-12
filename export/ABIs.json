@@ -2023,7 +2023,7 @@
             "type": "address"
           }
         ],
-        "name": "requestTransfer",
+        "name": "voteForBeneficiary",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"

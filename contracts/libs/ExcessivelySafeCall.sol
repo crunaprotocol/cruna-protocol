@@ -1,6 +1,12 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 pragma solidity ^0.8.20;
 
+/**
+  @title ExcessivelySafeCall
+  @dev A library to make calls to untrusted contracts safer
+
+  The original code is at https://github.com/nomad-xyz/ExcessivelySafeCall
+*/
 library ExcessivelySafeCall {
   uint256 private constant _LOW_28_MASK = 0x00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
 

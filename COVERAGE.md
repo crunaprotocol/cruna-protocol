@@ -18,9 +18,9 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   Canonical.sol                       |      100 |      100 |      100 |      100 
   ExcessivelySafeCall.sol             |      100 |      100 |      100 |      100 
   ManagerConstants.sol                |      100 |      100 |      100 |      100 
- manager/                             |    97.89 |    71.84 |    98.46 |    96.32 
+ manager/                             |    98.72 |    74.26 |    98.46 |    96.68 
   Actor.sol                           |      100 |    57.14 |      100 |      100 
-  CrunaManager.sol                    |    97.52 |    73.33 |    98.15 |    95.67 
+  CrunaManager.sol                    |     98.5 |    76.14 |    98.15 |    96.09 
   CrunaManagerBase.sol                |      100 |    66.67 |      100 |      100 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   ICrunaManager.sol                   |      100 |      100 |      100 |      100 
@@ -37,7 +37,7 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   CrunaProtectedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaProtectedNFT.sol              |      100 |      100 |      100 |      100 
   IManagedNFT.sol                     |      100 |      100 |      100 |      100 
- utils/                               |    96.36 |       72 |      100 |    98.39 
+ utils/                               |    96.43 |    71.15 |      100 |    98.41 
   CommonBase.sol                      |      100 |      100 |      100 |      100 
   ERC6551AccountProxy.sol             |       90 |       75 |      100 |    90.91 
   FlexiTimelockController.sol         |      100 |       50 |      100 |      100 
@@ -47,9 +47,9 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   ISignatureValidator.sol             |      100 |      100 |      100 |      100 
   ITokenLinkedContract.sol            |      100 |      100 |      100 |      100 
   IVersioned.sol                      |      100 |      100 |      100 |      100 
-  SignatureValidator.sol              |      100 |       90 |      100 |      100 
+  SignatureValidator.sol              |      100 |    86.36 |      100 |      100 
   TokenLinkedContract.sol             |       90 |       50 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    96.34 |    68.47 |    97.19 |    94.56 
+All files                             |    96.74 |    69.46 |    97.19 |    94.73 
 --------------------------------------|----------|----------|----------|----------
 ```

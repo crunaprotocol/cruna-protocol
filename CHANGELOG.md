@@ -1,5 +1,9 @@
 # Change log
 
+**0.2.5**
+- Simplifying the way to know that `ICrunaManager.setProtector` function is called in `SignatureValidator`
+- Completing the NatSpec comments for all the contracts.
+
 **0.2.4**
 - Increase coverage
 

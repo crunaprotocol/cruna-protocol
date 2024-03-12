@@ -12,18 +12,18 @@ import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
 
 interface ICrunaManager is ITokenLinkedContract, IVersioned {
   /**
-   * @dev A struct to keep info about plugged and unplugged plugins
-   * @param proxyAddress The address of the first implementation of the plugin
-   * @param salt The salt used during the deployment of the plugin.
-   * It allows to  have multiple instances of the same plugin
-   * @param timeLock The time lock for when a plugin is temporarily unauthorized from making transfers
-   * @param canManageTransfer True if the plugin can manage transfers
-   * @param canBeReset True if the plugin requires a reset when the vault is transferred
-   * @param active True if the plugin is active
-   * @param isERC6551Account True if the plugin is an ERC6551 account
-   * @param trusted True if the plugin is trusted
-   * @param banned True if the plugin is banned during the unplug process
-   * @param unplugged True if the plugin has been unplugged
+     @dev A struct to keep info about plugged and unplugged plugins
+     @param proxyAddress The address of the first implementation of the plugin
+     @param salt The salt used during the deployment of the plugin.
+     It allows to  have multiple instances of the same plugin
+     @param timeLock The time lock for when a plugin is temporarily unauthorized from making transfers
+     @param canManageTransfer True if the plugin can manage transfers
+     @param canBeReset True if the plugin requires a reset when the vault is transferred
+     @param active True if the plugin is active
+     @param isERC6551Account True if the plugin is an ERC6551 account
+     @param trusted True if the plugin is trusted
+     @param banned True if the plugin is banned during the unplug process
+     @param unplugged True if the plugin has been unplugged
    */
   struct PluginConfig {
     address proxyAddress;
@@ -39,14 +39,14 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   }
 
   /**
-   * @dev The plugin element
-   * @param nameId The bytes4 of the hash of the name of the plugin
-   * All plugins' names must be unique, as well as their bytes4 Ids
-   * An official registry will be set up to avoid collisions when plugins
-   * development will be more active. Using the proxy address as a key is
-   * not viable because plugins can be upgraded and the address can change.
-   * @param salt The salt of the plugin
-   * @param active True if the plugin is active
+     @dev The plugin element
+     @param nameId The bytes4 of the hash of the name of the plugin
+     All plugins' names must be unique, as well as their bytes4 Ids
+     An official registry will be set up to avoid collisions when plugins
+     development will be more active. Using the proxy address as a key is
+     not viable because plugins can be upgraded and the address can change.
+     @param salt The salt of the plugin
+     @param active True if the plugin is active
    */
   struct PluginElement {
     bytes4 nameId;
@@ -56,7 +56,7 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   }
 
   /**
-   * @dev It enumerates the action that can be performed when changing the status of a plugin
+     @dev It enumerates the action that can be performed when changing the status of a plugin
    */
   enum PluginChange {
     Plug,
@@ -93,16 +93,16 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   event PluginTrusted(string indexed name, bytes4 salt);
 
   /**
-   * @dev Emitted when the implementation of the manager is upgraded
-   * @param implementation_ The address of the new implementation
-   * @param oldVersion The old version of the manager
-   * @param newVersion The new version of the manager
+     @dev Emitted when the implementation of the manager is upgraded
+     @param implementation_ The address of the new implementation
+     @param oldVersion The old version of the manager
+     @param newVersion The new version of the manager
    */
   event ImplementationUpgraded(address indexed implementation_, uint256 oldVersion, uint256 newVersion);
 
   /**
-   * @dev Event emitted when the attempt to reset a plugin fails
-   * When this happens, the token owner can unplug the plugin and mark it as banned to avoid future re-plugs
+     @dev Event emitted when the attempt to reset a plugin fails
+     When this happens, the token owner can unplug the plugin and mark it as banned to avoid future re-plugs
    */
   event PluginResetAttemptFailed(bytes4 _nameId, bytes4 salt);
 
@@ -110,7 +110,7 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   error UntrustedImplementation(address implementation);
 
   /// @dev Returned when trying to upgrade to an older version of the manager
-  error InvalidVersion(uint256 version);
+  error InvalidVersion(uint256 oldVersion, uint256 newVersion);
 
   /// @dev Returned when trying to plug a plugin that requires a new version of the manager
   error PluginRequiresUpdatedManager(uint256 requiredVersion);
@@ -215,8 +215,8 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   error ToBeUsedOnlyWhenProtectorsAreActive();
 
   /**
-   * @dev It returns the configuration of a plugin by key
-   * @param key The key of the plugin
+     @dev It returns the configuration of a plugin by key
+     @param key The key of the plugin
    */
   function pluginByKey(bytes8 key) external view returns (PluginConfig memory);
 
@@ -224,26 +224,26 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   function allPlugins() external view returns (PluginElement[] memory);
 
   /**
-   * @dev It returns an element of the array of all plugged plugins
-   * @param index The index of the plugin in the array
+     @dev It returns an element of the array of all plugged plugins
+     @param index The index of the plugin in the array
    */
   function pluginByIndex(uint256 index) external view returns (PluginElement memory);
 
   /**
-   * @dev During an upgrade allows the manager to perform adjustments if necessary.
-   * The parameter is the version of the manager being replaced. This will allow the
-   * new manager to know what to do to adjust the state of the new manager.
+     @dev During an upgrade allows the manager to perform adjustments if necessary.
+     The parameter is the version of the manager being replaced. This will allow the
+     new manager to know what to do to adjust the state of the new manager.
    */
   function migrate(uint256 /* version */) external;
 
   /**
-   * @dev Find a specific protector
+     @dev Find a specific protector
    */
   function findProtectorIndex(address protector_) external view returns (uint256);
 
   /**
-   * @dev Returns true if the address is a protector.
-   * @param protector_ The protector address.
+     @dev Returns true if the address is a protector.
+     @param protector_ The protector address.
    */
   function isProtector(address protector_) external view returns (bool);
 
@@ -251,9 +251,9 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   function hasProtectors() external view returns (bool);
 
   /**
-   * @dev Returns true if the token is transferable (since the NFT is ERC6454)
-   * @param to The address of the recipient.
-   * If the recipient is a safe recipient, it returns true.
+     @dev Returns true if the token is transferable (since the NFT is ERC6454)
+     @param to The address of the recipient.
+     If the recipient is a safe recipient, it returns true.
    */
   function isTransferable(address to) external view returns (bool);
 
@@ -267,15 +267,15 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   function countSafeRecipients() external view returns (uint256);
 
   /**
-   * @dev Set a protector for the token
-   * @param protector_ The protector address
-   * @param active True to add a protector, false to remove it
-   * @param timestamp The timestamp of the signature
-   * @param validFor The validity of the signature
-   * @param signature The signature of the protector
-   * If no signature is required, the field timestamp must be 0
-   * If the operations has been pre-approved by the protector, the signature should be replaced
-   * by a shorter (invalid) one, to tell the signature validator to look for a pre-approval.
+     @dev Set a protector for the token
+     @param protector_ The protector address
+     @param active True to add a protector, false to remove it
+     @param timestamp The timestamp of the signature
+     @param validFor The validity of the signature
+     @param signature The signature of the protector
+     If no signature is required, the field timestamp must be 0
+     If the operations has been pre-approved by the protector, the signature should be replaced
+     by a shorter (invalid) one, to tell the signature validator to look for a pre-approval.
    */
   function setProtector(
     address protector_,
@@ -286,9 +286,9 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   ) external;
 
   /**
-   * @dev Imports protectors and safe recipients from another tokenId owned by the same owner
-   * It requires that there are no protectors and no safe recipients in the current token, and
-   * that the origin token has at least one protector or one safe recipient.
+     @dev Imports protectors and safe recipients from another tokenId owned by the same owner
+     It requires that there are no protectors and no safe recipients in the current token, and
+     that the origin token has at least one protector or one safe recipient.
    */
   function importProtectorsAndSafeRecipientsFrom(uint256 tokenId) external;
 
@@ -296,10 +296,10 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   function getProtectors() external view returns (address[] memory);
 
   /**
-   * @dev Set a safe recipient for the token, i.e., an address that can receive the token without any restriction
-   * even when protectors have been set.
-   * @param recipient The recipient address
-   * @param status True to add a safe recipient, false to remove it
+     @dev Set a safe recipient for the token, i.e., an address that can receive the token without any restriction
+     even when protectors have been set.
+     @param recipient The recipient address
+     @param status True to add a safe recipient, false to remove it
    * @param timestamp The timestamp of the signature
    * @param validFor The validity of the signature
    * @param signature The signature of the protector

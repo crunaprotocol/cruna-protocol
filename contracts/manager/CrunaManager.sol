@@ -110,7 +110,7 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
       ManagerConstants.protectorId(),
       protector_,
       status,
-      timestamp + (_TIME_VALIDATION_MULTIPLIER / _TIMESTAMP_MULTIPLIER),
+      timestamp,
       validFor,
       signature,
       _msgSender()
@@ -131,8 +131,6 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     address[] memory otherProtectors = otherManager.getProtectors();
     uint256 len = otherProtectors.length;
     for (uint256 i; i < len; ) {
-      if (otherProtectors[i] == address(0)) revert ZeroAddress();
-      if (otherProtectors[i] == _msgSender()) revert CannotBeYourself();
       _addActor(otherProtectors[i], ManagerConstants.protectorId());
       unchecked {
         ++i;
@@ -557,12 +555,14 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     _preValidateAndCheckSignature(_functionSelector, actor, status ? 1 : 0, 0, 0, timestamp, validFor, signature);
     if (!status) {
       if (timestamp != 0)
-        if (timestamp > _TIME_VALIDATION_MULTIPLIER - 1)
-          if (!_isActiveActor(actor, ManagerConstants.protectorId())) revert ProtectorNotFound(actor);
+        if (_functionSelector == this.setProtector.selector)
+          if (!_isActiveActor(actor, ManagerConstants.protectorId()))
+            // setProtector
+            revert ProtectorNotFound(actor);
       _removeActor(actor, role_);
     } else {
       if (timestamp != 0)
-        if (timestamp > _TIME_VALIDATION_MULTIPLIER - 1)
+        if (_functionSelector == this.setProtector.selector)
           if (_isActiveActor(actor, ManagerConstants.protectorId())) revert ProtectorAlreadySetByYou(actor);
       _addActor(actor, role_);
     }

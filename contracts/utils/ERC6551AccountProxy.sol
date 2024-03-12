@@ -6,30 +6,40 @@ import {Proxy} from "@openzeppelin/contracts/proxy/Proxy.sol";
 
 // import "hardhat/console.sol";
 
-// This version of ERC6551AccountProxy is modified to work with the OpenZeppelin Contracts v5
-// The original version can be found in https://github.com/erc6551/reference
+/**
+  @title ERC6551AccountProxy
+    This version of ERC6551AccountProxy is modified to work with the OpenZeppelin Contracts v5
+    The original version (working with OZ v4.9.x) can be found in https://github.com/erc6551/reference
+*/
 contract ERC6551AccountProxy is Proxy {
+  /// @dev The default implementation of the contract
   address public immutable DEFAULT_IMPLEMENTATION;
 
+  /// @dev Error returned when the implementation is invalid
   error InvalidImplementation();
 
+  /// @dev The function that allows to receive ether and generic calls
   receive() external payable virtual {
     _fallback();
   }
 
+  /**
+    @dev Constructor
+    @param _defaultImplementation The default implementation of the contract
+  */
   constructor(address _defaultImplementation) {
     if (_defaultImplementation == address(0)) revert InvalidImplementation();
     DEFAULT_IMPLEMENTATION = _defaultImplementation;
   }
 
+  /// @dev Returns the implementation of the contract
   function _implementation() internal view virtual override returns (address) {
     address implementation = ERC1967Utils.getImplementation();
-
     if (implementation == address(0)) return DEFAULT_IMPLEMENTATION;
-
     return implementation;
   }
 
+  /// @dev Fallback function that redirect all the calls not in this proxy to the implementation
   function _fallback() internal virtual override {
     if (msg.data.length == 0) {
       if (ERC1967Utils.getImplementation() == address(0)) {

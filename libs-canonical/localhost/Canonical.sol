@@ -7,11 +7,16 @@ import {ICrunaGuardian} from "../canonical/ICrunaGuardian.sol";
 import {ICrunaRegistry} from "../canonical/CrunaRegistry.sol";
 
 /**
-  Canonical for testing and deployment to localhost (using hardhat mnemonic).
+  @title Canonical
+  @dev Returns the address where registries and guardian have been deployed
+    There are two set of addresses. In both, the registry are on the same addresses, but
+    the guardian has a different address for testing and deployment to localhost (using the 2nd
+    and 3rd hardhat standard wallets as proposer and executor).
+    This contract is for development and testing purposes only. When the package is published
+    to Npm, the addresses will be replaced by the actual addresses of the deployed contracts.
 */
 
 library Canonical {
-
   function crunaRegistry() internal pure returns (ICrunaRegistry) {
     return ICrunaRegistry(0xccCCCb5339Db00811C69f52C384030cB431FBE00);
   }
