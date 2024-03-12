@@ -4,6 +4,7 @@ pragma solidity ^0.8.20;
 // Author: Francesco Sullo <francesco@sullo.co>
 
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {ICrunaManager} from "./ICrunaManager.sol";
 import {CommonBase} from "../utils/CommonBase.sol";
@@ -16,12 +17,12 @@ import {INamedAndVersioned} from "../utils/INamedAndVersioned.sol";
   @title CrunaManagerBase.sol
   @dev Base contract for managers and plugins
 */
-abstract contract CrunaManagerBase is ICrunaManager, CommonBase {
+abstract contract CrunaManagerBase is ICrunaManager, CommonBase, ReentrancyGuard {
   /**
     @dev Upgrade the implementation of the manager
     @param implementation_ The new implementation
   */
-  function upgrade(address implementation_) external virtual override {
+  function upgrade(address implementation_) external virtual override nonReentrant {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     if (implementation_ == address(0)) revert ZeroAddress();
     uint256 requires = Canonical.crunaGuardian().trustedImplementation(bytes4(keccak256("CrunaManager")), implementation_);
