@@ -12,38 +12,44 @@ import {Canonical} from "../libs/Canonical.sol";
 
 // import {console} from "hardhat/console.sol";
 
+/**
+  @title CrunaPluginBase
+  @dev Base contract for plugins
+*/
 abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
+  /// @dev The internal configuration of the plugin
   Conf internal _conf;
 
+  /// @dev Verifies that the plugin must not be reset
   modifier ifMustNotBeReset() {
     if (_conf.mustBeReset == 1) revert PluginMustBeReset();
     _;
   }
 
+  /// @dev Verifies that the caller is the manager
   modifier onlyManager() {
     if (_msgSender() != address(_conf.manager)) revert Forbidden();
     _;
   }
 
+  /// @dev see {ICrunaPlugin.sol-init}
   function init() external {
     address managerAddress = _vault().managerOf(tokenId());
     if (_msgSender() != managerAddress) revert Forbidden();
     _conf.manager = CrunaManager(managerAddress);
   }
 
+  /// @dev see {ICrunaPlugin.sol-manager}
   function manager() external view virtual override returns (CrunaManager) {
     return _conf.manager;
   }
 
-  // override if function is not 1.0.0
+  /// @dev see {IVersioned.sol-version}
   function version() external pure virtual override returns (uint256) {
     return _version();
   }
 
-  // @dev Upgrade the implementation of the plugin
-  //   Notice that the owner can upgrade active or disable plugins
-  //   so that, if a plugin is compromised, the user can disable it,
-  //   wait for a new trusted implementation and upgrade it.
+  /// @dev see {ICrunaPlugin.sol-upgrade}
   function upgrade(address implementation_) external virtual override {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     if (implementation_ == address(0)) revert ZeroAddress();
@@ -56,29 +62,41 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
     }
     IVersioned impl = IVersioned(implementation_);
     uint256 version_ = impl.version();
-    if (version_ <= _version()) revert InvalidVersion(version_);
+    if (version_ <= _version()) revert InvalidVersion(_version(), version_);
     if (_conf.manager.version() < requires) revert PluginRequiresUpdatedManager(requires);
     StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
   }
 
-  /// @dev This sets the plugin as must be reset. It is the plugin's responsibility
-  /// to set itself as market for reset and act consequently.
+  /// @dev see {ICrunaPlugin.sol-resetOnTransfer}
   function resetOnTransfer() external override ifMustNotBeReset onlyManager {
     _conf.mustBeReset = 1;
   }
 
+  /**
+    @dev Internal function to verify if a signer can pre approve an operation (if the sender is a protector)
+    The params:
+     - operation The selector of the called function
+     - the actor to be approved
+     - signer The signer of the operation (the protector)
+  */
   function _canPreApprove(bytes4, address, address signer) internal view virtual override returns (bool) {
     return _conf.manager.isProtector(signer);
   }
 
+  /// @dev see {IVersioned.sol-version}
   function _version() internal pure virtual returns (uint256) {
     return 1_000_000;
   }
 
+  /// @dev internal function to check if the NFT is currently protected
   function _isProtected() internal view virtual override returns (bool) {
     return _conf.manager.hasProtectors();
   }
 
+  /**
+    @dev Internal function to check if an address is a protector
+    @param protector The address to check
+  */
   function _isProtector(address protector) internal view virtual override returns (bool) {
     return _conf.manager.isProtector(protector);
   }

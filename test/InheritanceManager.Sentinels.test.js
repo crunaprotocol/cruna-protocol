@@ -203,7 +203,7 @@ describe("Sentinel and Inheritance", function () {
     await buyAVaultAndPlug(bob);
   });
 
-  it("should plug the plugin when protectors are active", async function () {
+  it("should plug it when protectors are active", async function () {
     await buyAVaultAndPlug(bob, true);
   });
 
@@ -403,7 +403,7 @@ describe("Sentinel and Inheritance", function () {
     expect(data[1].beneficiary).to.equal(addr0);
     expect(data[1].extendedProofOfLife).to.equal(0);
 
-    await expect(inheritancePlugin.connect(alice).requestTransfer(beneficiary1.address)).to.be.revertedWith(
+    await expect(inheritancePlugin.connect(alice).voteForBeneficiary(beneficiary1.address)).to.be.revertedWith(
       "InheritanceNotConfigured",
     );
 
@@ -453,19 +453,19 @@ describe("Sentinel and Inheritance", function () {
 
     await increaseBlockTimestampBy(10 * days);
 
-    await expect(inheritancePlugin.connect(alice).requestTransfer(beneficiary1.address)).to.be.revertedWith("StillAlive");
+    await expect(inheritancePlugin.connect(alice).voteForBeneficiary(beneficiary1.address)).to.be.revertedWith("StillAlive");
     await increaseBlockTimestampBy(100 * days);
 
-    await expect(inheritancePlugin.requestTransfer(beneficiary1.address)).to.be.revertedWith("NotASentinel");
+    await expect(inheritancePlugin.voteForBeneficiary(beneficiary1.address)).to.be.revertedWith("NotASentinel");
 
-    await expect(inheritancePlugin.connect(mark).requestTransfer(beneficiary1.address))
+    await expect(inheritancePlugin.connect(mark).voteForBeneficiary(beneficiary1.address))
       .to.emit(inheritancePlugin, "VotedForBeneficiary")
       .withArgs(mark.address, beneficiary1.address);
 
     data = await inheritancePlugin.getVotes();
     expect(data.includes(beneficiary1.address)).to.be.true;
 
-    await expect(inheritancePlugin.connect(fred).requestTransfer(beneficiary1.address))
+    await expect(inheritancePlugin.connect(fred).voteForBeneficiary(beneficiary1.address))
       .to.emit(inheritancePlugin, "VotedForBeneficiary")
       .withArgs(fred.address, beneficiary1.address);
 
@@ -484,11 +484,11 @@ describe("Sentinel and Inheritance", function () {
     // new attempt
 
     await increaseBlockTimestampBy(12 * 7 * days);
-    await inheritancePlugin.connect(mark).requestTransfer(beneficiary1.address);
-    await inheritancePlugin.connect(fred).requestTransfer(beneficiary1.address);
-    await inheritancePlugin.connect(otto).requestTransfer(beneficiary1.address);
+    await inheritancePlugin.connect(mark).voteForBeneficiary(beneficiary1.address);
+    await inheritancePlugin.connect(fred).voteForBeneficiary(beneficiary1.address);
+    await inheritancePlugin.connect(otto).voteForBeneficiary(beneficiary1.address);
 
-    await expect(inheritancePlugin.connect(jerry).requestTransfer(beneficiary1.address)).to.be.revertedWith(
+    await expect(inheritancePlugin.connect(jerry).voteForBeneficiary(beneficiary1.address)).to.be.revertedWith(
       "WaitingForBeneficiary",
     );
 
@@ -808,7 +808,7 @@ describe("Sentinel and Inheritance", function () {
 
     await increaseBlockTimestampBy(12 * 7 * days);
 
-    await inheritancePlugin.connect(alice).requestTransfer(beneficiary1.address);
+    await inheritancePlugin.connect(alice).voteForBeneficiary(beneficiary1.address);
 
     await inheritancePlugin.connect(beneficiary1).inherit();
   });
@@ -887,7 +887,7 @@ describe("Sentinel and Inheritance", function () {
     let votes = await inheritancePlugin.getVotes();
     expect(votes.length).to.equal(5);
 
-    await expect(inheritancePlugin.connect(alice).requestTransfer(beneficiary1.address)).to.be.revertedWith(
+    await expect(inheritancePlugin.connect(alice).voteForBeneficiary(beneficiary1.address)).to.be.revertedWith(
       "InheritanceNotConfigured",
     );
 
@@ -923,15 +923,15 @@ describe("Sentinel and Inheritance", function () {
 
     await increaseBlockTimestampBy(100 * days);
 
-    await expect(inheritancePlugin.connect(alice).requestTransfer(beneficiary1.address)).to.be.revertedWith(
+    await expect(inheritancePlugin.connect(alice).voteForBeneficiary(beneficiary1.address)).to.be.revertedWith(
       "WaitingForBeneficiary",
     );
 
     await increaseBlockTimestampBy(31 * days);
 
-    await expect(inheritancePlugin.requestTransfer(beneficiary2.address)).to.be.revertedWith("NotASentinel");
+    await expect(inheritancePlugin.voteForBeneficiary(beneficiary2.address)).to.be.revertedWith("NotASentinel");
 
-    await expect(inheritancePlugin.connect(mark).requestTransfer(beneficiary2.address))
+    await expect(inheritancePlugin.connect(mark).voteForBeneficiary(beneficiary2.address))
       .to.emit(inheritancePlugin, "VotedForBeneficiary")
       .withArgs(mark.address, beneficiary2.address);
 
@@ -939,7 +939,7 @@ describe("Sentinel and Inheritance", function () {
     expect(data.filter((e) => e !== addr0).length).to.equal(1);
     expect(data.includes(beneficiary2.address)).to.be.true;
 
-    await expect(inheritancePlugin.connect(fred).requestTransfer(beneficiary2.address))
+    await expect(inheritancePlugin.connect(fred).voteForBeneficiary(beneficiary2.address))
       .to.emit(inheritancePlugin, "VotedForBeneficiary")
       .withArgs(fred.address, beneficiary2.address);
 
@@ -956,9 +956,9 @@ describe("Sentinel and Inheritance", function () {
     // new attempt
 
     await increaseBlockTimestampBy(12 * 7 * days);
-    await inheritancePlugin.connect(mark).requestTransfer(beneficiary2.address);
-    await inheritancePlugin.connect(fred).requestTransfer(beneficiary2.address);
-    await inheritancePlugin.connect(otto).requestTransfer(beneficiary2.address);
+    await inheritancePlugin.connect(mark).voteForBeneficiary(beneficiary2.address);
+    await inheritancePlugin.connect(fred).voteForBeneficiary(beneficiary2.address);
+    await inheritancePlugin.connect(otto).voteForBeneficiary(beneficiary2.address);
 
     await expect(inheritancePlugin.connect(beneficiary2).inherit()).to.be.revertedWith("PluginNotFoundOrDisabled");
 
@@ -1192,7 +1192,7 @@ describe("Sentinel and Inheritance", function () {
     expect(data[1].beneficiary).to.equal(addr0);
     expect(data[1].extendedProofOfLife).to.equal(0);
 
-    await expect(inheritancePlugin.connect(alice).requestTransfer(beneficiary1.address)).to.be.revertedWith(
+    await expect(inheritancePlugin.connect(alice).voteForBeneficiary(beneficiary1.address)).to.be.revertedWith(
       "InheritanceNotConfigured",
     );
 
@@ -1228,22 +1228,22 @@ describe("Sentinel and Inheritance", function () {
 
     await increaseBlockTimestampBy(100 * days);
 
-    await expect(inheritancePlugin.connect(alice).requestTransfer(beneficiary1.address)).to.be.revertedWith(
+    await expect(inheritancePlugin.connect(alice).voteForBeneficiary(beneficiary1.address)).to.be.revertedWith(
       "WaitingForBeneficiary",
     );
 
     await increaseBlockTimestampBy(31 * days);
 
-    await expect(inheritancePlugin.requestTransfer(beneficiary2.address)).to.be.revertedWith("NotASentinel");
+    await expect(inheritancePlugin.voteForBeneficiary(beneficiary2.address)).to.be.revertedWith("NotASentinel");
 
-    await expect(inheritancePlugin.connect(mark).requestTransfer(beneficiary2.address))
+    await expect(inheritancePlugin.connect(mark).voteForBeneficiary(beneficiary2.address))
       .to.emit(inheritancePlugin, "VotedForBeneficiary")
       .withArgs(mark.address, beneficiary2.address);
 
     data = await inheritancePlugin.getVotes();
     expect(data.includes(beneficiary2.address)).to.be.true;
 
-    await expect(inheritancePlugin.connect(fred).requestTransfer(beneficiary2.address))
+    await expect(inheritancePlugin.connect(fred).voteForBeneficiary(beneficiary2.address))
       .to.emit(inheritancePlugin, "VotedForBeneficiary")
       .withArgs(fred.address, beneficiary2.address);
 
@@ -1262,9 +1262,9 @@ describe("Sentinel and Inheritance", function () {
     // new attempt
 
     await increaseBlockTimestampBy(12 * 7 * days);
-    await inheritancePlugin.connect(mark).requestTransfer(beneficiary2.address);
-    await inheritancePlugin.connect(fred).requestTransfer(beneficiary2.address);
-    await inheritancePlugin.connect(otto).requestTransfer(beneficiary2.address);
+    await inheritancePlugin.connect(mark).voteForBeneficiary(beneficiary2.address);
+    await inheritancePlugin.connect(fred).voteForBeneficiary(beneficiary2.address);
+    await inheritancePlugin.connect(otto).voteForBeneficiary(beneficiary2.address);
 
     await expect(inheritancePlugin.connect(beneficiary2).inherit()).to.be.revertedWith("PluginNotFoundOrDisabled");
 

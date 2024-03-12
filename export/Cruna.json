@@ -119,7 +119,12 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "version",
+          "name": "oldVersion",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "newVersion",
           "type": "uint256"
         }
       ],
@@ -1805,11 +1810,6 @@
     },
     {
       "inputs": [],
-      "name": "Expired",
-      "type": "error"
-    },
-    {
-      "inputs": [],
       "name": "Forbidden",
       "type": "error"
     },
@@ -1837,7 +1837,12 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "version",
+          "name": "oldVersion",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "newVersion",
           "type": "uint256"
         }
       ],
@@ -2068,38 +2073,6 @@
         }
       ],
       "name": "SentinelUpdated",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "sentinel",
-          "type": "address"
-        }
-      ],
-      "name": "TransferRequestApproved",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "sentinel",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "beneficiary",
-          "type": "address"
-        }
-      ],
-      "name": "TransferRequested",
       "type": "event"
     },
     {
@@ -2549,19 +2522,6 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "beneficiary",
-          "type": "address"
-        }
-      ],
-      "name": "requestTransfer",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
       "inputs": [],
       "name": "requiresResetOnTransfer",
       "outputs": [
@@ -2738,6 +2698,19 @@
         }
       ],
       "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "beneficiary",
+          "type": "address"
+        }
+      ],
+      "name": "voteForBeneficiary",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     }
   ],

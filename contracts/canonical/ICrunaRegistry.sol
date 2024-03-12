@@ -1,17 +1,24 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-// Modified registry based on CrunaRegistry
-// https://github.com/erc6551/reference/blob/main/src/CrunaRegistry.sol
-
-// We deploy our own registry to avoid misleading observers that may believe
-// that managers and plugins are accounts.
-
 // import "hardhat/console.sol";
 
+/**
+   @title CrunaRegistry
+   Modified registry based on ERC6551Registry
+   https://github.com/erc6551/reference/blob/main/src/ERC6551Registry.sol
+
+   @dev Manages the creation of token bound accounts
+ */
 interface ICrunaRegistry {
   /**
-   * @dev The registry MUST emit the ERC6551AccountCreated event upon successful account creation.
+    @dev The registry MUST emit the ERC6551AccountCreated event upon successful account creation.
+    @param contractAddress The address of the created account
+    @param implementation The address of the implementation contract
+    @param salt The salt to use for the create2 operation
+    @param chainId The chain id of the chain where the account is being created
+    @param tokenContract The address of the token contract
+    @param tokenId The id of the token
    */
   event TokenLinkedContractCreated(
     address contractAddress,
@@ -23,13 +30,15 @@ interface ICrunaRegistry {
   );
 
   /**
-   * @dev Creates a token bound account for a non-fungible token.
-   *
-   * If account has already been created, returns the account address without calling create2.
-   *
-   * Emits ERC6551AccountCreated event.
-   *
-   * @return account The address of the token bound account
+    @dev Creates a token bound account for a non-fungible token.
+    If account has already been created, returns the account address without calling create2.
+    @param implementation The address of the implementation contract
+    @param salt The salt to use for the create2 operation
+    @param chainId The chain id of the chain where the account is being created
+    @param tokenContract The address of the token contract
+    @param tokenId The id of the token
+      Emits TokenLinkedContractCreated event.
+    @return account The address of the token bound account
    */
   function createTokenLinkedContract(
     address implementation,
@@ -40,9 +49,13 @@ interface ICrunaRegistry {
   ) external returns (address account);
 
   /**
-   * @dev Returns the computed token bound account address for a non-fungible token.
-   *
-   * @return account The address of the token bound account
+    @dev Returns the computed token bound account address for a non-fungible token.
+    @param implementation The address of the implementation contract
+    @param salt The salt to use for the create2 operation
+    @param chainId The chain id of the chain where the account is being created
+    @param tokenContract The address of the token contract
+    @param tokenId The id of the token
+    @return account The address of the token bound account
    */
   function tokenLinkedContract(
     address implementation,

@@ -7,7 +7,8 @@ import {FlexiTimelockController} from "../utils/FlexiTimelockController.sol";
 
 // import "hardhat/console.sol";
 
-/** @title CrunaGuardian
+/**
+  @title CrunaGuardian
   @dev Manages a registry of trusted implementations and their required manager versions
   It is used by
   - manager and plugins to upgrade its own  implementation
@@ -16,9 +17,17 @@ import {FlexiTimelockController} from "../utils/FlexiTimelockController.sol";
 contract CrunaGuardian is ICrunaGuardian, IVersioned, FlexiTimelockController {
   error InvalidArguments();
 
+  /// @dev Emitted when a trusted implementation is updated
   mapping(bytes32 nameIdAndImplementationAddress => uint256 requiredManagerVersion) private _trustedImplementations;
 
-  // when deployed to production, proposers and executors will be multi-sig wallets owned by the Cruna DAO
+  /**
+    @dev When deployed to production, proposers and executors will be multi-sig wallets owned by the Cruna DAO
+    @param minDelay The minimum delay for timelock operations
+    @param proposers The addresses that can propose timelock operations
+    @param executors The addresses that can execute timelock operations
+    @param admin The address that can admin the contract. It will renounce to the role, as soon as the
+      DAO is stable and there are no risks in doing so.
+  */
   constructor(
     uint256 minDelay,
     address[] memory proposers,
@@ -26,6 +35,7 @@ contract CrunaGuardian is ICrunaGuardian, IVersioned, FlexiTimelockController {
     address admin
   ) FlexiTimelockController(minDelay, proposers, executors, admin) {}
 
+  /// @dev see {ICrunaGuardian-setTrustedImplementation}
   function version() external pure virtual returns (uint256) {
     // v1.1.0
     return 1_001_000;
