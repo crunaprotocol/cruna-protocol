@@ -131,8 +131,6 @@ contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
     address[] memory otherProtectors = otherManager.getProtectors();
     uint256 len = otherProtectors.length;
     for (uint256 i; i < len; ) {
-      if (otherProtectors[i] == address(0)) revert ZeroAddress();
-      if (otherProtectors[i] == _msgSender()) revert CannotBeYourself();
       _addActor(otherProtectors[i], ManagerConstants.protectorId());
       unchecked {
         ++i;

@@ -18,9 +18,9 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   Canonical.sol                       |      100 |      100 |      100 |      100 
   ExcessivelySafeCall.sol             |      100 |      100 |      100 |      100 
   ManagerConstants.sol                |      100 |      100 |      100 |      100 
- manager/                             |    98.73 |    73.79 |    98.46 |     96.7 
+ manager/                             |    98.72 |    74.26 |    98.46 |    96.68 
   Actor.sol                           |      100 |    57.14 |      100 |      100 
-  CrunaManager.sol                    |    98.51 |    75.56 |    98.15 |    96.12 
+  CrunaManager.sol                    |     98.5 |    76.14 |    98.15 |    96.09 
   CrunaManagerBase.sol                |      100 |    66.67 |      100 |      100 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   ICrunaManager.sol                   |      100 |      100 |      100 |      100 
@@ -50,6 +50,6 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   SignatureValidator.sol              |      100 |    86.36 |      100 |      100 
   TokenLinkedContract.sol             |       90 |       50 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    96.75 |    69.28 |    97.19 |    94.75 
+All files                             |    96.74 |    69.46 |    97.19 |    94.73 
 --------------------------------------|----------|----------|----------|----------
 ```
