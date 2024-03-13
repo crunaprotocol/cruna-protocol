@@ -5,7 +5,6 @@ pragma solidity ^0.8.20;
 
 import {Actor} from "./Actor.sol";
 import {CrunaManagerBase} from "./CrunaManagerBase.sol";
-import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {ExcessivelySafeCall} from "../libs/ExcessivelySafeCall.sol";
 
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
@@ -22,7 +21,7 @@ import {ManagerConstants} from "../libs/ManagerConstants.sol";
  * It is the only contract that can manage the NFT. It sets protectors and safe recipients,
  * plugs and manages plugins, and has the ability to transfer the NFT if there are protectors.
  */
-contract CrunaManager is Actor, CrunaManagerBase, ReentrancyGuard {
+contract CrunaManager is Actor, CrunaManagerBase {
   using ECDSA for bytes32;
   using Strings for uint256;
   using ExcessivelySafeCall for address;

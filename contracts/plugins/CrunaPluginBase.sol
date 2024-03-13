@@ -4,6 +4,7 @@ pragma solidity ^0.8.20;
 // Author: Francesco Sullo <francesco@sullo.co>
 
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {CrunaManager} from "../manager/CrunaManager.sol";
 import {ICrunaPlugin, IVersioned} from "./ICrunaPlugin.sol";
@@ -16,7 +17,7 @@ import {Canonical} from "../libs/Canonical.sol";
   @title CrunaPluginBase
   @dev Base contract for plugins
 */
-abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
+abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase, ReentrancyGuard {
   /// @dev The internal configuration of the plugin
   Conf internal _conf;
 
@@ -54,7 +55,7 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
   }
 
   /// @dev see {ICrunaPlugin.sol-upgrade}
-  function upgrade(address implementation_) external virtual override {
+  function upgrade(address implementation_) external virtual override nonReentrant {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     if (implementation_ == address(0)) revert ZeroAddress();
     uint256 requires = Canonical.crunaGuardian().trustedImplementation(_nameId(), implementation_);
