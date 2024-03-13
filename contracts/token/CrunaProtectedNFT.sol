@@ -60,7 +60,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     @dev allows only the manager of a certain tokenId to call the function.
     @param tokenId The id of the token.
   */
-  modifier whenThroughManagerOf(uint256 tokenId) {
+  modifier ifFromManagerOf(uint256 tokenId) {
     if (_managerOf(tokenId) != _msgSender()) revert NotTheManager();
     _;
   }
@@ -148,7 +148,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     bytes4 pluginNameId,
     uint256 tokenId,
     address to
-  ) external virtual override whenThroughManagerOf(tokenId) {
+  ) external virtual override ifFromManagerOf(tokenId) {
     _approvedTransfers[tokenId] = true;
     _approve(_managerOf(tokenId), tokenId, address(0));
     safeTransferFrom(ownerOf(tokenId), to, tokenId);
@@ -186,7 +186,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
      This function is not virtual because should not be overridden to avoid issues when
      called by the manager (when protectors are set/unset)
    */
-  function emitLockedEvent(uint256 tokenId, bool locked_) external whenThroughManagerOf(tokenId) {
+  function emitLockedEvent(uint256 tokenId, bool locked_) external ifFromManagerOf(tokenId) {
     emit Locked(tokenId, locked_);
   }
 
@@ -196,7 +196,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     bytes32 salt,
     uint256 tokenId,
     bool isERC6551Account
-  ) external virtual override whenThroughManagerOf(tokenId) returns (address) {
+  ) external virtual override ifFromManagerOf(tokenId) returns (address) {
     return _deploy(pluginImplementation, salt, tokenId, isERC6551Account);
   }
 

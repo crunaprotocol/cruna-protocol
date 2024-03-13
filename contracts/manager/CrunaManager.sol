@@ -103,7 +103,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
-  ) external virtual override onlyTokenOwner {
+  ) external virtual override ifTokenOwner {
     _setSignedActor(
       this.setProtector.selector,
       ManagerConstants.protectorId(),
@@ -119,7 +119,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   /// @dev see {ICrunaManager.sol-importProtectorsAndSafeRecipientsFrom}
-  function importProtectorsAndSafeRecipientsFrom(uint256 otherTokenId) external virtual override onlyTokenOwner {
+  function importProtectorsAndSafeRecipientsFrom(uint256 otherTokenId) external virtual override ifTokenOwner {
     if (_actorCount(ManagerConstants.protectorId()) != 0) revert ProtectorsAlreadySet();
     if (_actorCount(ManagerConstants.safeRecipientId()) != 0) revert SafeRecipientsAlreadySet();
     if (otherTokenId == tokenId()) revert CannotImportProtectorsAndSafeRecipientsFromYourself();
@@ -159,7 +159,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
-  ) external virtual override onlyTokenOwner {
+  ) external virtual override ifTokenOwner {
     _setSignedActor(
       this.setSafeRecipient.selector,
       ManagerConstants.safeRecipientId(),
@@ -199,7 +199,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
-  ) external virtual override nonReentrant onlyTokenOwner {
+  ) external virtual override nonReentrant ifTokenOwner {
     if (_allPlugins.length == 16) {
       // We do not allow more than 16 plugins to avoid risks of going out-of-gas while
       // looping through allPlugins.
@@ -240,7 +240,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
-  ) external virtual override nonReentrant onlyTokenOwner {
+  ) external virtual override nonReentrant ifTokenOwner {
     bytes4 nameId_ = _stringToBytes4(name);
     (bool plugged_, uint256 i) = _pluginIndex(nameId_, salt);
     if (!plugged_) revert PluginNotFound();
@@ -274,7 +274,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   /// @dev see {ICrunaManager.sol-trustPlugin}
-  function trustPlugin(string memory name, bytes4 salt) external virtual override onlyTokenOwner {
+  function trustPlugin(string memory name, bytes4 salt) external virtual override ifTokenOwner {
     bytes4 nameId_ = _stringToBytes4(name);
     bytes8 _key = _combineBytes4(nameId_, salt);
     if (_pluginByKey[_key].proxyAddress == address(0)) revert PluginNotFound();
@@ -367,7 +367,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
-  ) external override onlyTokenOwner {
+  ) external override ifTokenOwner {
     if (timestamp == 0) revert ToBeUsedOnlyWhenProtectorsAreActive();
     _preValidateAndCheckSignature(this.protectedTransfer.selector, to, 0, 0, 0, timestamp, validFor, signature);
     _resetOnTransfer(bytes4(0), bytes4(0));
