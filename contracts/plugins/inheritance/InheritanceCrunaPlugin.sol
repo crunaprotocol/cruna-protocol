@@ -169,7 +169,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   /// @dev see {ICrunaPlugin.sol-reset}
-  function reset() external override onlyManager {
+  function reset() external override whenThroughManager {
     delete _conf.mustBeReset;
     _reset();
   }

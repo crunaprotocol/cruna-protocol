@@ -32,7 +32,7 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase, ReentrancyGuard {
       The manager is not a wallet, it is the contract, owned by the token, that can manage the token
       and plug and manage plugins.
   */
-  modifier onlyManager() {
+  modifier whenThroughManager() {
     if (_msgSender() != address(_conf.manager)) revert Forbidden();
     _;
   }
@@ -74,7 +74,7 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase, ReentrancyGuard {
 
   /// @dev see {ICrunaPlugin.sol-resetOnTransfer}
   // The manager is not a wallet, it is the NFT Manager contract, owned by the token.
-  function resetOnTransfer() external override ifMustNotBeReset onlyManager {
+  function resetOnTransfer() external override ifMustNotBeReset whenThroughManager {
     _conf.mustBeReset = 1;
   }
 
