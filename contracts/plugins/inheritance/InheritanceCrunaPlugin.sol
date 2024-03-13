@@ -48,7 +48,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
-  ) external virtual override ifTokenOwner ifMustNotBeReset {
+  ) external virtual override onlyTokenOwner ifMustNotBeReset {
     _setSentinel(sentinel, status, timestamp, validFor, signature);
   }
 
@@ -56,7 +56,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   function setSentinels(
     address[] memory sentinels,
     bytes calldata emptySignature
-  ) external virtual override ifTokenOwner ifMustNotBeReset {
+  ) external virtual override onlyTokenOwner ifMustNotBeReset {
     uint256 len = sentinels.length;
     for (uint256 i; i < len; ) {
       // Notice that this will work only if no protector has been set
@@ -76,7 +76,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
-  ) external virtual override ifTokenOwner ifMustNotBeReset {
+  ) external virtual override onlyTokenOwner ifMustNotBeReset {
     if (validFor > _MAX_VALID_FOR) revert InvalidValidity();
     _validateAndCheckSignature(
       this.configureInheritance.selector,
@@ -119,7 +119,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   /// @dev see {IInheritanceCrunaPlugin.sol-proofOfLife}
-  function proofOfLife() external virtual override ifTokenOwner ifMustNotBeReset {
+  function proofOfLife() external virtual override onlyTokenOwner ifMustNotBeReset {
     if (0 == _inheritanceConf.proofOfLifeDurationInWeeks) revert InheritanceNotConfigured();
     // solhint-disable-next-line not-rely-on-time
     _inheritanceConf.lastProofOfLife = uint32(block.timestamp);
@@ -169,7 +169,8 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   /// @dev see {ICrunaPlugin.sol-reset}
-  function reset() external override ifFromManager {
+  function reset() external override {
+    if (_msgSender() != address(_conf.manager)) revert Forbidden();
     delete _conf.mustBeReset;
     _reset();
   }
@@ -198,7 +199,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
-  ) internal virtual ifTokenOwner ifMustNotBeReset {
+  ) internal virtual onlyTokenOwner ifMustNotBeReset {
     if (validFor > _MAX_VALID_FOR) revert InvalidValidity();
     _validateAndCheckSignature(
       this.setSentinel.selector,

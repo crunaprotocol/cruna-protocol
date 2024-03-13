@@ -24,22 +24,22 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   CrunaManagerBase.sol                |      100 |    64.29 |      100 |      100 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   ICrunaManager.sol                   |      100 |      100 |      100 |      100 
- plugins/                             |    94.74 |    66.67 |    90.91 |       96 
-  CrunaPluginBase.sol                 |    94.74 |    66.67 |    90.91 |       96 
+ plugins/                             |    94.74 |    68.18 |       90 |    95.83 
+  CrunaPluginBase.sol                 |    94.74 |    68.18 |       90 |    95.83 
   ICrunaPlugin.sol                    |      100 |      100 |      100 |      100 
- plugins/inheritance/                 |       90 |    63.64 |       96 |     87.7 
+ plugins/inheritance/                 |    90.11 |    63.64 |       92 |     87.8 
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
-  InheritanceCrunaPlugin.sol          |       90 |    63.64 |    95.83 |     87.7 
-  InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
+  InheritanceCrunaPlugin.sol          |    90.11 |    63.64 |    95.83 |     87.8 
+  InheritanceCrunaPluginProxy.sol     |      100 |      100 |        0 |      100 
  token/                               |    98.63 |    65.28 |      100 |     98.8 
   CrunaProtectedNFT.sol               |    98.53 |    64.06 |      100 |    98.73 
   CrunaProtectedNFTOwnable.sol        |      100 |       50 |      100 |      100 
   CrunaProtectedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaProtectedNFT.sol              |      100 |      100 |      100 |      100 
   IManagedNFT.sol                     |      100 |      100 |      100 |      100 
- utils/                               |    96.43 |    71.15 |      100 |    98.41 
+ utils/                               |    92.86 |    69.23 |      100 |    95.24 
   CommonBase.sol                      |      100 |      100 |      100 |      100 
-  ERC6551AccountProxy.sol             |       90 |       75 |      100 |    90.91 
+  ERC6551AccountProxy.sol             |       70 |     62.5 |      100 |    72.73 
   FlexiTimelockController.sol         |      100 |       50 |      100 |      100 
   ICommonBase.sol                     |      100 |      100 |      100 |      100 
   INamed.sol                          |      100 |      100 |      100 |      100 
@@ -50,6 +50,6 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   SignatureValidator.sol              |      100 |    86.36 |      100 |      100 
   TokenLinkedContract.sol             |       90 |       50 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    96.74 |     69.2 |    97.19 |    94.73 
+All files                             |    96.34 |    69.06 |    96.61 |    94.39 
 --------------------------------------|----------|----------|----------|----------
 ```
