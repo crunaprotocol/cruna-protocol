@@ -1,5 +1,8 @@
 # Change log
 
+**0.2.6**
+- Remove some unnecessary modifier to avoid false alarm from Auditbase 
+
 **0.2.5**
 - Simplifying the way to know that `ICrunaManager.setProtector` function is called in `SignatureValidator`
 - Completing the NatSpec comments for all the contracts.
