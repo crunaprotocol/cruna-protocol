@@ -1,11 +1,12 @@
-contracts/canonical/CanonicalAddresses.sol
 contracts/canonical/CrunaGuardian.sol
 contracts/canonical/CrunaRegistry.sol
-contracts/canonical/ICanonicalAddresses.sol
 contracts/canonical/ICrunaGuardian.sol
 contracts/canonical/ICrunaRegistry.sol
-contracts/interfaces/IERC6454.sol
-contracts/interfaces/IERC6982.sol
+contracts/erc/IERC6454.sol
+contracts/erc/IERC6982.sol
+contracts/libs/Canonical.sol
+contracts/libs/ExcessivelySafeCall.sol
+contracts/libs/ManagerConstants.sol
 contracts/manager/Actor.sol
 contracts/manager/CrunaManager.sol
 contracts/manager/CrunaManagerBase.sol
@@ -24,8 +25,10 @@ contracts/token/IManagedNFT.sol
 contracts/utils/CommonBase.sol
 contracts/utils/ERC6551AccountProxy.sol
 contracts/utils/FlexiTimelockController.sol
+contracts/utils/ICommonBase.sol
 contracts/utils/INamed.sol
 contracts/utils/INamedAndVersioned.sol
+contracts/utils/ISignatureValidator.sol
 contracts/utils/ITokenLinkedContract.sol
 contracts/utils/IVersioned.sol
 contracts/utils/SignatureValidator.sol
