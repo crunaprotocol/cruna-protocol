@@ -11,8 +11,6 @@ import {ICrunaPlugin, IVersioned} from "./ICrunaPlugin.sol";
 import {CommonBase} from "../utils/CommonBase.sol";
 import {Canonical} from "../libs/Canonical.sol";
 
-
-
 /**
  * @title CrunaPluginBase
  * @notice Base contract for plugins

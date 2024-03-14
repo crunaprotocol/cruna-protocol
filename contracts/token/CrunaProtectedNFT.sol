@@ -17,8 +17,6 @@ import {ICrunaManager} from "../manager/ICrunaManager.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 import {Canonical} from "../libs/Canonical.sol";
 
-
-
 /**
  * A convenient interface to mix nameId, version and default implementations
  */

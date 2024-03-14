@@ -9,8 +9,6 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {IInheritanceCrunaPlugin} from "./IInheritanceCrunaPlugin.sol";
 import {ICrunaPlugin, CrunaPluginBase} from "../CrunaPluginBase.sol";
 
-
-
 /**
  * @title InheritanceCrunaPlugin
  * @notice This contract manages inheritance

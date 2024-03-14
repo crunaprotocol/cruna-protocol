@@ -13,8 +13,6 @@ import {TimeControlledNFT} from "../token/TimeControlledNFT.sol";
 import {IVaultFactory} from "./IVaultFactory.sol";
 import {IVersioned} from "../../utils/IVersioned.sol";
 
-
-
 contract VaultFactory is
   IVaultFactory,
   IVersioned,

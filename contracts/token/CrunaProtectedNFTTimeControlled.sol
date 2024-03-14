@@ -6,8 +6,6 @@ pragma solidity ^0.8.20;
 import {CrunaProtectedNFT} from "./CrunaProtectedNFT.sol";
 import {TimelockController, FlexiTimelockController} from "../utils/FlexiTimelockController.sol";
 
-
-
 /**
  * @title CrunaProtectedNFTTimeControlled
  * @notice This contract is a base for NFTs with protected transfers.

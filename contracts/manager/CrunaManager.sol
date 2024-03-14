@@ -13,8 +13,6 @@ import {CrunaPluginBase} from "../plugins/CrunaPluginBase.sol";
 import {Canonical} from "../libs/Canonical.sol";
 import {ManagerConstants} from "../libs/ManagerConstants.sol";
 
-
-
 /**
  * @title CrunaManager
  * @notice The manager of the Cruna NFT

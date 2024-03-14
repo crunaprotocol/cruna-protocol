@@ -11,8 +11,6 @@ import {CommonBase} from "../utils/CommonBase.sol";
 import {Canonical} from "../libs/Canonical.sol";
 import {INamedAndVersioned} from "../utils/INamedAndVersioned.sol";
 
-
-
 /**
  * @title CrunaManagerBase.sol
  * @notice Base contract for managers and plugins

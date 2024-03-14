@@ -8,8 +8,6 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ISignatureValidator} from "./ISignatureValidator.sol";
 import {ICrunaManager} from "../manager/ICrunaManager.sol";
 
-
-
 /**
  * @title SignatureValidator
  * @author Francesco Sullo <francesco@sullo.co>

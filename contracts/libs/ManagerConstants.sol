@@ -3,8 +3,6 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-
-
 /**
  * @title ManagerConstants
  * @dev Constants for the manager. Using functions instead of state variables makes easier to manage future upgrades.

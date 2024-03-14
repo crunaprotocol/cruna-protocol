@@ -7,8 +7,6 @@ pragma solidity ^0.8.20;
 // We deploy our own registry to avoid misleading observers that may believe
 // that managers and plugins are accounts.
 
-
-
 import {ICrunaRegistry} from "./ICrunaRegistry.sol";
 
 /**

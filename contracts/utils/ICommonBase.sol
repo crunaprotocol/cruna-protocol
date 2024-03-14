@@ -3,8 +3,6 @@ pragma solidity ^0.8.20;
 
 import {CrunaProtectedNFT} from "../token/CrunaProtectedNFT.sol";
 
-
-
 /**
  * @title ICommonBase
  */

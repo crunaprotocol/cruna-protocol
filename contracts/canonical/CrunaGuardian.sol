@@ -5,8 +5,6 @@ import {ICrunaGuardian} from "./ICrunaGuardian.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 import {FlexiTimelockController} from "../utils/FlexiTimelockController.sol";
 
-
-
 /**
  * @title CrunaGuardian
  * @notice Manages a registry of trusted implementations and their required manager versions

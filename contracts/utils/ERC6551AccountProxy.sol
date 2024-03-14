@@ -4,8 +4,6 @@ pragma solidity ^0.8.20;
 import {ERC1967Utils} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
 import {Proxy} from "@openzeppelin/contracts/proxy/Proxy.sol";
 
-
-
 /**
  * @title ERC6551AccountProxy
  * This version of ERC6551AccountProxy is modified to work with the OpenZeppelin Contracts v5

@@ -6,8 +6,6 @@ import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 
 import {ITokenLinkedContract} from "./ITokenLinkedContract.sol";
 
-
-
 /**
  * @title TokenLinkedContract
  * @dev Abstract contract to link a contract to an NFT

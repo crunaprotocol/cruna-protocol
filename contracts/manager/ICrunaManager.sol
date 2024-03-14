@@ -8,8 +8,6 @@ import {CrunaPluginBase} from "../plugins/CrunaPluginBase.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
 
-
-
 interface ICrunaManager is ITokenLinkedContract, IVersioned {
   /**
    * @dev A struct to keep info about plugged and unplugged plugins

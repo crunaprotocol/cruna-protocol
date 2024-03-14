@@ -6,8 +6,6 @@ pragma solidity ^0.8.20;
 import {Ownable, Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {CrunaProtectedNFT} from "./CrunaProtectedNFT.sol";
 
-
-
 /**
  * @title CrunaProtectedNFTOwnable
  * @notice This contract is a base for NFTs with protected transfers.
