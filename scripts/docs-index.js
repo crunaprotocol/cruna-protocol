@@ -36,7 +36,7 @@ function generateIndexContent(markdownFiles, baseDir) {
     }
     files.forEach((filePath) => {
       const fileName = path.basename(filePath, ".md");
-      const relativePath = path.relative(baseDir, filePath);
+      const relativePath = path.relative(baseDir, filePath).replace(/^\./, "");
       indexContent += `  - [${fileName}](${relativePath})\n`;
     });
   }
@@ -54,7 +54,7 @@ let indexContent = generateIndexContent(markdownFiles, baseDir);
 
 indexContent += `
 
-This documentation is automatically generated.
+This documentation is automatically generated using [solidity-docgen](
 (c) 2024+ Cruna
 `;
 
