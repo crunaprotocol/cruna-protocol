@@ -1,5 +1,8 @@
 # Change log
 
+**0.2.7**
+- Make `CrunaProtectedNFT` variables `_nftConf` and `_managerHistory` internal
+
 **0.2.6**
 - Remove some unnecessary modifier to avoid false alarm from Auditbase 
 

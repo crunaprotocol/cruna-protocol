@@ -47,12 +47,12 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
   /**
    * @dev The configuration of the NFT
    */
-  NftConf private _nftConf;
+  NftConf internal _nftConf;
 
   /**
    * @dev The manager history
    */
-  ManagerHistory[] private _managerHistory;
+  ManagerHistory[] internal _managerHistory;
 
   /**
    * @dev internal variable used to make protected NFT temporarily transferable.
