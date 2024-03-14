@@ -31,6 +31,9 @@ devDependencies:
   '@openzeppelin/contracts-upgradeable':
     specifier: ^5.0.2
     version: 5.0.2(@openzeppelin/contracts@5.0.2)
+  '@openzeppelin/docs-utils':
+    specifier: ^0.1.5
+    version: 0.1.5
   '@openzeppelin/hardhat-upgrades':
     specifier: ^1.28.0
     version: 1.28.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(hardhat@2.21.0)
@@ -109,6 +112,9 @@ devDependencies:
   solidity-coverage:
     specifier: ^0.8.11
     version: 0.8.11(hardhat@2.21.0)
+  solidity-docgen:
+    specifier: 0.6.0-beta.36
+    version: 0.6.0-beta.36(hardhat@2.21.0)
   typescript:
     specifier: ^5.4.2
     version: 5.4.2
@@ -753,6 +759,11 @@ packages:
     engines: {node: '>=14'}
     dev: true
 
+  /@frangio/servbot@0.2.5:
+    resolution: {integrity: sha512-ogja4iAPZ1VwM5MU3C1ZhB88358F0PGbmSTGOkIZwOyLaDoMHIqOVCnavHjR7DV5h+oAI4Z4KDqlam3myQUrmg==}
+    engines: {node: '>=12.x', pnpm: 7.5.1}
+    dev: true
+
   /@ganache/ethereum-address@0.1.4:
     resolution: {integrity: sha512-sTkU0M9z2nZUzDeHRzzGlW724xhMLXo2LeX1hixbnjHWY1Zg1hkqORywVfl+g5uOO8ht8T0v+34IxNxAhmWlbw==}
     dependencies:
@@ -1236,6 +1247,21 @@ packages:
     transitivePeerDependencies:
       - debug
       - encoding
+    dev: true
+
+  /@openzeppelin/docs-utils@0.1.5:
+    resolution: {integrity: sha512-GfqXArKmdq8rv+hsP+g8uS1VEkvMIzWs31dCONffzmqFwJ+MOsaNQNZNXQnLRgUkzk8i5mTNDjJuxDy+aBZImQ==}
+    hasBin: true
+    dependencies:
+      '@frangio/servbot': 0.2.5
+      chalk: 3.0.0
+      chokidar: 3.6.0
+      env-paths: 2.2.1
+      find-up: 4.1.0
+      is-port-reachable: 3.1.0
+      js-yaml: 3.14.1
+      lodash.startcase: 4.4.0
+      minimist: 1.2.8
     dev: true
 
   /@openzeppelin/hardhat-upgrades@1.28.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(hardhat@2.21.0):
@@ -2672,6 +2698,14 @@ packages:
       ansi-styles: 3.2.1
       escape-string-regexp: 1.0.5
       supports-color: 5.5.0
+    dev: true
+
+  /chalk@3.0.0:
+    resolution: {integrity: sha512-4D3B6Wf41KOYRFdszmDqMCGq5VV/uMAB273JILmO+3jAlh8X4qDtdtgCR3fxtbLEMzSx22QdhnDcJvu2u1fVwg==}
+    engines: {node: '>=8'}
+    dependencies:
+      ansi-styles: 4.3.0
+      supports-color: 7.2.0
     dev: true
 
   /chalk@4.1.2:
@@ -5194,6 +5228,11 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
+  /is-port-reachable@3.1.0:
+    resolution: {integrity: sha512-vjc0SSRNZ32s9SbZBzGaiP6YVB+xglLShhgZD/FHMZUXBvQWaV9CtzgeVhjccFJrI6RAMV+LX7NYxueW/A8W5A==}
+    engines: {node: '>=8'}
+    dev: true
+
   /is-regex@1.1.4:
     resolution: {integrity: sha512-kvRdxDsxZjhzUX07ZnLydzS1TU/TJlTUHHY4YLL87e37oUA49DfkLqgy+VjFocowy29cKvcSiu+kIv728jTTVg==}
     engines: {node: '>= 0.4'}
@@ -5626,6 +5665,10 @@ packages:
 
   /lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
+    dev: true
+
+  /lodash.startcase@4.4.0:
+    resolution: {integrity: sha512-+WKqsK294HMSc2jEbNgpHpd0JfIBhp7rEV4aqXWqFr6AlXov+SlcgB1Fv01y2kGe3Gc8nMW7VA0SrGuSkRfIEg==}
     dev: true
 
   /lodash.truncate@4.4.2:
@@ -7423,6 +7466,16 @@ packages:
       semver: 7.6.0
       shelljs: 0.8.5
       web3-utils: 1.10.4
+    dev: true
+
+  /solidity-docgen@0.6.0-beta.36(hardhat@2.21.0):
+    resolution: {integrity: sha512-f/I5G2iJgU1h0XrrjRD0hHMr7C10u276vYvm//rw1TzFcYQ4xTOyAoi9oNAHRU0JU4mY9eTuxdVc2zahdMuhaQ==}
+    peerDependencies:
+      hardhat: ^2.8.0
+    dependencies:
+      handlebars: 4.7.8
+      hardhat: 2.21.0(typescript@5.4.2)
+      solidity-ast: 0.4.55
     dev: true
 
   /source-map-support@0.5.21:

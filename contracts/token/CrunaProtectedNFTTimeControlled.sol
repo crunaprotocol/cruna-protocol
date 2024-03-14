@@ -6,26 +6,26 @@ pragma solidity ^0.8.20;
 import {CrunaProtectedNFT} from "./CrunaProtectedNFT.sol";
 import {TimelockController, FlexiTimelockController} from "../utils/FlexiTimelockController.sol";
 
-// import {console} from "hardhat/console.sol";
-
 /**
-  @title CrunaProtectedNFTTimeControlled
-  @dev This contract is a base for NFTs with protected transfers.
-    It implements best practices for governance and timelock.
-*/
+ * @title CrunaProtectedNFTTimeControlled
+ * @notice This contract is a base for NFTs with protected transfers.
+ * It implements best practices for governance and timelock.
+ */
 abstract contract CrunaProtectedNFTTimeControlled is CrunaProtectedNFT, FlexiTimelockController {
-  /// @dev Error returned when the caller is not authorized
+  /**
+   * @notice Error returned when the caller is not authorized
+   */
   error NotAuthorized();
 
   /**
-    @dev construct the contract with a given name, symbol, minDelay, proposers, executors, and admin.
-    @param name_ The name of the token.
-    @param symbol_ The symbol of the token.
-    @param minDelay The minimum delay for the time lock.
-    @param proposers The initial proposers.
-    @param executors The initial executors.
-    @param admin The admin of the contract (they should later renounce to the role).
-  */
+   * @notice construct the contract with a given name, symbol, minDelay, proposers, executors, and admin.
+   * @param name_ The name of the token.
+   * @param symbol_ The symbol of the token.
+   * @param minDelay The minimum delay for the time lock.
+   * @param proposers The initial proposers.
+   * @param executors The initial executors.
+   * @param admin The admin of the contract (they should later renounce to the role).
+   */
   constructor(
     string memory name_,
     string memory symbol_,
@@ -35,14 +35,16 @@ abstract contract CrunaProtectedNFTTimeControlled is CrunaProtectedNFT, FlexiTim
     address admin
   ) CrunaProtectedNFT(name_, symbol_) FlexiTimelockController(minDelay, proposers, executors, admin) {}
 
-  // @dev See {ERC165-supportsInterface}.
+  // @notice See {ERC165-supportsInterface}.
   function supportsInterface(
     bytes4 interfaceId
   ) public view virtual override(TimelockController, CrunaProtectedNFT) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 
-  /// @dev see {CrunaProtectedNFT-_canManage}
+  /**
+   * @notice see {CrunaProtectedNFT-_canManage}
+   */
   function _canManage(bool isInitializing) internal view virtual override {
     if (isInitializing) {
       if (!hasRole(DEFAULT_ADMIN_ROLE, _msgSender())) revert NotAuthorized();

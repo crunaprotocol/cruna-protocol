@@ -7,21 +7,21 @@ pragma solidity ^0.8.20;
 // We deploy our own registry to avoid misleading observers that may believe
 // that managers and plugins are accounts.
 
-// import {console} from "hardhat/console.sol";
-
 import {ICrunaRegistry} from "./ICrunaRegistry.sol";
 
 /**
-  @title CrunaRegistry
-  @dev Manages the creation of token bound accounts
-*/
+ * @title CrunaRegistry
+ * @notice Manages the creation of token bound accounts
+ */
 contract CrunaRegistry is ICrunaRegistry {
   /**
-     @dev The registry MUST revert with TokenLinkedContractCreationFailed error if the create2 operation fails.
+   * @notice The registry MUST revert with TokenLinkedContractCreationFailed error if the create2 operation fails.
    */
   error TokenLinkedContractCreationFailed();
 
-  /// @dev see {ICrunaRegistry-createTokenLinkedContract}
+  /**
+   * @notice see {ICrunaRegistry-createTokenLinkedContract}
+   */
   function createTokenLinkedContract(
     address implementation,
     bytes32 salt,
@@ -98,7 +98,9 @@ contract CrunaRegistry is ICrunaRegistry {
     }
   }
 
-  /// @dev see {ICrunaRegistry-tokenLinkedContract}
+  /**
+   * @notice see {ICrunaRegistry-tokenLinkedContract}
+   */
   function tokenLinkedContract(
     address implementation,
     bytes32 salt,

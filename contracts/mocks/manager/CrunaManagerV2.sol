@@ -3,8 +3,6 @@ pragma solidity ^0.8.20;
 
 import {CrunaManager} from "../../manager/CrunaManager.sol";
 
-// import {console} from "hardhat/console.sol";
-
 contract CrunaManagerV2 is CrunaManager {
   bool public migrated;
 
