@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: GPL3
 pragma solidity ^0.8.20;
 
-/// @title IVersioned
-/// @author Francesco Sullo <francesco@sullo.co>
+/**
+ * @title IVersioned
+ * @author Francesco Sullo <francesco@sullo.co>
+ */
 interface IVersioned {
   /**
    * @dev Returns the version of the contract.

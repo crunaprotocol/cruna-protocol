@@ -7,7 +7,7 @@ pragma solidity ^0.8.20;
 // We deploy our own registry to avoid misleading observers that may believe
 // that managers and plugins are accounts.
 
-// import {console} from "hardhat/console.sol";
+
 
 import {ICrunaRegistry} from "./ICrunaRegistry.sol";
 
@@ -21,7 +21,9 @@ contract CrunaRegistry is ICrunaRegistry {
    */
   error TokenLinkedContractCreationFailed();
 
-  /// @notice see {ICrunaRegistry-createTokenLinkedContract}
+  /**
+   * @notice see {ICrunaRegistry-createTokenLinkedContract}
+   */
   function createTokenLinkedContract(
     address implementation,
     bytes32 salt,
@@ -98,7 +100,9 @@ contract CrunaRegistry is ICrunaRegistry {
     }
   }
 
-  /// @notice see {ICrunaRegistry-tokenLinkedContract}
+  /**
+   * @notice see {ICrunaRegistry-tokenLinkedContract}
+   */
   function tokenLinkedContract(
     address implementation,
     bytes32 salt,

@@ -42,13 +42,19 @@ interface ICrunaPlugin is ITokenLinkedContract, IVersioned {
    */
   error PluginRequiresUpdatedManager(uint256 requiredVersion);
 
-  /// @dev Error returned when the plugin is reset
+  /**
+   * @dev Error returned when the plugin is reset
+   */
   error Forbidden();
 
-  /// @dev Error returned when the plugin must be reset before using it
+  /**
+   * @dev Error returned when the plugin must be reset before using it
+   */
   error PluginMustBeReset();
 
-  /// @dev Initialize the plugin. It must be implemented, but can do nothing is no init is needed.
+  /**
+   * @dev Initialize the plugin. It must be implemented, but can do nothing is no init is needed.
+   */
   function init() external;
 
   /**
@@ -57,13 +63,19 @@ interface ICrunaPlugin is ITokenLinkedContract, IVersioned {
    */
   function requiresToManageTransfer() external pure returns (bool);
 
-  /// @dev Called by the manager to know it the plugin must be reset when transferring the NFT
+  /**
+   * @dev Called by the manager to know it the plugin must be reset when transferring the NFT
+   */
   function requiresResetOnTransfer() external pure returns (bool);
 
-  /// @dev Called by the manager to know if the plugin is an ERC721 account
+  /**
+   * @dev Called by the manager to know if the plugin is an ERC721 account
+   */
   function isERC6551Account() external pure returns (bool);
 
-  /// @dev Reset the plugin to the factory settings
+  /**
+   * @dev Reset the plugin to the factory settings
+   */
   function reset() external;
 
   // @dev During transfer, to reduce gas consumption, should set _conf.mustBeReset to 1
@@ -77,6 +89,8 @@ interface ICrunaPlugin is ITokenLinkedContract, IVersioned {
    */
   function upgrade(address implementation_) external;
 
-  /// @dev Returns the manager
+  /**
+   * @dev Returns the manager
+   */
   function manager() external view returns (CrunaManager);
 }

@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {CrunaProtectedNFTOwnable} from "../../token/CrunaProtectedNFTOwnable.sol";
 
-// import "hardhat/console.sol";
+
 
 // This is actually the real Cruna Flexi Vault contract.
 // We put it in mocks because it should not be used loading the package.

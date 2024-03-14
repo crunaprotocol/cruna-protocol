@@ -13,7 +13,7 @@ import {INamed} from "../utils/INamed.sol";
 import {ICommonBase} from "./ICommonBase.sol";
 import {Actor} from "../manager/Actor.sol";
 
-// import {console} from "hardhat/console.sol";
+
 
 /**
  * @title CommonBase.sol
@@ -27,22 +27,30 @@ abstract contract CommonBase is ICommonBase, INamed, Context, Actor, TokenLinked
    */
   bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
-  /// @dev Error returned when the caller is not the token owner
+  /**
+   * @dev Error returned when the caller is not the token owner
+   */
   modifier onlyTokenOwner() {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     _;
   }
 
-  /// @dev Returns the name id of the contract
+  /**
+   * @dev Returns the name id of the contract
+   */
   function nameId() external view override returns (bytes4) {
     return _nameId();
   }
 
-  /// @dev Internal function that must be overridden by the contract to
-  /// return the name id of the contract
+  /**
+   * @dev Internal function that must be overridden by the contract to
+   * return the name id of the contract
+   */
   function _nameId() internal view virtual returns (bytes4);
 
-  /// @dev Returns the vault, i.e., the CrunaProtectedNFT contract
+  /**
+   * @dev Returns the vault, i.e., the CrunaProtectedNFT contract
+   */
   function vault() external view virtual returns (CrunaProtectedNFT) {
     return _vault();
   }
@@ -72,7 +80,9 @@ abstract contract CommonBase is ICommonBase, INamed, Context, Actor, TokenLinked
     return bytes4(_hashString(str));
   }
 
-  /// @dev Returns the vault, i.e., the CrunaProtectedNFT contract
+  /**
+   * @dev Returns the vault, i.e., the CrunaProtectedNFT contract
+   */
   function _vault() internal view virtual returns (CrunaProtectedNFT) {
     return CrunaProtectedNFT(tokenAddress());
   }

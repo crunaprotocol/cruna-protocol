@@ -13,7 +13,7 @@ import {CrunaPluginBase} from "../plugins/CrunaPluginBase.sol";
 import {Canonical} from "../libs/Canonical.sol";
 import {ManagerConstants} from "../libs/ManagerConstants.sol";
 
-// import {console} from "hardhat/console.sol";
+
 
 /**
  * @title CrunaManager
@@ -26,77 +26,107 @@ contract CrunaManager is Actor, CrunaManagerBase {
   using Strings for uint256;
   using ExcessivelySafeCall for address;
 
-  /// @notice The array of all plugged plugins. The max length is set to 16 to avoid gas issues.
+  /**
+   * @notice The array of all plugged plugins. The max length is set to 16 to avoid gas issues.
+   */
   PluginElement[] private _allPlugins;
 
-  /// @notice The mapping of all plugins by key. A key is the combination of the nameId and the salt.
+  /**
+   * @notice The mapping of all plugins by key. A key is the combination of the nameId and the salt.
+   */
   mapping(bytes8 pluginKey => PluginConfig pluginDetails) private _pluginByKey;
 
-  /// @notice see {IVersioned.sol-version}
+  /**
+   * @notice see {IVersioned.sol-version}
+   */
   function version() external pure virtual override returns (uint256) {
     return 1_000_002;
   }
 
-  /// @notice see {ICrunaManager.sol-getPluginByKey}
+  /**
+   * @notice see {ICrunaManager.sol-getPluginByKey}
+   */
   function pluginByKey(bytes8 key) external view returns (PluginConfig memory) {
     return _pluginByKey[key];
   }
 
-  /// @notice see {ICrunaManager.sol-allPlugins}
+  /**
+   * @notice see {ICrunaManager.sol-allPlugins}
+   */
   function allPlugins() external view returns (PluginElement[] memory) {
     return _allPlugins;
   }
 
-  /// @notice see {ICrunaManager.sol-pluginByIndex}
+  /**
+   * @notice see {ICrunaManager.sol-pluginByIndex}
+   */
   function pluginByIndex(uint256 index) external view returns (PluginElement memory) {
     if (index >= _allPlugins.length) revert IndexOutOfBounds();
     return _allPlugins[index];
   }
 
-  /// @notice see {ICrunaManager.sol-migrate}
+  /**
+   * @notice see {ICrunaManager.sol-migrate}
+   */
   function migrate(uint256 /* version */) external virtual override {
     if (_msgSender() != address(this)) revert Forbidden();
     // Nothing, for now, since this is the first version of the manager
   }
 
-  /// @notice see {ICrunaManager.sol-findProtectorIndex}
+  /**
+   * @notice see {ICrunaManager.sol-findProtectorIndex}
+   */
   function findProtectorIndex(address protector_) external view virtual override returns (uint256) {
     return _actorIndex(protector_, ManagerConstants.protectorId());
   }
 
-  /// @notice see {ICrunaManager.sol-isProtector}
+  /**
+   * @notice see {ICrunaManager.sol-isProtector}
+   */
   function isProtector(address protector_) external view virtual override returns (bool) {
     return _isActiveActor(protector_, ManagerConstants.protectorId());
   }
 
-  /// @notice see {ICrunaManager.sol-hasProtectors}
+  /**
+   * @notice see {ICrunaManager.sol-hasProtectors}
+   */
   function hasProtectors() external view virtual override returns (bool) {
     return _actorCount(ManagerConstants.protectorId()) != 0;
   }
 
-  /// @notice see {ICrunaManager.sol-isTransferable}
+  /**
+   * @notice see {ICrunaManager.sol-isTransferable}
+   */
   function isTransferable(address to) external view override returns (bool) {
     return
       _actors[ManagerConstants.protectorId()].length == 0 ||
       _actorIndex(to, ManagerConstants.safeRecipientId()) != ManagerConstants.maxActors();
   }
 
-  /// @notice see {ICrunaManager.sol-locked}
+  /**
+   * @notice see {ICrunaManager.sol-locked}
+   */
   function locked() external view override returns (bool) {
     return _actors[ManagerConstants.protectorId()].length != 0;
   }
 
-  /// @notice see {ICrunaManager.sol-countProtectors}
+  /**
+   * @notice see {ICrunaManager.sol-countProtectors}
+   */
   function countProtectors() external view virtual override returns (uint256) {
     return _actorCount(ManagerConstants.protectorId());
   }
 
-  /// @notice see {ICrunaManager.sol-countSafeRecipients}
+  /**
+   * @notice see {ICrunaManager.sol-countSafeRecipients}
+   */
   function countSafeRecipients() external view virtual override returns (uint256) {
     return _actorCount(ManagerConstants.safeRecipientId());
   }
 
-  /// @dev see {ICrunaManager.sol-setProtector}
+  /**
+   * @dev see {ICrunaManager.sol-setProtector}
+   */
   function setProtector(
     address protector_,
     bool status,
@@ -118,7 +148,9 @@ contract CrunaManager is Actor, CrunaManagerBase {
     _emitLockeEvent(_actors[ManagerConstants.protectorId()].length, status);
   }
 
-  /// @dev see {ICrunaManager.sol-importProtectorsAndSafeRecipientsFrom}
+  /**
+   * @dev see {ICrunaManager.sol-importProtectorsAndSafeRecipientsFrom}
+   */
   function importProtectorsAndSafeRecipientsFrom(uint256 otherTokenId) external virtual override onlyTokenOwner {
     if (_actorCount(ManagerConstants.protectorId()) != 0) revert ProtectorsAlreadySet();
     if (_actorCount(ManagerConstants.safeRecipientId()) != 0) revert SafeRecipientsAlreadySet();
@@ -147,12 +179,16 @@ contract CrunaManager is Actor, CrunaManagerBase {
     _emitLockeEvent(1, true);
   }
 
-  /// @dev see {ICrunaManager.sol-getProtectors}
+  /**
+   * @dev see {ICrunaManager.sol-getProtectors}
+   */
   function getProtectors() external view virtual override returns (address[] memory) {
     return _getActors(ManagerConstants.protectorId());
   }
 
-  /// @dev see {ICrunaManager.sol-setSafeRecipient}
+  /**
+   * @dev see {ICrunaManager.sol-setSafeRecipient}
+   */
   function setSafeRecipient(
     address recipient,
     bool status,
@@ -173,12 +209,16 @@ contract CrunaManager is Actor, CrunaManagerBase {
     emit SafeRecipientChange(recipient, status);
   }
 
-  /// @dev see {ICrunaManager.sol-isSafeRecipient}
+  /**
+   * @dev see {ICrunaManager.sol-isSafeRecipient}
+   */
   function isSafeRecipient(address recipient) external view virtual override returns (bool) {
     return _actorIndex(recipient, ManagerConstants.safeRecipientId()) != ManagerConstants.maxActors();
   }
 
-  /// @dev see {ICrunaManager.sol-getSafeRecipients}
+  /**
+   * @dev see {ICrunaManager.sol-getSafeRecipients}
+   */
   function getSafeRecipients() external view virtual override returns (address[] memory) {
     return _getActors(ManagerConstants.safeRecipientId());
   }
@@ -189,7 +229,9 @@ contract CrunaManager is Actor, CrunaManagerBase {
    *
    */
 
-  /// @dev see {ICrunaManager.sol-plug}
+  /**
+   * @dev see {ICrunaManager.sol-plug}
+   */
   function plug(
     string memory name,
     address proxyAddress_,
@@ -231,7 +273,9 @@ contract CrunaManager is Actor, CrunaManagerBase {
     _plug(name, proxyAddress_, canManageTransfer, isERC6551Account, nameId_, salt, _key, requires);
   }
 
-  /// @dev see {ICrunaManager.sol-changePluginStatus}
+  /**
+   * @dev see {ICrunaManager.sol-changePluginStatus}
+   */
   function changePluginStatus(
     string memory name,
     bytes4 salt,
@@ -273,7 +317,9 @@ contract CrunaManager is Actor, CrunaManagerBase {
     emit PluginStatusChange(name, salt, _pluginAddress(nameId_, salt), uint256(change));
   }
 
-  /// @dev see {ICrunaManager.sol-trustPlugin}
+  /**
+   * @dev see {ICrunaManager.sol-trustPlugin}
+   */
   function trustPlugin(string memory name, bytes4 salt) external virtual override onlyTokenOwner {
     bytes4 nameId_ = _stringToBytes4(name);
     bytes8 _key = _combineBytes4(nameId_, salt);
@@ -285,22 +331,30 @@ contract CrunaManager is Actor, CrunaManagerBase {
     } else revert StillUntrusted();
   }
 
-  /// @dev see {ICrunaManager.sol-countPlugins}
+  /**
+   * @dev see {ICrunaManager.sol-countPlugins}
+   */
   function pluginAddress(bytes4 nameId_, bytes4 salt) external view virtual override returns (address payable) {
     return _pluginAddress(nameId_, salt);
   }
 
-  /// @dev see {ICrunaManager.sol-plugin}
+  /**
+   * @dev see {ICrunaManager.sol-plugin}
+   */
   function plugin(bytes4 nameId_, bytes4 salt) external view virtual override returns (CrunaPluginBase) {
     return _plugin(nameId_, salt);
   }
 
-  /// @dev see {ICrunaManager.sol-countPlugins}
+  /**
+   * @dev see {ICrunaManager.sol-countPlugins}
+   */
   function countPlugins() external view virtual override returns (uint256, uint256) {
     return _countPlugins();
   }
 
-  /// @dev see {ICrunaManager.sol-plugged}
+  /**
+   * @dev see {ICrunaManager.sol-plugged}
+   */
   function plugged(string memory name, bytes4 salt) external view virtual returns (bool) {
     bytes4 nameId_ = _stringToBytes4(name);
     return
@@ -308,12 +362,16 @@ contract CrunaManager is Actor, CrunaManagerBase {
       !_pluginByKey[_combineBytes4(nameId_, salt)].unplugged;
   }
 
-  /// @dev see {ICrunaManager.sol-pluginIndex}
+  /**
+   * @dev see {ICrunaManager.sol-pluginIndex}
+   */
   function pluginIndex(string memory name, bytes4 salt) external view virtual returns (bool, uint256) {
     return _pluginIndex(_stringToBytes4(name), salt);
   }
 
-  /// @dev see {ICrunaManager.sol-disablePlugin}
+  /**
+   * @dev see {ICrunaManager.sol-disablePlugin}
+   */
   function isPluginActive(string memory name, bytes4 salt) external view virtual returns (bool) {
     bytes4 nameId_ = _stringToBytes4(name);
     bytes8 _key = _combineBytes4(nameId_, salt);
@@ -321,7 +379,9 @@ contract CrunaManager is Actor, CrunaManagerBase {
     return _pluginByKey[_key].active;
   }
 
-  /// @dev see {ICrunaManager.sol-listPluginsKeys}
+  /**
+   * @dev see {ICrunaManager.sol-listPluginsKeys}
+   */
   function listPluginsKeys(bool active) external view virtual returns (bytes8[] memory) {
     (uint256 actives, uint256 disabled) = _countPlugins();
     bytes8[] memory _keys = new bytes8[](active ? actives : disabled);
@@ -338,12 +398,16 @@ contract CrunaManager is Actor, CrunaManagerBase {
     return _keys;
   }
 
-  /// @dev see {ICrunaManager.sol-pseudoAddress}
+  /**
+   * @dev see {ICrunaManager.sol-pseudoAddress}
+   */
   function pseudoAddress(string memory name, bytes4 _salt) external view virtual returns (address) {
     return _pseudoAddress(name, _salt);
   }
 
-  /// @dev See {IProtected721-managedTransfer}.
+  /**
+   * @dev See {IProtected721-managedTransfer}.
+   */
   function managedTransfer(bytes4 pluginNameId, address to) external virtual override nonReentrant {
     (bytes8 _key, bytes4 salt) = _getKeyAndSalt(pluginNameId);
     if (_key == bytes8(0) || !_pluginByKey[_key].active) revert PluginNotFoundOrDisabled();
@@ -360,7 +424,9 @@ contract CrunaManager is Actor, CrunaManagerBase {
     _vault().managedTransfer(pluginNameId, tokenId(), to);
   }
 
-  /// @dev See {IProtected721-protectedTransfer}.
+  /**
+   * @dev See {IProtected721-protectedTransfer}.
+   */
   function protectedTransfer(
     uint256 tokenId,
     address to,
@@ -379,9 +445,11 @@ contract CrunaManager is Actor, CrunaManagerBase {
     return CrunaPluginBase(_pluginAddress(nameId_, salt));
   }
 
-  /// @dev returns the address of a deployed plugin
-  /// @param nameId_ The nameId of the plugin
-  /// @param salt The salt of the plugin
+  /**
+   * @dev returns the address of a deployed plugin
+   * @param nameId_ The nameId of the plugin
+   * @param salt The salt of the plugin
+   */
   function _pluginAddress(bytes4 nameId_, bytes4 salt) internal view virtual returns (address payable) {
     return
       payable(
@@ -395,7 +463,9 @@ contract CrunaManager is Actor, CrunaManagerBase {
       );
   }
 
-  /// @dev returns the name Id of the manager
+  /**
+   * @dev returns the name Id of the manager
+   */
   function _nameId() internal view virtual override returns (bytes4) {
     return bytes4(keccak256("CrunaManager"));
   }
@@ -411,7 +481,9 @@ contract CrunaManager is Actor, CrunaManagerBase {
     return address(uint160(uint256(keccak256(abi.encodePacked(name, _salt)))));
   }
 
-  /// @dev Counts the active and disabled plugins
+  /**
+   * @dev Counts the active and disabled plugins
+   */
   function _countPlugins() internal view virtual returns (uint256, uint256) {
     uint256 active;
     uint256 disabled;
@@ -426,30 +498,36 @@ contract CrunaManager is Actor, CrunaManagerBase {
     return (active, disabled);
   }
 
-  /// @dev Internal function to disable a plugin but index and key
-  /// @param i The index of the plugin in the _allPlugins array
-  /// @param _key The key of the plugin
+  /**
+   * @dev Internal function to disable a plugin but index and key
+   * @param i The index of the plugin in the _allPlugins array
+   * @param _key The key of the plugin
+   */
   function _disablePlugin(uint256 i, bytes8 _key) internal {
     if (!_allPlugins[i].active) revert PluginAlreadyDisabled();
     delete _allPlugins[i].active;
     delete _pluginByKey[_key].active;
   }
 
-  /// @dev Internal function to re-enable a plugin but index and key
-  /// @param i The index of the plugin in the _allPlugins array
-  /// @param _key The key of the plugin
+  /**
+   * @dev Internal function to re-enable a plugin but index and key
+   * @param i The index of the plugin in the _allPlugins array
+   * @param _key The key of the plugin
+   */
   function _reEnablePlugin(uint256 i, bytes8 _key) internal {
     if (_allPlugins[i].active) revert PluginNotDisabled();
     _allPlugins[i].active = true;
     _pluginByKey[_key].active = true;
   }
 
-  /// @dev Unplugs a plugin
-  /// @param i The index of the plugin in the _allPlugins array
-  /// @param nameId_ The nameId of the plugin
-  /// @param salt The salt used to deploy the plugin
-  /// @param _key The key of the plugin
-  /// @param change The change to be made (Unplug or UnplugForever)
+  /**
+   * @dev Unplugs a plugin
+   * @param i The index of the plugin in the _allPlugins array
+   * @param nameId_ The nameId of the plugin
+   * @param salt The salt used to deploy the plugin
+   * @param _key The key of the plugin
+   * @param change The change to be made (Unplug or UnplugForever)
+   */
   function _unplugPlugin(uint256 i, bytes4 nameId_, bytes4 salt, bytes8 _key, PluginChange change) internal {
     if (_pluginByKey[_key].canBeReset) {
       if (change == PluginChange.UnplugForever) {
@@ -470,8 +548,10 @@ contract CrunaManager is Actor, CrunaManagerBase {
     _pluginByKey[_key].unplugged = true;
   }
 
-  /// @dev Id removing the authorization, it blocks a plugin for a maximum of 30 days from transferring
-  /// the NFT. If the plugins must be blocked for more time, disable it at your peril of making it useless.
+  /**
+   * @dev Id removing the authorization, it blocks a plugin for a maximum of 30 days from transferring
+   * the NFT. If the plugins must be blocked for more time, disable it at your peril of making it useless.
+   */
   function _authorizePluginToTransfer(
     bytes4 nameId_,
     bytes4 salt,
@@ -498,26 +578,34 @@ contract CrunaManager is Actor, CrunaManagerBase {
     }
   }
 
-  /// @dev Utility function to combine two bytes4 into a bytes8
+  /**
+   * @dev Utility function to combine two bytes4 into a bytes8
+   */
   function _combineBytes4(bytes4 a, bytes4 b) internal pure returns (bytes8) {
     return bytes8(bytes32(a) | (bytes32(b) >> 32));
   }
 
-  /// @dev Check if the NFT is protected
+  /**
+   * @dev Check if the NFT is protected
+   */
   function _isProtected() internal view virtual override returns (bool) {
     return _actorCount(ManagerConstants.protectorId()) != 0;
   }
 
-  /// @dev Checks if an address is a protector
-  /// @param protector_ The address to check
+  /**
+   * @dev Checks if an address is a protector
+   * @param protector_ The address to check
+   */
   function _isProtector(address protector_) internal view virtual override returns (bool) {
     return _isActiveActor(protector_, ManagerConstants.protectorId());
   }
 
-  /// @dev Override required by SignatureValidator to check if a signer is authorized to pre-approve an operation
-  /// @param selector The selector of the called function
-  /// @param actor The actor to be approved
-  /// @param signer The signer of the operation (the protector)
+  /**
+   * @dev Override required by SignatureValidator to check if a signer is authorized to pre-approve an operation
+   * @param selector The selector of the called function
+   * @param actor The actor to be approved
+   * @param signer The signer of the operation (the protector)
+   */
   function _canPreApprove(bytes4 selector, address actor, address signer) internal view virtual override returns (bool) {
     if (_actors[ManagerConstants.protectorId()].length == 0) {
       // if there are no protectors, the signer can pre-approve its own candidate
@@ -526,15 +614,17 @@ contract CrunaManager is Actor, CrunaManagerBase {
     return _isActiveActor(signer, ManagerConstants.protectorId());
   }
 
-  /// @dev Internal function plug a plugin
-  /// @param name The name of the plugin
-  /// @param proxyAddress_ The address of the plugin
-  /// @param canManageTransfer If the plugin can manage the transfer of the NFT
-  /// @param isERC6551Account If the plugin is an ERC6551 account
-  /// @param nameId_ The nameId of the plugin
-  /// @param salt The salt used to deploy the plugin
-  /// @param _key The key of the plugin
-  /// @param requires The version of the manager required by the implementation
+  /**
+   * @dev Internal function plug a plugin
+   * @param name The name of the plugin
+   * @param proxyAddress_ The address of the plugin
+   * @param canManageTransfer If the plugin can manage the transfer of the NFT
+   * @param isERC6551Account If the plugin is an ERC6551 account
+   * @param nameId_ The nameId of the plugin
+   * @param salt The salt used to deploy the plugin
+   * @param _key The key of the plugin
+   * @param requires The version of the manager required by the implementation
+   */
   function _plug(
     string memory name,
     address proxyAddress_,
@@ -607,9 +697,11 @@ contract CrunaManager is Actor, CrunaManagerBase {
     }
   }
 
-  /// @dev It asks the NFT to emit a Locked event, according to IERC6982
-  /// @param protectorsCount The number of protectors
-  /// @param status If latest protector has been added or removed
+  /**
+   * @dev It asks the NFT to emit a Locked event, according to IERC6982
+   * @param protectorsCount The number of protectors
+   * @param status If latest protector has been added or removed
+   */
   function _emitLockeEvent(uint256 protectorsCount, bool status) internal virtual {
     if ((status && protectorsCount == 1) || (!status && protectorsCount == 0)) {
       // Avoid to revert if the emission of the event fails.
@@ -631,8 +723,10 @@ contract CrunaManager is Actor, CrunaManagerBase {
     }
   }
 
-  /// @dev It returns the key and the salt of the current plugin calling the manager
-  /// @param pluginNameId The nameId of the plugin
+  /**
+   * @dev It returns the key and the salt of the current plugin calling the manager
+   * @param pluginNameId The nameId of the plugin
+   */
   function _getKeyAndSalt(bytes4 pluginNameId) internal view returns (bytes8, bytes4) {
     uint256 len = _allPlugins.length;
     for (uint256 i; i < len; ) {
@@ -651,7 +745,9 @@ contract CrunaManager is Actor, CrunaManagerBase {
     return (bytes8(0), bytes4(0));
   }
 
-  /// @dev It returns the index of the plugin in the _allPlugins array
+  /**
+   * @dev It returns the index of the plugin in the _allPlugins array
+   */
   function _pluginIndex(bytes4 nameId_, bytes4 salt) internal view virtual returns (bool, uint256) {
     uint256 len = _allPlugins.length;
     for (uint256 i; i < len; ) {
@@ -666,15 +762,17 @@ contract CrunaManager is Actor, CrunaManagerBase {
     return (false, 0);
   }
 
-  /// @dev Util to validate and check the signature
-  /// @param selector The selector of the function
-  /// @param actor The address of the actor (if a protector/safe recipient) or the pseudoAddress of a plugin
-  /// @param extra An extra value to be signed
-  /// @param extra2 An extra value to be signed
-  /// @param extra3 An extra value to be signed
-  /// @param timestamp The timestamp of the request
-  /// @param validFor The validity of the request
-  /// @param signature The signature of the request
+  /**
+   * @dev Util to validate and check the signature
+   * @param selector The selector of the function
+   * @param actor The address of the actor (if a protector/safe recipient) or the pseudoAddress of a plugin
+   * @param extra An extra value to be signed
+   * @param extra2 An extra value to be signed
+   * @param extra3 An extra value to be signed
+   * @param timestamp The timestamp of the request
+   * @param validFor The validity of the request
+   * @param signature The signature of the request
+   */
   function _preValidateAndCheckSignature(
     bytes4 selector,
     address actor,
@@ -700,19 +798,23 @@ contract CrunaManager is Actor, CrunaManagerBase {
     );
   }
 
-  /// @dev It resets a plugin
-  /// @param nameId_ The nameId of the plugin
-  /// @param salt The salt of the plugin
+  /**
+   * @dev It resets a plugin
+   * @param nameId_ The nameId of the plugin
+   * @param salt The salt of the plugin
+   */
   function _resetPlugin(bytes4 nameId_, bytes4 salt) internal virtual {
     CrunaPluginBase plugin_ = _plugin(nameId_, salt);
     plugin_.reset();
   }
 
-  /// @dev It resets a plugin on transfer.
-  /// It tries to minimize risks and gas consumption limiting the amount of gas sent to
-  /// the plugin. Since the called function should not be overridden, it should be safe.
-  /// @param nameId_ The nameId of the plugin
-  /// @param salt The salt of the plugin
+  /**
+   * @dev It resets a plugin on transfer.
+   * It tries to minimize risks and gas consumption limiting the amount of gas sent to
+   * the plugin. Since the called function should not be overridden, it should be safe.
+   * @param nameId_ The nameId of the plugin
+   * @param salt The salt of the plugin
+   */
   function _resetPluginOnTransfer(bytes4 nameId_, bytes4 salt) internal virtual {
     address plugin_ = _pluginAddress(nameId_, salt);
     // solhint-disable-next-line avoid-low-level-calls
@@ -729,10 +831,12 @@ contract CrunaManager is Actor, CrunaManagerBase {
     }
   }
 
-  /// @dev If a plugin has been temporarily deAuthorized from transferring the tolen, it
-  /// removes the lock if the lock is expired
-  /// @param nameId_ The nameId of the plugin
-  /// @param salt The salt of the plugin
+  /**
+   * @dev If a plugin has been temporarily deAuthorized from transferring the tolen, it
+   * removes the lock if the lock is expired
+   * @param nameId_ The nameId of the plugin
+   * @param salt The salt of the plugin
+   */
   function _removeLockIfExpired(bytes4 nameId_, bytes4 salt) internal virtual {
     bytes8 _key = _combineBytes4(nameId_, salt);
     if (_pluginByKey[_key].timeLock < block.timestamp) {
@@ -741,9 +845,11 @@ contract CrunaManager is Actor, CrunaManagerBase {
     }
   }
 
-  /// @dev It resets the manager on transfer
-  /// @param nameId_ The nameId of the plugin calling the transfer
-  /// @param salt The salt of the plugin calling the transfer
+  /**
+   * @dev It resets the manager on transfer
+   * @param nameId_ The nameId of the plugin calling the transfer
+   * @param salt The salt of the plugin calling the transfer
+   */
   function _resetOnTransfer(bytes4 nameId_, bytes4 salt) internal virtual {
     _deleteActors(ManagerConstants.protectorId());
     _deleteActors(ManagerConstants.safeRecipientId());

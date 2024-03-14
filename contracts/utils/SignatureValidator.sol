@@ -8,7 +8,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ISignatureValidator} from "./ISignatureValidator.sol";
 import {ICrunaManager} from "../manager/ICrunaManager.sol";
 
-// import "hardhat/console.sol";
+
 
 /**
  * @title SignatureValidator
@@ -27,10 +27,14 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
    * the timeValidation will be 17102805920003600
    */
 
-  /// @dev The maximum validFor. If more than this it will conflict with the timestamp.
+  /**
+   * @dev The maximum validFor. If more than this it will conflict with the timestamp.
+   */
   uint256 internal constant _MAX_VALID_FOR = 9_999_999;
 
-  /// @dev The multiplier for the timestamp in the timeValidation parameter.
+  /**
+   * @dev The multiplier for the timestamp in the timeValidation parameter.
+   */
   uint256 internal constant _TIMESTAMP_MULTIPLIER = 10_000_000;
 
   /**
@@ -47,25 +51,35 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
    */
   mapping(bytes32 signatureHash => bool used) private _usedSignatures;
 
-  /// @dev EIP712 constructor
+  /**
+   * @dev EIP712 constructor
+   */
   constructor() EIP712("Cruna", "1") {}
 
-  /// @dev See {ISignatureValidator.sol-preApprovals}
+  /**
+   * @dev See {ISignatureValidator.sol-preApprovals}
+   */
   function preApprovals(bytes32 hash) external view override returns (address) {
     return _preApprovals[hash];
   }
 
-  /// @dev see {ISignatureValidator.sol-hashSignature}
+  /**
+   * @dev see {ISignatureValidator.sol-hashSignature}
+   */
   function hashSignature(bytes calldata signature) external pure override returns (bytes32) {
     return _hashBytes(signature);
   }
 
-  /// @dev see {ISignatureValidator.sol-isSignatureUsed}
+  /**
+   * @dev see {ISignatureValidator.sol-isSignatureUsed}
+   */
   function isSignatureUsed(bytes32 hash) external view override returns (bool) {
     return _usedSignatures[hash];
   }
 
-  /// @dev see {ISignatureValidator-recoverSigner}
+  /**
+   * @dev see {ISignatureValidator-recoverSigner}
+   */
   function recoverSigner(
     bytes4 selector,
     address owner,
@@ -86,7 +100,9 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
     return (_preApprovals[hash], hash);
   }
 
-  /// @dev see {ISignatureValidator-preApprove}
+  /**
+   * @dev see {ISignatureValidator-preApprove}
+   */
   function preApprove(
     bytes4 selector,
     address owner,

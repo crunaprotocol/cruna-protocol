@@ -3,29 +3,41 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-// import {console} from "hardhat/console.sol";
+
 
 /**
  * @title Actor
  * @notice This contract manages actors (protectors, safe recipients, sentinels, etc.)
  */
 contract Actor {
-  /// @notice The maximum number of actors that can be set
+  /**
+   * @notice The maximum number of actors that can be set
+   */
   uint256 private constant _MAX_ACTORS = 16;
 
-  /// @notice The actors for each role
+  /**
+   * @notice The actors for each role
+   */
   mapping(bytes4 role => address[] actors) internal _actors;
 
-  /// @notice Error returned when trying to add a zero address
+  /**
+   * @notice Error returned when trying to add a zero address
+   */
   error ZeroAddress();
 
-  /// @notice Error returned when trying to add an actor already added
+  /**
+   * @notice Error returned when trying to add an actor already added
+   */
   error ActorAlreadyAdded();
 
-  /// @notice Error returned when trying to add too many actors
+  /**
+   * @notice Error returned when trying to add too many actors
+   */
   error TooManyActors();
 
-  /// @notice Error returned when an actor is not found
+  /**
+   * @notice Error returned when an actor is not found
+   */
   error ActorNotFound();
 
   /**

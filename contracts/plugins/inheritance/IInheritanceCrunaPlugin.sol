@@ -191,16 +191,24 @@ interface IInheritanceCrunaPlugin {
     bytes calldata signature
   ) external;
 
-  /// @dev Return all the sentinels and the inheritance data
+  /**
+   * @dev Return all the sentinels and the inheritance data
+   */
   function getSentinelsAndInheritanceData() external view returns (address[] memory, InheritanceConf memory);
 
-  /// @dev Return all the votes
+  /**
+   * @dev Return all the votes
+   */
   function getVotes() external view returns (address[] memory);
 
-  /// @dev Return the number of sentinels
+  /**
+   * @dev Return the number of sentinels
+   */
   function countSentinels() external view returns (uint256);
 
-  /// @dev allows the user to trigger a Proof-of-Live
+  /**
+   * @dev allows the user to trigger a Proof-of-Live
+   */
   function proofOfLife() external;
 
   /**
@@ -210,6 +218,8 @@ interface IInheritanceCrunaPlugin {
    */
   function voteForBeneficiary(address beneficiary) external;
 
-  /// @dev Allows the beneficiary to inherit the token
+  /**
+   * @dev Allows the beneficiary to inherit the token
+   */
   function inherit() external;
 }

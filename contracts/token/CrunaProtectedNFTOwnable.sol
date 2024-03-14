@@ -6,7 +6,7 @@ pragma solidity ^0.8.20;
 import {Ownable, Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {CrunaProtectedNFT} from "./CrunaProtectedNFT.sol";
 
-// import {console} from "hardhat/console.sol";
+
 
 /**
  * @title CrunaProtectedNFTOwnable
@@ -15,7 +15,9 @@ import {CrunaProtectedNFT} from "./CrunaProtectedNFT.sol";
  * a better governance.
  */
 abstract contract CrunaProtectedNFTOwnable is CrunaProtectedNFT, Ownable2Step {
-  /// @notice Error returned when the caller is not the owner
+  /**
+   * @notice Error returned when the caller is not the owner
+   */
   error NotTheOwner();
 
   /**
@@ -26,7 +28,9 @@ abstract contract CrunaProtectedNFTOwnable is CrunaProtectedNFT, Ownable2Step {
    */
   constructor(string memory name_, string memory symbol_, address admin) CrunaProtectedNFT(name_, symbol_) Ownable(admin) {}
 
-  /// @notice see {CrunaProtectedNFT-_canManage}
+  /**
+   * @notice see {CrunaProtectedNFT-_canManage}
+   */
   function _canManage(bool) internal view virtual override {
     if (_msgSender() != owner()) revert NotTheOwner();
   }

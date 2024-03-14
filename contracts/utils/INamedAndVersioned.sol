@@ -4,6 +4,8 @@ pragma solidity ^0.8.20;
 import {IVersioned} from "./IVersioned.sol";
 import {INamed} from "./INamed.sol";
 
-/// @title INamedAndVersioned
-/// @dev Combines INamed and IVersioned
+/**
+ * @title INamedAndVersioned
+ * @dev Combines INamed and IVersioned
+ */
 interface INamedAndVersioned is INamed, IVersioned {}

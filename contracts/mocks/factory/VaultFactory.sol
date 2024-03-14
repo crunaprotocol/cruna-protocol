@@ -13,7 +13,7 @@ import {TimeControlledNFT} from "../token/TimeControlledNFT.sol";
 import {IVaultFactory} from "./IVaultFactory.sol";
 import {IVersioned} from "../../utils/IVersioned.sol";
 
-// import {console} from "hardhat/console.sol";
+
 
 contract VaultFactory is
   IVaultFactory,
@@ -37,7 +37,9 @@ contract VaultFactory is
   uint256 public discount;
   address[] private _stableCoins;
 
-  /// @custom:oz-upgrades-unsafe-allow constructor
+  /**
+   * @custom:oz-upgrades-unsafe-allow constructor
+   */
   constructor() {
     _disableInitializers();
   }

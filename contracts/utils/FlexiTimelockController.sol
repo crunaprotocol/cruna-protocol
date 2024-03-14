@@ -9,22 +9,34 @@ import {TimelockController} from "@openzeppelin/contracts/governance/TimelockCon
  * @dev Extension of the TimelockController that allows for upgrade proposers and executors if needed.
  */
 contract FlexiTimelockController is TimelockController {
-  /// @dev Error returned when the function is not called through the TimelockController
+  /**
+   * @dev Error returned when the function is not called through the TimelockController
+   */
   error MustCallThroughTimeController();
 
-  /// @dev Error returned when trying to add an already existing proposer
+  /**
+   * @dev Error returned when trying to add an already existing proposer
+   */
   error ProposerAlreadyExists();
 
-  /// @dev Error returned when trying to remove a non-existing proposer
+  /**
+   * @dev Error returned when trying to remove a non-existing proposer
+   */
   error ProposerDoesNotExist();
 
-  /// @dev Error returned when trying to add an already existing executor
+  /**
+   * @dev Error returned when trying to add an already existing executor
+   */
   error ExecutorAlreadyExists();
 
-  /// @dev Error returned when trying to remove a non-existing executor
+  /**
+   * @dev Error returned when trying to remove a non-existing executor
+   */
   error ExecutorDoesNotExist();
 
-  /// @dev Modifier to allow only the TimelockController to call a function.
+  /**
+   * @dev Modifier to allow only the TimelockController to call a function.
+   */
   modifier onlyThroughTimeController() {
     if (msg.sender != address(this)) revert MustCallThroughTimeController();
     _;

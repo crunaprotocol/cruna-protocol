@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-// import "hardhat/console.sol";
+
 
 /**
  * @title ISignatureValidator
@@ -16,19 +16,29 @@ interface ISignatureValidator {
    */
   event PreApproved(bytes32 hash, address indexed signer);
 
-  /// @dev Error returned when a timestamp is invalid or expired.
+  /**
+   * @dev Error returned when a timestamp is invalid or expired.
+   */
   error TimestampInvalidOrExpired();
 
-  /// @dev Error returned when a called in unauthorized.
+  /**
+   * @dev Error returned when a called in unauthorized.
+   */
   error NotAuthorized();
 
-  /// @dev Error returned when trying to call a protected operation without a valid signature
+  /**
+   * @dev Error returned when trying to call a protected operation without a valid signature
+   */
   error NotPermittedWhenProtectorsAreActive();
 
-  /// @dev Error returned when the signature is not valid.
+  /**
+   * @dev Error returned when the signature is not valid.
+   */
   error WrongDataOrNotSignedByProtector();
 
-  /// @dev Error returned when the signature is already used.
+  /**
+   * @dev Error returned when the signature is already used.
+   */
   error SignatureAlreadyUsed();
 
   /**

@@ -8,7 +8,7 @@ import {CrunaPluginBase} from "../plugins/CrunaPluginBase.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
 
-// import {console} from "hardhat/console.sol";
+
 
 interface ICrunaManager is ITokenLinkedContract, IVersioned {
   /**
@@ -69,27 +69,41 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
     Reset
   }
 
-  /// @dev Event emitted when the manager call to the NFT to emit a Locked event fails.
+  /**
+   * @dev Event emitted when the manager call to the NFT to emit a Locked event fails.
+   */
   event EmitLockedEventFailed();
 
-  /// @dev Event emitted when the `status` of `protector` changes
+  /**
+   * @dev Event emitted when the `status` of `protector` changes
+   */
   event ProtectorChange(address indexed protector, bool status);
 
-  /// @dev Event emitted when protectors and safe recipients are imported from another token
+  /**
+   * @dev Event emitted when protectors and safe recipients are imported from another token
+   */
   event ProtectorsAndSafeRecipientsImported(address[] protectors, address[] safeRecipients, uint256 fromTokenId);
 
-  /// @dev Event emitted when the `status` of `recipient` changes
+  /**
+   * @dev Event emitted when the `status` of `recipient` changes
+   */
   event SafeRecipientChange(address indexed recipient, bool status);
 
-  /// @dev Event emitted when
-  /// the status of plugin identified by `name` and `salt`, and deployed to `pluginAddress` gets a specific `change`
+  /**
+   * @dev Event emitted when
+   * the status of plugin identified by `name` and `salt`, and deployed to `pluginAddress` gets a specific `change`
+   */
   event PluginStatusChange(string indexed name, bytes4 salt, address pluginAddress, uint256 change);
 
-  /// @dev Emitted when protectors and safe recipients are removed and all plugins are disabled (if they require it)
-  /// This event overrides any specific ProtectorChange, SafeRecipientChange and PluginStatusChange event
+  /**
+   * @dev Emitted when protectors and safe recipients are removed and all plugins are disabled (if they require it)
+   * This event overrides any specific ProtectorChange, SafeRecipientChange and PluginStatusChange event
+   */
   event Reset();
 
-  /// @dev Emitted when a plugin initially plugged despite being not trusted, is trusted by the CrunaGuardian
+  /**
+   * @dev Emitted when a plugin initially plugged despite being not trusted, is trusted by the CrunaGuardian
+   */
   event PluginTrusted(string indexed name, bytes4 salt);
 
   /**
@@ -106,112 +120,184 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
    */
   event PluginResetAttemptFailed(bytes4 _nameId, bytes4 salt);
 
-  /// @dev Returned when trying to upgrade the manager to an untrusted implementation
+  /**
+   * @dev Returned when trying to upgrade the manager to an untrusted implementation
+   */
   error UntrustedImplementation(address implementation);
 
-  /// @dev Returned when trying to upgrade to an older version of the manager
+  /**
+   * @dev Returned when trying to upgrade to an older version of the manager
+   */
   error InvalidVersion(uint256 oldVersion, uint256 newVersion);
 
-  /// @dev Returned when trying to plug a plugin that requires a new version of the manager
+  /**
+   * @dev Returned when trying to plug a plugin that requires a new version of the manager
+   */
   error PluginRequiresUpdatedManager(uint256 requiredVersion);
 
-  /// @dev Returned when the sender has no right to execute a function
+  /**
+   * @dev Returned when the sender has no right to execute a function
+   */
   error Forbidden();
 
-  /// @dev Returned when the sender is not a manager
+  /**
+   * @dev Returned when the sender is not a manager
+   */
   error NotAManager(address sender);
 
-  /// @dev Returned when a protector is not found
+  /**
+   * @dev Returned when a protector is not found
+   */
   error ProtectorNotFound(address protector);
 
-  /// @dev Returned when a protector is already set by the sender
+  /**
+   * @dev Returned when a protector is already set by the sender
+   */
   error ProtectorAlreadySetByYou(address protector);
 
-  /// @dev Returned when a protector is already set
+  /**
+   * @dev Returned when a protector is already set
+   */
   error ProtectorsAlreadySet();
 
-  /// @dev Returned when trying to set themself as a protector
+  /**
+   * @dev Returned when trying to set themself as a protector
+   */
   error CannotBeYourself();
 
-  /// @dev Returned when the managed transfer is called not by the right plugin
+  /**
+   * @dev Returned when the managed transfer is called not by the right plugin
+   */
   error NotTheAuthorizedPlugin(address callingPlugin);
 
-  /// @dev Returned when there is no more space for plugins
+  /**
+   * @dev Returned when there is no more space for plugins
+   */
   error PluginNumberOverflow();
 
-  /// @dev Returned when the plugin has been banned and marked as not pluggable
+  /**
+   * @dev Returned when the plugin has been banned and marked as not pluggable
+   */
   error PluginHasBeenMarkedAsNotPluggable();
 
-  /// @dev Returned when a plugin has already been plugged
+  /**
+   * @dev Returned when a plugin has already been plugged
+   */
   error PluginAlreadyPlugged();
 
-  /// @dev Returned when a plugin is not found
+  /**
+   * @dev Returned when a plugin is not found
+   */
   error PluginNotFound();
 
-  /// @dev Returned when trying to plug an unplugged plugin and the address of the implementation differ
+  /**
+   * @dev Returned when trying to plug an unplugged plugin and the address of the implementation differ
+   */
   error InconsistentProxyAddresses(address currentAddress, address proposedAddress);
 
-  /// @dev Returned when a plugin is not found or is disabled
+  /**
+   * @dev Returned when a plugin is not found or is disabled
+   */
   error PluginNotFoundOrDisabled();
 
-  /// @dev Returned when tryng to re-enable a not-disabled plugin
+  /**
+   * @dev Returned when tryng to re-enable a not-disabled plugin
+   */
   error PluginNotDisabled();
 
-  /// @dev Returned when trying to disable a plugin that is already disabled
+  /**
+   * @dev Returned when trying to disable a plugin that is already disabled
+   */
   error PluginAlreadyDisabled();
 
-  /// @dev Returned when a plugin tries to transfer the NFT without authorization
+  /**
+   * @dev Returned when a plugin tries to transfer the NFT without authorization
+   */
   error PluginNotAuthorizedToManageTransfer();
 
-  /// @dev Returned when a plugin has already been authorized
+  /**
+   * @dev Returned when a plugin has already been authorized
+   */
   error PluginAlreadyAuthorized();
 
-  /// @dev Returned when a plugin has already been unauthorized
+  /**
+   * @dev Returned when a plugin has already been unauthorized
+   */
   error PluginAlreadyUnauthorized();
 
-  /// @dev Returned when a plugin is not authorized to make transfers
+  /**
+   * @dev Returned when a plugin is not authorized to make transfers
+   */
   error NotATransferPlugin();
 
-  /// @dev Returned when trying to plug a plugin that responds to a different nameId
+  /**
+   * @dev Returned when trying to plug a plugin that responds to a different nameId
+   */
   error InvalidImplementation(bytes4 nameIdReturnedByPlugin, bytes4 proposedNameId);
 
-  /// @dev Returned when setting an invalid TimeLock when temporarily de-authorizing a plugin
+  /**
+   * @dev Returned when setting an invalid TimeLock when temporarily de-authorizing a plugin
+   */
   error InvalidTimeLock(uint256 timeLock);
 
-  /// @dev Returned when calling a function with a validity overflowing the maximum value
+  /**
+   * @dev Returned when calling a function with a validity overflowing the maximum value
+   */
   error InvalidValidity();
 
-  /// @dev Returned when plugging plugin as ERC6551 while the plugin is not an ERC6551 account, or vice versa
+  /**
+   * @dev Returned when plugging plugin as ERC6551 while the plugin is not an ERC6551 account, or vice versa
+   */
   error InvalidERC6551Status();
 
-  /// @dev Returned when trying to make a transfer with an untrusted plugin, when the NFT accepts only trusted ones
+  /**
+   * @dev Returned when trying to make a transfer with an untrusted plugin, when the NFT accepts only trusted ones
+   */
   error UntrustedImplementationsNotAllowedToMakeTransfers();
 
-  /// @dev Returned if trying to trust a plugin that is still untrusted
+  /**
+   * @dev Returned if trying to trust a plugin that is still untrusted
+   */
   error StillUntrusted();
 
-  /// @dev Returned if a plugin has already been trusted
+  /**
+   * @dev Returned if a plugin has already been trusted
+   */
   error PluginAlreadyTrusted();
 
-  /// @dev Returned when trying to import protectors and safe recipients from the token itself
+  /**
+   * @dev Returned when trying to import protectors and safe recipients from the token itself
+   */
   error CannotImportProtectorsAndSafeRecipientsFromYourself();
 
-  /// @dev Returned when the owner of the exporter token is different from the owner of the importer token
+  /**
+   * @dev Returned when the owner of the exporter token is different from the owner of the importer token
+   */
   error NotTheSameOwner(address originSOwner, address owner);
 
-  /// @dev Returned when some safe recipients have already been set
+  /**
+   * @dev Returned when some safe recipients have already been set
+   */
   error SafeRecipientsAlreadySet();
 
-  /// @dev Returned when the origin token has no protectors and no safe recipients
+  /**
+   * @dev Returned when the origin token has no protectors and no safe recipients
+   */
   error NothingToImport();
 
-  /// @dev Returned when trying to change the status of a plugin to an unsupported mode
+  /**
+   * @dev Returned when trying to change the status of a plugin to an unsupported mode
+   */
   error UnsupportedPluginChange();
 
-  /// @dev Returned when trying to get the index of a plugin in the allPlugins array, but that index is out of bounds
+  /**
+   * @dev Returned when trying to get the index of a plugin in the allPlugins array, but that index is out of bounds
+   */
   error IndexOutOfBounds();
 
-  /// @dev Returned when trying to use a function that requires protectors, but no protectors are set
+  /**
+   * @dev Returned when trying to use a function that requires protectors, but no protectors are set
+   */
   error ToBeUsedOnlyWhenProtectorsAreActive();
 
   /**
@@ -220,7 +306,9 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
    */
   function pluginByKey(bytes8 key) external view returns (PluginConfig memory);
 
-  /// @dev It returns the configuration of all currently plugged plugins
+  /**
+   * @dev It returns the configuration of all currently plugged plugins
+   */
   function allPlugins() external view returns (PluginElement[] memory);
 
   /**
@@ -247,7 +335,9 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
    */
   function isProtector(address protector_) external view returns (bool);
 
-  /// @dev Returns true if there are protectors.
+  /**
+   * @dev Returns true if there are protectors.
+   */
   function hasProtectors() external view returns (bool);
 
   /**
@@ -257,13 +347,19 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
    */
   function isTransferable(address to) external view returns (bool);
 
-  /// @dev Returns true if the token is locked (since the NFT is ERC6982)
+  /**
+   * @dev Returns true if the token is locked (since the NFT is ERC6982)
+   */
   function locked() external view returns (bool);
 
-  /// @dev Counts how many protectors have been set
+  /**
+   * @dev Counts how many protectors have been set
+   */
   function countProtectors() external view returns (uint256);
 
-  /// @dev Counts the safe recipients
+  /**
+   * @dev Counts the safe recipients
+   */
   function countSafeRecipients() external view returns (uint256);
 
   /**

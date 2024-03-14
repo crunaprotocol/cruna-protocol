@@ -6,7 +6,7 @@ pragma solidity ^0.8.20;
 import {CrunaProtectedNFT} from "./CrunaProtectedNFT.sol";
 import {TimelockController, FlexiTimelockController} from "../utils/FlexiTimelockController.sol";
 
-// import {console} from "hardhat/console.sol";
+
 
 /**
  * @title CrunaProtectedNFTTimeControlled
@@ -14,7 +14,9 @@ import {TimelockController, FlexiTimelockController} from "../utils/FlexiTimeloc
  * It implements best practices for governance and timelock.
  */
 abstract contract CrunaProtectedNFTTimeControlled is CrunaProtectedNFT, FlexiTimelockController {
-  /// @notice Error returned when the caller is not authorized
+  /**
+   * @notice Error returned when the caller is not authorized
+   */
   error NotAuthorized();
 
   /**
@@ -42,7 +44,9 @@ abstract contract CrunaProtectedNFTTimeControlled is CrunaProtectedNFT, FlexiTim
     return super.supportsInterface(interfaceId);
   }
 
-  /// @notice see {CrunaProtectedNFT-_canManage}
+  /**
+   * @notice see {CrunaProtectedNFT-_canManage}
+   */
   function _canManage(bool isInitializing) internal view virtual override {
     if (isInitializing) {
       if (!hasRole(DEFAULT_ADMIN_ROLE, _msgSender())) revert NotAuthorized();

@@ -57,45 +57,71 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
 
   // errors
 
-  /// @dev Error returned when the caller is not the token owner
+  /**
+   * @dev Error returned when the caller is not the token owner
+   */
   error NotTransferable();
 
-  /// @dev Error returned when the caller is not the manager
+  /**
+   * @dev Error returned when the caller is not the manager
+   */
   error NotTheManager();
 
-  /// @dev Error returned when the caller is not the token owner
+  /**
+   * @dev Error returned when the caller is not the token owner
+   */
   error ZeroAddress();
 
-  /// @dev Error returned when the token is already initiated
+  /**
+   * @dev Error returned when the token is already initiated
+   */
   error AlreadyInitiated();
 
-  /// @dev Error returned when the caller is not the token owner
+  /**
+   * @dev Error returned when the caller is not the token owner
+   */
   error NotTheTokenOwner();
 
-  /// @dev Error returned when trying to upgrade to an older version
+  /**
+   * @dev Error returned when trying to upgrade to an older version
+   */
   error CannotUpgradeToAnOlderVersion();
 
-  /// @dev Error returned when the new implementation of the manager is not trusted
+  /**
+   * @dev Error returned when the new implementation of the manager is not trusted
+   */
   error UntrustedImplementation(address implementation);
 
-  /// @dev Error returned when trying to call a function that requires progressive token ids
+  /**
+   * @dev Error returned when trying to call a function that requires progressive token ids
+   */
   error NotAvailableIfTokenIdsAreNotProgressive();
 
-  /// @dev Error returned when the token id is invalid
+  /**
+   * @dev Error returned when the token id is invalid
+   */
   error InvalidTokenId();
 
-  /// @dev Error returned when the NFT is not initiated
+  /**
+   * @dev Error returned when the NFT is not initiated
+   */
   error NftNotInitiated();
 
-  /// @dev Error returned when trying too set an invalid MaxTokenId
+  /**
+   * @dev Error returned when trying too set an invalid MaxTokenId
+   */
   error InvalidMaxTokenId();
 
-  /// @dev Error returned when an index is invalid
+  /**
+   * @dev Error returned when an index is invalid
+   */
   error InvalidIndex();
 
   // views
 
-  /// @dev Returns the configuration of the NFT
+  /**
+   * @dev Returns the configuration of the NFT
+   */
   function nftConf() external view returns (NftConf memory);
 
   /**

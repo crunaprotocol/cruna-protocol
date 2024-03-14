@@ -5,7 +5,7 @@ import {ICrunaGuardian} from "./ICrunaGuardian.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 import {FlexiTimelockController} from "../utils/FlexiTimelockController.sol";
 
-// import "hardhat/console.sol";
+
 
 /**
  * @title CrunaGuardian
@@ -16,10 +16,14 @@ import {FlexiTimelockController} from "../utils/FlexiTimelockController.sol";
  * - manager to trust a new plugin implementation and allow managed transfers
  */
 contract CrunaGuardian is ICrunaGuardian, IVersioned, FlexiTimelockController {
-  /// @notice Error returned when the arguments are invalid
+  /**
+   * @notice Error returned when the arguments are invalid
+   */
   error InvalidArguments();
 
-  /// @notice Emitted when a trusted implementation is updated
+  /**
+   * @notice Emitted when a trusted implementation is updated
+   */
   mapping(bytes32 nameIdAndImplementationAddress => uint256 requiredManagerVersion) private _trustedImplementations;
 
   /**
@@ -37,7 +41,9 @@ contract CrunaGuardian is ICrunaGuardian, IVersioned, FlexiTimelockController {
     address admin
   ) FlexiTimelockController(minDelay, proposers, executors, admin) {}
 
-  /// @notice see {ICrunaGuardian-setTrustedImplementation}
+  /**
+   * @notice see {ICrunaGuardian-setTrustedImplementation}
+   */
   function version() external pure virtual returns (uint256) {
     // v1.1.0
     return 1_001_000;
