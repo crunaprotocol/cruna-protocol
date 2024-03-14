@@ -5,4 +5,5 @@ root_dir=$(dirname $(realpath $(dirname "$0")))
 cd $root_dir
 
 SKIP_CRYPTOENV=true npx hardhat docgen
+node scripts/docs-index.js
 

@@ -55,6 +55,7 @@ let indexContent = generateIndexContent(markdownFiles, baseDir);
 indexContent += `
 
 This documentation is automatically generated using [solidity-docgen](https://github.com/OpenZeppelin/solidity-docgen)
+
 (c) 2024+ Cruna
 `;
 

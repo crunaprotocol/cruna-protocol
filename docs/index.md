@@ -45,5 +45,6 @@
   - [TokenLinkedContract](./utils/TokenLinkedContract.md)
 
 
-This documentation is automatically generated.
+This documentation is automatically generated using [solidity-docgen](https://github.com/OpenZeppelin/solidity-docgen)
+
 (c) 2024+ Cruna
