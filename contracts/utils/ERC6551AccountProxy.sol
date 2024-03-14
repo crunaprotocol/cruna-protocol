@@ -7,10 +7,10 @@ import {Proxy} from "@openzeppelin/contracts/proxy/Proxy.sol";
 // import "hardhat/console.sol";
 
 /**
-  @title ERC6551AccountProxy
-    This version of ERC6551AccountProxy is modified to work with the OpenZeppelin Contracts v5
-    The original version (working with OZ v4.9.x) can be found in https://github.com/erc6551/reference
-*/
+ * @title ERC6551AccountProxy
+ * This version of ERC6551AccountProxy is modified to work with the OpenZeppelin Contracts v5
+ * The original version (working with OZ v4.9.x) can be found in https://github.com/erc6551/reference
+ */
 contract ERC6551AccountProxy is Proxy {
   /// @dev The default implementation of the contract
   address public immutable DEFAULT_IMPLEMENTATION;
@@ -24,9 +24,9 @@ contract ERC6551AccountProxy is Proxy {
   }
 
   /**
-    @dev Constructor
-    @param _defaultImplementation The default implementation of the contract
-  */
+   * @dev Constructor
+   * @param _defaultImplementation The default implementation of the contract
+   */
   constructor(address _defaultImplementation) {
     if (_defaultImplementation == address(0)) revert InvalidImplementation();
     DEFAULT_IMPLEMENTATION = _defaultImplementation;

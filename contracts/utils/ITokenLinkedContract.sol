@@ -4,15 +4,15 @@ pragma solidity ^0.8.20;
 // this is a reduction of IERC6551Account focusing purely on the bond between the NFT and the contract
 
 /**
-  @title ITokenLinkedContract
-*/
+ * @title ITokenLinkedContract
+ */
 interface ITokenLinkedContract {
   /**
-    @dev Returns the token linked to the contract
-    @return chainId The chainId of the token
-    @return tokenContract The address of the token contract
-    @return tokenId The tokenId of the token
-  */
+   * @dev Returns the token linked to the contract
+   * @return chainId The chainId of the token
+   * @return tokenContract The address of the token contract
+   * @return tokenId The tokenId of the token
+   */
   function token() external view returns (uint256 chainId, address tokenContract, uint256 tokenId);
 
   /// @dev Returns the owner of the token

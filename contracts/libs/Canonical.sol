@@ -17,6 +17,7 @@ import {ICrunaRegistry} from "../canonical/ICrunaRegistry.sol";
 */
 
 library Canonical {
+
   /// @dev Returns the CrunaRegistry contract
   function crunaRegistry() internal pure returns (ICrunaRegistry) {
     return ICrunaRegistry(0xccCCCb5339Db00811C69f52C384030cB431FBE00);

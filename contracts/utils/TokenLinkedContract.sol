@@ -9,9 +9,9 @@ import {ITokenLinkedContract} from "./ITokenLinkedContract.sol";
 // import {console} from "hardhat/console.sol";
 
 /**
-  @title TokenLinkedContract
-  @dev Abstract contract to link a contract to an NFT
-*/
+ * @title TokenLinkedContract
+ * @dev Abstract contract to link a contract to an NFT
+ */
 abstract contract TokenLinkedContract is ITokenLinkedContract {
   /// @dev Returns the token linked to the contract
   function token() public view virtual override returns (uint256, address, uint256) {

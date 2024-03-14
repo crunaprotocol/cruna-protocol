@@ -6,9 +6,9 @@ pragma solidity ^0.8.20;
 // import {console} from "hardhat/console.sol";
 
 /**
-  @title ManagerConstants
-  @dev Constants for the manager. Using functions instead of state variables makes easier to manage future upgrades.
-*/
+ * @title ManagerConstants
+ * @dev Constants for the manager. Using functions instead of state variables makes easier to manage future upgrades.
+ */
 library ManagerConstants {
   /// @dev The maximum number of actors that can be added to the manager
   function maxActors() internal pure returns (uint256) {

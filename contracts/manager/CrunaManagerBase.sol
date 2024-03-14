@@ -14,14 +14,14 @@ import {INamedAndVersioned} from "../utils/INamedAndVersioned.sol";
 // import {console} from "hardhat/console.sol";
 
 /**
-  @title CrunaManagerBase.sol
-  @dev Base contract for managers and plugins
-*/
+ * @title CrunaManagerBase.sol
+ * @notice Base contract for managers and plugins
+ */
 abstract contract CrunaManagerBase is ICrunaManager, CommonBase, ReentrancyGuard {
   /**
-    @dev Upgrade the implementation of the manager
-    @param implementation_ The new implementation
-  */
+   * @notice Upgrade the implementation of the manager
+   * @param implementation_ The new implementation
+   */
   function upgrade(address implementation_) external virtual override nonReentrant {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     if (implementation_ == address(0)) revert ZeroAddress();
@@ -41,17 +41,17 @@ abstract contract CrunaManagerBase is ICrunaManager, CommonBase, ReentrancyGuard
   }
 
   /**
-    @dev Execute actions needed in a new manager based on the previous version
-    @param previousVersion The previous version
-  */
+   * @notice Execute actions needed in a new manager based on the previous version
+   * @param previousVersion The previous version
+   */
   function migrate(uint256 previousVersion) external virtual;
 
-  // @dev Returns the version of the manager
+  // @notice Returns the version of the manager
   function _version() internal pure virtual returns (uint256) {
     return 1_000_000;
   }
 
-  // @dev This empty reserved space is put in place to allow future versions to add new
+  // @notice This empty reserved space is put in place to allow future versions to add new
   // variables without shifting down storage in the inheritance chain.
   // See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
 

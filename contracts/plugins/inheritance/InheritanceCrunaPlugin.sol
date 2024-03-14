@@ -12,31 +12,31 @@ import {ICrunaPlugin, CrunaPluginBase} from "../CrunaPluginBase.sol";
 // import {console} from "hardhat/console.sol";
 
 /**
-  @title InheritanceCrunaPlugin
-  @dev This contract manages inheritance
-*/
+ * @title InheritanceCrunaPlugin
+ * @notice This contract manages inheritance
+ */
 contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaPluginBase {
   using ECDSA for bytes32;
   using Strings for uint256;
 
-  /// @dev The maximum number of actors that can be set
+  /// @notice The maximum number of actors that can be set
   uint256 private constant _MAX_ACTORS = 16;
 
-  /// @dev It returns a bytes4 identifying a SENTINEL actor.
+  /// @notice It returns a bytes4 identifying a SENTINEL actor.
   bytes4 private constant _SENTINEL = 0xd3eedd6d; // bytes4(keccak256("SENTINEL"))
 
-  /// @dev The object storing the inheritance configuration
+  /// @notice The object storing the inheritance configuration
   InheritanceConf internal _inheritanceConf;
 
-  /// @dev The object storing the votes
+  /// @notice The object storing the votes
   Votes internal _votes;
 
-  /// @dev see {IInheritanceCrunaPlugin.sol-requiresToManageTransfer}
+  /// @notice see {IInheritanceCrunaPlugin.sol-requiresToManageTransfer}
   function requiresToManageTransfer() external pure override returns (bool) {
     return true;
   }
 
-  /// @dev see {IInheritanceCrunaPlugin.sol-isERC6551Account}
+  /// @notice see {IInheritanceCrunaPlugin.sol-isERC6551Account}
   function isERC6551Account() external pure virtual returns (bool) {
     return false;
   }
@@ -186,13 +186,13 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   /**
-    @dev It sets a sentinel
-    @param sentinel The sentinel address
-    @param status True if the sentinel is active, false if it is not
-    @param timestamp The timestamp
-    @param validFor The validity of the signature
-    @param signature The signature
-  */
+   * @dev It sets a sentinel
+   * @param sentinel The sentinel address
+   * @param status True if the sentinel is active, false if it is not
+   * @param timestamp The timestamp
+   * @param validFor The validity of the signature
+   * @param signature The signature
+   */
   function _setSentinel(
     address sentinel,
     bool status,

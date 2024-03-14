@@ -16,14 +16,14 @@ import {Actor} from "../manager/Actor.sol";
 // import {console} from "hardhat/console.sol";
 
 /**
-  @title CommonBase.sol
-  @dev Base contract for managers and plugins
-*/
+ * @title CommonBase.sol
+ * @dev Base contract for managers and plugins
+ */
 abstract contract CommonBase is ICommonBase, INamed, Context, Actor, TokenLinkedContract, SignatureValidator {
   /**
-     @dev Storage slot with the address of the current implementation.
-     This is the keccak-256 hash of "eip1967.proxy.implementation" subtracted by 1, and is
-     validated in the constructor.
+   * @dev Storage slot with the address of the current implementation.
+   * This is the keccak-256 hash of "eip1967.proxy.implementation" subtracted by 1, and is
+   * validated in the constructor.
    */
   bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
@@ -48,9 +48,9 @@ abstract contract CommonBase is ICommonBase, INamed, Context, Actor, TokenLinked
   }
 
   /**
-     @dev Returns the keccak256 of a string variable.
-     It saves gas compared to keccak256(abi.encodePacked(string)).
-     @param input The string to hash
+   * @dev Returns the keccak256 of a string variable.
+   * It saves gas compared to keccak256(abi.encodePacked(string)).
+   * @param input The string to hash
    */
   function _hashString(string memory input) internal pure returns (bytes32 result) {
     // solhint-disable-next-line no-inline-assembly
@@ -65,9 +65,9 @@ abstract contract CommonBase is ICommonBase, INamed, Context, Actor, TokenLinked
   }
 
   /**
-    @dev Returns the equivalent of bytes4(keccak256(str).
-    @param str The string to hash
-  */
+   * @dev Returns the equivalent of bytes4(keccak256(str).
+   * @param str The string to hash
+   */
   function _stringToBytes4(string memory str) internal pure returns (bytes4) {
     return bytes4(_hashString(str));
   }

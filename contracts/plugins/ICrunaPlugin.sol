@@ -6,15 +6,15 @@ import {IVersioned} from "../utils/IVersioned.sol";
 import {CrunaManager} from "../manager/CrunaManager.sol";
 
 /**
- @title ICrunaPlugin.sol
- @dev Interface for plugins
-   Technically, plugins are secondary managers, pluggable in
-   the primary manage, which is CrunaManager.sol
-*/
+ * @title ICrunaPlugin.sol
+ * @dev Interface for plugins
+ * Technically, plugins are secondary managers, pluggable in
+ * the primary manage, which is CrunaManager.sol
+ */
 interface ICrunaPlugin is ITokenLinkedContract, IVersioned {
   /**
-    @dev The configuration of the plugin
-  */
+   * @dev The configuration of the plugin
+   */
   struct Conf {
     CrunaManager manager;
     // When mustReset is true, the plugin must be reset before being used again.
@@ -24,22 +24,22 @@ interface ICrunaPlugin is ITokenLinkedContract, IVersioned {
   }
 
   /**
-    @dev Error returned when the plugin is reset
-    @param implementation The address of the new implementation
-  */
+   * @dev Error returned when the plugin is reset
+   * @param implementation The address of the new implementation
+   */
   error UntrustedImplementation(address implementation);
 
   /**
-    @dev Error returned when the plugin is reset
-    @param oldVersion The version of the current implementation
-    @param newVersion The version of the new implementation
-  */
+   * @dev Error returned when the plugin is reset
+   * @param oldVersion The version of the current implementation
+   * @param newVersion The version of the new implementation
+   */
   error InvalidVersion(uint256 oldVersion, uint256 newVersion);
 
   /**
-    @dev Error returned when the plugin is reset
-    @param requiredVersion The version required by the plugin
-  */
+   * @dev Error returned when the plugin is reset
+   * @param requiredVersion The version required by the plugin
+   */
   error PluginRequiresUpdatedManager(uint256 requiredVersion);
 
   /// @dev Error returned when the plugin is reset
@@ -52,9 +52,9 @@ interface ICrunaPlugin is ITokenLinkedContract, IVersioned {
   function init() external;
 
   /**
-    @dev Called by the manager during the plugging to know if the plugin is asking the
-      right to make a managed transfer of the vault
-  */
+   * @dev Called by the manager during the plugging to know if the plugin is asking the
+   * right to make a managed transfer of the vault
+   */
   function requiresToManageTransfer() external pure returns (bool);
 
   /// @dev Called by the manager to know it the plugin must be reset when transferring the NFT
@@ -70,11 +70,11 @@ interface ICrunaPlugin is ITokenLinkedContract, IVersioned {
   function resetOnTransfer() external;
 
   /**
-    @dev Upgrade the implementation of the manager/plugin
-      Notice that the owner can upgrade active or disable plugins
-      so that, if a plugin is compromised, the user can disable it,
-      wait for a new trusted implementation and upgrade it.
-  */
+   * @dev Upgrade the implementation of the manager/plugin
+   * Notice that the owner can upgrade active or disable plugins
+   * so that, if a plugin is compromised, the user can disable it,
+   * wait for a new trusted implementation and upgrade it.
+   */
   function upgrade(address implementation_) external;
 
   /// @dev Returns the manager

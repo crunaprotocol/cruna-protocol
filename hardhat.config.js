@@ -110,6 +110,7 @@ module.exports = {
     // coinmarketcap: env.coinMarketCapAPIKey
   },
   docgen: {
-    exclude: ["mocks"]
+    exclude: ["mocks"],
+    pages: "files"
   }
 };

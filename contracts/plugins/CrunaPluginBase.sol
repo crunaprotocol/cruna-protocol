@@ -14,37 +14,37 @@ import {Canonical} from "../libs/Canonical.sol";
 // import {console} from "hardhat/console.sol";
 
 /**
-  @title CrunaPluginBase
-  @dev Base contract for plugins
-*/
+ * @title CrunaPluginBase
+ * @notice Base contract for plugins
+ */
 abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase, ReentrancyGuard {
-  /// @dev The internal configuration of the plugin
+  /// @notice The internal configuration of the plugin
   Conf internal _conf;
 
-  /// @dev Verifies that the plugin must not be reset
+  /// @notice Verifies that the plugin must not be reset
   modifier ifMustNotBeReset() {
     if (_conf.mustBeReset == 1) revert PluginMustBeReset();
     _;
   }
 
-  /// @dev see {ICrunaPlugin.sol-init}
+  /// @notice see {ICrunaPlugin.sol-init}
   function init() external {
     address managerAddress = _vault().managerOf(tokenId());
     if (_msgSender() != managerAddress) revert Forbidden();
     _conf.manager = CrunaManager(managerAddress);
   }
 
-  /// @dev see {ICrunaPlugin.sol-manager}
+  /// @notice see {ICrunaPlugin.sol-manager}
   function manager() external view virtual override returns (CrunaManager) {
     return _conf.manager;
   }
 
-  /// @dev see {IVersioned.sol-version}
+  /// @notice see {IVersioned.sol-version}
   function version() external pure virtual override returns (uint256) {
     return _version();
   }
 
-  /// @dev see {ICrunaPlugin.sol-upgrade}
+  /// @notice see {ICrunaPlugin.sol-upgrade}
   function upgrade(address implementation_) external virtual override nonReentrant {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     if (implementation_ == address(0)) revert ZeroAddress();
@@ -62,7 +62,7 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase, ReentrancyGuard {
     StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
   }
 
-  /// @dev see {ICrunaPlugin.sol-resetOnTransfer}
+  /// @notice see {ICrunaPlugin.sol-resetOnTransfer}
   // The manager is not a wallet, it is the NFT Manager contract, owned by the token.
   function resetOnTransfer() external override ifMustNotBeReset {
     if (_msgSender() != address(_conf.manager)) revert Forbidden();
@@ -70,12 +70,12 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase, ReentrancyGuard {
   }
 
   /**
-    @dev Internal function to verify if a signer can pre approve an operation (if the sender is a protector)
-    The params:
-     - operation The selector of the called function
-     - the actor to be approved
-     - signer The signer of the operation (the protector)
-  */
+   * @dev Internal function to verify if a signer can pre approve an operation (if the sender is a protector)
+   * The params:
+   * - operation The selector of the called function
+   * - the actor to be approved
+   * - signer The signer of the operation (the protector)
+   */
   function _canPreApprove(bytes4, address, address signer) internal view virtual override returns (bool) {
     return _conf.manager.isProtector(signer);
   }
@@ -91,9 +91,9 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase, ReentrancyGuard {
   }
 
   /**
-    @dev Internal function to check if an address is a protector
-    @param protector The address to check
-  */
+   * @dev Internal function to check if an address is a protector
+   * @param protector The address to check
+   */
   function _isProtector(address protector) internal view virtual override returns (bool) {
     return _conf.manager.isProtector(protector);
   }
