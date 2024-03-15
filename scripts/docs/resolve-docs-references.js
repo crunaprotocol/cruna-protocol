@@ -65,10 +65,15 @@ async function main() {
         }
     });
 
+    globalCommentsMap.forEach(resolveReference);
+
     globalCommentsMap.forEach((value, key) => {
         const solFile = key.split("/").pop();
-        fs.writeFileSync(path.join(contractsPath, solFile), modified[solFile], 'utf8');
-
+        if (modified[solFile]) {
+            let f = path.join(contractsPath, key);
+            console.log(f)
+            // fs.writeFileSync(f, modified[solFile], 'utf8');
+        }
     })
 }
 
