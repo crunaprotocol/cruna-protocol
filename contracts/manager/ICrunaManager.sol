@@ -386,7 +386,9 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
    */
   function importProtectorsAndSafeRecipientsFrom(uint256 tokenId) external;
 
-  /** @dev get the list of all protectors */
+  /**
+   * @dev get the list of all protectors
+   */
   function getProtectors() external view returns (address[] memory);
 
   /**

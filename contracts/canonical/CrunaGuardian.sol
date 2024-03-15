@@ -45,7 +45,7 @@ contract CrunaGuardian is ICrunaGuardian, IVersioned, FlexiTimelockController {
     return 1_001_000;
   }
 
-  /// @dev see {ICrunaGuardian.sol-setTrustedImplementation}
+  /// @dev see {ICrunaGuardian-setTrustedImplementation}
   function setTrustedImplementation(
     bytes4 nameId,
     address implementation,

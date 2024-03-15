@@ -31,8 +31,8 @@ async function extractReferencedComment(v) {
     let res;
     if (cache[`${contract}.sol`]) {
         let c = cache[`${contract}.sol`].split("function " + func)[0].split("/**");
-        // c = c[c.length - 1].split("function")[0];
-        res = "  /**" + c[c.length - 1];
+        c = c[c.length - 1].split("*/")[0];
+        res = "  /**" + c + "*/";
     }
     return res;
 }
@@ -50,7 +50,7 @@ async function resolveReference(value, key) {
             if (comment) {
                 let re = new RegExp(escapeRegExp(v));
                 // if (solFile == "CrunaManager.sol") {
-                //     console.log(comment);
+                //     console.log("\n\n", comment, "\n\n");
                 //     console.log(re.test(cache[solFile]));
                 //     console.log(cache[solFile].replace(re, comment));
                 // }

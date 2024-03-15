@@ -287,7 +287,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
     } else revert StillUntrusted();
   }
 
-  /// @dev see {ICrunaManager-countPlugins}
+  /// @dev see {ICrunaManager-pluginAddress}
   function pluginAddress(bytes4 nameId_, bytes4 salt) external view virtual override returns (address payable) {
     return _pluginAddress(nameId_, salt);
   }
@@ -315,7 +315,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
     return _pluginIndex(_stringToBytes4(name), salt);
   }
 
-  /// @dev see {ICrunaManager-disablePlugin}
+  /// @dev see {ICrunaManager-isPluginActive}
   function isPluginActive(string memory name, bytes4 salt) external view virtual returns (bool) {
     bytes4 nameId_ = _stringToBytes4(name);
     bytes8 _key = _combineBytes4(nameId_, salt);
