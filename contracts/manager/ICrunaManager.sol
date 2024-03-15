@@ -363,7 +363,7 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   /**
    * @dev Set a protector for the token
    * @param protector_ The protector address
-   * @param active True to add a protector, false to remove it
+   * @param status True to add a protector, false to remove it
    * @param timestamp The timestamp of the signature
    * @param validFor The validity of the signature
    * @param signature The signature of the protector
@@ -373,7 +373,7 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
    */
   function setProtector(
     address protector_,
-    bool active,
+    bool status,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
