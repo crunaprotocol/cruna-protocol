@@ -49,12 +49,14 @@ const baseDir = path.resolve(__dirname, "../../docs");
 // Find all Markdown files organized by directory
 const markdownFiles = findMarkdownFiles(baseDir);
 
+const intro = fs.readFileSync(path.join(__dirname, "intro.md"), "utf8");
+
 // Generate index content
-let indexContent = generateIndexContent(markdownFiles, baseDir);
+let indexContent = intro + generateIndexContent(markdownFiles, baseDir);
 
 indexContent += `
 
-This documentation is automatically generated using [solidity-docgen](https://github.com/OpenZeppelin/solidity-docgen)
+The documentation is automatically generated using [solidity-docgen](https://github.com/OpenZeppelin/solidity-docgen)
 
 (c) 2024+ Cruna
 `;
