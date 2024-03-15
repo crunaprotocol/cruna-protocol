@@ -2,7 +2,7 @@
 
 /**
  * @title EIP-6454 Minimalistic Non-Transferable interface for NFTs
- * @dev see https://eips.ethereum.org/EIPS/eip-6454
+ * @notice see https://eips.ethereum.org/EIPS/eip-6454
  * @notice Note: the ERC-165 identifier for this interface is 0x91a6262f.
  * @authors Bruno Škvorc (@Swader), Francesco Sullo (@sullof), Steven Pineda (@steven2308), Stevan Bogosavljevic (@stevyhacker), Jan Turk (@ThunderDeliverer)
  */

@@ -39,7 +39,7 @@ When deployed to production, proposers and executors will be multi-sig wallets o
 function version() external pure virtual returns (uint256)
 ```
 
-_see {ICrunaGuardian-setTrustedImplementation}_
+see {ICrunaGuardian-setTrustedImplementation}
 
 ### setTrustedImplementation
 

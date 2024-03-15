@@ -64,22 +64,3 @@ const indexPath = path.join(baseDir, "index.md");
 fs.writeFileSync(indexPath, indexContent, "utf8");
 
 console.log(`index.md has been created with entries organized by directory.`);
-
-
-function parseNatSpecComments(filePath) {
-  const content = fs.readFileSync(filePath, 'utf8');
-  const regex = /\/\*\*(\s+\*\s+@.*?)+\s+\*\//gs; // Adjust this regex to accurately capture NatSpec comments
-  const comments = content.match(regex) || [];
-
-  let commentsMap = new Map();
-
-  comments.forEach(comment => {
-    const identifier = extractIdentifier(comment); // Implement this based on your comment structure
-    commentsMap.set(identifier, comment);
-  });
-
-  return commentsMap;
-}
-
-
-console.log(parseNatSpecComments(path.join(__dirname, '../contracts/GoA.sol')));

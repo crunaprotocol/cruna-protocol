@@ -20,7 +20,7 @@ contract CrunaRegistry is ICrunaRegistry {
   error TokenLinkedContractCreationFailed();
 
   /**
-   * @dev see {ICrunaRegistry-createTokenLinkedContract}
+   * @notice see {ICrunaRegistry-createTokenLinkedContract}
    */
   function createTokenLinkedContract(
     address implementation,
@@ -99,7 +99,7 @@ contract CrunaRegistry is ICrunaRegistry {
   }
 
   /**
-   * @dev see {ICrunaRegistry-tokenLinkedContract}
+   * @notice see {ICrunaRegistry-tokenLinkedContract}
    */
   function tokenLinkedContract(
     address implementation,

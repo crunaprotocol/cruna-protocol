@@ -30,7 +30,7 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase, ReentrancyGuard {
   }
 
   /**
-   * @dev see {ICrunaPlugin-init}
+   * @notice see {ICrunaPlugin-init}
    */
   function init() external {
     address managerAddress = _vault().managerOf(tokenId());
@@ -39,21 +39,21 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase, ReentrancyGuard {
   }
 
   /**
-   * @dev see {ICrunaPlugin-manager}
+   * @notice see {ICrunaPlugin-manager}
    */
   function manager() external view virtual override returns (CrunaManager) {
     return _conf.manager;
   }
 
   /**
-   * @dev see {IVersioned-version}
+   * @notice see {IVersioned-version}
    */
   function version() external pure virtual override returns (uint256) {
     return _version();
   }
 
   /**
-   * @dev see {ICrunaPlugin-upgrade}
+   * @notice see {ICrunaPlugin-upgrade}
    */
   function upgrade(address implementation_) external virtual override nonReentrant {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
@@ -73,7 +73,7 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase, ReentrancyGuard {
   }
 
   /**
-   * @dev see {ICrunaPlugin-resetOnTransfer}
+   * @notice see {ICrunaPlugin-resetOnTransfer}
    */
   // The manager is not a wallet, it is the NFT Manager contract, owned by the token.
   function resetOnTransfer() external override ifMustNotBeReset {
@@ -93,7 +93,7 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase, ReentrancyGuard {
   }
 
   /**
-   * @dev see {IVersioned-version}
+   * @notice see {IVersioned-version}
    */
   function _version() internal pure virtual returns (uint256) {
     return 1_000_000;

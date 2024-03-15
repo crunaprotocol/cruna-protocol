@@ -44,5 +44,5 @@ function supportsInterface(bytes4 interfaceId) public view virtual returns (bool
 function _canManage(bool isInitializing) internal view virtual
 ```
 
-_see {CrunaProtectedNFT-_canManage}_
+see {CrunaProtectedNFT-_canManage}
 

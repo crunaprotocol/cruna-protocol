@@ -35,28 +35,28 @@ contract CrunaManager is Actor, CrunaManagerBase {
   mapping(bytes8 pluginKey => PluginConfig pluginDetails) private _pluginByKey;
 
   /**
-   * @dev see {IVersioned-version}
+   * @notice see {IVersioned-version}
    */
   function version() external pure virtual override returns (uint256) {
     return 1_000_002;
   }
 
   /**
-   * @dev see {ICrunaManager-getPluginByKey}
+   * @notice see {ICrunaManager-getPluginByKey}
    */
   function pluginByKey(bytes8 key) external view returns (PluginConfig memory) {
     return _pluginByKey[key];
   }
 
   /**
-   * @dev see {ICrunaManager-allPlugins}
+   * @notice see {ICrunaManager-allPlugins}
    */
   function allPlugins() external view returns (PluginElement[] memory) {
     return _allPlugins;
   }
 
   /**
-   * @dev see {ICrunaManager-pluginByIndex}
+   * @notice see {ICrunaManager-pluginByIndex}
    */
   function pluginByIndex(uint256 index) external view returns (PluginElement memory) {
     if (index >= _allPlugins.length) revert IndexOutOfBounds();
@@ -64,7 +64,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   /**
-   * @dev see {ICrunaManager-migrate}
+   * @notice see {ICrunaManager-migrate}
    */
   function migrate(uint256 /* version */) external virtual override {
     if (_msgSender() != address(this)) revert Forbidden();
@@ -72,28 +72,28 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   /**
-   * @dev see {ICrunaManager-findProtectorIndex}
+   * @notice see {ICrunaManager-findProtectorIndex}
    */
   function findProtectorIndex(address protector_) external view virtual override returns (uint256) {
     return _actorIndex(protector_, ManagerConstants.protectorId());
   }
 
   /**
-   * @dev see {ICrunaManager-isProtector}
+   * @notice see {ICrunaManager-isProtector}
    */
   function isProtector(address protector_) external view virtual override returns (bool) {
     return _isActiveActor(protector_, ManagerConstants.protectorId());
   }
 
   /**
-   * @dev see {ICrunaManager-hasProtectors}
+   * @notice see {ICrunaManager-hasProtectors}
    */
   function hasProtectors() external view virtual override returns (bool) {
     return _actorCount(ManagerConstants.protectorId()) != 0;
   }
 
   /**
-   * @dev see {ICrunaManager-isTransferable}
+   * @notice see {ICrunaManager-isTransferable}
    */
   function isTransferable(address to) external view override returns (bool) {
     return
@@ -102,28 +102,28 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   /**
-   * @dev see {ICrunaManager-locked}
+   * @notice see {ICrunaManager-locked}
    */
   function locked() external view override returns (bool) {
     return _actors[ManagerConstants.protectorId()].length != 0;
   }
 
   /**
-   * @dev see {ICrunaManager-countProtectors}
+   * @notice see {ICrunaManager-countProtectors}
    */
   function countProtectors() external view virtual override returns (uint256) {
     return _actorCount(ManagerConstants.protectorId());
   }
 
   /**
-   * @dev see {ICrunaManager-countSafeRecipients}
+   * @notice see {ICrunaManager-countSafeRecipients}
    */
   function countSafeRecipients() external view virtual override returns (uint256) {
     return _actorCount(ManagerConstants.safeRecipientId());
   }
 
   /**
-   * @dev see {ICrunaManager-setProtector}
+   * @notice see {ICrunaManager-setProtector}
    */
   function setProtector(
     address protector_,
@@ -147,7 +147,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   /**
-   * @dev see {ICrunaManager-importProtectorsAndSafeRecipientsFrom}
+   * @notice see {ICrunaManager-importProtectorsAndSafeRecipientsFrom}
    */
   function importProtectorsAndSafeRecipientsFrom(uint256 otherTokenId) external virtual override onlyTokenOwner {
     if (_actorCount(ManagerConstants.protectorId()) != 0) revert ProtectorsAlreadySet();
@@ -178,14 +178,14 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   /**
-   * @dev see {ICrunaManager-getProtectors}
+   * @notice see {ICrunaManager-getProtectors}
    */
   function getProtectors() external view virtual override returns (address[] memory) {
     return _getActors(ManagerConstants.protectorId());
   }
 
   /**
-   * @dev see {ICrunaManager-setSafeRecipient}
+   * @notice see {ICrunaManager-setSafeRecipient}
    */
   function setSafeRecipient(
     address recipient,
@@ -208,14 +208,14 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   /**
-   * @dev see {ICrunaManager-isSafeRecipient}
+   * @notice see {ICrunaManager-isSafeRecipient}
    */
   function isSafeRecipient(address recipient) external view virtual override returns (bool) {
     return _actorIndex(recipient, ManagerConstants.safeRecipientId()) != ManagerConstants.maxActors();
   }
 
   /**
-   * @dev see {ICrunaManager-getSafeRecipients}
+   * @notice see {ICrunaManager-getSafeRecipients}
    */
   function getSafeRecipients() external view virtual override returns (address[] memory) {
     return _getActors(ManagerConstants.safeRecipientId());
@@ -228,7 +228,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
    */
 
   /**
-   * @dev see {ICrunaManager-plug}
+   * @notice see {ICrunaManager-plug}
    */
   function plug(
     string memory name,
@@ -272,7 +272,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   /**
-   * @dev see {ICrunaManager-changePluginStatus}
+   * @notice see {ICrunaManager-changePluginStatus}
    */
   function changePluginStatus(
     string memory name,
@@ -316,7 +316,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   /**
-   * @dev see {ICrunaManager-trustPlugin}
+   * @notice see {ICrunaManager-trustPlugin}
    */
   function trustPlugin(string memory name, bytes4 salt) external virtual override onlyTokenOwner {
     bytes4 nameId_ = _stringToBytes4(name);
@@ -330,28 +330,28 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   /**
-   * @dev see {ICrunaManager-countPlugins}
+   * @notice see {ICrunaManager-countPlugins}
    */
   function pluginAddress(bytes4 nameId_, bytes4 salt) external view virtual override returns (address payable) {
     return _pluginAddress(nameId_, salt);
   }
 
   /**
-   * @dev see {ICrunaManager-plugin}
+   * @notice see {ICrunaManager-plugin}
    */
   function plugin(bytes4 nameId_, bytes4 salt) external view virtual override returns (CrunaPluginBase) {
     return _plugin(nameId_, salt);
   }
 
   /**
-   * @dev see {ICrunaManager-countPlugins}
+   * @notice see {ICrunaManager-countPlugins}
    */
   function countPlugins() external view virtual override returns (uint256, uint256) {
     return _countPlugins();
   }
 
   /**
-   * @dev see {ICrunaManager-plugged}
+   * @notice see {ICrunaManager-plugged}
    */
   function plugged(string memory name, bytes4 salt) external view virtual returns (bool) {
     bytes4 nameId_ = _stringToBytes4(name);
@@ -361,14 +361,14 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   /**
-   * @dev see {ICrunaManager-pluginIndex}
+   * @notice see {ICrunaManager-pluginIndex}
    */
   function pluginIndex(string memory name, bytes4 salt) external view virtual returns (bool, uint256) {
     return _pluginIndex(_stringToBytes4(name), salt);
   }
 
   /**
-   * @dev see {ICrunaManager-disablePlugin}
+   * @notice see {ICrunaManager-disablePlugin}
    */
   function isPluginActive(string memory name, bytes4 salt) external view virtual returns (bool) {
     bytes4 nameId_ = _stringToBytes4(name);
@@ -378,7 +378,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   /**
-   * @dev see {ICrunaManager-listPluginsKeys}
+   * @notice see {ICrunaManager-listPluginsKeys}
    */
   function listPluginsKeys(bool active) external view virtual returns (bytes8[] memory) {
     (uint256 actives, uint256 disabled) = _countPlugins();
@@ -397,14 +397,14 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   /**
-   * @dev see {ICrunaManager-pseudoAddress}
+   * @notice see {ICrunaManager-pseudoAddress}
    */
   function pseudoAddress(string memory name, bytes4 _salt) external view virtual returns (address) {
     return _pseudoAddress(name, _salt);
   }
 
   /**
-   * @dev see {IProtected721-managedTransfer}.
+   * @notice see {IProtected721-managedTransfer}.
    */
   function managedTransfer(bytes4 pluginNameId, address to) external virtual override nonReentrant {
     (bytes8 _key, bytes4 salt) = _getKeyAndSalt(pluginNameId);
@@ -423,7 +423,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   /**
-   * @dev see {IProtected721-protectedTransfer}.
+   * @notice see {IProtected721-protectedTransfer}.
    */
   function protectedTransfer(
     uint256 tokenId,

@@ -26,7 +26,7 @@ Verifies that the plugin must not be reset
 function init() external
 ```
 
-_see {ICrunaPlugin-init}_
+see {ICrunaPlugin-init}
 
 ### manager
 
@@ -34,7 +34,7 @@ _see {ICrunaPlugin-init}_
 function manager() external view virtual returns (contract CrunaManager)
 ```
 
-_see {ICrunaPlugin-manager}_
+see {ICrunaPlugin-manager}
 
 ### version
 
@@ -42,7 +42,7 @@ _see {ICrunaPlugin-manager}_
 function version() external pure virtual returns (uint256)
 ```
 
-_see {IVersioned-version}_
+see {IVersioned-version}
 
 ### upgrade
 
@@ -50,7 +50,7 @@ _see {IVersioned-version}_
 function upgrade(address implementation_) external virtual
 ```
 
-_see {ICrunaPlugin-upgrade}_
+see {ICrunaPlugin-upgrade}
 
 ### resetOnTransfer
 
@@ -58,7 +58,7 @@ _see {ICrunaPlugin-upgrade}_
 function resetOnTransfer() external
 ```
 
-_see {ICrunaPlugin-resetOnTransfer}_
+see {ICrunaPlugin-resetOnTransfer}
 
 ### _canPreApprove
 
@@ -78,7 +78,7 @@ The params:
 function _version() internal pure virtual returns (uint256)
 ```
 
-_see {IVersioned-version}_
+see {IVersioned-version}
 
 ### _isProtected
 

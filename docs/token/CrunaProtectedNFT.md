@@ -80,7 +80,7 @@ allows only the manager of a certain tokenId to call the function.
 function nftConf() external view virtual returns (struct ICrunaProtectedNFT.NftConf)
 ```
 
-_see {ICrunaProtectedNFT-nftConf}_
+see {ICrunaProtectedNFT-nftConf}
 
 ### managerHistory
 
@@ -88,7 +88,7 @@ _see {ICrunaProtectedNFT-nftConf}_
 function managerHistory(uint256 index) external view virtual returns (struct ICrunaProtectedNFT.ManagerHistory)
 ```
 
-_see {ICrunaProtectedNFT-managerHistory}_
+see {ICrunaProtectedNFT-managerHistory}
 
 ### version
 
@@ -96,7 +96,7 @@ _see {ICrunaProtectedNFT-managerHistory}_
 function version() external pure virtual returns (uint256)
 ```
 
-_see {IVersioned-version}_
+see {IVersioned-version}
 
 ### constructor
 
@@ -110,7 +110,7 @@ constructor(string name_, string symbol_) internal
 function init(address managerAddress_, bool progressiveTokenIds_, bool allowUntrustedTransfers_, uint112 nextTokenId_, uint112 maxTokenId_) external virtual
 ```
 
-_see {ICrunaProtectedNFT-init}_
+see {ICrunaProtectedNFT-init}
 
 ### allowUntrustedTransfers
 
@@ -118,7 +118,7 @@ _see {ICrunaProtectedNFT-init}_
 function allowUntrustedTransfers() external view virtual returns (bool)
 ```
 
-_see {ICrunaProtectedNFT-allowUntrustedTransfers}_
+see {ICrunaProtectedNFT-allowUntrustedTransfers}
 
 ### setMaxTokenId
 
@@ -126,7 +126,7 @@ _see {ICrunaProtectedNFT-allowUntrustedTransfers}_
 function setMaxTokenId(uint112 maxTokenId_) external virtual
 ```
 
-_see {ICrunaProtectedNFT-setMaxTokenId}_
+see {ICrunaProtectedNFT-setMaxTokenId}
 
 ### defaultManagerImplementation
 
@@ -134,7 +134,7 @@ _see {ICrunaProtectedNFT-setMaxTokenId}_
 function defaultManagerImplementation(uint256 _tokenId) external view virtual returns (address)
 ```
 
-_see {ICrunaProtectedNFT-defaultManagerImplementation}_
+see {ICrunaProtectedNFT-defaultManagerImplementation}
 
 ### upgradeDefaultManager
 
@@ -142,7 +142,7 @@ _see {ICrunaProtectedNFT-defaultManagerImplementation}_
 function upgradeDefaultManager(address payable newManagerProxy) external virtual
 ```
 
-_see {ICrunaProtectedNFT-upgradeDefaultManager}_
+see {ICrunaProtectedNFT-upgradeDefaultManager}
 
 ### managedTransfer
 
@@ -150,7 +150,7 @@ _see {ICrunaProtectedNFT-upgradeDefaultManager}_
 function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external virtual
 ```
 
-_see {ICrunaProtectedNFT-managedTransfer}._
+see {ICrunaProtectedNFT-managedTransfer}.
 
 ### supportsInterface
 
@@ -164,7 +164,7 @@ function supportsInterface(bytes4 interfaceId) public view virtual returns (bool
 function isTransferable(uint256 tokenId, address from, address to) external view virtual returns (bool)
 ```
 
-_see {IERC6454-isTransferable}_
+see {IERC6454-isTransferable}
 
 ### defaultLocked
 
@@ -172,7 +172,7 @@ _see {IERC6454-isTransferable}_
 function defaultLocked() external pure virtual returns (bool)
 ```
 
-_see {IERC6982-defaultLocked}_
+see {IERC6982-defaultLocked}
 
 ### locked
 
@@ -180,7 +180,7 @@ _see {IERC6982-defaultLocked}_
 function locked(uint256 tokenId) external view virtual returns (bool)
 ```
 
-_see {IERC6982-Locked}_
+see {IERC6982-Locked}
 
 ### emitLockedEvent
 
@@ -198,7 +198,7 @@ called by the manager (when protectors are set/unset)
 function deployPlugin(address pluginImplementation, bytes32 salt, uint256 tokenId, bool isERC6551Account) external virtual returns (address)
 ```
 
-_see {ICrunaProtectedNFT-deployPlugin}_
+see {ICrunaProtectedNFT-deployPlugin}
 
 ### isDeployed
 
@@ -206,7 +206,7 @@ _see {ICrunaProtectedNFT-deployPlugin}_
 function isDeployed(address implementation, bytes32 salt, uint256 tokenId, bool isERC6551Account) external view virtual returns (bool)
 ```
 
-_see {ICrunaProtectedNFT-isDeployed}_
+see {ICrunaProtectedNFT-isDeployed}
 
 ### managerOf
 
@@ -214,7 +214,7 @@ _see {ICrunaProtectedNFT-isDeployed}_
 function managerOf(uint256 tokenId) external view virtual returns (address)
 ```
 
-_see {ICrunaProtectedNFT-managerOf}_
+see {ICrunaProtectedNFT-managerOf}
 
 ### _managerOf
 
@@ -294,7 +294,7 @@ Must be overridden to specify who can manage changes during initialization and l
 function _update(address to, uint256 tokenId, address auth) internal virtual returns (address)
 ```
 
-_see {ERC721-_update}._
+see {ERC721-_update}.
 
 ### _isTransferable
 

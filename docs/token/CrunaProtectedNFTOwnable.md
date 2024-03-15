@@ -36,5 +36,5 @@ Construct the contract with a given name, symbol, and admin.
 function _canManage(bool) internal view virtual
 ```
 
-_see {CrunaProtectedNFT-_canManage}_
+see {CrunaProtectedNFT-_canManage}
 

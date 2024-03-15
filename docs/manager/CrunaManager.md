@@ -12,7 +12,7 @@ plugs and manages plugins, and has the ability to transfer the NFT if there are 
 function version() external pure virtual returns (uint256)
 ```
 
-_see {IVersioned-version}_
+see {IVersioned-version}
 
 ### pluginByKey
 
@@ -20,7 +20,7 @@ _see {IVersioned-version}_
 function pluginByKey(bytes8 key) external view returns (struct ICrunaManager.PluginConfig)
 ```
 
-_see {ICrunaManager-getPluginByKey}_
+see {ICrunaManager-getPluginByKey}
 
 ### allPlugins
 
@@ -28,7 +28,7 @@ _see {ICrunaManager-getPluginByKey}_
 function allPlugins() external view returns (struct ICrunaManager.PluginElement[])
 ```
 
-_see {ICrunaManager-allPlugins}_
+see {ICrunaManager-allPlugins}
 
 ### pluginByIndex
 
@@ -36,7 +36,7 @@ _see {ICrunaManager-allPlugins}_
 function pluginByIndex(uint256 index) external view returns (struct ICrunaManager.PluginElement)
 ```
 
-_see {ICrunaManager-pluginByIndex}_
+see {ICrunaManager-pluginByIndex}
 
 ### migrate
 
@@ -44,7 +44,7 @@ _see {ICrunaManager-pluginByIndex}_
 function migrate(uint256) external virtual
 ```
 
-_see {ICrunaManager-migrate}_
+see {ICrunaManager-migrate}
 
 ### findProtectorIndex
 
@@ -52,7 +52,7 @@ _see {ICrunaManager-migrate}_
 function findProtectorIndex(address protector_) external view virtual returns (uint256)
 ```
 
-_see {ICrunaManager-findProtectorIndex}_
+see {ICrunaManager-findProtectorIndex}
 
 ### isProtector
 
@@ -60,7 +60,7 @@ _see {ICrunaManager-findProtectorIndex}_
 function isProtector(address protector_) external view virtual returns (bool)
 ```
 
-_see {ICrunaManager-isProtector}_
+see {ICrunaManager-isProtector}
 
 ### hasProtectors
 
@@ -68,7 +68,7 @@ _see {ICrunaManager-isProtector}_
 function hasProtectors() external view virtual returns (bool)
 ```
 
-_see {ICrunaManager-hasProtectors}_
+see {ICrunaManager-hasProtectors}
 
 ### isTransferable
 
@@ -76,7 +76,7 @@ _see {ICrunaManager-hasProtectors}_
 function isTransferable(address to) external view returns (bool)
 ```
 
-_see {ICrunaManager-isTransferable}_
+see {ICrunaManager-isTransferable}
 
 ### locked
 
@@ -84,7 +84,7 @@ _see {ICrunaManager-isTransferable}_
 function locked() external view returns (bool)
 ```
 
-_see {ICrunaManager-locked}_
+see {ICrunaManager-locked}
 
 ### countProtectors
 
@@ -92,7 +92,7 @@ _see {ICrunaManager-locked}_
 function countProtectors() external view virtual returns (uint256)
 ```
 
-_see {ICrunaManager-countProtectors}_
+see {ICrunaManager-countProtectors}
 
 ### countSafeRecipients
 
@@ -100,7 +100,7 @@ _see {ICrunaManager-countProtectors}_
 function countSafeRecipients() external view virtual returns (uint256)
 ```
 
-_see {ICrunaManager-countSafeRecipients}_
+see {ICrunaManager-countSafeRecipients}
 
 ### setProtector
 
@@ -108,7 +108,7 @@ _see {ICrunaManager-countSafeRecipients}_
 function setProtector(address protector_, bool status, uint256 timestamp, uint256 validFor, bytes signature) external virtual
 ```
 
-_see {ICrunaManager-setProtector}_
+see {ICrunaManager-setProtector}
 
 ### importProtectorsAndSafeRecipientsFrom
 
@@ -116,7 +116,7 @@ _see {ICrunaManager-setProtector}_
 function importProtectorsAndSafeRecipientsFrom(uint256 otherTokenId) external virtual
 ```
 
-_see {ICrunaManager-importProtectorsAndSafeRecipientsFrom}_
+see {ICrunaManager-importProtectorsAndSafeRecipientsFrom}
 
 ### getProtectors
 
@@ -124,7 +124,7 @@ _see {ICrunaManager-importProtectorsAndSafeRecipientsFrom}_
 function getProtectors() external view virtual returns (address[])
 ```
 
-_see {ICrunaManager-getProtectors}_
+see {ICrunaManager-getProtectors}
 
 ### setSafeRecipient
 
@@ -132,7 +132,7 @@ _see {ICrunaManager-getProtectors}_
 function setSafeRecipient(address recipient, bool status, uint256 timestamp, uint256 validFor, bytes signature) external virtual
 ```
 
-_see {ICrunaManager-setSafeRecipient}_
+see {ICrunaManager-setSafeRecipient}
 
 ### isSafeRecipient
 
@@ -140,7 +140,7 @@ _see {ICrunaManager-setSafeRecipient}_
 function isSafeRecipient(address recipient) external view virtual returns (bool)
 ```
 
-_see {ICrunaManager-isSafeRecipient}_
+see {ICrunaManager-isSafeRecipient}
 
 ### getSafeRecipients
 
@@ -148,7 +148,7 @@ _see {ICrunaManager-isSafeRecipient}_
 function getSafeRecipients() external view virtual returns (address[])
 ```
 
-_see {ICrunaManager-getSafeRecipients}_
+see {ICrunaManager-getSafeRecipients}
 
 ### plug
 
@@ -156,7 +156,7 @@ _see {ICrunaManager-getSafeRecipients}_
 function plug(string name, address proxyAddress_, bool canManageTransfer, bool isERC6551Account, bytes4 salt, uint256 timestamp, uint256 validFor, bytes signature) external virtual
 ```
 
-_see {ICrunaManager-plug}_
+see {ICrunaManager-plug}
 
 ### changePluginStatus
 
@@ -164,7 +164,7 @@ _see {ICrunaManager-plug}_
 function changePluginStatus(string name, bytes4 salt, enum ICrunaManager.PluginChange change, uint256 timeLock_, uint256 timestamp, uint256 validFor, bytes signature) external virtual
 ```
 
-_see {ICrunaManager-changePluginStatus}_
+see {ICrunaManager-changePluginStatus}
 
 ### trustPlugin
 
@@ -172,7 +172,7 @@ _see {ICrunaManager-changePluginStatus}_
 function trustPlugin(string name, bytes4 salt) external virtual
 ```
 
-_see {ICrunaManager-trustPlugin}_
+see {ICrunaManager-trustPlugin}
 
 ### pluginAddress
 
@@ -180,7 +180,7 @@ _see {ICrunaManager-trustPlugin}_
 function pluginAddress(bytes4 nameId_, bytes4 salt) external view virtual returns (address payable)
 ```
 
-_see {ICrunaManager-countPlugins}_
+see {ICrunaManager-countPlugins}
 
 ### plugin
 
@@ -188,7 +188,7 @@ _see {ICrunaManager-countPlugins}_
 function plugin(bytes4 nameId_, bytes4 salt) external view virtual returns (contract CrunaPluginBase)
 ```
 
-_see {ICrunaManager-plugin}_
+see {ICrunaManager-plugin}
 
 ### countPlugins
 
@@ -196,7 +196,7 @@ _see {ICrunaManager-plugin}_
 function countPlugins() external view virtual returns (uint256, uint256)
 ```
 
-_see {ICrunaManager-countPlugins}_
+see {ICrunaManager-countPlugins}
 
 ### plugged
 
@@ -204,7 +204,7 @@ _see {ICrunaManager-countPlugins}_
 function plugged(string name, bytes4 salt) external view virtual returns (bool)
 ```
 
-_see {ICrunaManager-plugged}_
+see {ICrunaManager-plugged}
 
 ### pluginIndex
 
@@ -212,7 +212,7 @@ _see {ICrunaManager-plugged}_
 function pluginIndex(string name, bytes4 salt) external view virtual returns (bool, uint256)
 ```
 
-_see {ICrunaManager-pluginIndex}_
+see {ICrunaManager-pluginIndex}
 
 ### isPluginActive
 
@@ -220,7 +220,7 @@ _see {ICrunaManager-pluginIndex}_
 function isPluginActive(string name, bytes4 salt) external view virtual returns (bool)
 ```
 
-_see {ICrunaManager-disablePlugin}_
+see {ICrunaManager-disablePlugin}
 
 ### listPluginsKeys
 
@@ -228,7 +228,7 @@ _see {ICrunaManager-disablePlugin}_
 function listPluginsKeys(bool active) external view virtual returns (bytes8[])
 ```
 
-_see {ICrunaManager-listPluginsKeys}_
+see {ICrunaManager-listPluginsKeys}
 
 ### pseudoAddress
 
@@ -236,7 +236,7 @@ _see {ICrunaManager-listPluginsKeys}_
 function pseudoAddress(string name, bytes4 _salt) external view virtual returns (address)
 ```
 
-_see {ICrunaManager-pseudoAddress}_
+see {ICrunaManager-pseudoAddress}
 
 ### managedTransfer
 
@@ -244,7 +244,7 @@ _see {ICrunaManager-pseudoAddress}_
 function managedTransfer(bytes4 pluginNameId, address to) external virtual
 ```
 
-_see {IProtectedNFT-managedTransfer}._
+see {IProtected721-managedTransfer}.
 
 ### protectedTransfer
 
@@ -252,7 +252,7 @@ _see {IProtectedNFT-managedTransfer}._
 function protectedTransfer(uint256 tokenId, address to, uint256 timestamp, uint256 validFor, bytes signature) external
 ```
 
-_see {IProtectedNFT-protectedTransfer}._
+see {IProtected721-protectedTransfer}.
 
 ### _plugin
 

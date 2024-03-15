@@ -18,7 +18,7 @@ The registry MUST revert with TokenLinkedContractCreationFailed error if the cre
 function createTokenLinkedContract(address implementation, bytes32 salt, uint256 chainId, address tokenContract, uint256 tokenId) external returns (address)
 ```
 
-_see {ICrunaRegistry-createTokenLinkedContract}_
+see {ICrunaRegistry-createTokenLinkedContract}
 
 ### tokenLinkedContract
 
@@ -26,5 +26,5 @@ _see {ICrunaRegistry-createTokenLinkedContract}_
 function tokenLinkedContract(address implementation, bytes32 salt, uint256 chainId, address tokenContract, uint256 tokenId) external view returns (address)
 ```
 
-_see {ICrunaRegistry-tokenLinkedContract}_
+see {ICrunaRegistry-tokenLinkedContract}
 

@@ -26,7 +26,7 @@ The object storing the votes
 function requiresToManageTransfer() external pure returns (bool)
 ```
 
-_see {IInheritanceCrunaPlugin-requiresToManageTransfer}_
+see {IInheritanceCrunaPlugin-requiresToManageTransfer}
 
 ### isERC6551Account
 
@@ -34,7 +34,7 @@ _see {IInheritanceCrunaPlugin-requiresToManageTransfer}_
 function isERC6551Account() external pure virtual returns (bool)
 ```
 
-_see {IInheritanceCrunaPlugin-isERC6551Account}_
+see {IInheritanceCrunaPlugin-isERC6551Account}
 
 ### setSentinel
 
@@ -42,7 +42,7 @@ _see {IInheritanceCrunaPlugin-isERC6551Account}_
 function setSentinel(address sentinel, bool status, uint256 timestamp, uint256 validFor, bytes signature) external virtual
 ```
 
-_see {IInheritanceCrunaPlugin-setSentinel}_
+see {IInheritanceCrunaPlugin-setSentinel}
 
 ### setSentinels
 
@@ -50,7 +50,7 @@ _see {IInheritanceCrunaPlugin-setSentinel}_
 function setSentinels(address[] sentinels, bytes emptySignature) external virtual
 ```
 
-_see {IInheritanceCrunaPlugin-setSentinels}_
+see {IInheritanceCrunaPlugin-setSentinels}
 
 ### configureInheritance
 
@@ -58,7 +58,7 @@ _see {IInheritanceCrunaPlugin-setSentinels}_
 function configureInheritance(uint8 quorum, uint8 proofOfLifeDurationInWeeks, uint8 gracePeriodInWeeks, address beneficiary, uint256 timestamp, uint256 validFor, bytes signature) external virtual
 ```
 
-_see {IInheritanceCrunaPlugin-configureInheritance}_
+see {IInheritanceCrunaPlugin-configureInheritance}
 
 ### countSentinels
 
@@ -66,7 +66,7 @@ _see {IInheritanceCrunaPlugin-configureInheritance}_
 function countSentinels() external view virtual returns (uint256)
 ```
 
-_see {IInheritanceCrunaPlugin-countSentinels}_
+see {IInheritanceCrunaPlugin-countSentinels}
 
 ### getSentinelsAndInheritanceData
 
@@ -74,7 +74,7 @@ _see {IInheritanceCrunaPlugin-countSentinels}_
 function getSentinelsAndInheritanceData() external view virtual returns (address[], struct IInheritanceCrunaPlugin.InheritanceConf)
 ```
 
-_see {IInheritanceCrunaPlugin-getSentinelsAndInheritanceData}_
+see {IInheritanceCrunaPlugin-getSentinelsAndInheritanceData}
 
 ### getVotes
 
@@ -82,7 +82,7 @@ _see {IInheritanceCrunaPlugin-getSentinelsAndInheritanceData}_
 function getVotes() external view virtual returns (address[])
 ```
 
-_see {IInheritanceCrunaPlugin-getVotes}_
+see {IInheritanceCrunaPlugin-getVotes}
 
 ### proofOfLife
 
@@ -90,7 +90,7 @@ _see {IInheritanceCrunaPlugin-getVotes}_
 function proofOfLife() external virtual
 ```
 
-_see {IInheritanceCrunaPlugin-proofOfLife}_
+see {IInheritanceCrunaPlugin-proofOfLife}
 
 ### voteForBeneficiary
 
@@ -98,7 +98,7 @@ _see {IInheritanceCrunaPlugin-proofOfLife}_
 function voteForBeneficiary(address beneficiary) external virtual
 ```
 
-_see {IInheritanceCrunaPlugin-voteForBeneficiary}_
+see {IInheritanceCrunaPlugin-voteForBeneficiary}
 
 ### inherit
 
@@ -106,7 +106,7 @@ _see {IInheritanceCrunaPlugin-voteForBeneficiary}_
 function inherit() external virtual
 ```
 
-_see {IInheritanceCrunaPlugin-inherit}_
+see {IInheritanceCrunaPlugin-inherit}
 
 ### reset
 
@@ -114,7 +114,7 @@ _see {IInheritanceCrunaPlugin-inherit}_
 function reset() external
 ```
 
-_see {ICrunaPlugin-reset}_
+see {ICrunaPlugin-reset}
 
 ### requiresResetOnTransfer
 
@@ -122,7 +122,7 @@ _see {ICrunaPlugin-reset}_
 function requiresResetOnTransfer() external pure returns (bool)
 ```
 
-_see {ICrunaPlugin-requiresResetOnTransfer}_
+see {ICrunaPlugin-requiresResetOnTransfer}
 
 ### _nameId
 
@@ -130,7 +130,7 @@ _see {ICrunaPlugin-requiresResetOnTransfer}_
 function _nameId() internal pure virtual returns (bytes4)
 ```
 
-_see {CrunaPluginBase-_nameId}_
+see {CrunaPluginBase-_nameId}
 
 ### _setSentinel
 

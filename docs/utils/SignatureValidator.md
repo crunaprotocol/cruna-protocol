@@ -35,7 +35,7 @@ EIP712 constructor
 function preApprovals(bytes32 hash) external view returns (address)
 ```
 
-_see {ISignatureValidator-preApprovals}_
+see {ISignatureValidator-preApprovals}
 
 ### hashSignature
 
@@ -43,7 +43,7 @@ _see {ISignatureValidator-preApprovals}_
 function hashSignature(bytes signature) external pure returns (bytes32)
 ```
 
-_see {ISignatureValidator-hashSignature}_
+see {ISignatureValidator-hashSignature}
 
 ### isSignatureUsed
 
@@ -51,7 +51,7 @@ _see {ISignatureValidator-hashSignature}_
 function isSignatureUsed(bytes32 hash) external view returns (bool)
 ```
 
-_see {ISignatureValidator-isSignatureUsed}_
+see {ISignatureValidator-isSignatureUsed}
 
 ### recoverSigner
 
@@ -59,7 +59,7 @@ _see {ISignatureValidator-isSignatureUsed}_
 function recoverSigner(bytes4 selector, address owner, address actor, address tokenAddress, uint256 tokenId, uint256 extra, uint256 extra2, uint256 extra3, uint256 timeValidation, bytes signature) public view returns (address, bytes32)
 ```
 
-_see {ISignatureValidator-recoverSigner}_
+see {ISignatureValidator-recoverSigner}
 
 ### preApprove
 
@@ -67,7 +67,7 @@ _see {ISignatureValidator-recoverSigner}_
 function preApprove(bytes4 selector, address owner, address actor, address tokenAddress, uint256 tokenId, uint256 extra, uint256 extra2, uint256 extra3, uint256 timeValidation) external
 ```
 
-_see {ISignatureValidator-preApprove}_
+see {ISignatureValidator-preApprove}
 
 ### _canPreApprove
 
