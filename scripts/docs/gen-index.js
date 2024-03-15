@@ -29,7 +29,7 @@ function capitalizeFirstLetter(string) {
 
 // Function to generate index.md content from the organized Markdown file paths
 function generateIndexContent(markdownFiles, baseDir) {
-  let indexContent = "# Cruna Protocol Documentation Index\n\n";
+  let indexContent = "\n\n";
   for (const [dir, files] of Object.entries(markdownFiles)) {
     if (dir !== ".") {
       indexContent += `- ${capitalizeFirstLetter(dir)}\n`;
