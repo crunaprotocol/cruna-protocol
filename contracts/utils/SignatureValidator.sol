@@ -54,30 +54,22 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
    */
   constructor() EIP712("Cruna", "1") {}
 
-  /**
-   * @notice see {ISignatureValidator-preApprovals}
-   */
+  /// @dev see {ISignatureValidator-preApprovals}
   function preApprovals(bytes32 hash) external view override returns (address) {
     return _preApprovals[hash];
   }
 
-  /**
-   * @notice see {ISignatureValidator-hashSignature}
-   */
+  /// @dev see {ISignatureValidator-hashSignature}
   function hashSignature(bytes calldata signature) external pure override returns (bytes32) {
     return _hashBytes(signature);
   }
 
-  /**
-   * @notice see {ISignatureValidator-isSignatureUsed}
-   */
+  /// @dev see {ISignatureValidator-isSignatureUsed}
   function isSignatureUsed(bytes32 hash) external view override returns (bool) {
     return _usedSignatures[hash];
   }
 
-  /**
-   * @notice see {ISignatureValidator-recoverSigner}
-   */
+  /// @dev see {ISignatureValidator-recoverSigner}
   function recoverSigner(
     bytes4 selector,
     address owner,
@@ -98,9 +90,7 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
     return (_preApprovals[hash], hash);
   }
 
-  /**
-   * @notice see {ISignatureValidator-preApprove}
-   */
+  /// @dev see {ISignatureValidator-preApprove}
   function preApprove(
     bytes4 selector,
     address owner,

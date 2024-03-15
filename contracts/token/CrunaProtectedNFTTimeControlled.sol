@@ -42,9 +42,7 @@ abstract contract CrunaProtectedNFTTimeControlled is CrunaProtectedNFT, FlexiTim
     return super.supportsInterface(interfaceId);
   }
 
-  /**
-   * @notice see {CrunaProtectedNFT-_canManage}
-   */
+  /// @dev see {CrunaProtectedNFT-_canManage}
   function _canManage(bool isInitializing) internal view virtual override {
     if (isInitializing) {
       if (!hasRole(DEFAULT_ADMIN_ROLE, _msgSender())) revert NotAuthorized();

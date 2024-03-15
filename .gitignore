@@ -69,3 +69,4 @@ tmp
 !tmp/.gitkeep
 /scripts/deploy-debug*
 /skipped
+/backup_contracts

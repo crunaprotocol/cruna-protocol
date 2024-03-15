@@ -37,23 +37,17 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
    */
   Votes internal _votes;
 
-  /**
-   * @notice see {IInheritanceCrunaPlugin-requiresToManageTransfer}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-requiresToManageTransfer}
   function requiresToManageTransfer() external pure override returns (bool) {
     return true;
   }
 
-  /**
-   * @notice see {IInheritanceCrunaPlugin-isERC6551Account}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-isERC6551Account}
   function isERC6551Account() external pure virtual returns (bool) {
     return false;
   }
 
-  /**
-   * @notice see {IInheritanceCrunaPlugin-setSentinel}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-setSentinel}
   function setSentinel(
     address sentinel,
     bool status,
@@ -64,9 +58,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     _setSentinel(sentinel, status, timestamp, validFor, signature);
   }
 
-  /**
-   * @notice see {IInheritanceCrunaPlugin-setSentinels}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-setSentinels}
   function setSentinels(
     address[] memory sentinels,
     bytes calldata emptySignature
@@ -81,9 +73,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     }
   }
 
-  /**
-   * @notice see {IInheritanceCrunaPlugin-configureInheritance}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-configureInheritance}
   function configureInheritance(
     uint8 quorum,
     uint8 proofOfLifeDurationInWeeks,
@@ -109,25 +99,19 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     _configureInheritance(quorum, proofOfLifeDurationInWeeks, gracePeriodInWeeks, beneficiary);
   }
 
-  /**
-   * @notice see {IInheritanceCrunaPlugin-countSentinels}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-countSentinels}
   function countSentinels() external view virtual override returns (uint256) {
     if (_conf.mustBeReset == 1) return 0;
     return _actorCount(_SENTINEL);
   }
 
-  /**
-   * @notice see {IInheritanceCrunaPlugin-getSentinelsAndInheritanceData}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-getSentinelsAndInheritanceData}
   function getSentinelsAndInheritanceData() external view virtual override returns (address[] memory, InheritanceConf memory) {
     if (_conf.mustBeReset == 1) return (new address[](0), InheritanceConf(address(0), 0, 0, 0, 0, 0));
     return (_getActors(_SENTINEL), _inheritanceConf);
   }
 
-  /**
-   * @notice see {IInheritanceCrunaPlugin-getVotes}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-getVotes}
   function getVotes() external view virtual override returns (address[] memory) {
     address[] memory votes = _conf.mustBeReset == 1 ? new address[](0) : _getActors(_SENTINEL);
     uint256 len = votes.length;
@@ -140,9 +124,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     return votes;
   }
 
-  /**
-   * @notice see {IInheritanceCrunaPlugin-proofOfLife}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-proofOfLife}
   function proofOfLife() external virtual override onlyTokenOwner ifMustNotBeReset {
     if (0 == _inheritanceConf.proofOfLifeDurationInWeeks) revert InheritanceNotConfigured();
     // solhint-disable-next-line not-rely-on-time
@@ -152,9 +134,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     emit ProofOfLife(_msgSender());
   }
 
-  /**
-   * @notice see {IInheritanceCrunaPlugin-voteForBeneficiary}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-voteForBeneficiary}
   function voteForBeneficiary(address beneficiary) external virtual override ifMustNotBeReset {
     if (0 == _inheritanceConf.proofOfLifeDurationInWeeks) revert InheritanceNotConfigured();
     if (_inheritanceConf.beneficiary != address(0))
@@ -185,9 +165,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     }
   }
 
-  /**
-   * @notice see {IInheritanceCrunaPlugin-inherit}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-inherit}
   function inherit() external virtual override ifMustNotBeReset {
     if (_inheritanceConf.beneficiary == address(0)) revert BeneficiaryNotSet();
     if (_inheritanceConf.beneficiary != _msgSender()) revert NotTheBeneficiary();
@@ -196,25 +174,19 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     _conf.manager.managedTransfer(_nameId(), _msgSender());
   }
 
-  /**
-   * @notice see {ICrunaPlugin-reset}
-   */
+  /// @dev see {ICrunaPlugin-reset}
   function reset() external override {
     if (_msgSender() != address(_conf.manager)) revert Forbidden();
     delete _conf.mustBeReset;
     _reset();
   }
 
-  /**
-   * @notice see {ICrunaPlugin-requiresResetOnTransfer}
-   */
+  /// @dev see {ICrunaPlugin-requiresResetOnTransfer}
   function requiresResetOnTransfer() external pure returns (bool) {
     return true;
   }
 
-  /**
-   * @notice see {CrunaPluginBase-_nameId}
-   */
+  /// @dev see {CrunaPluginBase-_nameId}
   function _nameId() internal pure virtual override returns (bytes4) {
     return bytes4(keccak256("InheritanceCrunaPlugin"));
   }
