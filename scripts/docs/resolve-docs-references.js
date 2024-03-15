@@ -22,17 +22,17 @@ function processDirectory(directory, callback) {
 // Function to extract NatSpec comments from Solidity files
 function extractNatSpecComments(filePath) {
     const content = fs.readFileSync(filePath, 'utf8');
-    const regex = /\/\/\/ @dev see \{[\w-]+}/gs;
+    const regex = /\/\/\/ @dev see \{[\w-_]+}/gs;
     return content.match(regex) || [];
 }
 
 async function extractReferencedComment(v) {
-    const [ contract, func] = v.replace(/.+\{(\w+)-(\w+)}.*$/,"$1,$2").split(",");
+    const [ contract, func] = v.replace(/.+\{(\w+)-((_|)\w+)}.*$/,"$1,$2").split(",");
     let res;
     if (cache[`${contract}.sol`]) {
         let c = cache[`${contract}.sol`].split("function " + func)[0].split("/**");
-        c = c[c.length - 1].split("function")[0];
-        res = "  /**" + c;
+        // c = c[c.length - 1].split("function")[0];
+        res = "  /**" + c[c.length - 1];
     }
     return res;
 }
