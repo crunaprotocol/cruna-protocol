@@ -148,9 +148,9 @@ contract MySuperToken is CrunaProtectedNFTOwnable {
 
 If your goal is to build a plugin, look at the contracts in [contracts/mocks/plugin-example](contracts/mocks/plugins/plugin-example) to start from.
 
-## API Documentation
+## Technical introduction and API Documentation
 
-Look at [documentation](docs/index.md).
+Look at [documentation](docs/README.md).
 
 ## History
 
