@@ -186,7 +186,6 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     return true;
   }
 
-  /// @dev see {CrunaPluginBase-_nameId}
   function _nameId() internal pure virtual override returns (bytes4) {
     return bytes4(keccak256("InheritanceCrunaPlugin"));
   }
@@ -232,6 +231,13 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     emit SentinelUpdated(_msgSender(), sentinel, status);
   }
 
+  /**
+   * @notice It configures inheritance
+   * @param quorum The quorum
+   * @param proofOfLifeDurationInWeeks The proof of life duration in weeks
+   * @param gracePeriodInWeeks The grace period in weeks
+   * @param beneficiary The beneficiary
+   */
   function _configureInheritance(
     uint8 quorum,
     uint8 proofOfLifeDurationInWeeks,
@@ -253,6 +259,10 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     emit InheritanceConfigured(_msgSender(), quorum, proofOfLifeDurationInWeeks, gracePeriodInWeeks, beneficiary);
   }
 
+  /**
+   * @notice Checks if the quorum has been reached
+   * @return The beneficiary if the quorum has been reached, address(0) otherwise
+   */
   function _quorumReached() internal view virtual returns (address) {
     address[] memory sentinels = _getActors(_SENTINEL);
     uint256 len = _votes.nominations.length;
@@ -274,6 +284,11 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     return address(0);
   }
 
+  /**
+   * @notice Check is a beneficiary has been nominated
+   * @param beneficiary The beneficiary to check
+   * @return True if the beneficiary has been nominated, false otherwise
+   */
   function _isNominated(address beneficiary) internal view virtual returns (bool) {
     uint256 len = _votes.nominations.length;
     for (uint256 i; i < len; ) {
@@ -287,6 +302,10 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     return false;
   }
 
+  /**
+   * @notice Removes a nominated beneficiary
+   * @param beneficiary The beneficiary to remove
+   */
   function _popNominated(address beneficiary) internal virtual {
     uint256 len = _votes.nominations.length;
     for (uint256 i; i < len; ) {
@@ -304,6 +323,9 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     }
   }
 
+  /**
+   * @notice Resets nominations and votes
+   */
   function _resetNominationsAndVotes() internal virtual {
     if (_votes.nominations.length != 0) {
       delete _votes.nominations;
@@ -318,10 +340,17 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     }
   }
 
+  /**
+   * @notice Checks if the sender is a sentinel
+   * @return True if the sender is a sentinel, false otherwise
+   */
   function _isASentinel() internal view virtual returns (bool) {
     return _actorIndex(_msgSender(), _SENTINEL) != _MAX_ACTORS;
   }
 
+  /**
+   * @notice Checks if the owner is still alive
+   */
   function _checkIfStillAlive() internal view virtual {
     if (
       // solhint-disable-next-line not-rely-on-time
@@ -329,6 +358,10 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     ) revert StillAlive();
   }
 
+  /**
+   * @notice Checks if the grace period has expired
+   * @return True if the grace period has expired, false otherwise
+   */
   function _isGracePeriodExpiredForBeneficiary() internal virtual returns (bool) {
     if (
       // solhint-disable-next-line not-rely-on-time
@@ -342,6 +375,9 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     return false;
   }
 
+  /**
+   * Reset the plugin configuration
+   */
   function _reset() internal {
     delete _actors[_SENTINEL];
     delete _inheritanceConf;

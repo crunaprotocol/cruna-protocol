@@ -146,12 +146,12 @@ interface IInheritanceCrunaPlugin {
   /**
    * @notice Set a sentinel for the token
    * @param sentinel The sentinel address
-   * @param active True to activate, false to deactivate
+   * @param status True to activate, false to deactivate
    * @param timestamp The timestamp of the signature
    * @param validFor The validity of the signature
    * @param signature The signature of the tokensOwner
    */
-  function setSentinel(address sentinel, bool active, uint256 timestamp, uint256 validFor, bytes calldata signature) external;
+  function setSentinel(address sentinel, bool status, uint256 timestamp, uint256 validFor, bytes calldata signature) external;
 
   /**
    * @notice Set a list of sentinels for the token

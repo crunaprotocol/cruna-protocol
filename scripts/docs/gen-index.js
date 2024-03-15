@@ -44,7 +44,7 @@ function generateIndexContent(markdownFiles, baseDir) {
 }
 
 // Base directory where the Markdown files are located
-const baseDir = path.resolve(__dirname, "../docs");
+const baseDir = path.resolve(__dirname, "../../docs");
 
 // Find all Markdown files organized by directory
 const markdownFiles = findMarkdownFiles(baseDir);

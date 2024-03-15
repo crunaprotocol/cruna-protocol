@@ -1019,7 +1019,7 @@
         },
         {
           "internalType": "address",
-          "name": "proxyAddress_",
+          "name": "pluginProxy",
           "type": "address"
         },
         {
