@@ -8,7 +8,7 @@
 address DEFAULT_IMPLEMENTATION
 ```
 
-_The default implementation of the contract_
+The default implementation of the contract
 
 ### InvalidImplementation
 
@@ -16,7 +16,7 @@ _The default implementation of the contract_
 error InvalidImplementation()
 ```
 
-_Error returned when the implementation is invalid_
+Error returned when the implementation is invalid
 
 ### receive
 
@@ -24,7 +24,7 @@ _Error returned when the implementation is invalid_
 receive() external payable virtual
 ```
 
-_The function that allows to receive ether and generic calls_
+The function that allows to receive ether and generic calls
 
 ### constructor
 
@@ -32,7 +32,7 @@ _The function that allows to receive ether and generic calls_
 constructor(address _defaultImplementation) public
 ```
 
-_Constructor_
+Constructor
 
 #### Parameters
 
@@ -46,7 +46,7 @@ _Constructor_
 function _implementation() internal view virtual returns (address)
 ```
 
-_Returns the implementation of the contract_
+Returns the implementation of the contract
 
 ### _fallback
 
@@ -54,5 +54,5 @@ _Returns the implementation of the contract_
 function _fallback() internal virtual
 ```
 
-_Fallback function that redirect all the calls not in this proxy to the implementation_
+Fallback function that redirect all the calls not in this proxy to the implementation
 

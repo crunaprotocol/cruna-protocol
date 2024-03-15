@@ -2,12 +2,12 @@
 
 ## Canonical
 
-_Returns the address where registries and guardian have been deployed
+Returns the address where registries and guardian have been deployed
 There are two set of addresses. In both, the registry are on the same addresses, but
 the guardian has a different address for testing and deployment to localhost (using the 2nd
 and 3rd hardhat standard wallets as proposer and executor).
 This contract is for development and testing purposes only. When the package is published
-to Npm, the addresses will be replaced by the actual addresses of the deployed contracts._
+to Npm, the addresses will be replaced by the actual addresses of the deployed contracts.
 
 ### crunaRegistry
 
@@ -15,7 +15,7 @@ to Npm, the addresses will be replaced by the actual addresses of the deployed c
 function crunaRegistry() internal pure returns (contract ICrunaRegistry)
 ```
 
-_Returns the CrunaRegistry contract_
+Returns the CrunaRegistry contract
 
 ### erc6551Registry
 
@@ -23,7 +23,7 @@ _Returns the CrunaRegistry contract_
 function erc6551Registry() internal pure returns (contract IERC6551Registry)
 ```
 
-_Returns the ERC6551Registry contract_
+Returns the ERC6551Registry contract
 
 ### crunaGuardian
 
@@ -31,5 +31,5 @@ _Returns the ERC6551Registry contract_
 function crunaGuardian() internal pure returns (contract ICrunaGuardian)
 ```
 
-_Returns the CrunaGuardian contract_
+Returns the CrunaGuardian contract
 

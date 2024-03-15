@@ -33,7 +33,23 @@ the _canManage function to define who can alter the contract. Two versions are p
 address _SELF
 ```
 
-_Set a convenient variable to refer to the contract itself_
+Set a convenient variable to refer to the contract itself
+
+### _nftConf
+
+```solidity
+struct ICrunaProtectedNFT.NftConf _nftConf
+```
+
+The configuration of the NFT
+
+### _managerHistory
+
+```solidity
+struct ICrunaProtectedNFT.ManagerHistory[] _managerHistory
+```
+
+The manager history
 
 ### _approvedTransfers
 
@@ -41,8 +57,8 @@ _Set a convenient variable to refer to the contract itself_
 mapping(uint256 => bool) _approvedTransfers
 ```
 
-_internal variable used to make protected NFT temporarily transferable.
-It is set before the transfer and removed after it, during the manager transfer process._
+internal variable used to make protected NFT temporarily transferable.
+It is set before the transfer and removed after it, during the manager transfer process.
 
 ### onlyManagerOf
 
@@ -50,7 +66,7 @@ It is set before the transfer and removed after it, during the manager transfer 
 modifier onlyManagerOf(uint256 tokenId)
 ```
 
-_allows only the manager of a certain tokenId to call the function._
+allows only the manager of a certain tokenId to call the function.
 
 #### Parameters
 
@@ -64,7 +80,7 @@ _allows only the manager of a certain tokenId to call the function._
 function nftConf() external view virtual returns (struct ICrunaProtectedNFT.NftConf)
 ```
 
-_see {ICrunaProtectedNFT.sol-nftConf}_
+_see {ICrunaProtectedNFT-nftConf}_
 
 ### managerHistory
 
@@ -72,7 +88,7 @@ _see {ICrunaProtectedNFT.sol-nftConf}_
 function managerHistory(uint256 index) external view virtual returns (struct ICrunaProtectedNFT.ManagerHistory)
 ```
 
-_see {ICrunaProtectedNFT.sol-managerHistory}_
+_see {ICrunaProtectedNFT-managerHistory}_
 
 ### version
 
@@ -80,7 +96,7 @@ _see {ICrunaProtectedNFT.sol-managerHistory}_
 function version() external pure virtual returns (uint256)
 ```
 
-_see {IVersioned.sol-version}_
+_see {IVersioned-version}_
 
 ### constructor
 
@@ -94,7 +110,7 @@ constructor(string name_, string symbol_) internal
 function init(address managerAddress_, bool progressiveTokenIds_, bool allowUntrustedTransfers_, uint112 nextTokenId_, uint112 maxTokenId_) external virtual
 ```
 
-_see {ICrunaProtectedNFT.sol-init}_
+_see {ICrunaProtectedNFT-init}_
 
 ### allowUntrustedTransfers
 
@@ -102,7 +118,7 @@ _see {ICrunaProtectedNFT.sol-init}_
 function allowUntrustedTransfers() external view virtual returns (bool)
 ```
 
-_see {ICrunaProtectedNFT.sol-allowUntrustedTransfers}_
+_see {ICrunaProtectedNFT-allowUntrustedTransfers}_
 
 ### setMaxTokenId
 
@@ -110,7 +126,7 @@ _see {ICrunaProtectedNFT.sol-allowUntrustedTransfers}_
 function setMaxTokenId(uint112 maxTokenId_) external virtual
 ```
 
-_see {ICrunaProtectedNFT.sol-setMaxTokenId}_
+_see {ICrunaProtectedNFT-setMaxTokenId}_
 
 ### defaultManagerImplementation
 
@@ -118,7 +134,7 @@ _see {ICrunaProtectedNFT.sol-setMaxTokenId}_
 function defaultManagerImplementation(uint256 _tokenId) external view virtual returns (address)
 ```
 
-_see {ICrunaProtectedNFT.sol-defaultManagerImplementation}_
+_see {ICrunaProtectedNFT-defaultManagerImplementation}_
 
 ### upgradeDefaultManager
 
@@ -126,7 +142,7 @@ _see {ICrunaProtectedNFT.sol-defaultManagerImplementation}_
 function upgradeDefaultManager(address payable newManagerProxy) external virtual
 ```
 
-_see {ICrunaProtectedNFT.sol-upgradeDefaultManager}_
+_see {ICrunaProtectedNFT-upgradeDefaultManager}_
 
 ### managedTransfer
 
@@ -134,7 +150,7 @@ _see {ICrunaProtectedNFT.sol-upgradeDefaultManager}_
 function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external virtual
 ```
 
-_see {ICrunaProtectedNFT.sol-managedTransfer}._
+_see {ICrunaProtectedNFT-managedTransfer}._
 
 ### supportsInterface
 
@@ -148,7 +164,7 @@ function supportsInterface(bytes4 interfaceId) public view virtual returns (bool
 function isTransferable(uint256 tokenId, address from, address to) external view virtual returns (bool)
 ```
 
-_see {IERC6454.sol-isTransferable}_
+_see {IERC6454-isTransferable}_
 
 ### defaultLocked
 
@@ -156,7 +172,7 @@ _see {IERC6454.sol-isTransferable}_
 function defaultLocked() external pure virtual returns (bool)
 ```
 
-_see {IERC6982.sol-defaultLocked}_
+_see {IERC6982-defaultLocked}_
 
 ### locked
 
@@ -164,7 +180,7 @@ _see {IERC6982.sol-defaultLocked}_
 function locked(uint256 tokenId) external view virtual returns (bool)
 ```
 
-_see {IERC6982.sol-Locked}_
+_see {IERC6982-Locked}_
 
 ### emitLockedEvent
 
@@ -172,9 +188,9 @@ _see {IERC6982.sol-Locked}_
 function emitLockedEvent(uint256 tokenId, bool locked_) external
 ```
 
-_Emit a Locked event when a protector is set and the token becomes locked.
+Emit a Locked event when a protector is set and the token becomes locked.
 This function is not virtual because should not be overridden to avoid issues when
-called by the manager (when protectors are set/unset)_
+called by the manager (when protectors are set/unset)
 
 ### deployPlugin
 
@@ -182,7 +198,7 @@ called by the manager (when protectors are set/unset)_
 function deployPlugin(address pluginImplementation, bytes32 salt, uint256 tokenId, bool isERC6551Account) external virtual returns (address)
 ```
 
-_see {ICrunaProtectedNFT.sol-deployPlugin}_
+_see {ICrunaProtectedNFT-deployPlugin}_
 
 ### isDeployed
 
@@ -190,7 +206,7 @@ _see {ICrunaProtectedNFT.sol-deployPlugin}_
 function isDeployed(address implementation, bytes32 salt, uint256 tokenId, bool isERC6551Account) external view virtual returns (bool)
 ```
 
-_see {ICrunaProtectedNFT.sol-isDeployed}_
+_see {ICrunaProtectedNFT-isDeployed}_
 
 ### managerOf
 
@@ -198,7 +214,7 @@ _see {ICrunaProtectedNFT.sol-isDeployed}_
 function managerOf(uint256 tokenId) external view virtual returns (address)
 ```
 
-_see {ICrunaProtectedNFT.sol-managerOf}_
+_see {ICrunaProtectedNFT-managerOf}_
 
 ### _managerOf
 
@@ -206,7 +222,7 @@ _see {ICrunaProtectedNFT.sol-managerOf}_
 function _managerOf(uint256 tokenId) internal view virtual returns (address)
 ```
 
-_internal function to return the manager (for lesser gas consumption)_
+internal function to return the manager (for lesser gas consumption)
 
 #### Parameters
 
@@ -226,7 +242,7 @@ _internal function to return the manager (for lesser gas consumption)_
 function _defaultManagerImplementation(uint256 _tokenId) internal view virtual returns (address)
 ```
 
-_Returns the default implementation of the manager for a specific tokenId_
+Returns the default implementation of the manager for a specific tokenId
 
 #### Parameters
 
@@ -246,7 +262,7 @@ _Returns the default implementation of the manager for a specific tokenId_
 function _addressOfDeployed(address implementation, bytes32 salt, uint256 tokenId, bool isERC6551Account) internal view virtual returns (address)
 ```
 
-_Internal function to return the address of a deployed token bound contract_
+Internal function to return the address of a deployed token bound contract
 
 #### Parameters
 
@@ -263,8 +279,8 @@ _Internal function to return the address of a deployed token bound contract_
 function _canManage(bool isInitializing) internal view virtual
 ```
 
-_Specify if the caller can call some function.
-Must be overridden to specify who can manage changes during initialization and later_
+Specify if the caller can call some function.
+Must be overridden to specify who can manage changes during initialization and later
 
 #### Parameters
 
@@ -278,7 +294,7 @@ Must be overridden to specify who can manage changes during initialization and l
 function _update(address to, uint256 tokenId, address auth) internal virtual returns (address)
 ```
 
-_See {ERC721-_update}._
+_see {ERC721-_update}._
 
 ### _isTransferable
 
@@ -286,7 +302,7 @@ _See {ERC721-_update}._
 function _isTransferable(uint256 tokenId, address from, address to) internal view virtual returns (bool)
 ```
 
-_Function to define a token as transferable or not, according to IERC6454_
+Function to define a token as transferable or not, according to IERC6454
 
 #### Parameters
 
@@ -308,8 +324,9 @@ _Function to define a token as transferable or not, according to IERC6454_
 function _mintAndActivateByAmount(address to, uint256 amount) internal virtual
 ```
 
-_Mints tokens by amount.
-It works only if nftConf.progressiveTokenIds is true._
+Mints tokens by amount.
+
+_It works only if nftConf.progressiveTokenIds is true._
 
 #### Parameters
 
@@ -324,8 +341,9 @@ It works only if nftConf.progressiveTokenIds is true._
 function _mintAndActivate(address to, uint256 tokenId) internal virtual
 ```
 
-_This function will mint a new token and initialize it.
-Use it carefully if nftConf.progressiveTokenIds is true. Usually, used to
+This function will mint a new token and initialize it.
+
+_Use it carefully if nftConf.progressiveTokenIds is true. Usually, used to
 reserve some specific token to the project itself, the DAO, etc._
 
 #### Parameters
@@ -341,7 +359,7 @@ reserve some specific token to the project itself, the DAO, etc._
 function _deploy(address implementation, bytes32 salt, uint256 tokenId, bool isERC6551Account) internal virtual returns (address)
 ```
 
-_This function deploys a token-bound contract (manager or plugin)_
+This function deploys a token-bound contract (manager or plugin)
 
 #### Parameters
 

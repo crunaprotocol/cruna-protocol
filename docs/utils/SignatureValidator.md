@@ -2,8 +2,8 @@
 
 ## SignatureValidator
 
-_This contract is used to validate signatures.
-It is based on EIP712 and supports typed messages V4._
+This contract is used to validate signatures.
+It is based on EIP712 and supports typed messages V4.
 
 ### _MAX_VALID_FOR
 
@@ -11,7 +11,7 @@ It is based on EIP712 and supports typed messages V4._
 uint256 _MAX_VALID_FOR
 ```
 
-_The maximum validFor. If more than this it will conflict with the timestamp._
+The maximum validFor. If more than this it will conflict with the timestamp.
 
 ### _TIMESTAMP_MULTIPLIER
 
@@ -19,7 +19,7 @@ _The maximum validFor. If more than this it will conflict with the timestamp._
 uint256 _TIMESTAMP_MULTIPLIER
 ```
 
-_The multiplier for the timestamp in the timeValidation parameter._
+The multiplier for the timestamp in the timeValidation parameter.
 
 ### constructor
 
@@ -27,7 +27,7 @@ _The multiplier for the timestamp in the timeValidation parameter._
 constructor() internal
 ```
 
-_EIP712 constructor_
+EIP712 constructor
 
 ### preApprovals
 
@@ -35,7 +35,7 @@ _EIP712 constructor_
 function preApprovals(bytes32 hash) external view returns (address)
 ```
 
-_See {ISignatureValidator.sol-preApprovals}_
+_see {ISignatureValidator-preApprovals}_
 
 ### hashSignature
 
@@ -43,7 +43,7 @@ _See {ISignatureValidator.sol-preApprovals}_
 function hashSignature(bytes signature) external pure returns (bytes32)
 ```
 
-_see {ISignatureValidator.sol-hashSignature}_
+_see {ISignatureValidator-hashSignature}_
 
 ### isSignatureUsed
 
@@ -51,7 +51,7 @@ _see {ISignatureValidator.sol-hashSignature}_
 function isSignatureUsed(bytes32 hash) external view returns (bool)
 ```
 
-_see {ISignatureValidator.sol-isSignatureUsed}_
+_see {ISignatureValidator-isSignatureUsed}_
 
 ### recoverSigner
 
@@ -75,8 +75,8 @@ _see {ISignatureValidator-preApprove}_
 function _canPreApprove(bytes4 selector, address actor, address signer) internal view virtual returns (bool)
 ```
 
-_Checks if someone can pre approve an operation.
-Must be implemented by the contract using this base contract_
+Checks if someone can pre approve an operation.
+Must be implemented by the contract using this base contract
 
 #### Parameters
 
@@ -92,7 +92,7 @@ Must be implemented by the contract using this base contract_
 function _validate(uint256 timeValidation) internal view
 ```
 
-_Validates the timeValidation parameter._
+Validates the timeValidation parameter.
 
 #### Parameters
 
@@ -106,8 +106,8 @@ _Validates the timeValidation parameter._
 function _isProtected() internal view virtual returns (bool)
 ```
 
-_Checks if the NFT is protected.
-Must be implemented by the contract using this base contract_
+Checks if the NFT is protected.
+Must be implemented by the contract using this base contract
 
 ### _isProtector
 
@@ -115,8 +115,8 @@ Must be implemented by the contract using this base contract_
 function _isProtector(address protector) internal view virtual returns (bool)
 ```
 
-_Checks if an address is a protector.
-Must be implemented by the contract using this base contract_
+Checks if an address is a protector.
+Must be implemented by the contract using this base contract
 
 ### _validateAndCheckSignature
 
@@ -124,7 +124,7 @@ Must be implemented by the contract using this base contract_
 function _validateAndCheckSignature(bytes4 selector, address owner, address actor, address tokenAddress, uint256 tokenId, uint256 extra, uint256 extra2, uint256 extra3, uint256 timeValidation, bytes signature) internal virtual
 ```
 
-_Validates and checks the signature._
+Validates and checks the signature.
 
 #### Parameters
 
@@ -147,7 +147,7 @@ _Validates and checks the signature._
 function _hashData(bytes4 selector, address owner, address actor, address tokenAddress, uint256 tokenId, uint256 extra, uint256 extra2, uint256 extra3, uint256 timeValidation) internal pure returns (bytes32)
 ```
 
-_Hashes the data._
+Hashes the data.
 
 #### Parameters
 
@@ -169,7 +169,7 @@ _Hashes the data._
 function _hashBytes(bytes signature) internal pure returns (bytes32 hash)
 ```
 
-_Util to hash the bytes of the signature saving gas in comparison with using keccak256._
+Util to hash the bytes of the signature saving gas in comparison with using keccak256.
 
 #### Parameters
 

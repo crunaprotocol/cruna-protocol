@@ -4,7 +4,7 @@
 
 ### PluginConfig
 
-_A struct to keep info about plugged and unplugged plugins_
+A struct to keep info about plugged and unplugged plugins
 
 #### Parameters
 
@@ -28,7 +28,7 @@ struct PluginConfig {
 
 ### PluginElement
 
-_The plugin element_
+The plugin element
 
 #### Parameters
 
@@ -45,7 +45,7 @@ struct PluginElement {
 
 ### PluginChange
 
-_It enumerates the action that can be performed when changing the status of a plugin_
+It enumerates the action that can be performed when changing the status of a plugin
 
 ```solidity
 enum PluginChange {
@@ -66,7 +66,7 @@ enum PluginChange {
 event EmitLockedEventFailed()
 ```
 
-_Event emitted when the manager call to the NFT to emit a Locked event fails._
+Event emitted when the manager call to the NFT to emit a Locked event fails.
 
 ### ProtectorChange
 
@@ -74,7 +74,7 @@ _Event emitted when the manager call to the NFT to emit a Locked event fails._
 event ProtectorChange(address protector, bool status)
 ```
 
-_Event emitted when the `status` of `protector` changes_
+Event emitted when the `status` of `protector` changes
 
 ### ProtectorsAndSafeRecipientsImported
 
@@ -82,7 +82,7 @@ _Event emitted when the `status` of `protector` changes_
 event ProtectorsAndSafeRecipientsImported(address[] protectors, address[] safeRecipients, uint256 fromTokenId)
 ```
 
-_Event emitted when protectors and safe recipients are imported from another token_
+Event emitted when protectors and safe recipients are imported from another token
 
 ### SafeRecipientChange
 
@@ -90,7 +90,7 @@ _Event emitted when protectors and safe recipients are imported from another tok
 event SafeRecipientChange(address recipient, bool status)
 ```
 
-_Event emitted when the `status` of `recipient` changes_
+Event emitted when the `status` of `recipient` changes
 
 ### PluginStatusChange
 
@@ -98,8 +98,8 @@ _Event emitted when the `status` of `recipient` changes_
 event PluginStatusChange(string name, bytes4 salt, address pluginAddress, uint256 change)
 ```
 
-_Event emitted when
-the status of plugin identified by `name` and `salt`, and deployed to `pluginAddress` gets a specific `change`_
+Event emitted when
+the status of plugin identified by `name` and `salt`, and deployed to `pluginAddress` gets a specific `change`
 
 ### Reset
 
@@ -107,8 +107,8 @@ the status of plugin identified by `name` and `salt`, and deployed to `pluginAdd
 event Reset()
 ```
 
-_Emitted when protectors and safe recipients are removed and all plugins are disabled (if they require it)
-This event overrides any specific ProtectorChange, SafeRecipientChange and PluginStatusChange event_
+Emitted when protectors and safe recipients are removed and all plugins are disabled (if they require it)
+This event overrides any specific ProtectorChange, SafeRecipientChange and PluginStatusChange event
 
 ### PluginTrusted
 
@@ -116,7 +116,7 @@ This event overrides any specific ProtectorChange, SafeRecipientChange and Plugi
 event PluginTrusted(string name, bytes4 salt)
 ```
 
-_Emitted when a plugin initially plugged despite being not trusted, is trusted by the CrunaGuardian_
+Emitted when a plugin initially plugged despite being not trusted, is trusted by the CrunaGuardian
 
 ### ImplementationUpgraded
 
@@ -124,7 +124,7 @@ _Emitted when a plugin initially plugged despite being not trusted, is trusted b
 event ImplementationUpgraded(address implementation_, uint256 oldVersion, uint256 newVersion)
 ```
 
-_Emitted when the implementation of the manager is upgraded_
+Emitted when the implementation of the manager is upgraded
 
 #### Parameters
 
@@ -140,8 +140,8 @@ _Emitted when the implementation of the manager is upgraded_
 event PluginResetAttemptFailed(bytes4 _nameId, bytes4 salt)
 ```
 
-_Event emitted when the attempt to reset a plugin fails
-When this happens, the token owner can unplug the plugin and mark it as banned to avoid future re-plugs_
+Event emitted when the attempt to reset a plugin fails
+When this happens, the token owner can unplug the plugin and mark it as banned to avoid future re-plugs
 
 ### UntrustedImplementation
 
@@ -149,7 +149,7 @@ When this happens, the token owner can unplug the plugin and mark it as banned t
 error UntrustedImplementation(address implementation)
 ```
 
-_Returned when trying to upgrade the manager to an untrusted implementation_
+Returned when trying to upgrade the manager to an untrusted implementation
 
 ### InvalidVersion
 
@@ -157,7 +157,7 @@ _Returned when trying to upgrade the manager to an untrusted implementation_
 error InvalidVersion(uint256 oldVersion, uint256 newVersion)
 ```
 
-_Returned when trying to upgrade to an older version of the manager_
+Returned when trying to upgrade to an older version of the manager
 
 ### PluginRequiresUpdatedManager
 
@@ -165,7 +165,7 @@ _Returned when trying to upgrade to an older version of the manager_
 error PluginRequiresUpdatedManager(uint256 requiredVersion)
 ```
 
-_Returned when trying to plug a plugin that requires a new version of the manager_
+Returned when trying to plug a plugin that requires a new version of the manager
 
 ### Forbidden
 
@@ -173,7 +173,7 @@ _Returned when trying to plug a plugin that requires a new version of the manage
 error Forbidden()
 ```
 
-_Returned when the sender has no right to execute a function_
+Returned when the sender has no right to execute a function
 
 ### NotAManager
 
@@ -181,7 +181,7 @@ _Returned when the sender has no right to execute a function_
 error NotAManager(address sender)
 ```
 
-_Returned when the sender is not a manager_
+Returned when the sender is not a manager
 
 ### ProtectorNotFound
 
@@ -189,7 +189,7 @@ _Returned when the sender is not a manager_
 error ProtectorNotFound(address protector)
 ```
 
-_Returned when a protector is not found_
+Returned when a protector is not found
 
 ### ProtectorAlreadySetByYou
 
@@ -197,7 +197,7 @@ _Returned when a protector is not found_
 error ProtectorAlreadySetByYou(address protector)
 ```
 
-_Returned when a protector is already set by the sender_
+Returned when a protector is already set by the sender
 
 ### ProtectorsAlreadySet
 
@@ -205,7 +205,7 @@ _Returned when a protector is already set by the sender_
 error ProtectorsAlreadySet()
 ```
 
-_Returned when a protector is already set_
+Returned when a protector is already set
 
 ### CannotBeYourself
 
@@ -213,7 +213,7 @@ _Returned when a protector is already set_
 error CannotBeYourself()
 ```
 
-_Returned when trying to set themself as a protector_
+Returned when trying to set themself as a protector
 
 ### NotTheAuthorizedPlugin
 
@@ -221,7 +221,7 @@ _Returned when trying to set themself as a protector_
 error NotTheAuthorizedPlugin(address callingPlugin)
 ```
 
-_Returned when the managed transfer is called not by the right plugin_
+Returned when the managed transfer is called not by the right plugin
 
 ### PluginNumberOverflow
 
@@ -229,7 +229,7 @@ _Returned when the managed transfer is called not by the right plugin_
 error PluginNumberOverflow()
 ```
 
-_Returned when there is no more space for plugins_
+Returned when there is no more space for plugins
 
 ### PluginHasBeenMarkedAsNotPluggable
 
@@ -237,7 +237,7 @@ _Returned when there is no more space for plugins_
 error PluginHasBeenMarkedAsNotPluggable()
 ```
 
-_Returned when the plugin has been banned and marked as not pluggable_
+Returned when the plugin has been banned and marked as not pluggable
 
 ### PluginAlreadyPlugged
 
@@ -245,7 +245,7 @@ _Returned when the plugin has been banned and marked as not pluggable_
 error PluginAlreadyPlugged()
 ```
 
-_Returned when a plugin has already been plugged_
+Returned when a plugin has already been plugged
 
 ### PluginNotFound
 
@@ -253,7 +253,7 @@ _Returned when a plugin has already been plugged_
 error PluginNotFound()
 ```
 
-_Returned when a plugin is not found_
+Returned when a plugin is not found
 
 ### InconsistentProxyAddresses
 
@@ -261,7 +261,7 @@ _Returned when a plugin is not found_
 error InconsistentProxyAddresses(address currentAddress, address proposedAddress)
 ```
 
-_Returned when trying to plug an unplugged plugin and the address of the implementation differ_
+Returned when trying to plug an unplugged plugin and the address of the implementation differ
 
 ### PluginNotFoundOrDisabled
 
@@ -269,7 +269,7 @@ _Returned when trying to plug an unplugged plugin and the address of the impleme
 error PluginNotFoundOrDisabled()
 ```
 
-_Returned when a plugin is not found or is disabled_
+Returned when a plugin is not found or is disabled
 
 ### PluginNotDisabled
 

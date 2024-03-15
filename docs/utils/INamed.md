@@ -8,5 +8,5 @@
 function nameId() external view returns (bytes4)
 ```
 
-_Returns the name id of the contract_
+Returns the name id of the contract
 

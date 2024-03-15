@@ -2,7 +2,7 @@
 
 ## IManagedNFT
 
-_Interface for a managed NFT_
+Interface for a managed NFT
 
 ### ManagedTransfer
 
@@ -10,7 +10,7 @@ _Interface for a managed NFT_
 event ManagedTransfer(bytes4 pluginNameId, uint256 tokenId)
 ```
 
-_Emitted when a token is transferred by a plugin_
+Emitted when a token is transferred by a plugin
 
 #### Parameters
 
@@ -25,7 +25,7 @@ _Emitted when a token is transferred by a plugin_
 function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external
 ```
 
-_Allow a plugin to transfer the token_
+Allow a plugin to transfer the token
 
 #### Parameters
 

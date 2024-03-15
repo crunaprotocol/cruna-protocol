@@ -4,13 +4,13 @@
 
 ### NftConf
 
-_Optimized configuration structure for the generic NFT
+Optimized configuration structure for the generic NFT
 Elements:
 - progressiveTokenIds is used to allow the upgrade of the default manager implementation. It is used to assure that the manager can be upgraded in a safe way.
 - allowUntrustedTransfers is used by the managers to allow untrusted plugins to transfer the tokens. Typically, we would set it true for testnets and false for mainnets.
 - nextTokenId is the next tokenId to be used. It is used to mint new tokens if progressiveTokenIds is true. Notice the limit to a uint112.
 - maxTokenId is the maximum tokenId that can be minted. It is used to limit the minting of new tokens. Notice the limit to a uint112.
-- managerHistoryLength is the length of the manager history._
+- managerHistoryLength is the length of the manager history.
 
 ```solidity
 struct NftConf {
@@ -25,11 +25,11 @@ struct NftConf {
 
 ### ManagerHistory
 
-_Manager history structure
+Manager history structure
 Elements:
 - firstTokenId is the first tokenId using a specific manager.
 - lastTokenId is the last tokenId managed by the same manager.
-- managerAddress is the address of the manager._
+- managerAddress is the address of the manager.
 
 ```solidity
 struct ManagerHistory {
@@ -45,7 +45,7 @@ struct ManagerHistory {
 event DefaultManagerUpgrade(address newManagerProxy)
 ```
 
-_Emitted when the default manager is upgraded_
+Emitted when the default manager is upgraded
 
 #### Parameters
 
@@ -59,7 +59,7 @@ _Emitted when the default manager is upgraded_
 event MaxTokenIdChange(uint112 maxTokenId)
 ```
 
-_Emitted when the maxTokenId is changed_
+Emitted when the maxTokenId is changed
 
 #### Parameters
 
@@ -73,7 +73,7 @@ _Emitted when the maxTokenId is changed_
 error NotTransferable()
 ```
 
-_Error returned when the caller is not the token owner_
+Error returned when the caller is not the token owner
 
 ### NotTheManager
 
@@ -81,7 +81,7 @@ _Error returned when the caller is not the token owner_
 error NotTheManager()
 ```
 
-_Error returned when the caller is not the manager_
+Error returned when the caller is not the manager
 
 ### ZeroAddress
 
@@ -89,7 +89,7 @@ _Error returned when the caller is not the manager_
 error ZeroAddress()
 ```
 
-_Error returned when the caller is not the token owner_
+Error returned when the caller is not the token owner
 
 ### AlreadyInitiated
 
@@ -97,7 +97,7 @@ _Error returned when the caller is not the token owner_
 error AlreadyInitiated()
 ```
 
-_Error returned when the token is already initiated_
+Error returned when the token is already initiated
 
 ### NotTheTokenOwner
 
@@ -105,7 +105,7 @@ _Error returned when the token is already initiated_
 error NotTheTokenOwner()
 ```
 
-_Error returned when the caller is not the token owner_
+Error returned when the caller is not the token owner
 
 ### CannotUpgradeToAnOlderVersion
 
@@ -113,7 +113,7 @@ _Error returned when the caller is not the token owner_
 error CannotUpgradeToAnOlderVersion()
 ```
 
-_Error returned when trying to upgrade to an older version_
+Error returned when trying to upgrade to an older version
 
 ### UntrustedImplementation
 
@@ -121,7 +121,7 @@ _Error returned when trying to upgrade to an older version_
 error UntrustedImplementation(address implementation)
 ```
 
-_Error returned when the new implementation of the manager is not trusted_
+Error returned when the new implementation of the manager is not trusted
 
 ### NotAvailableIfTokenIdsAreNotProgressive
 
@@ -129,7 +129,7 @@ _Error returned when the new implementation of the manager is not trusted_
 error NotAvailableIfTokenIdsAreNotProgressive()
 ```
 
-_Error returned when trying to call a function that requires progressive token ids_
+Error returned when trying to call a function that requires progressive token ids
 
 ### InvalidTokenId
 
@@ -137,7 +137,7 @@ _Error returned when trying to call a function that requires progressive token i
 error InvalidTokenId()
 ```
 
-_Error returned when the token id is invalid_
+Error returned when the token id is invalid
 
 ### NftNotInitiated
 
@@ -145,7 +145,7 @@ _Error returned when the token id is invalid_
 error NftNotInitiated()
 ```
 
-_Error returned when the NFT is not initiated_
+Error returned when the NFT is not initiated
 
 ### InvalidMaxTokenId
 
@@ -153,7 +153,7 @@ _Error returned when the NFT is not initiated_
 error InvalidMaxTokenId()
 ```
 
-_Error returned when trying too set an invalid MaxTokenId_
+Error returned when trying too set an invalid MaxTokenId
 
 ### InvalidIndex
 
@@ -161,7 +161,7 @@ _Error returned when trying too set an invalid MaxTokenId_
 error InvalidIndex()
 ```
 
-_Error returned when an index is invalid_
+Error returned when an index is invalid
 
 ### nftConf
 
@@ -169,7 +169,7 @@ _Error returned when an index is invalid_
 function nftConf() external view returns (struct ICrunaProtectedNFT.NftConf)
 ```
 
-_Returns the configuration of the NFT_
+Returns the configuration of the NFT
 
 ### managerHistory
 
@@ -177,7 +177,7 @@ _Returns the configuration of the NFT_
 function managerHistory(uint256 index) external view returns (struct ICrunaProtectedNFT.ManagerHistory)
 ```
 
-_Returns the manager history for a specific index_
+Returns the manager history for a specific index
 
 #### Parameters
 
@@ -191,7 +191,7 @@ _Returns the manager history for a specific index_
 function setMaxTokenId(uint112 maxTokenId_) external
 ```
 
-_set the maximum tokenId that can be minted_
+set the maximum tokenId that can be minted
 
 #### Parameters
 
@@ -205,8 +205,8 @@ _set the maximum tokenId that can be minted_
 function allowUntrustedTransfers() external view returns (bool)
 ```
 
-_Returns true if the token allows untrusted plugins to transfer the tokens
-This is usually set to true for testnets and false for mainnets_
+Returns true if the token allows untrusted plugins to transfer the tokens
+This is usually set to true for testnets and false for mainnets
 
 ### init
 
@@ -214,7 +214,7 @@ This is usually set to true for testnets and false for mainnets_
 function init(address managerAddress_, bool progressiveTokenIds_, bool allowUntrustedTransfers_, uint112 nextTokenId_, uint112 maxTokenId_) external
 ```
 
-_Initialize the NFT_
+Initialize the NFT
 
 #### Parameters
 
@@ -232,7 +232,7 @@ _Initialize the NFT_
 function defaultManagerImplementation(uint256 _tokenId) external view returns (address)
 ```
 
-_Returns the address of the default implementation of the manager for a tokenId_
+Returns the address of the default implementation of the manager for a tokenId
 
 #### Parameters
 
@@ -246,7 +246,7 @@ _Returns the address of the default implementation of the manager for a tokenId_
 function upgradeDefaultManager(address payable newManagerProxy) external
 ```
 
-_Upgrade the default manager for any following tokenId_
+Upgrade the default manager for any following tokenId
 
 #### Parameters
 
@@ -260,7 +260,7 @@ _Upgrade the default manager for any following tokenId_
 function managerOf(uint256 tokenId) external view returns (address)
 ```
 
-_Return the address of the manager of a tokenId_
+Return the address of the manager of a tokenId
 
 #### Parameters
 
@@ -274,7 +274,7 @@ _Return the address of the manager of a tokenId_
 function deployPlugin(address pluginImplementation, bytes32 salt, uint256 tokenId, bool isERC6551Account) external returns (address)
 ```
 
-_Deploys a plugin_
+Deploys a plugin
 
 #### Parameters
 
@@ -291,7 +291,7 @@ _Deploys a plugin_
 function isDeployed(address implementation, bytes32 salt, uint256 tokenId, bool isERC6551Account) external view returns (bool)
 ```
 
-_Returns if a plugin is deployed_
+Returns if a plugin is deployed
 
 #### Parameters
 

@@ -2,7 +2,7 @@
 
 ## ICrunaGuardian
 
-_Manages upgrade and cross-chain execution settings for accounts_
+Manages upgrade and cross-chain execution settings for accounts
 
 ### TrustedImplementationUpdated
 
@@ -10,7 +10,7 @@ _Manages upgrade and cross-chain execution settings for accounts_
 event TrustedImplementationUpdated(bytes4 nameId, address implementation, bool trusted, uint256 requires)
 ```
 
-_Emitted when a trusted implementation is updated_
+Emitted when a trusted implementation is updated
 
 #### Parameters
 
@@ -27,7 +27,7 @@ _Emitted when a trusted implementation is updated_
 function setTrustedImplementation(bytes4 nameId, address implementation, bool trusted, uint256 requires) external
 ```
 
-_Sets a given implementation address as trusted, allowing accounts to upgrade to this implementation._
+Sets a given implementation address as trusted, allowing accounts to upgrade to this implementation.
 
 #### Parameters
 
@@ -44,7 +44,7 @@ _Sets a given implementation address as trusted, allowing accounts to upgrade to
 function trustedImplementation(bytes4 nameId, address implementation) external view returns (uint256)
 ```
 
-_Returns the manager version required by a trusted implementation_
+Returns the manager version required by a trusted implementation
 
 #### Parameters
 

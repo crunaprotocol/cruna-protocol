@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 /**
  * @title ExcessivelySafeCall
- * @dev A library to make calls to untrusted contracts safer
+ * @notice A library to make calls to untrusted contracts safer
  *
  * The original code is at https://github.com/nomad-xyz/ExcessivelySafeCall
  */

@@ -2,7 +2,7 @@
 
 ## CrunaManagerProxy
 
-_Proxy contract for the CrunaManager_
+Proxy contract for the CrunaManager
 
 ### constructor
 
@@ -10,7 +10,7 @@ _Proxy contract for the CrunaManager_
 constructor(address _initialImplementation) public
 ```
 
-_Constructor_
+Constructor
 
 #### Parameters
 

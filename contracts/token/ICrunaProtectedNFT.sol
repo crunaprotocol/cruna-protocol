@@ -10,7 +10,7 @@ import {IManagedNFT} from "./IManagedNFT.sol";
  */
 interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
   /**
-   * @dev Optimized configuration structure for the generic NFT
+   * @notice Optimized configuration structure for the generic NFT
    * Elements:
    * - progressiveTokenIds is used to allow the upgrade of the default manager implementation. It is used to assure that the manager can be upgraded in a safe way.
    * - allowUntrustedTransfers is used by the managers to allow untrusted plugins to transfer the tokens. Typically, we would set it true for testnets and false for mainnets.
@@ -29,7 +29,7 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
   }
 
   /**
-   * @dev Manager history structure
+   * @notice Manager history structure
    * Elements:
    * - firstTokenId is the first tokenId using a specific manager.
    * - lastTokenId is the last tokenId managed by the same manager.
@@ -44,13 +44,13 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
   // events
 
   /**
-   * @dev Emitted when the default manager is upgraded
+   * @notice Emitted when the default manager is upgraded
    * @param newManagerProxy The address of the new manager proxy
    */
   event DefaultManagerUpgrade(address indexed newManagerProxy);
 
   /**
-   * @dev Emitted when the maxTokenId is changed
+   * @notice Emitted when the maxTokenId is changed
    * @param maxTokenId The new maxTokenId
    */
   event MaxTokenIdChange(uint112 maxTokenId);
@@ -58,92 +58,92 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
   // errors
 
   /**
-   * @dev Error returned when the caller is not the token owner
+   * @notice Error returned when the caller is not the token owner
    */
   error NotTransferable();
 
   /**
-   * @dev Error returned when the caller is not the manager
+   * @notice Error returned when the caller is not the manager
    */
   error NotTheManager();
 
   /**
-   * @dev Error returned when the caller is not the token owner
+   * @notice Error returned when the caller is not the token owner
    */
   error ZeroAddress();
 
   /**
-   * @dev Error returned when the token is already initiated
+   * @notice Error returned when the token is already initiated
    */
   error AlreadyInitiated();
 
   /**
-   * @dev Error returned when the caller is not the token owner
+   * @notice Error returned when the caller is not the token owner
    */
   error NotTheTokenOwner();
 
   /**
-   * @dev Error returned when trying to upgrade to an older version
+   * @notice Error returned when trying to upgrade to an older version
    */
   error CannotUpgradeToAnOlderVersion();
 
   /**
-   * @dev Error returned when the new implementation of the manager is not trusted
+   * @notice Error returned when the new implementation of the manager is not trusted
    */
   error UntrustedImplementation(address implementation);
 
   /**
-   * @dev Error returned when trying to call a function that requires progressive token ids
+   * @notice Error returned when trying to call a function that requires progressive token ids
    */
   error NotAvailableIfTokenIdsAreNotProgressive();
 
   /**
-   * @dev Error returned when the token id is invalid
+   * @notice Error returned when the token id is invalid
    */
   error InvalidTokenId();
 
   /**
-   * @dev Error returned when the NFT is not initiated
+   * @notice Error returned when the NFT is not initiated
    */
   error NftNotInitiated();
 
   /**
-   * @dev Error returned when trying too set an invalid MaxTokenId
+   * @notice Error returned when trying too set an invalid MaxTokenId
    */
   error InvalidMaxTokenId();
 
   /**
-   * @dev Error returned when an index is invalid
+   * @notice Error returned when an index is invalid
    */
   error InvalidIndex();
 
   // views
 
   /**
-   * @dev Returns the configuration of the NFT
+   * @notice Returns the configuration of the NFT
    */
   function nftConf() external view returns (NftConf memory);
 
   /**
-   * @dev Returns the manager history for a specific index
+   * @notice Returns the manager history for a specific index
    * @param index The index
    */
   function managerHistory(uint256 index) external view returns (ManagerHistory memory);
 
   /**
-   * @dev set the maximum tokenId that can be minted
+   * @notice set the maximum tokenId that can be minted
    * @param maxTokenId_ The new maxTokenId
    */
   function setMaxTokenId(uint112 maxTokenId_) external;
 
   /**
-   * @dev Returns true if the token allows untrusted plugins to transfer the tokens
+   * @notice Returns true if the token allows untrusted plugins to transfer the tokens
    * This is usually set to true for testnets and false for mainnets
    */
   function allowUntrustedTransfers() external view returns (bool);
 
   /**
-   * @dev Initialize the NFT
+   * @notice Initialize the NFT
    * @param managerAddress_ The address of the manager
    * @param progressiveTokenIds_ If true, the tokenIds will be progressive
    * @param allowUntrustedTransfers_ If true, the token will allow untrusted plugins to transfer the tokens
@@ -159,25 +159,25 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
   ) external;
 
   /**
-   * @dev Returns the address of the default implementation of the manager for a tokenId
+   * @notice Returns the address of the default implementation of the manager for a tokenId
    * @param _tokenId The tokenId
    */
   function defaultManagerImplementation(uint256 _tokenId) external view returns (address);
 
   /**
-   * @dev Upgrade the default manager for any following tokenId
+   * @notice Upgrade the default manager for any following tokenId
    * @param newManagerProxy The address of the new manager proxy
    */
   function upgradeDefaultManager(address payable newManagerProxy) external;
 
   /**
-   * @dev Return the address of the manager of a tokenId
+   * @notice Return the address of the manager of a tokenId
    * @param tokenId The id of the token.
    */
   function managerOf(uint256 tokenId) external view returns (address);
 
   /**
-   * @dev Deploys a plugin
+   * @notice Deploys a plugin
    * @param pluginImplementation The address of the plugin implementation
    * @param salt The salt
    * @param tokenId The tokenId
@@ -193,7 +193,7 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
   ) external returns (address);
 
   /**
-   * @dev Returns if a plugin is deployed
+   * @notice Returns if a plugin is deployed
    * @param implementation The address of the plugin implementation
    * @param salt The salt
    * @param tokenId The tokenId

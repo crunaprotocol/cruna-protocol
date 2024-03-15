@@ -39,7 +39,7 @@ When deployed to production, proposers and executors will be multi-sig wallets o
 function version() external pure virtual returns (uint256)
 ```
 
-see {ICrunaGuardian-setTrustedImplementation}
+_see {ICrunaGuardian-setTrustedImplementation}_
 
 ### setTrustedImplementation
 
@@ -47,7 +47,7 @@ see {ICrunaGuardian-setTrustedImplementation}
 function setTrustedImplementation(bytes4 nameId, address implementation, bool trusted, uint256 requires) external
 ```
 
-_Sets a given implementation address as trusted, allowing accounts to upgrade to this implementation._
+Sets a given implementation address as trusted, allowing accounts to upgrade to this implementation.
 
 #### Parameters
 
@@ -64,7 +64,7 @@ _Sets a given implementation address as trusted, allowing accounts to upgrade to
 function trustedImplementation(bytes4 nameId, address implementation) external view returns (uint256)
 ```
 
-_Returns the manager version required by a trusted implementation_
+Returns the manager version required by a trusted implementation
 
 #### Parameters
 

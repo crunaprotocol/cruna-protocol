@@ -8,7 +8,7 @@ pragma solidity ^0.8.20;
  */
 interface ITokenLinkedContract {
   /**
-   * @dev Returns the token linked to the contract
+   * @notice Returns the token linked to the contract
    * @return chainId The chainId of the token
    * @return tokenContract The address of the token contract
    * @return tokenId The tokenId of the token
@@ -16,22 +16,22 @@ interface ITokenLinkedContract {
   function token() external view returns (uint256 chainId, address tokenContract, uint256 tokenId);
 
   /**
-   * @dev Returns the owner of the token
+   * @notice Returns the owner of the token
    */
   function owner() external view returns (address);
 
   /**
-   * @dev Returns the address of the token contract
+   * @notice Returns the address of the token contract
    */
   function tokenAddress() external view returns (address);
 
   /**
-   * @dev Returns the tokenId of the token
+   * @notice Returns the tokenId of the token
    */
   function tokenId() external view returns (uint256);
 
   /**
-   * @dev Returns the implementation used when creating the contract
+   * @notice Returns the implementation used when creating the contract
    */
   function implementation() external view returns (address);
 }

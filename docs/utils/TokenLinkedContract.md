@@ -2,7 +2,7 @@
 
 ## TokenLinkedContract
 
-_Abstract contract to link a contract to an NFT_
+Abstract contract to link a contract to an NFT
 
 ### token
 
@@ -10,7 +10,7 @@ _Abstract contract to link a contract to an NFT_
 function token() public view virtual returns (uint256, address, uint256)
 ```
 
-_Returns the token linked to the contract_
+Returns the token linked to the contract
 
 ### owner
 
@@ -18,7 +18,7 @@ _Returns the token linked to the contract_
 function owner() public view virtual returns (address)
 ```
 
-_Returns the owner of the token_
+Returns the owner of the token
 
 ### tokenAddress
 
@@ -26,7 +26,7 @@ _Returns the owner of the token_
 function tokenAddress() public view virtual returns (address)
 ```
 
-_Returns the address of the token contract_
+Returns the address of the token contract
 
 ### tokenId
 
@@ -34,7 +34,7 @@ _Returns the address of the token contract_
 function tokenId() public view virtual returns (uint256)
 ```
 
-_Returns the tokenId of the token_
+Returns the tokenId of the token
 
 ### implementation
 
@@ -42,5 +42,5 @@ _Returns the tokenId of the token_
 function implementation() public view virtual returns (address)
 ```
 
-_Returns the implementation used when creating the contract_
+Returns the implementation used when creating the contract
 

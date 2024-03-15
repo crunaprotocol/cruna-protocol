@@ -9,7 +9,7 @@ import {ERC6551AccountProxy} from "../../utils/ERC6551AccountProxy.sol";
  */
 contract InheritanceCrunaPluginProxy is ERC6551AccountProxy {
   /**
-   * @dev Constructor
+   * @notice Constructor
    * @param _initialImplementation Address of the initial implementation
    */
   constructor(address _initialImplementation) ERC6551AccountProxy(_initialImplementation) {}

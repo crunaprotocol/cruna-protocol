@@ -8,7 +8,7 @@
 error NotTheTokenOwner()
 ```
 
-_Error returned when the caller is not the token owner_
+Error returned when the caller is not the token owner
 
 ### vault
 
@@ -16,5 +16,5 @@ _Error returned when the caller is not the token owner_
 function vault() external view returns (contract CrunaProtectedNFT)
 ```
 
-_Returns the vault, i.e., the CrunaProtectedNFT contract_
+Returns the vault, i.e., the CrunaProtectedNFT contract
 

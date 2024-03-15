@@ -38,21 +38,21 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   Votes internal _votes;
 
   /**
-   * @notice see {IInheritanceCrunaPlugin.sol-requiresToManageTransfer}
+   * @dev see {IInheritanceCrunaPlugin-requiresToManageTransfer}
    */
   function requiresToManageTransfer() external pure override returns (bool) {
     return true;
   }
 
   /**
-   * @notice see {IInheritanceCrunaPlugin.sol-isERC6551Account}
+   * @dev see {IInheritanceCrunaPlugin-isERC6551Account}
    */
   function isERC6551Account() external pure virtual returns (bool) {
     return false;
   }
 
   /**
-   * @dev see {IInheritanceCrunaPlugin.sol-setSentinel}
+   * @dev see {IInheritanceCrunaPlugin-setSentinel}
    */
   function setSentinel(
     address sentinel,
@@ -65,7 +65,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   /**
-   * @dev see {IInheritanceCrunaPlugin.sol-setSentinels}
+   * @dev see {IInheritanceCrunaPlugin-setSentinels}
    */
   function setSentinels(
     address[] memory sentinels,
@@ -82,7 +82,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   /**
-   * @dev see {IInheritanceCrunaPlugin.sol-configureInheritance}
+   * @dev see {IInheritanceCrunaPlugin-configureInheritance}
    */
   function configureInheritance(
     uint8 quorum,
@@ -110,7 +110,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   /**
-   * @dev see {IInheritanceCrunaPlugin.sol-countSentinels}
+   * @dev see {IInheritanceCrunaPlugin-countSentinels}
    */
   function countSentinels() external view virtual override returns (uint256) {
     if (_conf.mustBeReset == 1) return 0;
@@ -118,7 +118,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   /**
-   * @dev see {IInheritanceCrunaPlugin.sol-getSentinelsAndInheritanceData}
+   * @dev see {IInheritanceCrunaPlugin-getSentinelsAndInheritanceData}
    */
   function getSentinelsAndInheritanceData() external view virtual override returns (address[] memory, InheritanceConf memory) {
     if (_conf.mustBeReset == 1) return (new address[](0), InheritanceConf(address(0), 0, 0, 0, 0, 0));
@@ -126,7 +126,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   /**
-   * @dev see {IInheritanceCrunaPlugin.sol-getVotes}
+   * @dev see {IInheritanceCrunaPlugin-getVotes}
    */
   function getVotes() external view virtual override returns (address[] memory) {
     address[] memory votes = _conf.mustBeReset == 1 ? new address[](0) : _getActors(_SENTINEL);
@@ -141,7 +141,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   /**
-   * @dev see {IInheritanceCrunaPlugin.sol-proofOfLife}
+   * @dev see {IInheritanceCrunaPlugin-proofOfLife}
    */
   function proofOfLife() external virtual override onlyTokenOwner ifMustNotBeReset {
     if (0 == _inheritanceConf.proofOfLifeDurationInWeeks) revert InheritanceNotConfigured();
@@ -153,7 +153,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   /**
-   * @dev see {IInheritanceCrunaPlugin.sol-voteForBeneficiary}
+   * @dev see {IInheritanceCrunaPlugin-voteForBeneficiary}
    */
   function voteForBeneficiary(address beneficiary) external virtual override ifMustNotBeReset {
     if (0 == _inheritanceConf.proofOfLifeDurationInWeeks) revert InheritanceNotConfigured();
@@ -186,7 +186,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   /**
-   * @dev see {IInheritanceCrunaPlugin.sol-inherit}
+   * @dev see {IInheritanceCrunaPlugin-inherit}
    */
   function inherit() external virtual override ifMustNotBeReset {
     if (_inheritanceConf.beneficiary == address(0)) revert BeneficiaryNotSet();
@@ -197,7 +197,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   /**
-   * @dev see {ICrunaPlugin.sol-reset}
+   * @dev see {ICrunaPlugin-reset}
    */
   function reset() external override {
     if (_msgSender() != address(_conf.manager)) revert Forbidden();
@@ -206,21 +206,21 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   /**
-   * @dev see {ICrunaPlugin.sol-requiresResetOnTransfer}
+   * @dev see {ICrunaPlugin-requiresResetOnTransfer}
    */
   function requiresResetOnTransfer() external pure returns (bool) {
     return true;
   }
 
   /**
-   * @dev see {CrunaPluginBase.sol-_nameId}
+   * @dev see {CrunaPluginBase-_nameId}
    */
   function _nameId() internal pure virtual override returns (bytes4) {
     return bytes4(keccak256("InheritanceCrunaPlugin"));
   }
 
   /**
-   * @dev It sets a sentinel
+   * @notice It sets a sentinel
    * @param sentinel The sentinel address
    * @param status True if the sentinel is active, false if it is not
    * @param timestamp The timestamp
@@ -378,9 +378,9 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
 
   /**
    * @dev This empty reserved space is put in place to allow future versions to add new
+   * variables without shifting down storage in the inheritance chain.
+   * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
    */
-  // variables without shifting down storage in the inheritance chain.
-  // See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
 
   uint256[50] private __gap;
 }

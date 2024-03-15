@@ -2,9 +2,9 @@
 
 ## ExcessivelySafeCall
 
-_A library to make calls to untrusted contracts safer
+A library to make calls to untrusted contracts safer
 
-The original code is at https://github.com/nomad-xyz/ExcessivelySafeCall_
+The original code is at https://github.com/nomad-xyz/ExcessivelySafeCall
 
 ### BufLengthOverflow
 

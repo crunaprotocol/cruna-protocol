@@ -2,7 +2,10 @@
 
 ## ICrunaRegistry
 
-_Manages the creation of token bound accounts_
+Manages the creation of token bound accounts
+
+_Modified registry based on ERC6551Registry
+https://github.com/erc6551/reference/blob/main/src/ERC6551Registry.sol_
 
 ### TokenLinkedContractCreated
 
@@ -10,7 +13,7 @@ _Manages the creation of token bound accounts_
 event TokenLinkedContractCreated(address contractAddress, address implementation, bytes32 salt, uint256 chainId, address tokenContract, uint256 tokenId)
 ```
 
-_The registry MUST emit the ERC6551AccountCreated event upon successful account creation._
+The registry MUST emit the ERC6551AccountCreated event upon successful account creation.
 
 #### Parameters
 
@@ -29,8 +32,8 @@ _The registry MUST emit the ERC6551AccountCreated event upon successful account 
 function createTokenLinkedContract(address implementation, bytes32 salt, uint256 chainId, address tokenContract, uint256 tokenId) external returns (address account)
 ```
 
-_Creates a token bound account for a non-fungible token.
-If account has already been created, returns the account address without calling create2._
+Creates a token bound account for a non-fungible token.
+If account has already been created, returns the account address without calling create2.
 
 #### Parameters
 
@@ -54,7 +57,7 @@ If account has already been created, returns the account address without calling
 function tokenLinkedContract(address implementation, bytes32 salt, uint256 chainId, address tokenContract, uint256 tokenId) external view returns (address account)
 ```
 
-_Returns the computed token bound account address for a non-fungible token._
+Returns the computed token bound account address for a non-fungible token.
 
 #### Parameters
 

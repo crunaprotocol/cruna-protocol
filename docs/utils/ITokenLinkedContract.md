@@ -8,7 +8,7 @@
 function token() external view returns (uint256 chainId, address tokenContract, uint256 tokenId)
 ```
 
-_Returns the token linked to the contract_
+Returns the token linked to the contract
 
 #### Return Values
 
@@ -24,7 +24,7 @@ _Returns the token linked to the contract_
 function owner() external view returns (address)
 ```
 
-_Returns the owner of the token_
+Returns the owner of the token
 
 ### tokenAddress
 
@@ -32,7 +32,7 @@ _Returns the owner of the token_
 function tokenAddress() external view returns (address)
 ```
 
-_Returns the address of the token contract_
+Returns the address of the token contract
 
 ### tokenId
 
@@ -40,7 +40,7 @@ _Returns the address of the token contract_
 function tokenId() external view returns (uint256)
 ```
 
-_Returns the tokenId of the token_
+Returns the tokenId of the token
 
 ### implementation
 
@@ -48,5 +48,5 @@ _Returns the tokenId of the token_
 function implementation() external view returns (address)
 ```
 
-_Returns the implementation used when creating the contract_
+Returns the implementation used when creating the contract
 

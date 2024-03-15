@@ -8,12 +8,12 @@ import {CrunaProtectedNFT} from "../token/CrunaProtectedNFT.sol";
  */
 interface ICommonBase {
   /**
-   * @dev Error returned when the caller is not the token owner
+   * @notice Error returned when the caller is not the token owner
    */
   error NotTheTokenOwner();
 
   /**
-   * @dev Returns the vault, i.e., the CrunaProtectedNFT contract
+   * @notice Returns the vault, i.e., the CrunaProtectedNFT contract
    */
   function vault() external view returns (CrunaProtectedNFT);
 }

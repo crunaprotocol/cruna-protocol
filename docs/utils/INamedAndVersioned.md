@@ -2,5 +2,5 @@
 
 ## INamedAndVersioned
 
-_Combines INamed and IVersioned_
+Combines INamed and IVersioned
 
