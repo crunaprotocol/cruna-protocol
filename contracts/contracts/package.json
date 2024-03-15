@@ -1,0 +1,44 @@
+{
+  "name": "@cruna/protocol",
+  "version": "0.2.7",
+  "description": "The Cruna protocol",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "**/*.sol",
+    "!/mocks/**/*",
+    "!/plugins/inheritance/**/*",
+    "README.md",
+    "canonicalBytecodes.json"
+  ],
+  "scripts": {
+    "clean": "rimraf artifacts cache coverage coverage.json",
+    "prepublishOnly": "../scripts/verify-package-json-in-sync.js && ../scripts/check-hardhat-console.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crunaprotocol/cruna-protocol.git"
+  },
+  "author": {
+    "name": "Francesco Sullo",
+    "email": "francesco@sullo.co"
+  },
+  "bugs": {
+    "url": "https://github.com/crunaprotocol/cruna-protocol/issues"
+  },
+  "homepage": "https://github.com/crunaprotocol/cruna-protocol#readme",
+  "license": "GPL3",
+  "keywords": [
+    "solidity",
+    "ethereum",
+    "smart",
+    "contracts",
+    "security",
+    "nft"
+  ],
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2",
+    "erc6551": "^0.3.1"
+  }
+}

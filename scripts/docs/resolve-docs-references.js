@@ -64,8 +64,6 @@ async function resolveReference(value, key) {
 async function main() {
     const contractsPath = path.resolve(__dirname, '../../contracts');
 
-
-
     // Step 1: Extract NatSpec comments from all Solidity files
     processDirectory(contractsPath, (filePath) => {
         if (filePath.endsWith('.sol')) {
