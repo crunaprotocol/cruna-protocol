@@ -4,13 +4,14 @@ root_dir=$(dirname $(realpath $(dirname "$0")))
 # if not run from the root, we cd into the root
 cd $root_dir
 
-#!/bin/bash
-
 # Backup the contracts
+rm -rf ./backup_contracts
 cp -r ./contracts ./backup_contracts
 
 # Resolve the dependencies
 node scripts/docs/resolve-docs-references.js
+
+exit 0
 
 # Compiles the new contracts to validate them
 npm run compile

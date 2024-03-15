@@ -39,7 +39,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
     return 1_000_002;
   }
 
-  /// @dev see {ICrunaManager-getPluginByKey}
+  /// @dev see {ICrunaManager-pluginByKey}
   function pluginByKey(bytes8 key) external view returns (PluginConfig memory) {
     return _pluginByKey[key];
   }

@@ -178,7 +178,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     return false;
   }
 
-  /// @dev see {IERC6982-Locked}
+  /// @dev see {IERC6982-locked}
   function locked(uint256 tokenId) external view virtual override returns (bool) {
     return ICrunaManager(_managerOf(tokenId)).locked();
   }
