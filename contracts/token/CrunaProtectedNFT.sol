@@ -159,7 +159,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     emit ManagedTransfer(pluginNameId, tokenId);
   }
 
-  // @notice see {ERC165-supportsInterface}.
+  /// @dev see {ERC165-supportsInterface}.
   function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, IERC165) returns (bool) {
     return
       interfaceId == type(IManagedNFT).interfaceId ||

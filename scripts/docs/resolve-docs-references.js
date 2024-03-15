@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const cache = {};
+const globalCommentsMap = {}
 
 // Function to recursively read through directory and process files
 function processDirectory(directory, callback) {
@@ -36,24 +37,33 @@ async function extractReferencedComment(v) {
     return res;
 }
 
-const modified = {};
+function escapeRegExp(string) {
+    // This function escapes special characters for use in a regular expression
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
 
 async function resolveReference(value, key) {
     const solFile = key.split("/").pop();
     if (value.length > 0) {
         for (let v of value) {
             const comment = await extractReferencedComment(v);
-            // console.log(key);
-            cache[solFile] = cache[solFile].replace(RegExp(v.replace(/\//g, "\\/").replace(/\{/, "\\{").replace(/\}/,"\\}")), comment);
+            if (comment) {
+                let re = new RegExp(escapeRegExp(v));
+                // if (solFile == "CrunaManager.sol") {
+                //     console.log(comment);
+                //     console.log(re.test(cache[solFile]));
+                //     console.log(cache[solFile].replace(re, comment));
+                // }
+                cache[solFile] = cache[solFile].replace(re, comment)
+            }
         }
     }
-    modified[solFile] = cache[solFile];
 }
 
 // Main function to tie everything together
 async function main() {
     const contractsPath = path.resolve(__dirname, '../../contracts');
-    let globalCommentsMap = new Map();
+
 
 
     // Step 1: Extract NatSpec comments from all Solidity files
@@ -61,20 +71,28 @@ async function main() {
         if (filePath.endsWith('.sol')) {
             const commentsMap = extractNatSpecComments(filePath);
             const relativePath = path.relative(contractsPath, filePath);
-            globalCommentsMap.set(relativePath, commentsMap);
+            globalCommentsMap[relativePath] = commentsMap;
         }
     });
 
-    globalCommentsMap.forEach(resolveReference);
+    const startCache = JSON.parse(JSON.stringify(cache));
+    // console.log(startCache["CrunaGuardian.sol"]);
 
-    globalCommentsMap.forEach((value, key) => {
+    for (let key in globalCommentsMap) {
+        await resolveReference(globalCommentsMap[key], key);
+    }
+    // console.log(cache["CrunaManager.sol"]);
+    // console.log(cache);
+
+    for (let key in globalCommentsMap) {
         const solFile = key.split("/").pop();
-        if (modified[solFile]) {
+        if (startCache[solFile] !== cache[solFile]) {
+            // console.log(solFile);
             let f = path.join(contractsPath, key);
-            console.log(f)
-            // fs.writeFileSync(f, modified[solFile], 'utf8');
+            // console.log(f)
+            fs.writeFileSync(f, cache[solFile], 'utf8');
         }
-    })
+    }
 }
 
 main().catch(console.error);
