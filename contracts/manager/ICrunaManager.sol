@@ -422,12 +422,6 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   function getSafeRecipients() external view returns (address[] memory);
 
   /**
-   *
-   * PLUGINS
-   *
-   */
-
-  /**
    * @dev It plugs a new plugin
    * @param name The name of the plugin
    * @param pluginProxy The address of the plugin implementation

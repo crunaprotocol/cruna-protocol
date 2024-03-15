@@ -36,6 +36,5 @@ mv ./backup_contracts ./contracts
 
 echo "Process completed."
 
-#rm -rf ./contracts
-#cp -r ./backup_contracts ./contracts
+#rm -rf ./contracts && cp -r ./backup_contracts ./contracts
 

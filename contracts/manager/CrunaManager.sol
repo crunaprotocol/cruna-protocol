@@ -101,7 +101,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
   /// @dev see {ICrunaManager-setProtector}
   function setProtector(
     address protector_,
-    bool status,
+    bool active,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature

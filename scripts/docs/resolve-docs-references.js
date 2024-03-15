@@ -30,7 +30,7 @@ async function extractReferencedComment(v) {
     const [ contract, func] = v.replace(/.+\{(\w+)-((_|)\w+)}.*$/,"$1,$2").split(",");
     let res;
     if (cache[`${contract}.sol`]) {
-        let c = cache[`${contract}.sol`].split("function " + func)[0].split("/**");
+        let c = cache[`${contract}.sol`].split("function " + func+ "(")[0].split("/**");
         c = c[c.length - 1].split("*/")[0];
         res = "  /**" + c + "*/";
     }
@@ -49,11 +49,7 @@ async function resolveReference(value, key) {
             const comment = await extractReferencedComment(v);
             if (comment) {
                 let re = new RegExp(escapeRegExp(v));
-                // if (solFile == "CrunaManager.sol") {
-                //     console.log("\n\n", comment, "\n\n");
-                //     console.log(re.test(cache[solFile]));
-                //     console.log(cache[solFile].replace(re, comment));
-                // }
+                // console.log("\n\n", v, "\n\n", comment, "\n\n");
                 cache[solFile] = cache[solFile].replace(re, comment)
             }
         }
