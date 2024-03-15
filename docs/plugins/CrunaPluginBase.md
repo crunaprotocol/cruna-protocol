@@ -26,7 +26,7 @@ Verifies that the plugin must not be reset
 function init() external
 ```
 
-see {ICrunaPlugin.sol-init}
+Initialize the plugin. It must be implemented, but can do nothing is no init is needed.
 
 ### manager
 
@@ -34,7 +34,7 @@ see {ICrunaPlugin.sol-init}
 function manager() external view virtual returns (contract CrunaManager)
 ```
 
-see {ICrunaPlugin.sol-manager}
+Returns the manager
 
 ### version
 
@@ -42,7 +42,9 @@ see {ICrunaPlugin.sol-manager}
 function version() external pure virtual returns (uint256)
 ```
 
-see {IVersioned.sol-version}
+Returns the version of the contract.
+The format is similar to semver, where any element takes 3 digits.
+For example, version 1.2.14 is 1_002_014.
 
 ### upgrade
 
@@ -50,7 +52,10 @@ see {IVersioned.sol-version}
 function upgrade(address implementation_) external virtual
 ```
 
-see {ICrunaPlugin.sol-upgrade}
+Upgrade the implementation of the manager/plugin
+Notice that the owner can upgrade active or disable plugins
+so that, if a plugin is compromised, the user can disable it,
+wait for a new trusted implementation and upgrade it.
 
 ### resetOnTransfer
 
@@ -58,7 +63,7 @@ see {ICrunaPlugin.sol-upgrade}
 function resetOnTransfer() external
 ```
 
-see {ICrunaPlugin.sol-resetOnTransfer}
+Reset the plugin to the factory settings
 
 ### _canPreApprove
 
@@ -66,11 +71,11 @@ see {ICrunaPlugin.sol-resetOnTransfer}
 function _canPreApprove(bytes4, address, address signer) internal view virtual returns (bool)
 ```
 
-_Internal function to verify if a signer can pre approve an operation (if the sender is a protector)
+Internal function to verify if a signer can pre approve an operation (if the sender is a protector)
 The params:
 - operation The selector of the called function
 - the actor to be approved
-- signer The signer of the operation (the protector)_
+- signer The signer of the operation (the protector)
 
 ### _version
 
@@ -78,7 +83,9 @@ The params:
 function _version() internal pure virtual returns (uint256)
 ```
 
-_see {IVersioned.sol-version}_
+Returns the version of the contract.
+The format is similar to semver, where any element takes 3 digits.
+For example, version 1.2.14 is 1_002_014.
 
 ### _isProtected
 
@@ -86,7 +93,7 @@ _see {IVersioned.sol-version}_
 function _isProtected() internal view virtual returns (bool)
 ```
 
-_internal function to check if the NFT is currently protected_
+internal function to check if the NFT is currently protected
 
 ### _isProtector
 
@@ -94,7 +101,7 @@ _internal function to check if the NFT is currently protected_
 function _isProtector(address protector) internal view virtual returns (bool)
 ```
 
-_Internal function to check if an address is a protector_
+Internal function to check if an address is a protector
 
 #### Parameters
 

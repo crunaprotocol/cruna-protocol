@@ -37,23 +37,17 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
    */
   Votes internal _votes;
 
-  /**
-   * @notice see {IInheritanceCrunaPlugin.sol-requiresToManageTransfer}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-requiresToManageTransfer}
   function requiresToManageTransfer() external pure override returns (bool) {
     return true;
   }
 
-  /**
-   * @notice see {IInheritanceCrunaPlugin.sol-isERC6551Account}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-isERC6551Account}
   function isERC6551Account() external pure virtual returns (bool) {
     return false;
   }
 
-  /**
-   * @dev see {IInheritanceCrunaPlugin.sol-setSentinel}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-setSentinel}
   function setSentinel(
     address sentinel,
     bool status,
@@ -64,9 +58,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     _setSentinel(sentinel, status, timestamp, validFor, signature);
   }
 
-  /**
-   * @dev see {IInheritanceCrunaPlugin.sol-setSentinels}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-setSentinels}
   function setSentinels(
     address[] memory sentinels,
     bytes calldata emptySignature
@@ -81,9 +73,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     }
   }
 
-  /**
-   * @dev see {IInheritanceCrunaPlugin.sol-configureInheritance}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-configureInheritance}
   function configureInheritance(
     uint8 quorum,
     uint8 proofOfLifeDurationInWeeks,
@@ -109,25 +99,19 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     _configureInheritance(quorum, proofOfLifeDurationInWeeks, gracePeriodInWeeks, beneficiary);
   }
 
-  /**
-   * @dev see {IInheritanceCrunaPlugin.sol-countSentinels}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-countSentinels}
   function countSentinels() external view virtual override returns (uint256) {
     if (_conf.mustBeReset == 1) return 0;
     return _actorCount(_SENTINEL);
   }
 
-  /**
-   * @dev see {IInheritanceCrunaPlugin.sol-getSentinelsAndInheritanceData}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-getSentinelsAndInheritanceData}
   function getSentinelsAndInheritanceData() external view virtual override returns (address[] memory, InheritanceConf memory) {
     if (_conf.mustBeReset == 1) return (new address[](0), InheritanceConf(address(0), 0, 0, 0, 0, 0));
     return (_getActors(_SENTINEL), _inheritanceConf);
   }
 
-  /**
-   * @dev see {IInheritanceCrunaPlugin.sol-getVotes}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-getVotes}
   function getVotes() external view virtual override returns (address[] memory) {
     address[] memory votes = _conf.mustBeReset == 1 ? new address[](0) : _getActors(_SENTINEL);
     uint256 len = votes.length;
@@ -140,9 +124,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     return votes;
   }
 
-  /**
-   * @dev see {IInheritanceCrunaPlugin.sol-proofOfLife}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-proofOfLife}
   function proofOfLife() external virtual override onlyTokenOwner ifMustNotBeReset {
     if (0 == _inheritanceConf.proofOfLifeDurationInWeeks) revert InheritanceNotConfigured();
     // solhint-disable-next-line not-rely-on-time
@@ -152,9 +134,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     emit ProofOfLife(_msgSender());
   }
 
-  /**
-   * @dev see {IInheritanceCrunaPlugin.sol-voteForBeneficiary}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-voteForBeneficiary}
   function voteForBeneficiary(address beneficiary) external virtual override ifMustNotBeReset {
     if (0 == _inheritanceConf.proofOfLifeDurationInWeeks) revert InheritanceNotConfigured();
     if (_inheritanceConf.beneficiary != address(0))
@@ -185,9 +165,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     }
   }
 
-  /**
-   * @dev see {IInheritanceCrunaPlugin.sol-inherit}
-   */
+  /// @dev see {IInheritanceCrunaPlugin-inherit}
   function inherit() external virtual override ifMustNotBeReset {
     if (_inheritanceConf.beneficiary == address(0)) revert BeneficiaryNotSet();
     if (_inheritanceConf.beneficiary != _msgSender()) revert NotTheBeneficiary();
@@ -196,31 +174,24 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     _conf.manager.managedTransfer(_nameId(), _msgSender());
   }
 
-  /**
-   * @dev see {ICrunaPlugin.sol-reset}
-   */
+  /// @dev see {ICrunaPlugin-reset}
   function reset() external override {
     if (_msgSender() != address(_conf.manager)) revert Forbidden();
     delete _conf.mustBeReset;
     _reset();
   }
 
-  /**
-   * @dev see {ICrunaPlugin.sol-requiresResetOnTransfer}
-   */
+  /// @dev see {ICrunaPlugin-requiresResetOnTransfer}
   function requiresResetOnTransfer() external pure returns (bool) {
     return true;
   }
 
-  /**
-   * @dev see {CrunaPluginBase.sol-_nameId}
-   */
   function _nameId() internal pure virtual override returns (bytes4) {
     return bytes4(keccak256("InheritanceCrunaPlugin"));
   }
 
   /**
-   * @dev It sets a sentinel
+   * @notice It sets a sentinel
    * @param sentinel The sentinel address
    * @param status True if the sentinel is active, false if it is not
    * @param timestamp The timestamp
@@ -260,6 +231,13 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     emit SentinelUpdated(_msgSender(), sentinel, status);
   }
 
+  /**
+   * @notice It configures inheritance
+   * @param quorum The quorum
+   * @param proofOfLifeDurationInWeeks The proof of life duration in weeks
+   * @param gracePeriodInWeeks The grace period in weeks
+   * @param beneficiary The beneficiary
+   */
   function _configureInheritance(
     uint8 quorum,
     uint8 proofOfLifeDurationInWeeks,
@@ -281,6 +259,10 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     emit InheritanceConfigured(_msgSender(), quorum, proofOfLifeDurationInWeeks, gracePeriodInWeeks, beneficiary);
   }
 
+  /**
+   * @notice Checks if the quorum has been reached
+   * @return The beneficiary if the quorum has been reached, address(0) otherwise
+   */
   function _quorumReached() internal view virtual returns (address) {
     address[] memory sentinels = _getActors(_SENTINEL);
     uint256 len = _votes.nominations.length;
@@ -302,6 +284,11 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     return address(0);
   }
 
+  /**
+   * @notice Check is a beneficiary has been nominated
+   * @param beneficiary The beneficiary to check
+   * @return True if the beneficiary has been nominated, false otherwise
+   */
   function _isNominated(address beneficiary) internal view virtual returns (bool) {
     uint256 len = _votes.nominations.length;
     for (uint256 i; i < len; ) {
@@ -315,6 +302,10 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     return false;
   }
 
+  /**
+   * @notice Removes a nominated beneficiary
+   * @param beneficiary The beneficiary to remove
+   */
   function _popNominated(address beneficiary) internal virtual {
     uint256 len = _votes.nominations.length;
     for (uint256 i; i < len; ) {
@@ -332,6 +323,9 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     }
   }
 
+  /**
+   * @notice Resets nominations and votes
+   */
   function _resetNominationsAndVotes() internal virtual {
     if (_votes.nominations.length != 0) {
       delete _votes.nominations;
@@ -346,10 +340,17 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     }
   }
 
+  /**
+   * @notice Checks if the sender is a sentinel
+   * @return True if the sender is a sentinel, false otherwise
+   */
   function _isASentinel() internal view virtual returns (bool) {
     return _actorIndex(_msgSender(), _SENTINEL) != _MAX_ACTORS;
   }
 
+  /**
+   * @notice Checks if the owner is still alive
+   */
   function _checkIfStillAlive() internal view virtual {
     if (
       // solhint-disable-next-line not-rely-on-time
@@ -357,6 +358,10 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     ) revert StillAlive();
   }
 
+  /**
+   * @notice Checks if the grace period has expired
+   * @return True if the grace period has expired, false otherwise
+   */
   function _isGracePeriodExpiredForBeneficiary() internal virtual returns (bool) {
     if (
       // solhint-disable-next-line not-rely-on-time
@@ -370,6 +375,9 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     return false;
   }
 
+  /**
+   * Reset the plugin configuration
+   */
   function _reset() internal {
     delete _actors[_SENTINEL];
     delete _inheritanceConf;
@@ -378,9 +386,9 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
 
   /**
    * @dev This empty reserved space is put in place to allow future versions to add new
+   * variables without shifting down storage in the inheritance chain.
+   * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
    */
-  // variables without shifting down storage in the inheritance chain.
-  // See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
 
   uint256[50] private __gap;
 }

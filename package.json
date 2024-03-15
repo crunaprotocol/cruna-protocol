@@ -74,7 +74,7 @@
     "pretty-quick": "^4.0.0",
     "require-or-mock": "^0.2.1",
     "rimraf": "^5.0.5",
-    "solhint": "^4.1.1",
+    "solhint": "^4.5.0",
     "solidity-coverage": "^0.8.11",
     "solidity-docgen": "0.6.0-beta.36",
     "typescript": "^5.4.2"

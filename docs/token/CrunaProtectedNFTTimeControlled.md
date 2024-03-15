@@ -38,11 +38,20 @@ construct the contract with a given name, symbol, minDelay, proposers, executors
 function supportsInterface(bytes4 interfaceId) public view virtual returns (bool)
 ```
 
+_see {ERC165-supportsInterface}._
+
 ### _canManage
 
 ```solidity
 function _canManage(bool isInitializing) internal view virtual
 ```
 
-see {CrunaProtectedNFT-_canManage}
+Specify if the caller can call some function.
+Must be overridden to specify who can manage changes during initialization and later
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| isInitializing | bool | If true, the function is being called during initialization, if false, it is supposed to the called later. A time controlled NFT can allow the admin to call some functions during the initialization, requiring later a standard proposal/execition process. |
 

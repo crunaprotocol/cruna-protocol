@@ -10,7 +10,7 @@ Proxy contract for the InheritanceCrunaPlugin
 constructor(address _initialImplementation) public
 ```
 
-_Constructor_
+Constructor
 
 #### Parameters
 

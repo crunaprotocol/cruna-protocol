@@ -15,18 +15,18 @@ import {Actor} from "../manager/Actor.sol";
 
 /**
  * @title CommonBase.sol
- * @dev Base contract for managers and plugins
+ * @notice Base contract for managers and plugins
  */
 abstract contract CommonBase is ICommonBase, INamed, Context, Actor, TokenLinkedContract, SignatureValidator {
   /**
-   * @dev Storage slot with the address of the current implementation.
+   * @notice Storage slot with the address of the current implementation.
    * This is the keccak-256 hash of "eip1967.proxy.implementation" subtracted by 1, and is
    * validated in the constructor.
    */
   bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
   /**
-   * @dev Error returned when the caller is not the token owner
+   * @notice Error returned when the caller is not the token owner
    */
   modifier onlyTokenOwner() {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
@@ -34,27 +34,27 @@ abstract contract CommonBase is ICommonBase, INamed, Context, Actor, TokenLinked
   }
 
   /**
-   * @dev Returns the name id of the contract
+   * @notice Returns the name id of the contract
    */
   function nameId() external view override returns (bytes4) {
     return _nameId();
   }
 
   /**
-   * @dev Internal function that must be overridden by the contract to
+   * @notice Internal function that must be overridden by the contract to
    * return the name id of the contract
    */
   function _nameId() internal view virtual returns (bytes4);
 
   /**
-   * @dev Returns the vault, i.e., the CrunaProtectedNFT contract
+   * @notice Returns the vault, i.e., the CrunaProtectedNFT contract
    */
   function vault() external view virtual returns (CrunaProtectedNFT) {
     return _vault();
   }
 
   /**
-   * @dev Returns the keccak256 of a string variable.
+   * @notice Returns the keccak256 of a string variable.
    * It saves gas compared to keccak256(abi.encodePacked(string)).
    * @param input The string to hash
    */
@@ -71,7 +71,7 @@ abstract contract CommonBase is ICommonBase, INamed, Context, Actor, TokenLinked
   }
 
   /**
-   * @dev Returns the equivalent of bytes4(keccak256(str).
+   * @notice Returns the equivalent of bytes4(keccak256(str).
    * @param str The string to hash
    */
   function _stringToBytes4(string memory str) internal pure returns (bytes4) {
@@ -79,7 +79,7 @@ abstract contract CommonBase is ICommonBase, INamed, Context, Actor, TokenLinked
   }
 
   /**
-   * @dev Returns the vault, i.e., the CrunaProtectedNFT contract
+   * @notice Returns the vault, i.e., the CrunaProtectedNFT contract
    */
   function _vault() internal view virtual returns (CrunaProtectedNFT) {
     return CrunaProtectedNFT(tokenAddress());

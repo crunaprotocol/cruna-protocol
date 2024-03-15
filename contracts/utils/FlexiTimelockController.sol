@@ -6,36 +6,36 @@ import {TimelockController} from "@openzeppelin/contracts/governance/TimelockCon
 /**
  * @title FlexiTimelockController
  * @author Francesco Sullo <francesco@sullo.co>
- * @dev Extension of the TimelockController that allows for upgrade proposers and executors if needed.
+ * @notice Extension of the TimelockController that allows for upgrade proposers and executors if needed.
  */
 contract FlexiTimelockController is TimelockController {
   /**
-   * @dev Error returned when the function is not called through the TimelockController
+   * @notice Error returned when the function is not called through the TimelockController
    */
   error MustCallThroughTimeController();
 
   /**
-   * @dev Error returned when trying to add an already existing proposer
+   * @notice Error returned when trying to add an already existing proposer
    */
   error ProposerAlreadyExists();
 
   /**
-   * @dev Error returned when trying to remove a non-existing proposer
+   * @notice Error returned when trying to remove a non-existing proposer
    */
   error ProposerDoesNotExist();
 
   /**
-   * @dev Error returned when trying to add an already existing executor
+   * @notice Error returned when trying to add an already existing executor
    */
   error ExecutorAlreadyExists();
 
   /**
-   * @dev Error returned when trying to remove a non-existing executor
+   * @notice Error returned when trying to remove a non-existing executor
    */
   error ExecutorDoesNotExist();
 
   /**
-   * @dev Modifier to allow only the TimelockController to call a function.
+   * @notice Modifier to allow only the TimelockController to call a function.
    */
   modifier onlyThroughTimeController() {
     if (msg.sender != address(this)) revert MustCallThroughTimeController();
@@ -43,7 +43,7 @@ contract FlexiTimelockController is TimelockController {
   }
 
   /**
-   * @dev Initializes the contract with a given minDelay and initial proposers and executors.
+   * @notice Initializes the contract with a given minDelay and initial proposers and executors.
    * @param minDelay The minimum delay for the time lock.
    * @param proposers The initial proposers.
    * @param executors The initial executors.
@@ -57,7 +57,7 @@ contract FlexiTimelockController is TimelockController {
   ) TimelockController(minDelay, proposers, executors, admin) {}
 
   /**
-   * @dev Adds a new proposer.
+   * @notice Adds a new proposer.
    * Can only be called through the TimelockController.
    */
   function addProposer(address proposer) external onlyThroughTimeController {
@@ -66,7 +66,7 @@ contract FlexiTimelockController is TimelockController {
   }
 
   /**
-   * @dev Removes a proposer.
+   * @notice Removes a proposer.
    * Can only be called through the TimelockController.
    */
   function removeProposer(address proposer) external onlyThroughTimeController {
@@ -75,7 +75,7 @@ contract FlexiTimelockController is TimelockController {
   }
 
   /**
-   * @dev Adds a new executor.
+   * @notice Adds a new executor.
    * Can only be called through the TimelockController.
    */
   function addExecutor(address executor) external onlyThroughTimeController {
@@ -84,7 +84,7 @@ contract FlexiTimelockController is TimelockController {
   }
 
   /**
-   * @dev Removes an executor.
+   * @notice Removes an executor.
    * Can only be called through the TimelockController.
    */
   function removeExecutor(address executor) external onlyThroughTimeController {

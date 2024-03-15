@@ -35,16 +35,14 @@ abstract contract CrunaProtectedNFTTimeControlled is CrunaProtectedNFT, FlexiTim
     address admin
   ) CrunaProtectedNFT(name_, symbol_) FlexiTimelockController(minDelay, proposers, executors, admin) {}
 
-  // @notice See {ERC165-supportsInterface}.
+  /// @dev see {ERC165-supportsInterface}.
   function supportsInterface(
     bytes4 interfaceId
   ) public view virtual override(TimelockController, CrunaProtectedNFT) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 
-  /**
-   * @notice see {CrunaProtectedNFT-_canManage}
-   */
+  /// @dev see {CrunaProtectedNFT-_canManage}
   function _canManage(bool isInitializing) internal view virtual override {
     if (isInitializing) {
       if (!hasRole(DEFAULT_ADMIN_ROLE, _msgSender())) revert NotAuthorized();

@@ -11,24 +11,24 @@ import {Proxy} from "@openzeppelin/contracts/proxy/Proxy.sol";
  */
 contract ERC6551AccountProxy is Proxy {
   /**
-   * @dev The default implementation of the contract
+   * @notice The default implementation of the contract
    */
   address public immutable DEFAULT_IMPLEMENTATION;
 
   /**
-   * @dev Error returned when the implementation is invalid
+   * @notice Error returned when the implementation is invalid
    */
   error InvalidImplementation();
 
   /**
-   * @dev The function that allows to receive ether and generic calls
+   * @notice The function that allows to receive ether and generic calls
    */
   receive() external payable virtual {
     _fallback();
   }
 
   /**
-   * @dev Constructor
+   * @notice Constructor
    * @param _defaultImplementation The default implementation of the contract
    */
   constructor(address _defaultImplementation) {
@@ -37,7 +37,7 @@ contract ERC6551AccountProxy is Proxy {
   }
 
   /**
-   * @dev Returns the implementation of the contract
+   * @notice Returns the implementation of the contract
    */
   function _implementation() internal view virtual override returns (address) {
     address implementation = ERC1967Utils.getImplementation();
@@ -46,7 +46,7 @@ contract ERC6551AccountProxy is Proxy {
   }
 
   /**
-   * @dev Fallback function that redirect all the calls not in this proxy to the implementation
+   * @notice Fallback function that redirect all the calls not in this proxy to the implementation
    */
   function _fallback() internal virtual override {
     if (msg.data.length == 0) {

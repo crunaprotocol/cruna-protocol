@@ -2,13 +2,14 @@
 
 ## ICrunaPlugin
 
-_Interface for plugins
-Technically, plugins are secondary managers, pluggable in
+Interface for plugins
+
+_Technically, plugins are secondary managers, pluggable in
 the primary manage, which is CrunaManager.sol_
 
 ### Conf
 
-_The configuration of the plugin_
+The configuration of the plugin
 
 ```solidity
 struct Conf {
@@ -23,7 +24,7 @@ struct Conf {
 error UntrustedImplementation(address implementation)
 ```
 
-_Error returned when the plugin is reset_
+Error returned when the plugin is reset
 
 #### Parameters
 
@@ -37,7 +38,7 @@ _Error returned when the plugin is reset_
 error InvalidVersion(uint256 oldVersion, uint256 newVersion)
 ```
 
-_Error returned when the plugin is reset_
+Error returned when the plugin is reset
 
 #### Parameters
 
@@ -52,7 +53,7 @@ _Error returned when the plugin is reset_
 error PluginRequiresUpdatedManager(uint256 requiredVersion)
 ```
 
-_Error returned when the plugin is reset_
+Error returned when the plugin is reset
 
 #### Parameters
 
@@ -66,7 +67,7 @@ _Error returned when the plugin is reset_
 error Forbidden()
 ```
 
-_Error returned when the plugin is reset_
+Error returned when the plugin is reset
 
 ### PluginMustBeReset
 
@@ -74,7 +75,7 @@ _Error returned when the plugin is reset_
 error PluginMustBeReset()
 ```
 
-_Error returned when the plugin must be reset before using it_
+Error returned when the plugin must be reset before using it
 
 ### init
 
@@ -82,7 +83,7 @@ _Error returned when the plugin must be reset before using it_
 function init() external
 ```
 
-_Initialize the plugin. It must be implemented, but can do nothing is no init is needed._
+Initialize the plugin. It must be implemented, but can do nothing is no init is needed.
 
 ### requiresToManageTransfer
 
@@ -90,8 +91,8 @@ _Initialize the plugin. It must be implemented, but can do nothing is no init is
 function requiresToManageTransfer() external pure returns (bool)
 ```
 
-_Called by the manager during the plugging to know if the plugin is asking the
-right to make a managed transfer of the vault_
+Called by the manager during the plugging to know if the plugin is asking the
+right to make a managed transfer of the vault
 
 ### requiresResetOnTransfer
 
@@ -99,7 +100,7 @@ right to make a managed transfer of the vault_
 function requiresResetOnTransfer() external pure returns (bool)
 ```
 
-_Called by the manager to know it the plugin must be reset when transferring the NFT_
+Called by the manager to know it the plugin must be reset when transferring the NFT
 
 ### isERC6551Account
 
@@ -107,7 +108,7 @@ _Called by the manager to know it the plugin must be reset when transferring the
 function isERC6551Account() external pure returns (bool)
 ```
 
-_Called by the manager to know if the plugin is an ERC721 account_
+Called by the manager to know if the plugin is an ERC721 account
 
 ### reset
 
@@ -115,7 +116,7 @@ _Called by the manager to know if the plugin is an ERC721 account_
 function reset() external
 ```
 
-_Reset the plugin to the factory settings_
+Reset the plugin to the factory settings
 
 ### resetOnTransfer
 
@@ -129,10 +130,10 @@ function resetOnTransfer() external
 function upgrade(address implementation_) external
 ```
 
-_Upgrade the implementation of the manager/plugin
+Upgrade the implementation of the manager/plugin
 Notice that the owner can upgrade active or disable plugins
 so that, if a plugin is compromised, the user can disable it,
-wait for a new trusted implementation and upgrade it._
+wait for a new trusted implementation and upgrade it.
 
 ### manager
 
@@ -140,5 +141,5 @@ wait for a new trusted implementation and upgrade it._
 function manager() external view returns (contract CrunaManager)
 ```
 
-_Returns the manager_
+Returns the manager
 

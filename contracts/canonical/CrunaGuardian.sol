@@ -39,15 +39,13 @@ contract CrunaGuardian is ICrunaGuardian, IVersioned, FlexiTimelockController {
     address admin
   ) FlexiTimelockController(minDelay, proposers, executors, admin) {}
 
-  /**
-   * @notice see {ICrunaGuardian-setTrustedImplementation}
-   */
+  /// @dev see {IVersioned-version}
   function version() external pure virtual returns (uint256) {
     // v1.1.0
     return 1_001_000;
   }
 
-  // @notice see {ICrunaGuardian.sol-setTrustedImplementation}
+  /// @dev see {ICrunaGuardian-setTrustedImplementation}
   function setTrustedImplementation(
     bytes4 nameId,
     address implementation,

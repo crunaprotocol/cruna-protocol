@@ -2,8 +2,8 @@
 
 ## SignatureValidator
 
-_This contract is used to validate signatures.
-It is based on EIP712 and supports typed messages V4._
+This contract is used to validate signatures.
+It is based on EIP712 and supports typed messages V4.
 
 ### _MAX_VALID_FOR
 
@@ -11,7 +11,7 @@ It is based on EIP712 and supports typed messages V4._
 uint256 _MAX_VALID_FOR
 ```
 
-_The maximum validFor. If more than this it will conflict with the timestamp._
+The maximum validFor. If more than this it will conflict with the timestamp.
 
 ### _TIMESTAMP_MULTIPLIER
 
@@ -19,7 +19,7 @@ _The maximum validFor. If more than this it will conflict with the timestamp._
 uint256 _TIMESTAMP_MULTIPLIER
 ```
 
-_The multiplier for the timestamp in the timeValidation parameter._
+The multiplier for the timestamp in the timeValidation parameter.
 
 ### constructor
 
@@ -27,7 +27,7 @@ _The multiplier for the timestamp in the timeValidation parameter._
 constructor() internal
 ```
 
-_EIP712 constructor_
+EIP712 constructor
 
 ### preApprovals
 
@@ -35,7 +35,13 @@ _EIP712 constructor_
 function preApprovals(bytes32 hash) external view returns (address)
 ```
 
-_See {ISignatureValidator.sol-preApprovals}_
+_Returns the address who approved a pre-approved operation._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| hash | bytes32 | The hash of the operation. |
 
 ### hashSignature
 
@@ -43,7 +49,13 @@ _See {ISignatureValidator.sol-preApprovals}_
 function hashSignature(bytes signature) external pure returns (bytes32)
 ```
 
-_see {ISignatureValidator.sol-hashSignature}_
+_Returns the hash of a signature._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| signature | bytes | The signature. |
 
 ### isSignatureUsed
 
@@ -51,7 +63,13 @@ _see {ISignatureValidator.sol-hashSignature}_
 function isSignatureUsed(bytes32 hash) external view returns (bool)
 ```
 
-_see {ISignatureValidator.sol-isSignatureUsed}_
+_Returns if a signature has been used._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| hash | bytes32 | The hash of the signature. |
 
 ### recoverSigner
 
@@ -59,7 +77,31 @@ _see {ISignatureValidator.sol-isSignatureUsed}_
 function recoverSigner(bytes4 selector, address owner, address actor, address tokenAddress, uint256 tokenId, uint256 extra, uint256 extra2, uint256 extra3, uint256 timeValidation, bytes signature) public view returns (address, bytes32)
 ```
 
-_see {ISignatureValidator-recoverSigner}_
+_This function validates a signature trying to be as flexible as possible.
+As long as called inside the same contract, the cost adding some more parameters is negligible.
+Instead, calling it from other contracts can be expensive._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| selector | bytes4 | The selector of the function being called. |
+| owner | address | The owner of the token. |
+| actor | address | The actor being authorized. It can be address(0) if the parameter is not needed. |
+| tokenAddress | address | The address of the token. |
+| tokenId | uint256 | The id of the token. |
+| extra | uint256 | The extra |
+| extra2 | uint256 | The extra2 |
+| extra3 | uint256 | The extra3 |
+| timeValidation | uint256 | A combination of timestamp and validity of the signature. |
+| signature | bytes |  |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | address | The signer of the signature and the hash of the signature. |
+| [1] | bytes32 |  |
 
 ### preApprove
 
@@ -67,7 +109,21 @@ _see {ISignatureValidator-recoverSigner}_
 function preApprove(bytes4 selector, address owner, address actor, address tokenAddress, uint256 tokenId, uint256 extra, uint256 extra2, uint256 extra3, uint256 timeValidation) external
 ```
 
-_see {ISignatureValidator-preApprove}_
+_Pre-approve a signature._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| selector | bytes4 | The selector of the function being called. |
+| owner | address | The owner of the token. |
+| actor | address | The actor being authorized. It can be address(0) if the parameter is not needed. |
+| tokenAddress | address | The address of the token. |
+| tokenId | uint256 | The id of the token. |
+| extra | uint256 | The extra |
+| extra2 | uint256 | The extra2 |
+| extra3 | uint256 | The extra3 |
+| timeValidation | uint256 | A combination of timestamp and validity of the signature. |
 
 ### _canPreApprove
 
@@ -75,8 +131,8 @@ _see {ISignatureValidator-preApprove}_
 function _canPreApprove(bytes4 selector, address actor, address signer) internal view virtual returns (bool)
 ```
 
-_Checks if someone can pre approve an operation.
-Must be implemented by the contract using this base contract_
+Checks if someone can pre approve an operation.
+Must be implemented by the contract using this base contract
 
 #### Parameters
 
@@ -92,7 +148,7 @@ Must be implemented by the contract using this base contract_
 function _validate(uint256 timeValidation) internal view
 ```
 
-_Validates the timeValidation parameter._
+Validates the timeValidation parameter.
 
 #### Parameters
 
@@ -106,8 +162,8 @@ _Validates the timeValidation parameter._
 function _isProtected() internal view virtual returns (bool)
 ```
 
-_Checks if the NFT is protected.
-Must be implemented by the contract using this base contract_
+Checks if the NFT is protected.
+Must be implemented by the contract using this base contract
 
 ### _isProtector
 
@@ -115,8 +171,8 @@ Must be implemented by the contract using this base contract_
 function _isProtector(address protector) internal view virtual returns (bool)
 ```
 
-_Checks if an address is a protector.
-Must be implemented by the contract using this base contract_
+Checks if an address is a protector.
+Must be implemented by the contract using this base contract
 
 ### _validateAndCheckSignature
 
@@ -124,7 +180,7 @@ Must be implemented by the contract using this base contract_
 function _validateAndCheckSignature(bytes4 selector, address owner, address actor, address tokenAddress, uint256 tokenId, uint256 extra, uint256 extra2, uint256 extra3, uint256 timeValidation, bytes signature) internal virtual
 ```
 
-_Validates and checks the signature._
+Validates and checks the signature.
 
 #### Parameters
 
@@ -147,7 +203,7 @@ _Validates and checks the signature._
 function _hashData(bytes4 selector, address owner, address actor, address tokenAddress, uint256 tokenId, uint256 extra, uint256 extra2, uint256 extra3, uint256 timeValidation) internal pure returns (bytes32)
 ```
 
-_Hashes the data._
+Hashes the data.
 
 #### Parameters
 
@@ -169,7 +225,7 @@ _Hashes the data._
 function _hashBytes(bytes signature) internal pure returns (bytes32 hash)
 ```
 
-_Util to hash the bytes of the signature saving gas in comparison with using keccak256._
+Util to hash the bytes of the signature saving gas in comparison with using keccak256.
 
 #### Parameters
 

@@ -10,7 +10,7 @@ import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
 
 interface ICrunaManager is ITokenLinkedContract, IVersioned {
   /**
-   * @dev A struct to keep info about plugged and unplugged plugins
+   * @notice A struct to keep info about plugged and unplugged plugins
    * @param proxyAddress The address of the first implementation of the plugin
    * @param salt The salt used during the deployment of the plugin.
    * It allows to  have multiple instances of the same plugin
@@ -37,7 +37,7 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   }
 
   /**
-   * @dev The plugin element
+   * @notice The plugin element
    * @param nameId The bytes4 of the hash of the name of the plugin
    * All plugins' names must be unique, as well as their bytes4 Ids
    * An official registry will be set up to avoid collisions when plugins
@@ -54,7 +54,7 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   }
 
   /**
-   * @dev It enumerates the action that can be performed when changing the status of a plugin
+   * @notice It enumerates the action that can be performed when changing the status of a plugin
    */
   enum PluginChange {
     Plug,
@@ -68,44 +68,44 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   }
 
   /**
-   * @dev Event emitted when the manager call to the NFT to emit a Locked event fails.
+   * @notice Event emitted when the manager call to the NFT to emit a Locked event fails.
    */
   event EmitLockedEventFailed();
 
   /**
-   * @dev Event emitted when the `status` of `protector` changes
+   * @notice Event emitted when the `status` of `protector` changes
    */
   event ProtectorChange(address indexed protector, bool status);
 
   /**
-   * @dev Event emitted when protectors and safe recipients are imported from another token
+   * @notice Event emitted when protectors and safe recipients are imported from another token
    */
   event ProtectorsAndSafeRecipientsImported(address[] protectors, address[] safeRecipients, uint256 fromTokenId);
 
   /**
-   * @dev Event emitted when the `status` of `recipient` changes
+   * @notice Event emitted when the `status` of `recipient` changes
    */
   event SafeRecipientChange(address indexed recipient, bool status);
 
   /**
-   * @dev Event emitted when
+   * @notice Event emitted when
    * the status of plugin identified by `name` and `salt`, and deployed to `pluginAddress` gets a specific `change`
    */
   event PluginStatusChange(string indexed name, bytes4 salt, address pluginAddress, uint256 change);
 
   /**
-   * @dev Emitted when protectors and safe recipients are removed and all plugins are disabled (if they require it)
+   * @notice Emitted when protectors and safe recipients are removed and all plugins are disabled (if they require it)
    * This event overrides any specific ProtectorChange, SafeRecipientChange and PluginStatusChange event
    */
   event Reset();
 
   /**
-   * @dev Emitted when a plugin initially plugged despite being not trusted, is trusted by the CrunaGuardian
+   * @notice Emitted when a plugin initially plugged despite being not trusted, is trusted by the CrunaGuardian
    */
   event PluginTrusted(string indexed name, bytes4 salt);
 
   /**
-   * @dev Emitted when the implementation of the manager is upgraded
+   * @notice Emitted when the implementation of the manager is upgraded
    * @param implementation_ The address of the new implementation
    * @param oldVersion The old version of the manager
    * @param newVersion The new version of the manager
@@ -113,88 +113,88 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   event ImplementationUpgraded(address indexed implementation_, uint256 oldVersion, uint256 newVersion);
 
   /**
-   * @dev Event emitted when the attempt to reset a plugin fails
+   * @notice Event emitted when the attempt to reset a plugin fails
    * When this happens, the token owner can unplug the plugin and mark it as banned to avoid future re-plugs
    */
   event PluginResetAttemptFailed(bytes4 _nameId, bytes4 salt);
 
   /**
-   * @dev Returned when trying to upgrade the manager to an untrusted implementation
+   * @notice Returned when trying to upgrade the manager to an untrusted implementation
    */
   error UntrustedImplementation(address implementation);
 
   /**
-   * @dev Returned when trying to upgrade to an older version of the manager
+   * @notice Returned when trying to upgrade to an older version of the manager
    */
   error InvalidVersion(uint256 oldVersion, uint256 newVersion);
 
   /**
-   * @dev Returned when trying to plug a plugin that requires a new version of the manager
+   * @notice Returned when trying to plug a plugin that requires a new version of the manager
    */
   error PluginRequiresUpdatedManager(uint256 requiredVersion);
 
   /**
-   * @dev Returned when the sender has no right to execute a function
+   * @notice Returned when the sender has no right to execute a function
    */
   error Forbidden();
 
   /**
-   * @dev Returned when the sender is not a manager
+   * @notice Returned when the sender is not a manager
    */
   error NotAManager(address sender);
 
   /**
-   * @dev Returned when a protector is not found
+   * @notice Returned when a protector is not found
    */
   error ProtectorNotFound(address protector);
 
   /**
-   * @dev Returned when a protector is already set by the sender
+   * @notice Returned when a protector is already set by the sender
    */
   error ProtectorAlreadySetByYou(address protector);
 
   /**
-   * @dev Returned when a protector is already set
+   * @notice Returned when a protector is already set
    */
   error ProtectorsAlreadySet();
 
   /**
-   * @dev Returned when trying to set themself as a protector
+   * @notice Returned when trying to set themself as a protector
    */
   error CannotBeYourself();
 
   /**
-   * @dev Returned when the managed transfer is called not by the right plugin
+   * @notice Returned when the managed transfer is called not by the right plugin
    */
   error NotTheAuthorizedPlugin(address callingPlugin);
 
   /**
-   * @dev Returned when there is no more space for plugins
+   * @notice Returned when there is no more space for plugins
    */
   error PluginNumberOverflow();
 
   /**
-   * @dev Returned when the plugin has been banned and marked as not pluggable
+   * @notice Returned when the plugin has been banned and marked as not pluggable
    */
   error PluginHasBeenMarkedAsNotPluggable();
 
   /**
-   * @dev Returned when a plugin has already been plugged
+   * @notice Returned when a plugin has already been plugged
    */
   error PluginAlreadyPlugged();
 
   /**
-   * @dev Returned when a plugin is not found
+   * @notice Returned when a plugin is not found
    */
   error PluginNotFound();
 
   /**
-   * @dev Returned when trying to plug an unplugged plugin and the address of the implementation differ
+   * @notice Returned when trying to plug an unplugged plugin and the address of the implementation differ
    */
   error InconsistentProxyAddresses(address currentAddress, address proposedAddress);
 
   /**
-   * @dev Returned when a plugin is not found or is disabled
+   * @notice Returned when a plugin is not found or is disabled
    */
   error PluginNotFoundOrDisabled();
 
@@ -363,7 +363,7 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
   /**
    * @dev Set a protector for the token
    * @param protector_ The protector address
-   * @param active True to add a protector, false to remove it
+   * @param status True to add a protector, false to remove it
    * @param timestamp The timestamp of the signature
    * @param validFor The validity of the signature
    * @param signature The signature of the protector
@@ -373,7 +373,7 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
    */
   function setProtector(
     address protector_,
-    bool active,
+    bool status,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
@@ -386,7 +386,9 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
    */
   function importProtectorsAndSafeRecipientsFrom(uint256 tokenId) external;
 
-  /** @dev get the list of all protectors */
+  /**
+   * @dev get the list of all protectors
+   */
   function getProtectors() external view returns (address[] memory);
 
   /**
@@ -418,12 +420,6 @@ interface ICrunaManager is ITokenLinkedContract, IVersioned {
    * @return An array with the list of all safe recipients
    */
   function getSafeRecipients() external view returns (address[] memory);
-
-  /**
-   *
-   * PLUGINS
-   *
-   */
 
   /**
    * @dev It plugs a new plugin

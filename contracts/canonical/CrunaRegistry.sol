@@ -19,9 +19,7 @@ contract CrunaRegistry is ICrunaRegistry {
    */
   error TokenLinkedContractCreationFailed();
 
-  /**
-   * @notice see {ICrunaRegistry-createTokenLinkedContract}
-   */
+  /// @dev see {ICrunaRegistry-createTokenLinkedContract}
   function createTokenLinkedContract(
     address implementation,
     bytes32 salt,
@@ -98,9 +96,7 @@ contract CrunaRegistry is ICrunaRegistry {
     }
   }
 
-  /**
-   * @notice see {ICrunaRegistry-tokenLinkedContract}
-   */
+  /// @dev see {ICrunaRegistry-tokenLinkedContract}
   function tokenLinkedContract(
     address implementation,
     bytes32 salt,

@@ -2,7 +2,7 @@
 
 ## CommonBase
 
-_Base contract for managers and plugins_
+Base contract for managers and plugins
 
 ### _IMPLEMENTATION_SLOT
 
@@ -10,9 +10,9 @@ _Base contract for managers and plugins_
 bytes32 _IMPLEMENTATION_SLOT
 ```
 
-_Storage slot with the address of the current implementation.
+Storage slot with the address of the current implementation.
 This is the keccak-256 hash of "eip1967.proxy.implementation" subtracted by 1, and is
-validated in the constructor._
+validated in the constructor.
 
 ### onlyTokenOwner
 
@@ -20,7 +20,7 @@ validated in the constructor._
 modifier onlyTokenOwner()
 ```
 
-_Error returned when the caller is not the token owner_
+Error returned when the caller is not the token owner
 
 ### nameId
 
@@ -28,7 +28,7 @@ _Error returned when the caller is not the token owner_
 function nameId() external view returns (bytes4)
 ```
 
-_Returns the name id of the contract_
+Returns the name id of the contract
 
 ### _nameId
 
@@ -36,8 +36,8 @@ _Returns the name id of the contract_
 function _nameId() internal view virtual returns (bytes4)
 ```
 
-_Internal function that must be overridden by the contract to
-return the name id of the contract_
+Internal function that must be overridden by the contract to
+return the name id of the contract
 
 ### vault
 
@@ -45,7 +45,7 @@ return the name id of the contract_
 function vault() external view virtual returns (contract CrunaProtectedNFT)
 ```
 
-_Returns the vault, i.e., the CrunaProtectedNFT contract_
+Returns the vault, i.e., the CrunaProtectedNFT contract
 
 ### _hashString
 
@@ -53,8 +53,8 @@ _Returns the vault, i.e., the CrunaProtectedNFT contract_
 function _hashString(string input) internal pure returns (bytes32 result)
 ```
 
-_Returns the keccak256 of a string variable.
-It saves gas compared to keccak256(abi.encodePacked(string))._
+Returns the keccak256 of a string variable.
+It saves gas compared to keccak256(abi.encodePacked(string)).
 
 #### Parameters
 
@@ -68,7 +68,7 @@ It saves gas compared to keccak256(abi.encodePacked(string))._
 function _stringToBytes4(string str) internal pure returns (bytes4)
 ```
 
-_Returns the equivalent of bytes4(keccak256(str)._
+Returns the equivalent of bytes4(keccak256(str).
 
 #### Parameters
 
@@ -82,5 +82,5 @@ _Returns the equivalent of bytes4(keccak256(str)._
 function _vault() internal view virtual returns (contract CrunaProtectedNFT)
 ```
 
-_Returns the vault, i.e., the CrunaProtectedNFT contract_
+Returns the vault, i.e., the CrunaProtectedNFT contract
 

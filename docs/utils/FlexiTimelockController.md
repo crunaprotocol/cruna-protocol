@@ -2,7 +2,7 @@
 
 ## FlexiTimelockController
 
-_Extension of the TimelockController that allows for upgrade proposers and executors if needed._
+Extension of the TimelockController that allows for upgrade proposers and executors if needed.
 
 ### MustCallThroughTimeController
 
@@ -10,7 +10,7 @@ _Extension of the TimelockController that allows for upgrade proposers and execu
 error MustCallThroughTimeController()
 ```
 
-_Error returned when the function is not called through the TimelockController_
+Error returned when the function is not called through the TimelockController
 
 ### ProposerAlreadyExists
 
@@ -18,7 +18,7 @@ _Error returned when the function is not called through the TimelockController_
 error ProposerAlreadyExists()
 ```
 
-_Error returned when trying to add an already existing proposer_
+Error returned when trying to add an already existing proposer
 
 ### ProposerDoesNotExist
 
@@ -26,7 +26,7 @@ _Error returned when trying to add an already existing proposer_
 error ProposerDoesNotExist()
 ```
 
-_Error returned when trying to remove a non-existing proposer_
+Error returned when trying to remove a non-existing proposer
 
 ### ExecutorAlreadyExists
 
@@ -34,7 +34,7 @@ _Error returned when trying to remove a non-existing proposer_
 error ExecutorAlreadyExists()
 ```
 
-_Error returned when trying to add an already existing executor_
+Error returned when trying to add an already existing executor
 
 ### ExecutorDoesNotExist
 
@@ -42,7 +42,7 @@ _Error returned when trying to add an already existing executor_
 error ExecutorDoesNotExist()
 ```
 
-_Error returned when trying to remove a non-existing executor_
+Error returned when trying to remove a non-existing executor
 
 ### onlyThroughTimeController
 
@@ -50,7 +50,7 @@ _Error returned when trying to remove a non-existing executor_
 modifier onlyThroughTimeController()
 ```
 
-_Modifier to allow only the TimelockController to call a function._
+Modifier to allow only the TimelockController to call a function.
 
 ### constructor
 
@@ -58,7 +58,7 @@ _Modifier to allow only the TimelockController to call a function._
 constructor(uint256 minDelay, address[] proposers, address[] executors, address admin) public
 ```
 
-_Initializes the contract with a given minDelay and initial proposers and executors._
+Initializes the contract with a given minDelay and initial proposers and executors.
 
 #### Parameters
 
@@ -75,8 +75,8 @@ _Initializes the contract with a given minDelay and initial proposers and execut
 function addProposer(address proposer) external
 ```
 
-_Adds a new proposer.
-Can only be called through the TimelockController._
+Adds a new proposer.
+Can only be called through the TimelockController.
 
 ### removeProposer
 
@@ -84,8 +84,8 @@ Can only be called through the TimelockController._
 function removeProposer(address proposer) external
 ```
 
-_Removes a proposer.
-Can only be called through the TimelockController._
+Removes a proposer.
+Can only be called through the TimelockController.
 
 ### addExecutor
 
@@ -93,8 +93,8 @@ Can only be called through the TimelockController._
 function addExecutor(address executor) external
 ```
 
-_Adds a new executor.
-Can only be called through the TimelockController._
+Adds a new executor.
+Can only be called through the TimelockController.
 
 ### removeExecutor
 
@@ -102,6 +102,6 @@ Can only be called through the TimelockController._
 function removeExecutor(address executor) external
 ```
 
-_Removes an executor.
-Can only be called through the TimelockController._
+Removes an executor.
+Can only be called through the TimelockController.
 

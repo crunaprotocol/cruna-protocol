@@ -29,32 +29,24 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase, ReentrancyGuard {
     _;
   }
 
-  /**
-   * @notice see {ICrunaPlugin.sol-init}
-   */
+  /// @dev see {ICrunaPlugin-init}
   function init() external {
     address managerAddress = _vault().managerOf(tokenId());
     if (_msgSender() != managerAddress) revert Forbidden();
     _conf.manager = CrunaManager(managerAddress);
   }
 
-  /**
-   * @notice see {ICrunaPlugin.sol-manager}
-   */
+  /// @dev see {ICrunaPlugin-manager}
   function manager() external view virtual override returns (CrunaManager) {
     return _conf.manager;
   }
 
-  /**
-   * @notice see {IVersioned.sol-version}
-   */
+  /// @dev see {IVersioned-version}
   function version() external pure virtual override returns (uint256) {
     return _version();
   }
 
-  /**
-   * @notice see {ICrunaPlugin.sol-upgrade}
-   */
+  /// @dev see {ICrunaPlugin-upgrade}
   function upgrade(address implementation_) external virtual override nonReentrant {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     if (implementation_ == address(0)) revert ZeroAddress();
@@ -72,9 +64,7 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase, ReentrancyGuard {
     StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
   }
 
-  /**
-   * @notice see {ICrunaPlugin.sol-resetOnTransfer}
-   */
+  /// @dev see {ICrunaPlugin-resetOnTransfer}
   // The manager is not a wallet, it is the NFT Manager contract, owned by the token.
   function resetOnTransfer() external override ifMustNotBeReset {
     if (_msgSender() != address(_conf.manager)) revert Forbidden();
@@ -82,7 +72,7 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase, ReentrancyGuard {
   }
 
   /**
-   * @dev Internal function to verify if a signer can pre approve an operation (if the sender is a protector)
+   * @notice Internal function to verify if a signer can pre approve an operation (if the sender is a protector)
    * The params:
    * - operation The selector of the called function
    * - the actor to be approved
@@ -92,22 +82,20 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase, ReentrancyGuard {
     return _conf.manager.isProtector(signer);
   }
 
-  /**
-   * @dev see {IVersioned.sol-version}
-   */
+  /// @dev see {IVersioned-version}
   function _version() internal pure virtual returns (uint256) {
     return 1_000_000;
   }
 
   /**
-   * @dev internal function to check if the NFT is currently protected
+   * @notice internal function to check if the NFT is currently protected
    */
   function _isProtected() internal view virtual override returns (bool) {
     return _conf.manager.hasProtectors();
   }
 
   /**
-   * @dev Internal function to check if an address is a protector
+   * @notice Internal function to check if an address is a protector
    * @param protector The address to check
    */
   function _isProtector(address protector) internal view virtual override returns (bool) {

@@ -11,7 +11,7 @@ function findMarkdownFiles(directory, fileList = {}, parentPath = "") {
     if (file.isDirectory()) {
       // Recurse into subdirectories
       findMarkdownFiles(filePath, fileList, relativeFilePath);
-    } else if (file.name.endsWith(".md") && file.name !== "index.md") {
+    } else if (file.name.endsWith(".md") && file.name !== "README.md") {
       const dir = parentPath || ".";
       if (!fileList[dir]) {
         fileList[dir] = [];
@@ -44,7 +44,7 @@ function generateIndexContent(markdownFiles, baseDir) {
 }
 
 // Base directory where the Markdown files are located
-const baseDir = path.resolve(__dirname, "../docs");
+const baseDir = path.resolve(__dirname, "../../docs");
 
 // Find all Markdown files organized by directory
 const markdownFiles = findMarkdownFiles(baseDir);
@@ -59,8 +59,8 @@ This documentation is automatically generated using [solidity-docgen](https://gi
 (c) 2024+ Cruna
 `;
 
-// Write the index.md file
-const indexPath = path.join(baseDir, "index.md");
+// Write the index file
+const indexPath = path.join(baseDir, "README.md");
 fs.writeFileSync(indexPath, indexContent, "utf8");
 
-console.log(`index.md has been created with entries organized by directory.`);
+console.log(`docs/README.md has been created with entries organized by directory.`);

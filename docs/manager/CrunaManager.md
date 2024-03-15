@@ -12,7 +12,9 @@ plugs and manages plugins, and has the ability to transfer the NFT if there are 
 function version() external pure virtual returns (uint256)
 ```
 
-see {IVersioned.sol-version}
+Returns the version of the contract.
+The format is similar to semver, where any element takes 3 digits.
+For example, version 1.2.14 is 1_002_014.
 
 ### pluginByKey
 
@@ -20,7 +22,13 @@ see {IVersioned.sol-version}
 function pluginByKey(bytes8 key) external view returns (struct ICrunaManager.PluginConfig)
 ```
 
-see {ICrunaManager.sol-getPluginByKey}
+_It returns the configuration of a plugin by key_
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| key | bytes8 | The key of the plugin |
 
 ### allPlugins
 
@@ -28,7 +36,7 @@ see {ICrunaManager.sol-getPluginByKey}
 function allPlugins() external view returns (struct ICrunaManager.PluginElement[])
 ```
 
-see {ICrunaManager.sol-allPlugins}
+_It returns the configuration of all currently plugged plugins_
 
 ### pluginByIndex
 
@@ -36,7 +44,13 @@ see {ICrunaManager.sol-allPlugins}
 function pluginByIndex(uint256 index) external view returns (struct ICrunaManager.PluginElement)
 ```
 
-see {ICrunaManager.sol-pluginByIndex}
+_It returns an element of the array of all plugged plugins_
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| index | uint256 | The index of the plugin in the array |
 
 ### migrate
 
@@ -44,7 +58,9 @@ see {ICrunaManager.sol-pluginByIndex}
 function migrate(uint256) external virtual
 ```
 
-see {ICrunaManager.sol-migrate}
+_During an upgrade allows the manager to perform adjustments if necessary.
+The parameter is the version of the manager being replaced. This will allow the
+new manager to know what to do to adjust the state of the new manager._
 
 ### findProtectorIndex
 
@@ -52,7 +68,7 @@ see {ICrunaManager.sol-migrate}
 function findProtectorIndex(address protector_) external view virtual returns (uint256)
 ```
 
-see {ICrunaManager.sol-findProtectorIndex}
+_Find a specific protector_
 
 ### isProtector
 
@@ -60,7 +76,13 @@ see {ICrunaManager.sol-findProtectorIndex}
 function isProtector(address protector_) external view virtual returns (bool)
 ```
 
-see {ICrunaManager.sol-isProtector}
+_Returns true if the address is a protector._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| protector_ | address | The protector address. |
 
 ### hasProtectors
 
@@ -68,7 +90,7 @@ see {ICrunaManager.sol-isProtector}
 function hasProtectors() external view virtual returns (bool)
 ```
 
-see {ICrunaManager.sol-hasProtectors}
+_Returns true if there are protectors._
 
 ### isTransferable
 
@@ -76,7 +98,13 @@ see {ICrunaManager.sol-hasProtectors}
 function isTransferable(address to) external view returns (bool)
 ```
 
-see {ICrunaManager.sol-isTransferable}
+_Returns true if the token is transferable (since the NFT is ERC6454)_
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| to | address | The address of the recipient. If the recipient is a safe recipient, it returns true. |
 
 ### locked
 
@@ -84,7 +112,7 @@ see {ICrunaManager.sol-isTransferable}
 function locked() external view returns (bool)
 ```
 
-see {ICrunaManager.sol-locked}
+_Returns true if the token is locked (since the NFT is ERC6982)_
 
 ### countProtectors
 
@@ -92,7 +120,7 @@ see {ICrunaManager.sol-locked}
 function countProtectors() external view virtual returns (uint256)
 ```
 
-see {ICrunaManager.sol-countProtectors}
+_Counts how many protectors have been set_
 
 ### countSafeRecipients
 
@@ -100,7 +128,7 @@ see {ICrunaManager.sol-countProtectors}
 function countSafeRecipients() external view virtual returns (uint256)
 ```
 
-see {ICrunaManager.sol-countSafeRecipients}
+_Counts the safe recipients_
 
 ### setProtector
 
@@ -108,7 +136,17 @@ see {ICrunaManager.sol-countSafeRecipients}
 function setProtector(address protector_, bool status, uint256 timestamp, uint256 validFor, bytes signature) external virtual
 ```
 
-_see {ICrunaManager.sol-setProtector}_
+_Set a protector for the token_
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| protector_ | address | The protector address |
+| status | bool | True to add a protector, false to remove it |
+| timestamp | uint256 | The timestamp of the signature |
+| validFor | uint256 | The validity of the signature |
+| signature | bytes | The signature of the protector If no signature is required, the field timestamp must be 0 If the operations has been pre-approved by the protector, the signature should be replaced by a shorter (invalid) one, to tell the signature validator to look for a pre-approval. |
 
 ### importProtectorsAndSafeRecipientsFrom
 
@@ -116,7 +154,9 @@ _see {ICrunaManager.sol-setProtector}_
 function importProtectorsAndSafeRecipientsFrom(uint256 otherTokenId) external virtual
 ```
 
-_see {ICrunaManager.sol-importProtectorsAndSafeRecipientsFrom}_
+_Imports protectors and safe recipients from another tokenId owned by the same owner
+It requires that there are no protectors and no safe recipients in the current token, and
+that the origin token has at least one protector or one safe recipient._
 
 ### getProtectors
 
@@ -124,7 +164,7 @@ _see {ICrunaManager.sol-importProtectorsAndSafeRecipientsFrom}_
 function getProtectors() external view virtual returns (address[])
 ```
 
-_see {ICrunaManager.sol-getProtectors}_
+_get the list of all protectors_
 
 ### setSafeRecipient
 
@@ -132,7 +172,18 @@ _see {ICrunaManager.sol-getProtectors}_
 function setSafeRecipient(address recipient, bool status, uint256 timestamp, uint256 validFor, bytes signature) external virtual
 ```
 
-_see {ICrunaManager.sol-setSafeRecipient}_
+_Set a safe recipient for the token, i.e., an address that can receive the token without any restriction
+even when protectors have been set._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| recipient | address | The recipient address |
+| status | bool | True to add a safe recipient, false to remove it |
+| timestamp | uint256 | The timestamp of the signature |
+| validFor | uint256 | The validity of the signature |
+| signature | bytes | The signature of the protector |
 
 ### isSafeRecipient
 
@@ -140,7 +191,19 @@ _see {ICrunaManager.sol-setSafeRecipient}_
 function isSafeRecipient(address recipient) external view virtual returns (bool)
 ```
 
-_see {ICrunaManager.sol-isSafeRecipient}_
+_Check if an address is a safe recipient_
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| recipient | address | The recipient address |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | bool | True if the recipient is a safe recipient |
 
 ### getSafeRecipients
 
@@ -148,15 +211,34 @@ _see {ICrunaManager.sol-isSafeRecipient}_
 function getSafeRecipients() external view virtual returns (address[])
 ```
 
-_see {ICrunaManager.sol-getSafeRecipients}_
+_Gets all safe recipients_
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | address[] | An array with the list of all safe recipients |
 
 ### plug
 
 ```solidity
-function plug(string name, address proxyAddress_, bool canManageTransfer, bool isERC6551Account, bytes4 salt, uint256 timestamp, uint256 validFor, bytes signature) external virtual
+function plug(string name, address pluginProxy, bool canManageTransfer, bool isERC6551Account, bytes4 salt, uint256 timestamp, uint256 validFor, bytes signature) external virtual
 ```
 
-_see {ICrunaManager.sol-plug}_
+_It plugs a new plugin_
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| name | string | The name of the plugin |
+| pluginProxy | address | The address of the plugin implementation |
+| canManageTransfer | bool | True if the plugin can manage transfers |
+| isERC6551Account | bool | True if the plugin is an ERC6551 account |
+| salt | bytes4 | The salt used during the deployment of the plugin |
+| timestamp | uint256 | The timestamp of the signature |
+| validFor | uint256 | The validity of the signature |
+| signature | bytes | The signature of the protector |
 
 ### changePluginStatus
 
@@ -164,7 +246,19 @@ _see {ICrunaManager.sol-plug}_
 function changePluginStatus(string name, bytes4 salt, enum ICrunaManager.PluginChange change, uint256 timeLock_, uint256 timestamp, uint256 validFor, bytes signature) external virtual
 ```
 
-_see {ICrunaManager.sol-changePluginStatus}_
+_It changes the status of a plugin_
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| name | string | The name of the plugin |
+| salt | bytes4 | The salt used during the deployment of the plugin |
+| change | enum ICrunaManager.PluginChange | The type of change |
+| timeLock_ | uint256 | The time lock for when a plugin is temporarily unauthorized from making transfers |
+| timestamp | uint256 | The timestamp of the signature |
+| validFor | uint256 | The validity of the signature |
+| signature | bytes | The signature of the protector |
 
 ### trustPlugin
 
@@ -172,7 +266,14 @@ _see {ICrunaManager.sol-changePluginStatus}_
 function trustPlugin(string name, bytes4 salt) external virtual
 ```
 
-_see {ICrunaManager.sol-trustPlugin}_
+_It trusts a plugin_
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| name | string | The name of the plugin |
+| salt | bytes4 | The salt used during the deployment of the plugin No need for a signature by a protector because the safety of the plugin is guaranteed by the CrunaGuardian. |
 
 ### pluginAddress
 
@@ -180,7 +281,20 @@ _see {ICrunaManager.sol-trustPlugin}_
 function pluginAddress(bytes4 nameId_, bytes4 salt) external view virtual returns (address payable)
 ```
 
-_see {ICrunaManager.sol-countPlugins}_
+_It returns the address of a plugin_
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| nameId_ | bytes4 | The bytes4 of the hash of the name of the plugin |
+| salt | bytes4 | The salt used during the deployment of the plugin The address is returned even if a plugin has not deployed yet. |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | address payable | The plugin address |
 
 ### plugin
 
@@ -188,7 +302,20 @@ _see {ICrunaManager.sol-countPlugins}_
 function plugin(bytes4 nameId_, bytes4 salt) external view virtual returns (contract CrunaPluginBase)
 ```
 
-_see {ICrunaManager.sol-plugin}_
+_It returns a plugin by name and salt_
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| nameId_ | bytes4 | The bytes4 of the hash of the name of the plugin |
+| salt | bytes4 | The salt used during the deployment of the plugin The plugin is returned even if a plugin has not deployed yet, which means that it will revert during the execution. |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | contract CrunaPluginBase | The plugin |
 
 ### countPlugins
 
@@ -196,7 +323,7 @@ _see {ICrunaManager.sol-plugin}_
 function countPlugins() external view virtual returns (uint256, uint256)
 ```
 
-_see {ICrunaManager.sol-countPlugins}_
+_It returns the number of plugins_
 
 ### plugged
 
@@ -204,7 +331,7 @@ _see {ICrunaManager.sol-countPlugins}_
 function plugged(string name, bytes4 salt) external view virtual returns (bool)
 ```
 
-_see {ICrunaManager.sol-plugged}_
+_Says if a plugin is currently plugged_
 
 ### pluginIndex
 
@@ -212,7 +339,21 @@ _see {ICrunaManager.sol-plugged}_
 function pluginIndex(string name, bytes4 salt) external view virtual returns (bool, uint256)
 ```
 
-_see {ICrunaManager.sol-pluginIndex}_
+_Returns the index of a plugin_
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| name | string | The name of the plugin |
+| salt | bytes4 | The salt used during the deployment of the plugin |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | bool | a tuple with a true if the plugin is found, and the index of the plugin |
+| [1] | uint256 |  |
 
 ### isPluginActive
 
@@ -220,7 +361,20 @@ _see {ICrunaManager.sol-pluginIndex}_
 function isPluginActive(string name, bytes4 salt) external view virtual returns (bool)
 ```
 
-_see {ICrunaManager.sol-disablePlugin}_
+_Checks if a plugin is active_
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| name | string | The name of the plugin |
+| salt | bytes4 | The salt used during the deployment of the plugin |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | bool | True if the plugin is active |
 
 ### listPluginsKeys
 
@@ -228,7 +382,23 @@ _see {ICrunaManager.sol-disablePlugin}_
 function listPluginsKeys(bool active) external view virtual returns (bytes8[])
 ```
 
-_see {ICrunaManager.sol-listPluginsKeys}_
+_returns the list of plugins' keys
+Since the names of the plugins are not saved in the contract, the app calling for this function
+is responsible for knowing the names of all the plugins.
+In the future it would be good to have an official registry of all plugins to be able to reverse
+from the nameId to the name as a string._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| active | bool | True to get the list of active plugins, false to get the list of inactive plugins |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | bytes8[] | The list of plugins' keys |
 
 ### pseudoAddress
 
@@ -236,7 +406,22 @@ _see {ICrunaManager.sol-listPluginsKeys}_
 function pseudoAddress(string name, bytes4 _salt) external view virtual returns (address)
 ```
 
-_see {ICrunaManager.sol-pseudoAddress}_
+_It returns a pseudo address created from the name of a plugin and the salt used to deploy it.
+Notice that abi.encodePacked does not risk to create collisions because the salt has fixed length
+in the hashed bytes._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| name | string | The name of the plugin |
+| _salt | bytes4 | The salt used during the deployment of the plugin |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | address | The pseudo address of the plugin |
 
 ### managedTransfer
 
@@ -244,7 +429,7 @@ _see {ICrunaManager.sol-pseudoAddress}_
 function managedTransfer(bytes4 pluginNameId, address to) external virtual
 ```
 
-_See {IProtected721-managedTransfer}._
+see {IProtectedNFT-managedTransfer}.
 
 ### protectedTransfer
 
@@ -252,7 +437,7 @@ _See {IProtected721-managedTransfer}._
 function protectedTransfer(uint256 tokenId, address to, uint256 timestamp, uint256 validFor, bytes signature) external
 ```
 
-_See {IProtected721-protectedTransfer}._
+see {IProtectedNFT-protectedTransfer}.
 
 ### _plugin
 
@@ -266,7 +451,7 @@ function _plugin(bytes4 nameId_, bytes4 salt) internal view virtual returns (con
 function _pluginAddress(bytes4 nameId_, bytes4 salt) internal view virtual returns (address payable)
 ```
 
-_returns the address of a deployed plugin_
+returns the address of a deployed plugin
 
 #### Parameters
 
@@ -281,7 +466,7 @@ _returns the address of a deployed plugin_
 function _nameId() internal view virtual returns (bytes4)
 ```
 
-_returns the name Id of the manager_
+returns the name Id of the manager
 
 ### _pseudoAddress
 
@@ -311,7 +496,7 @@ to deploy it. This is needed to pass a valid address as an actor to the Signatur
 function _countPlugins() internal view virtual returns (uint256, uint256)
 ```
 
-_Counts the active and disabled plugins_
+Counts the active and disabled plugins
 
 ### _disablePlugin
 
@@ -319,7 +504,7 @@ _Counts the active and disabled plugins_
 function _disablePlugin(uint256 i, bytes8 _key) internal
 ```
 
-_Internal function to disable a plugin but index and key_
+Internal function to disable a plugin but index and key
 
 #### Parameters
 
@@ -334,7 +519,7 @@ _Internal function to disable a plugin but index and key_
 function _reEnablePlugin(uint256 i, bytes8 _key) internal
 ```
 
-_Internal function to re-enable a plugin but index and key_
+Internal function to re-enable a plugin but index and key
 
 #### Parameters
 
@@ -349,7 +534,7 @@ _Internal function to re-enable a plugin but index and key_
 function _unplugPlugin(uint256 i, bytes4 nameId_, bytes4 salt, bytes8 _key, enum ICrunaManager.PluginChange change) internal
 ```
 
-_Unplugs a plugin_
+Unplugs a plugin
 
 #### Parameters
 
@@ -367,8 +552,8 @@ _Unplugs a plugin_
 function _authorizePluginToTransfer(bytes4 nameId_, bytes4 salt, bytes8 _key, enum ICrunaManager.PluginChange change, uint256 timeLock) internal virtual
 ```
 
-_Id removing the authorization, it blocks a plugin for a maximum of 30 days from transferring
-the NFT. If the plugins must be blocked for more time, disable it at your peril of making it useless._
+Id removing the authorization, it blocks a plugin for a maximum of 30 days from transferring
+the NFT. If the plugins must be blocked for more time, disable it at your peril of making it useless.
 
 ### _combineBytes4
 
@@ -376,7 +561,7 @@ the NFT. If the plugins must be blocked for more time, disable it at your peril 
 function _combineBytes4(bytes4 a, bytes4 b) internal pure returns (bytes8)
 ```
 
-_Utility function to combine two bytes4 into a bytes8_
+Utility function to combine two bytes4 into a bytes8
 
 ### _isProtected
 
@@ -384,7 +569,7 @@ _Utility function to combine two bytes4 into a bytes8_
 function _isProtected() internal view virtual returns (bool)
 ```
 
-_Check if the NFT is protected_
+Check if the NFT is protected
 
 ### _isProtector
 
@@ -392,7 +577,7 @@ _Check if the NFT is protected_
 function _isProtector(address protector_) internal view virtual returns (bool)
 ```
 
-_Checks if an address is a protector_
+Checks if an address is a protector
 
 #### Parameters
 
@@ -406,7 +591,7 @@ _Checks if an address is a protector_
 function _canPreApprove(bytes4 selector, address actor, address signer) internal view virtual returns (bool)
 ```
 
-_Override required by SignatureValidator to check if a signer is authorized to pre-approve an operation_
+Override required by SignatureValidator to check if a signer is authorized to pre-approve an operation
 
 #### Parameters
 
@@ -422,7 +607,7 @@ _Override required by SignatureValidator to check if a signer is authorized to p
 function _plug(string name, address proxyAddress_, bool canManageTransfer, bool isERC6551Account, bytes4 nameId_, bytes4 salt, bytes8 _key, uint256 requires) internal
 ```
 
-_Internal function plug a plugin_
+Internal function plug a plugin
 
 #### Parameters
 
@@ -449,7 +634,7 @@ function _setSignedActor(bytes4 _functionSelector, bytes4 role_, address actor, 
 function _emitLockeEvent(uint256 protectorsCount, bool status) internal virtual
 ```
 
-_It asks the NFT to emit a Locked event, according to IERC6982_
+It asks the NFT to emit a Locked event, according to IERC6982
 
 #### Parameters
 
@@ -464,7 +649,7 @@ _It asks the NFT to emit a Locked event, according to IERC6982_
 function _getKeyAndSalt(bytes4 pluginNameId) internal view returns (bytes8, bytes4)
 ```
 
-_It returns the key and the salt of the current plugin calling the manager_
+It returns the key and the salt of the current plugin calling the manager
 
 #### Parameters
 
@@ -478,7 +663,7 @@ _It returns the key and the salt of the current plugin calling the manager_
 function _pluginIndex(bytes4 nameId_, bytes4 salt) internal view virtual returns (bool, uint256)
 ```
 
-_It returns the index of the plugin in the _allPlugins array_
+It returns the index of the plugin in the _allPlugins array
 
 ### _preValidateAndCheckSignature
 
@@ -486,7 +671,7 @@ _It returns the index of the plugin in the _allPlugins array_
 function _preValidateAndCheckSignature(bytes4 selector, address actor, uint256 extra, uint256 extra2, uint256 extra3, uint256 timestamp, uint256 validFor, bytes signature) internal virtual
 ```
 
-_Util to validate and check the signature_
+Util to validate and check the signature
 
 #### Parameters
 
@@ -507,7 +692,7 @@ _Util to validate and check the signature_
 function _resetPlugin(bytes4 nameId_, bytes4 salt) internal virtual
 ```
 
-_It resets a plugin_
+It resets a plugin
 
 #### Parameters
 
@@ -522,9 +707,9 @@ _It resets a plugin_
 function _resetPluginOnTransfer(bytes4 nameId_, bytes4 salt) internal virtual
 ```
 
-_It resets a plugin on transfer.
+It resets a plugin on transfer.
 It tries to minimize risks and gas consumption limiting the amount of gas sent to
-the plugin. Since the called function should not be overridden, it should be safe._
+the plugin. Since the called function should not be overridden, it should be safe.
 
 #### Parameters
 
@@ -539,8 +724,8 @@ the plugin. Since the called function should not be overridden, it should be saf
 function _removeLockIfExpired(bytes4 nameId_, bytes4 salt) internal virtual
 ```
 
-_If a plugin has been temporarily deAuthorized from transferring the tolen, it
-removes the lock if the lock is expired_
+If a plugin has been temporarily deAuthorized from transferring the tolen, it
+removes the lock if the lock is expired
 
 #### Parameters
 
@@ -555,7 +740,7 @@ removes the lock if the lock is expired_
 function _resetOnTransfer(bytes4 nameId_, bytes4 salt) internal virtual
 ```
 
-_It resets the manager on transfer_
+It resets the manager on transfer
 
 #### Parameters
 

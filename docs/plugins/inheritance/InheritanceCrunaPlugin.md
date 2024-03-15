@@ -26,7 +26,7 @@ The object storing the votes
 function requiresToManageTransfer() external pure returns (bool)
 ```
 
-see {IInheritanceCrunaPlugin.sol-requiresToManageTransfer}
+Allows the beneficiary to inherit the token
 
 ### isERC6551Account
 
@@ -34,7 +34,7 @@ see {IInheritanceCrunaPlugin.sol-requiresToManageTransfer}
 function isERC6551Account() external pure virtual returns (bool)
 ```
 
-see {IInheritanceCrunaPlugin.sol-isERC6551Account}
+Allows the beneficiary to inherit the token
 
 ### setSentinel
 
@@ -42,7 +42,17 @@ see {IInheritanceCrunaPlugin.sol-isERC6551Account}
 function setSentinel(address sentinel, bool status, uint256 timestamp, uint256 validFor, bytes signature) external virtual
 ```
 
-_see {IInheritanceCrunaPlugin.sol-setSentinel}_
+Set a sentinel for the token
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| sentinel | address | The sentinel address |
+| status | bool | True to activate, false to deactivate |
+| timestamp | uint256 | The timestamp of the signature |
+| validFor | uint256 | The validity of the signature |
+| signature | bytes | The signature of the tokensOwner |
 
 ### setSentinels
 
@@ -50,7 +60,16 @@ _see {IInheritanceCrunaPlugin.sol-setSentinel}_
 function setSentinels(address[] sentinels, bytes emptySignature) external virtual
 ```
 
-_see {IInheritanceCrunaPlugin.sol-setSentinels}_
+Set a list of sentinels for the token
+It is a convenience function to set multiple sentinels at once, but it
+works only if no protectors have been set up. Useful for initial settings.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| sentinels | address[] | The sentinel addresses |
+| emptySignature | bytes | The signature of the tokensOwner |
 
 ### configureInheritance
 
@@ -58,7 +77,25 @@ _see {IInheritanceCrunaPlugin.sol-setSentinels}_
 function configureInheritance(uint8 quorum, uint8 proofOfLifeDurationInWeeks, uint8 gracePeriodInWeeks, address beneficiary, uint256 timestamp, uint256 validFor, bytes signature) external virtual
 ```
 
-_see {IInheritanceCrunaPlugin.sol-configureInheritance}_
+Configures an inheritance
+Some parameters are optional depending on the scenario.
+There are three scenarios:
+
+- The user sets a beneficiary. The beneficiary can inherit the NFT as soon as a Proof-of-Life is missed.
+- The user sets more than a single sentinel. The sentinels propose a beneficiary, and when the quorum is reached, the beneficiary can inherit the NFT.
+- The user sets a beneficiary and some sentinels. In this case, the beneficiary has a grace period to inherit the NFT. If after that grace period the beneficiary has not inherited the NFT, the sentinels can propose a new beneficiary.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| quorum | uint8 | The number of sentinels required to approve a request |
+| proofOfLifeDurationInWeeks | uint8 | The duration of the Proof-of-Live, i.e., the number of days after which the sentinels can start the process to inherit the token if the owner does not prove to be alive |
+| gracePeriodInWeeks | uint8 | The grace period in weeks |
+| beneficiary | address | The beneficiary address |
+| timestamp | uint256 | The timestamp of the signature |
+| validFor | uint256 | The validity of the signature |
+| signature | bytes | The signature of the tokensOwner |
 
 ### countSentinels
 
@@ -66,7 +103,7 @@ _see {IInheritanceCrunaPlugin.sol-configureInheritance}_
 function countSentinels() external view virtual returns (uint256)
 ```
 
-_see {IInheritanceCrunaPlugin.sol-countSentinels}_
+Return the number of sentinels
 
 ### getSentinelsAndInheritanceData
 
@@ -74,7 +111,7 @@ _see {IInheritanceCrunaPlugin.sol-countSentinels}_
 function getSentinelsAndInheritanceData() external view virtual returns (address[], struct IInheritanceCrunaPlugin.InheritanceConf)
 ```
 
-_see {IInheritanceCrunaPlugin.sol-getSentinelsAndInheritanceData}_
+Return all the sentinels and the inheritance data
 
 ### getVotes
 
@@ -82,7 +119,7 @@ _see {IInheritanceCrunaPlugin.sol-getSentinelsAndInheritanceData}_
 function getVotes() external view virtual returns (address[])
 ```
 
-_see {IInheritanceCrunaPlugin.sol-getVotes}_
+Return all the votes
 
 ### proofOfLife
 
@@ -90,7 +127,7 @@ _see {IInheritanceCrunaPlugin.sol-getVotes}_
 function proofOfLife() external virtual
 ```
 
-_see {IInheritanceCrunaPlugin.sol-proofOfLife}_
+allows the user to trigger a Proof-of-Live
 
 ### voteForBeneficiary
 
@@ -98,7 +135,13 @@ _see {IInheritanceCrunaPlugin.sol-proofOfLife}_
 function voteForBeneficiary(address beneficiary) external virtual
 ```
 
-_see {IInheritanceCrunaPlugin.sol-voteForBeneficiary}_
+Allows the sentinels to nominate a beneficiary
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| beneficiary | address | The beneficiary address If the beneficiary is address(0), the vote is to retire a previously voted beneficiary |
 
 ### inherit
 
@@ -106,7 +149,7 @@ _see {IInheritanceCrunaPlugin.sol-voteForBeneficiary}_
 function inherit() external virtual
 ```
 
-_see {IInheritanceCrunaPlugin.sol-inherit}_
+Allows the beneficiary to inherit the token
 
 ### reset
 
@@ -114,7 +157,7 @@ _see {IInheritanceCrunaPlugin.sol-inherit}_
 function reset() external
 ```
 
-_see {ICrunaPlugin.sol-reset}_
+Reset the plugin to the factory settings
 
 ### requiresResetOnTransfer
 
@@ -122,7 +165,7 @@ _see {ICrunaPlugin.sol-reset}_
 function requiresResetOnTransfer() external pure returns (bool)
 ```
 
-_see {ICrunaPlugin.sol-requiresResetOnTransfer}_
+Called by the manager to know it the plugin must be reset when transferring the NFT
 
 ### _nameId
 
@@ -130,7 +173,8 @@ _see {ICrunaPlugin.sol-requiresResetOnTransfer}_
 function _nameId() internal pure virtual returns (bytes4)
 ```
 
-_see {CrunaPluginBase.sol-_nameId}_
+Internal function that must be overridden by the contract to
+return the name id of the contract
 
 ### _setSentinel
 
@@ -138,7 +182,7 @@ _see {CrunaPluginBase.sol-_nameId}_
 function _setSentinel(address sentinel, bool status, uint256 timestamp, uint256 validFor, bytes signature) internal virtual
 ```
 
-_It sets a sentinel_
+It sets a sentinel
 
 #### Parameters
 
@@ -156,11 +200,30 @@ _It sets a sentinel_
 function _configureInheritance(uint8 quorum, uint8 proofOfLifeDurationInWeeks, uint8 gracePeriodInWeeks, address beneficiary) internal virtual
 ```
 
+It configures inheritance
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| quorum | uint8 | The quorum |
+| proofOfLifeDurationInWeeks | uint8 | The proof of life duration in weeks |
+| gracePeriodInWeeks | uint8 | The grace period in weeks |
+| beneficiary | address | The beneficiary |
+
 ### _quorumReached
 
 ```solidity
 function _quorumReached() internal view virtual returns (address)
 ```
+
+Checks if the quorum has been reached
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | address | The beneficiary if the quorum has been reached, address(0) otherwise |
 
 ### _isNominated
 
@@ -168,11 +231,33 @@ function _quorumReached() internal view virtual returns (address)
 function _isNominated(address beneficiary) internal view virtual returns (bool)
 ```
 
+Check is a beneficiary has been nominated
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| beneficiary | address | The beneficiary to check |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | bool | True if the beneficiary has been nominated, false otherwise |
+
 ### _popNominated
 
 ```solidity
 function _popNominated(address beneficiary) internal virtual
 ```
+
+Removes a nominated beneficiary
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| beneficiary | address | The beneficiary to remove |
 
 ### _resetNominationsAndVotes
 
@@ -180,11 +265,21 @@ function _popNominated(address beneficiary) internal virtual
 function _resetNominationsAndVotes() internal virtual
 ```
 
+Resets nominations and votes
+
 ### _isASentinel
 
 ```solidity
 function _isASentinel() internal view virtual returns (bool)
 ```
+
+Checks if the sender is a sentinel
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | bool | True if the sender is a sentinel, false otherwise |
 
 ### _checkIfStillAlive
 
@@ -192,15 +287,27 @@ function _isASentinel() internal view virtual returns (bool)
 function _checkIfStillAlive() internal view virtual
 ```
 
+Checks if the owner is still alive
+
 ### _isGracePeriodExpiredForBeneficiary
 
 ```solidity
 function _isGracePeriodExpiredForBeneficiary() internal virtual returns (bool)
 ```
 
+Checks if the grace period has expired
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | bool | True if the grace period has expired, false otherwise |
+
 ### _reset
 
 ```solidity
 function _reset() internal
 ```
+
+Reset the plugin configuration
 

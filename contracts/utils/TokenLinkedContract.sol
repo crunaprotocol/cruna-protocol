@@ -8,43 +8,43 @@ import {ITokenLinkedContract} from "./ITokenLinkedContract.sol";
 
 /**
  * @title TokenLinkedContract
- * @dev Abstract contract to link a contract to an NFT
+ * @notice Abstract contract to link a contract to an NFT
  */
 abstract contract TokenLinkedContract is ITokenLinkedContract {
   /**
-   * @dev Returns the token linked to the contract
+   * @notice Returns the token linked to the contract
    */
   function token() public view virtual override returns (uint256, address, uint256) {
     return ERC6551AccountLib.token();
   }
 
   /**
-   * @dev Returns the owner of the token
+   * @notice Returns the owner of the token
    */
   function owner() public view virtual override returns (address) {
-    (uint256 chainId, address tokenContract_, uint256 tokenId_) = token();
+    (uint256 chainId, address tokenContract_, uint256 tokenId_) = ERC6551AccountLib.token();
     if (chainId != block.chainid) return address(0);
     return IERC721(tokenContract_).ownerOf(tokenId_);
   }
 
   /**
-   * @dev Returns the address of the token contract
+   * @notice Returns the address of the token contract
    */
   function tokenAddress() public view virtual override returns (address) {
-    (, address tokenContract_, ) = token();
+    (, address tokenContract_, ) = ERC6551AccountLib.token();
     return tokenContract_;
   }
 
   /**
-   * @dev Returns the tokenId of the token
+   * @notice Returns the tokenId of the token
    */
   function tokenId() public view virtual override returns (uint256) {
-    (, , uint256 tokenId_) = token();
+    (, , uint256 tokenId_) = ERC6551AccountLib.token();
     return tokenId_;
   }
 
   /**
-   * @dev Returns the implementation used when creating the contract
+   * @notice Returns the implementation used when creating the contract
    */
   function implementation() public view virtual override returns (address) {
     return ERC6551AccountLib.implementation();

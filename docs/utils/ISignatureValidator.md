@@ -2,7 +2,7 @@
 
 ## ISignatureValidator
 
-_Validates signatures_
+Validates signatures
 
 ### PreApproved
 
@@ -10,7 +10,7 @@ _Validates signatures_
 event PreApproved(bytes32 hash, address signer)
 ```
 
-_Emitted when a signature is pre-approved._
+Emitted when a signature is pre-approved.
 
 #### Parameters
 

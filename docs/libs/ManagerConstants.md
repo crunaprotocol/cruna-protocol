@@ -2,7 +2,7 @@
 
 ## ManagerConstants
 
-_Constants for the manager. Using functions instead of state variables makes easier to manage future upgrades._
+Constants for the manager. Using functions instead of state variables makes easier to manage future upgrades.
 
 ### maxActors
 
@@ -10,7 +10,7 @@ _Constants for the manager. Using functions instead of state variables makes eas
 function maxActors() internal pure returns (uint256)
 ```
 
-_The maximum number of actors that can be added to the manager_
+The maximum number of actors that can be added to the manager
 
 ### protectorId
 
@@ -18,7 +18,7 @@ _The maximum number of actors that can be added to the manager_
 function protectorId() internal pure returns (bytes4)
 ```
 
-_Equivalent to bytes4(keccak256("PROTECTOR"))_
+Equivalent to bytes4(keccak256("PROTECTOR"))
 
 ### safeRecipientId
 
@@ -26,7 +26,7 @@ _Equivalent to bytes4(keccak256("PROTECTOR"))_
 function safeRecipientId() internal pure returns (bytes4)
 ```
 
-_Equivalent to bytes4(keccak256("SAFE_RECIPIENT"))_
+Equivalent to bytes4(keccak256("SAFE_RECIPIENT"))
 
 ### gasToEmitLockedEvent
 
@@ -34,7 +34,7 @@ _Equivalent to bytes4(keccak256("SAFE_RECIPIENT"))_
 function gasToEmitLockedEvent() internal pure returns (uint256)
 ```
 
-_The gas passed to the Protected NFT when asking to emit a Locked event_
+The gas passed to the Protected NFT when asking to emit a Locked event
 
 ### gasToResetPlugin
 
@@ -42,5 +42,5 @@ _The gas passed to the Protected NFT when asking to emit a Locked event_
 function gasToResetPlugin() internal pure returns (uint256)
 ```
 
-_The gas passed to plugins when asking to them mark the plugin as must-be-reset_
+The gas passed to plugins when asking to them mark the plugin as must-be-reset
 

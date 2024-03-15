@@ -6,6 +6,6 @@ import {INamed} from "./INamed.sol";
 
 /**
  * @title INamedAndVersioned
- * @dev Combines INamed and IVersioned
+ * @notice Combines INamed and IVersioned
  */
 interface INamedAndVersioned is INamed, IVersioned {}

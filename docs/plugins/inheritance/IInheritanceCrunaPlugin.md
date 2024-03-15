@@ -6,7 +6,7 @@ Interface for the inheritance plugin
 
 ### InheritanceConf
 
-_Struct to store the configuration for the inheritance_
+Struct to store the configuration for the inheritance
 
 #### Parameters
 
@@ -26,7 +26,7 @@ struct InheritanceConf {
 
 ### Votes
 
-_Struct to store the votes_
+Struct to store the votes
 
 #### Parameters
 
@@ -46,7 +46,7 @@ struct Votes {
 event SentinelUpdated(address owner, address sentinel, bool status)
 ```
 
-_Emitted when a sentinel is updated_
+Emitted when a sentinel is updated
 
 #### Parameters
 
@@ -62,7 +62,7 @@ _Emitted when a sentinel is updated_
 event InheritanceConfigured(address owner, uint256 quorum, uint256 proofOfLifeDurationInWeeks, uint256 gracePeriodInWeeks, address beneficiary)
 ```
 
-_Emitted when the inheritance is configured_
+Emitted when the inheritance is configured
 
 #### Parameters
 
@@ -80,7 +80,7 @@ _Emitted when the inheritance is configured_
 event ProofOfLife(address owner)
 ```
 
-_Emitted when a Proof-of-Life is triggered_
+Emitted when a Proof-of-Life is triggered
 
 #### Parameters
 
@@ -94,7 +94,7 @@ _Emitted when a Proof-of-Life is triggered_
 event VotedForBeneficiary(address sentinel, address beneficiary)
 ```
 
-_Emitted when a sentinel votes for a beneficiary_
+Emitted when a sentinel votes for a beneficiary
 
 #### Parameters
 
@@ -109,7 +109,7 @@ _Emitted when a sentinel votes for a beneficiary_
 event BeneficiaryApproved(address beneficiary)
 ```
 
-_Emitted when a beneficiary is approved_
+Emitted when a beneficiary is approved
 
 #### Parameters
 
@@ -123,7 +123,7 @@ _Emitted when a beneficiary is approved_
 error QuorumCannotBeZero()
 ```
 
-_Error returned when the quorum is set to 0_
+Error returned when the quorum is set to 0
 
 ### QuorumCannotBeGreaterThanSentinels
 
@@ -131,7 +131,7 @@ _Error returned when the quorum is set to 0_
 error QuorumCannotBeGreaterThanSentinels()
 ```
 
-_Error returned when the quorum is greater than the number of sentinels_
+Error returned when the quorum is greater than the number of sentinels
 
 ### InheritanceNotConfigured
 
@@ -139,7 +139,7 @@ _Error returned when the quorum is greater than the number of sentinels_
 error InheritanceNotConfigured()
 ```
 
-_Error returned when the inheritance is not set_
+Error returned when the inheritance is not set
 
 ### StillAlive
 
@@ -147,8 +147,8 @@ _Error returned when the inheritance is not set_
 error StillAlive()
 ```
 
-_Error returned when the owner is still alive, i.e., there is a Proof-of-Life event
-more recent than the Proof-of-Life duration_
+Error returned when the owner is still alive, i.e., there is a Proof-of-Life event
+more recent than the Proof-of-Life duration
 
 ### NotASentinel
 
@@ -156,7 +156,7 @@ more recent than the Proof-of-Life duration_
 error NotASentinel()
 ```
 
-_Error returned when the sender is not a sentinel_
+Error returned when the sender is not a sentinel
 
 ### NotTheBeneficiary
 
@@ -164,7 +164,7 @@ _Error returned when the sender is not a sentinel_
 error NotTheBeneficiary()
 ```
 
-_Error returned when the sender is not the beneficiary_
+Error returned when the sender is not the beneficiary
 
 ### BeneficiaryNotSet
 
@@ -172,7 +172,7 @@ _Error returned when the sender is not the beneficiary_
 error BeneficiaryNotSet()
 ```
 
-_Error returned when the beneficiary is not set_
+Error returned when the beneficiary is not set
 
 ### WaitingForBeneficiary
 
@@ -180,8 +180,8 @@ _Error returned when the beneficiary is not set_
 error WaitingForBeneficiary()
 ```
 
-_Error returned when trying to vote for a beneficiary, while
-the grace period for the current beneficiary is not over_
+Error returned when trying to vote for a beneficiary, while
+the grace period for the current beneficiary is not over
 
 ### InvalidValidity
 
@@ -189,7 +189,7 @@ the grace period for the current beneficiary is not over_
 error InvalidValidity()
 ```
 
-_Error returned when passing a signature with a validFor > MAX_VALID_FOR_
+Error returned when passing a signature with a validFor > MAX_VALID_FOR
 
 ### NoVoteToRetire
 
@@ -197,7 +197,7 @@ _Error returned when passing a signature with a validFor > MAX_VALID_FOR_
 error NoVoteToRetire()
 ```
 
-_Error returned when trying to retire a not-found vote_
+Error returned when trying to retire a not-found vote
 
 ### InvalidParameters
 
@@ -205,22 +205,22 @@ _Error returned when trying to retire a not-found vote_
 error InvalidParameters()
 ```
 
-_Error returned when the parameters are invalid_
+Error returned when the parameters are invalid
 
 ### setSentinel
 
 ```solidity
-function setSentinel(address sentinel, bool active, uint256 timestamp, uint256 validFor, bytes signature) external
+function setSentinel(address sentinel, bool status, uint256 timestamp, uint256 validFor, bytes signature) external
 ```
 
-_Set a sentinel for the token_
+Set a sentinel for the token
 
 #### Parameters
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | sentinel | address | The sentinel address |
-| active | bool | True to activate, false to deactivate |
+| status | bool | True to activate, false to deactivate |
 | timestamp | uint256 | The timestamp of the signature |
 | validFor | uint256 | The validity of the signature |
 | signature | bytes | The signature of the tokensOwner |
@@ -231,9 +231,9 @@ _Set a sentinel for the token_
 function setSentinels(address[] sentinels, bytes emptySignature) external
 ```
 
-_Set a list of sentinels for the token
+Set a list of sentinels for the token
 It is a convenience function to set multiple sentinels at once, but it
-works only if no protectors have been set up. Useful for initial settings._
+works only if no protectors have been set up. Useful for initial settings.
 
 #### Parameters
 
@@ -248,13 +248,13 @@ works only if no protectors have been set up. Useful for initial settings._
 function configureInheritance(uint8 quorum, uint8 proofOfLifeDurationInWeeks, uint8 gracePeriodInWeeks, address beneficiary, uint256 timestamp, uint256 validFor, bytes signature) external
 ```
 
-_Configures an inheritance
+Configures an inheritance
 Some parameters are optional depending on the scenario.
 There are three scenarios:
 
 - The user sets a beneficiary. The beneficiary can inherit the NFT as soon as a Proof-of-Life is missed.
 - The user sets more than a single sentinel. The sentinels propose a beneficiary, and when the quorum is reached, the beneficiary can inherit the NFT.
-- The user sets a beneficiary and some sentinels. In this case, the beneficiary has a grace period to inherit the NFT. If after that grace period the beneficiary has not inherited the NFT, the sentinels can propose a new beneficiary._
+- The user sets a beneficiary and some sentinels. In this case, the beneficiary has a grace period to inherit the NFT. If after that grace period the beneficiary has not inherited the NFT, the sentinels can propose a new beneficiary.
 
 #### Parameters
 
@@ -274,7 +274,7 @@ There are three scenarios:
 function getSentinelsAndInheritanceData() external view returns (address[], struct IInheritanceCrunaPlugin.InheritanceConf)
 ```
 
-_Return all the sentinels and the inheritance data_
+Return all the sentinels and the inheritance data
 
 ### getVotes
 
@@ -282,7 +282,7 @@ _Return all the sentinels and the inheritance data_
 function getVotes() external view returns (address[])
 ```
 
-_Return all the votes_
+Return all the votes
 
 ### countSentinels
 
@@ -290,7 +290,7 @@ _Return all the votes_
 function countSentinels() external view returns (uint256)
 ```
 
-_Return the number of sentinels_
+Return the number of sentinels
 
 ### proofOfLife
 
@@ -298,7 +298,7 @@ _Return the number of sentinels_
 function proofOfLife() external
 ```
 
-_allows the user to trigger a Proof-of-Live_
+allows the user to trigger a Proof-of-Live
 
 ### voteForBeneficiary
 
@@ -306,7 +306,7 @@ _allows the user to trigger a Proof-of-Live_
 function voteForBeneficiary(address beneficiary) external
 ```
 
-_Allows the sentinels to nominate a beneficiary_
+Allows the sentinels to nominate a beneficiary
 
 #### Parameters
 
@@ -320,5 +320,5 @@ _Allows the sentinels to nominate a beneficiary_
 function inherit() external
 ```
 
-_Allows the beneficiary to inherit the token_
+Allows the beneficiary to inherit the token
 

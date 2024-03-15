@@ -4,11 +4,11 @@ pragma solidity ^0.8.20;
 /**
  * @title ISignatureValidator
  * @author Francesco Sullo <francesco@sullo.co>
- * @dev Validates signatures
+ * @notice Validates signatures
  */
 interface ISignatureValidator {
   /**
-   * @dev Emitted when a signature is pre-approved.
+   * @notice Emitted when a signature is pre-approved.
    * @param hash The hash of the signature.
    * @param signer The signer of the signature.
    */

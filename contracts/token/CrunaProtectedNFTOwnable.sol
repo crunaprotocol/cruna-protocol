@@ -26,9 +26,6 @@ abstract contract CrunaProtectedNFTOwnable is CrunaProtectedNFT, Ownable2Step {
    */
   constructor(string memory name_, string memory symbol_, address admin) CrunaProtectedNFT(name_, symbol_) Ownable(admin) {}
 
-  /**
-   * @notice see {CrunaProtectedNFT-_canManage}
-   */
   function _canManage(bool) internal view virtual override {
     if (_msgSender() != owner()) revert NotTheOwner();
   }
