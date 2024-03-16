@@ -216,6 +216,8 @@ describe("Sentinel and Inheritance", function () {
     const inheritancePluginAddress = await manager.pluginAddress(nameId, "0x00000000");
     const inheritancePlugin = await ethers.getContractAt("InheritanceCrunaPlugin", inheritancePluginAddress);
 
+    expect(await vault.managerOf(tokenId)).to.equal(await inheritancePlugin.manager());
+
     expect(await inheritancePlugin.requiresToManageTransfer()).to.be.true;
 
     // console.log(inheritancePluginProxy.address);

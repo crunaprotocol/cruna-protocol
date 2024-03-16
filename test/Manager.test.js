@@ -93,10 +93,15 @@ describe("CrunaManager : Upgrades", function () {
       );
 
     const managerAddress = await vault.managerOf(nextTokenId);
-    const manager = await ethers.getContractAt("CrunaManager", managerAddress);
-
+    const managerAddress2 = await vault.addressOfDeployed(managerProxy.address, ethers.constants.HashZero, nextTokenId, false);
+    expect(managerAddress).to.equal(managerAddress2);
+    expect(await vault.isDeployed(managerProxy.address, ethers.constants.HashZero, nextTokenId, false)).to.be.true;
     return nextTokenId;
   };
+
+  it("should buy a vault", async function () {
+    await buyAVault(bob);
+  });
 
   it("should allow bob to upgrade the manager", async function () {
     const tokenId = await buyAVault(bob);

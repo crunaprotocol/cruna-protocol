@@ -232,6 +232,16 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     return _addressOfDeployed(_defaultManagerImplementation(tokenId), 0x00, tokenId, false);
   }
 
+  /// @dev see {ICrunaProtectedNFT-addressOfDeployed}
+  function addressOfDeployed(
+    address implementation,
+    bytes32 salt,
+    uint256 tokenId,
+    bool isERC6551Account
+  ) external view virtual override returns (address) {
+    return _addressOfDeployed(implementation, salt, tokenId, isERC6551Account);
+  }
+
   /**
    * @notice Returns the default implementation of the manager for a specific tokenId
    * @param _tokenId the tokenId

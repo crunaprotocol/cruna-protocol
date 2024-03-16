@@ -1,5 +1,8 @@
 # Change log
 
+**0.2.8**
+- Add more view in CrunaProtectedNFT to retrieve deployed plugins' addresses
+
 **0.2.7**
 - Make `CrunaProtectedNFT` variables `_nftConf` and `_managerHistory` internal
 

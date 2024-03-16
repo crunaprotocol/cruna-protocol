@@ -177,6 +177,23 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
   function managerOf(uint256 tokenId) external view returns (address);
 
   /**
+   * @notice Returns the address of a deployed manager or plugin
+   * @param implementation The address of the manager or plugin implementation
+   * @param salt The salt
+   * @param tokenId The tokenId
+   * @param isERC6551Account Specifies the registry to use
+   * True if the tokenId was deployed via ERC6551Registry,
+   * false, it was deployed via CrunaRegistry
+   * @return The address of the deployed manager or plugin
+   */
+  function addressOfDeployed(
+    address implementation,
+    bytes32 salt,
+    uint256 tokenId,
+    bool isERC6551Account
+  ) external view returns (address);
+
+  /**
    * @notice Deploys a plugin
    * @param pluginImplementation The address of the plugin implementation
    * @param salt The salt

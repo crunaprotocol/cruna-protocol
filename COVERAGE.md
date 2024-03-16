@@ -1,7 +1,7 @@
 # Test coverage
 
 ```
-  51 passing
+  52 passing
 
 --------------------------------------|----------|----------|----------|----------
 File                                  |  % Stmts | % Branch |  % Funcs |  % Lines 
@@ -24,15 +24,15 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   CrunaManagerBase.sol                |      100 |    64.29 |      100 |      100 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   ICrunaManager.sol                   |      100 |      100 |      100 |      100 
- plugins/                             |    94.74 |    68.18 |       90 |    95.83 
-  CrunaPluginBase.sol                 |    94.74 |    68.18 |       90 |    95.83 
+ plugins/                             |      100 |    68.18 |      100 |      100 
+  CrunaPluginBase.sol                 |      100 |    68.18 |      100 |      100 
   ICrunaPlugin.sol                    |      100 |      100 |      100 |      100 
  plugins/inheritance/                 |    90.11 |    63.64 |       96 |     87.8 
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
   InheritanceCrunaPlugin.sol          |    90.11 |    63.64 |    95.83 |     87.8 
   InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
- token/                               |    98.63 |    65.28 |      100 |     98.8 
-  CrunaProtectedNFT.sol               |    98.53 |    64.06 |      100 |    98.73 
+ token/                               |    98.65 |    65.28 |      100 |    98.81 
+  CrunaProtectedNFT.sol               |    98.55 |    64.06 |      100 |    98.75 
   CrunaProtectedNFTOwnable.sol        |      100 |       50 |      100 |      100 
   CrunaProtectedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaProtectedNFT.sol              |      100 |      100 |      100 |      100 
@@ -50,6 +50,6 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   SignatureValidator.sol              |      100 |    86.36 |      100 |      100 
   TokenLinkedContract.sol             |       90 |       50 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    96.75 |    69.28 |    97.18 |    94.73 
+All files                             |    96.96 |    69.28 |    97.75 |    94.91 
 --------------------------------------|----------|----------|----------|----------
 ```
