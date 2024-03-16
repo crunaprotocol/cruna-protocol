@@ -321,6 +321,29 @@ internal function to return the manager (for lesser gas consumption)
 | ---- | ---- | ----------- |
 | [0] | address | the address of the manager |
 
+### addressOfDeployed
+
+```solidity
+function addressOfDeployed(address implementation, bytes32 salt, uint256 tokenId, bool isERC6551Account) external view virtual returns (address)
+```
+
+Returns the address of a deployed manager or plugin
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| implementation | address | The address of the manager or plugin implementation |
+| salt | bytes32 | The salt |
+| tokenId | uint256 | The tokenId |
+| isERC6551Account | bool | Specifies the registry to use True if the tokenId was deployed via ERC6551Registry, false, it was deployed via CrunaRegistry |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | address | The address of the deployed manager or plugin |
+
 ### _defaultManagerImplementation
 
 ```solidity
