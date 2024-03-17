@@ -26,7 +26,7 @@ async function main() {
   // It should not happen after the first guardian as been deployed, except if very serious
   // issues are found and a new guardian is needed. In that unfortunate case, all managers
   // and plugins will have to be upgraded by tokens' owners.
-  let salt = bytecodes.CrunaGuardian.salt;
+  let salt = bytecodes.CrunaRegistry.salt;
   bytecodes.CrunaRegistry.bytecode = await deployUtils.getBytecodeToBeDeployedViaNickSFactory(deployer, "CrunaRegistry");
 
   let canonical = fs.readFileSync(canonicalPath, "utf8");
