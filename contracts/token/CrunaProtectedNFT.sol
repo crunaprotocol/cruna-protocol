@@ -343,8 +343,14 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
 
   /**
    * @notice This function will mint a new token and initialize it.
-   * @dev Use it carefully if nftConf.progressiveTokenIds is true. Usually, used to
-   * reserve some specific token to the project itself, the DAO, etc.
+   * @dev Use it carefully if nftConf.progressiveTokenIds is true. Usually, you may
+   * want to do so if you reserved some specific token to the project itself, the DAO, etc.
+   * An example:
+   * You reserve 1000 tokens to the DAO, `nextTokenId` will be 1001.
+   * If you have a function the uses directly _mintAndActivate you MUST set a check
+   * to avoid minting tokens with higher id than `nextTokenId`. If than happens, when
+   * you call again _mintAndActivateByAmount, if one of the supposed tokens is already minted,
+   * the function will revert and the error may be unfixable.
    * @param to The address of the recipient.
    * @param tokenId The id of the token.
    */

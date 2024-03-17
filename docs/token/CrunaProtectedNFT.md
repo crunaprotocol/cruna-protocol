@@ -127,7 +127,7 @@ Initialize the NFT
 | managerAddress_ | address | The address of the manager |
 | progressiveTokenIds_ | bool | If true, the tokenIds will be progressive |
 | allowUntrustedTransfers_ | bool | If true, the token will allow untrusted plugins to transfer the tokens |
-| nextTokenId_ | uint112 | The next tokenId to be used |
+| nextTokenId_ | uint112 | The next tokenId to be used. If progressiveTokenIds_ == true and the project must reserve some tokens to special addresses, community, etc. You set the nextTokenId_ to the first not reserved token. Be careful, your function minting by tokenId MUST check that the tokenId is not higher than nextTokenId. If not, when trying to mint tokens by amount, as soon as nextTokenId reaches the minted tokenId, the function will revert, blocking any future minting. If you code may risk so, set a function that allow you to correct the nextTokenId to skip the token minted by mistake. |
 | maxTokenId_ | uint112 | The maximum tokenId that can be minted (it can be 0 if no upper limit) |
 
 ### allowUntrustedTransfers
@@ -451,8 +451,14 @@ function _mintAndActivate(address to, uint256 tokenId) internal virtual
 
 This function will mint a new token and initialize it.
 
-_Use it carefully if nftConf.progressiveTokenIds is true. Usually, used to
-reserve some specific token to the project itself, the DAO, etc._
+_Use it carefully if nftConf.progressiveTokenIds is true. Usually, you may
+want to do so if you reserved some specific token to the project itself, the DAO, etc.
+An example:
+You reserve 1000 tokens to the DAO, `nextTokenId` will be 1001.
+If you have a function the uses directly _mintAndActivate you MUST set a check
+to avoid minting tokens with higher id than `nextTokenId`. If than happens, when
+you call again _mintAndActivateByAmount, if one of the supposed tokens is already minted,
+the function will revert and the error may be unfixable._
 
 #### Parameters
 
