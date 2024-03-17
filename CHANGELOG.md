@@ -1,5 +1,8 @@
 # Change log
 
+**0.2.9**
+- Optimize the code for CrunaRegistry and deploy new bytecode
+
 **0.2.8**
 - Add more view in CrunaProtectedNFT to retrieve deployed plugins' addresses
 

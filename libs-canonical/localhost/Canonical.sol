@@ -21,7 +21,7 @@ library Canonical {
    * @notice Returns the CrunaRegistry contract
    */
   function crunaRegistry() internal pure returns (ICrunaRegistry) {
-    return ICrunaRegistry(0xccCCCb5339Db00811C69f52C384030cB431FBE00);
+    return ICrunaRegistry(0xCccCC45e6836482BF3089880FfcEb512D67926e2);
   }
 
   /**

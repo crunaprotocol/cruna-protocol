@@ -78,7 +78,8 @@ module.exports = {
       accounts: [env.DEPLOYER],
     },
     mumbai: {
-      url: "https://rpc-mumbai.maticvigil.com",
+      // url: "https://rpc-mumbai.maticvigil.com",
+      url: "https://polygon-mumbai.blockpi.network/v1/rpc/public",
       chainId: 80001,
       // gasPrice: 20000000000,
       gasLimit: 6000000,

@@ -1,22 +1,22 @@
 {
   "v0" : {
     "44787": {
-      "CrunaRegistry": "0xccCCCb5339Db00811C69f52C384030cB431FBE00",
+      "CrunaRegistry": "0xCccCC45e6836482BF3089880FfcEb512D67926e2",
       "CrunaGuardian": "0xCcCCcef4727755933fb5c381C231d44dB34c5442",
       "ERC6551Registry": "0x000000006551c19487814612e58FE06813775758",
-      "CrunaManager": "0x155Bb5f576b150F07f4EC1a22A0F46FfbB8Ae278",
-      "CrunaManagerProxy": "0x233FE954367be6aEB5De0949E181Baf4e0DA3ADa",
-      "InheritanceCrunaPlugin": "0xEE7F2Bf30e8e74E8Ba37717763737750deA3B78c",
-      "InheritanceCrunaPluginProxy": "0xE6648bb332F81054326bd24ABc350C2303D9E341"
+      "CrunaManager": "0xD3022af9Ed3FC89241e4CA40b7Fc82e318E3C13b",
+      "CrunaManagerProxy": "0x8C1A3D6C0DC84fc1f3396e4CEe037037A734d37F",
+      "InheritanceCrunaPlugin": "0xb77D6DfC04f00DA4e7FF4d96Af5A8bFAf5041C71",
+      "InheritanceCrunaPluginProxy": "0x08ffd31cE3fAD860082e963A6b40F6bAeF1165a2"
     },
     "80001": {
-      "CrunaRegistry": "0xccCCCb5339Db00811C69f52C384030cB431FBE00",
+      "CrunaRegistry": "0xCccCC45e6836482BF3089880FfcEb512D67926e2",
       "CrunaGuardian": "0xCcCCcef4727755933fb5c381C231d44dB34c5442",
       "ERC6551Registry": "0x000000006551c19487814612e58FE06813775758",
-      "CrunaManager": "0x155Bb5f576b150F07f4EC1a22A0F46FfbB8Ae278",
-      "CrunaManagerProxy": "0x233FE954367be6aEB5De0949E181Baf4e0DA3ADa",
-      "InheritanceCrunaPlugin": "0xEE7F2Bf30e8e74E8Ba37717763737750deA3B78c",
-      "InheritanceCrunaPluginProxy": "0xE6648bb332F81054326bd24ABc350C2303D9E341"
+      "CrunaManager": "0xD3022af9Ed3FC89241e4CA40b7Fc82e318E3C13b",
+      "CrunaManagerProxy": "0x8C1A3D6C0DC84fc1f3396e4CEe037037A734d37F",
+      "InheritanceCrunaPlugin": "0xb77D6DfC04f00DA4e7FF4d96Af5A8bFAf5041C71",
+      "InheritanceCrunaPluginProxy": "0x08ffd31cE3fAD860082e963A6b40F6bAeF1165a2"
     }
   }
 }

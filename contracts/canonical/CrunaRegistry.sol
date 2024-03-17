@@ -23,7 +23,7 @@ contract CrunaRegistry is ICrunaRegistry {
   function createTokenLinkedContract(
     address implementation,
     bytes32 salt,
-    uint256 chainId,
+    uint256 /* chainId */,
     address tokenContract,
     uint256 tokenId
   ) external override returns (address) {
@@ -43,9 +43,6 @@ contract CrunaRegistry is ICrunaRegistry {
       // 0xAC   chainId (uint256)              (32 bytes)
       // 0xCC   tokenContract (address)        (32 bytes)
       // 0xEC   tokenId (uint256)              (32 bytes)
-
-      // Silence unused variable warnings
-      pop(chainId)
 
       // Copy bytecode + constant data to memory
       calldatacopy(0x8c, 0x24, 0x80) // salt, chainId, tokenContract, tokenId
@@ -100,17 +97,12 @@ contract CrunaRegistry is ICrunaRegistry {
   function tokenLinkedContract(
     address implementation,
     bytes32 salt,
-    uint256 chainId,
-    address tokenContract,
-    uint256 tokenId
+    uint256 /* chainId */,
+    address /* tokenContract */,
+    uint256 /* tokenId */
   ) external view override returns (address) {
     // solhint-disable-next-line no-inline-assembly
     assembly {
-      // Silence unused variable warnings
-      pop(chainId)
-      pop(tokenContract)
-      pop(tokenId)
-
       // Copy bytecode + constant data to memory
       calldatacopy(0x8c, 0x24, 0x80) // salt, chainId, tokenContract, tokenId
       mstore(0x6c, 0x5af43d82803e903d91602b57fd5bf3) // ERC-1167 footer
