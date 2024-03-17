@@ -74,6 +74,8 @@ describe("CrunaManager : Protectors", function () {
     crunaRegistry = await ethers.getContractAt("CrunaRegistry", CRUNA_REGISTRY);
     guardian = await ethers.getContractAt("CrunaGuardian", CRUNA_GUARDIAN);
     erc6551Registry = await ethers.getContractAt("ERC6551Registry", ERC6551_REGISTRY);
+
+    expect(await getInterfaceId("ICrunaRegistry")).to.equal("0xcd691053");
   });
 
   beforeEach(async function () {

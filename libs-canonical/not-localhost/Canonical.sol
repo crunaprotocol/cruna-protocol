@@ -20,7 +20,7 @@ library Canonical {
    * @notice Returns the CrunaRegistry contract
    */
   function crunaRegistry() internal pure returns (ICrunaRegistry) {
-    return ICrunaRegistry(0xCccCC45e6836482BF3089880FfcEb512D67926e2);
+    return ICrunaRegistry(0x75cCa8eb2B7BCD072410562F10824EC0d3CF0d2e);
   }
 
   /**

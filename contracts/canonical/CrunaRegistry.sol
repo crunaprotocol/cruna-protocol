@@ -122,4 +122,12 @@ contract CrunaRegistry is ICrunaRegistry {
       return(0x00, 0x20)
     }
   }
+
+  /**
+   * @dev Returns true if interfaceId is IERC76xxRegistry's interfaceId
+   * This contract does not extend IERC165 to keep the bytecode as small as possible
+   */
+  function supportsInterface(bytes4 interfaceId) external pure returns (bool) {
+    return interfaceId == 0xcd691053;
+  }
 }

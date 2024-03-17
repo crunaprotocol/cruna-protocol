@@ -1,5 +1,8 @@
 # Change log
 
+**0.2.10**
+- Add supportsInterface to CrunaRegistry contract for generic implementations
+
 **0.2.9**
 - Optimize the code for CrunaRegistry and deploy new bytecode
 
