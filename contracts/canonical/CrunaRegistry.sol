@@ -19,7 +19,8 @@ contract CrunaRegistry is ICrunaRegistry {
    */
   error TokenLinkedContractCreationFailed();
 
-  /// @dev see {ICrunaRegistry-createTokenLinkedContract}
+  /// @notice Deployes token linked contracts.
+  /// Look at the interface for more information.
   function createTokenLinkedContract(
     address implementation,
     bytes32 salt,
@@ -93,7 +94,8 @@ contract CrunaRegistry is ICrunaRegistry {
     }
   }
 
-  /// @dev see {ICrunaRegistry-tokenLinkedContract}
+  /// @notice Returns the computed address of a token linked contract
+  /// Look at the interface for more information.
   function tokenLinkedContract(
     address implementation,
     bytes32 salt,
