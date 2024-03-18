@@ -15,20 +15,20 @@ node scripts/docs/resolve-docs-references.js
 
 cp -r contracts ./tmp/resolved-contracts
 
-# Compiles the new contracts to validate them
 npm run compile
+compile_status=$?
 
-# Lint the new contracts
 npm run lint:sol
+lint_status=$?
 
 # Check if both commands were successful
-#if [ $compile_status -eq 0 ] && [ $lint_status -eq 0 ]; then
+if [ $compile_status -eq 0 ] && [ $lint_status -eq 0 ]; then
     # If successful, produce the docs
     SKIP_CRYPTOENV=true npx hardhat docgen
     node scripts/docs/gen-index.js
-#else
-#    echo "Compilation or linting failed, skipping documentation generation."
-#fi
+else
+    echo "Compilation or linting failed, skipping documentation generation."
+fi
 
 # Revert the contracts
 rm -rf ./contracts
