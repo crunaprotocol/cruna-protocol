@@ -42,6 +42,10 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     return true;
   }
 
+  function requiredManagerVersion() external pure virtual override returns (uint256) {
+    return 1;
+  }
+
   /// @dev see {IInheritanceCrunaPlugin-isERC6551Account}
   function isERC6551Account() external pure virtual returns (bool) {
     return false;

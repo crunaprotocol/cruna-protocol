@@ -190,7 +190,7 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
    * @param tokenId The tokenId
    * @param isERC6551Account Specifies the registry to use
    * True if the tokenId was deployed via ERC6551Registry,
-   * false, it was deployed via CrunaRegistry
+   * false, it was deployed via ERC7656Registry
    * @return The address of the deployed manager or plugin
    */
   function addressOfDeployed(
@@ -207,7 +207,7 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
    * @param tokenId The tokenId
    * @param isERC6551Account Specifies the registry to use
    * True if the tokenId must be deployed via ERC6551Registry,
-   * false, it must be deployed via CrunaRegistry
+   * false, it must be deployed via ERC7656Registry
    */
   function deployPlugin(
     address pluginImplementation,
@@ -223,7 +223,7 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
    * @param tokenId The tokenId
    * @param isERC6551Account Specifies the registry to use
    * True if the tokenId was deployed via ERC6551Registry,
-   * false, it was deployed via CrunaRegistry
+   * false, it was deployed via ERC7656Registry
    */
   function isDeployed(
     address implementation,

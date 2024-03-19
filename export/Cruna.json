@@ -1531,6 +1531,25 @@
       "type": "function"
     },
     {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "interfaceId",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "token",
       "outputs": [
@@ -1637,7 +1656,7 @@
       "type": "function"
     }
   ],
-  "CrunaRegistry": [
+  "ERC7656Registry": [
     {
       "inputs": [],
       "name": "TokenLinkedContractCreationFailed",
@@ -2547,6 +2566,19 @@
     },
     {
       "inputs": [],
+      "name": "requiredManagerVersion",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "requiresResetOnTransfer",
       "outputs": [
         {
@@ -2634,6 +2666,25 @@
       "name": "setSentinels",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "interfaceId",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "pure",
       "type": "function"
     },
     {

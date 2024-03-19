@@ -1,7 +1,7 @@
 {
   "v0.2.10": {
     "contracts": {
-      "CrunaRegistry": "0x75cCa8eb2B7BCD072410562F10824EC0d3CF0d2e",
+      "ERC7656Registry": "0x75cCa8eb2B7BCD072410562F10824EC0d3CF0d2e",
       "CrunaGuardian": "0xCcCCcef4727755933fb5c381C231d44dB34c5442",
       "ERC6551Registry": "0x000000006551c19487814612e58FE06813775758",
       "CrunaManager": "0xD3022af9Ed3FC89241e4CA40b7Fc82e318E3C13b",

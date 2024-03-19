@@ -19,7 +19,7 @@ const {
   deployCanonical,
   setFakeCanonicalIfCoverage,
   deployNickSFactory,
-  deployCrunaRegistry,
+  deployERC7656Registry,
   getBytecodeForNickSFactory,
 } = require("./helpers");
 
@@ -39,7 +39,7 @@ describe("Testing contract deployments", function () {
 
     chainId = await getChainId();
     [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
-    crunaRegistry = await ethers.getContractAt("CrunaRegistry", CRUNA_REGISTRY);
+    crunaRegistry = await ethers.getContractAt("ERC7656Registry", CRUNA_REGISTRY);
     guardian = await ethers.getContractAt("CrunaGuardian", CRUNA_GUARDIAN);
     erc6551Registry = await ethers.getContractAt("ERC6551Registry", ERC6551_REGISTRY);
   });

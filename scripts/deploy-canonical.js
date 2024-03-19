@@ -35,9 +35,9 @@ async function main() {
   }
   await deployUtils.deployBytecodeViaNickSFactory(
     deployer,
-    "CrunaRegistry",
-    canonicalBytecodes.CrunaRegistry.bytecode,
-    canonicalBytecodes.CrunaRegistry.salt,
+    "ERC7656Registry",
+    canonicalBytecodes.ERC7656Registry.bytecode,
+    canonicalBytecodes.ERC7656Registry.salt,
   );
 
   await deployUtils.deployBytecodeViaNickSFactory(

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.20;
 
-import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
+import {IERC7656Contract} from "../erc/IERC7656Contract.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 import {CrunaManager} from "../manager/CrunaManager.sol";
 
@@ -11,7 +11,7 @@ import {CrunaManager} from "../manager/CrunaManager.sol";
  * @dev Technically, plugins are secondary managers, pluggable in
  * the primary manage, which is CrunaManager.sol
  */
-interface ICrunaPlugin is ITokenLinkedContract, IVersioned {
+interface ICrunaPlugin is IERC7656Contract, IVersioned {
   /**
    * @notice The configuration of the plugin
    */
@@ -67,6 +67,11 @@ interface ICrunaPlugin is ITokenLinkedContract, IVersioned {
    * @notice Called by the manager to know it the plugin must be reset when transferring the NFT
    */
   function requiresResetOnTransfer() external pure returns (bool);
+
+  /**
+   * @notice Returns the minimum version of the manager required by the plugin
+   */
+  function requiredManagerVersion() external pure returns (uint256);
 
   /**
    * @notice Called by the manager to know if the plugin is an ERC721 account

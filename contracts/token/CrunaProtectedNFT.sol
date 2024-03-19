@@ -267,7 +267,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
    * @param implementation The address of the implementation
    * @param salt The salt
    * @param tokenId The tokenId
-   * @param isERC6551Account If true, the tokenId has been deployed via ERC6551Registry, if false, via CrunaRegistry
+   * @param isERC6551Account If true, the tokenId has been deployed via ERC6551Registry, if false, via ERC7656Registry
    */
   function _addressOfDeployed(
     address implementation,
@@ -371,7 +371,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
    * @param salt The salt
    * @param tokenId The tokenId
    * @param isERC6551Account If true, the tokenId will be deployed via ERC6551Registry,
-   * if false, via CrunaRegistry
+   * if false, via ERC7656Registry
    */
   function _deploy(
     address implementation,

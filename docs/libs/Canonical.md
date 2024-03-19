@@ -13,10 +13,10 @@ to Npm, the addresses will be replaced by the actual addresses of the deployed c
 ### crunaRegistry
 
 ```solidity
-function crunaRegistry() internal pure returns (contract ICrunaRegistry)
+function crunaRegistry() internal pure returns (contract IERC7656Registry)
 ```
 
-Returns the CrunaRegistry contract
+Returns the ERC7656Registry contract
 
 ### erc6551Registry
 

@@ -76,7 +76,7 @@ const Helpers = {
   async deployCanonical(deployer, proposer, executor, delay) {
     await Helpers.deployNickSFactory(deployer);
 
-    const _CRUNA_REGISTRY = canonicalBytecodes.CrunaRegistry.address;
+    const _CRUNA_REGISTRY = canonicalBytecodes.ERC7656Registry.address;
     const _ERC6551_REGISTRY = canonicalBytecodes.ERC6551Registry.address;
     const _CRUNA_GUARDIAN = bytecodes.CrunaGuardian.address;
 
@@ -93,9 +93,9 @@ const Helpers = {
     let crunaRegistryAddress = (
       await thiz.deployBytecodeViaNickSFactory(
         deployer,
-        "CrunaRegistry",
-        canonicalBytecodes.CrunaRegistry.bytecode,
-        canonicalBytecodes.CrunaRegistry.salt,
+        "ERC7656Registry",
+        canonicalBytecodes.ERC7656Registry.bytecode,
+        canonicalBytecodes.ERC7656Registry.salt,
       )
     ).address;
 

@@ -1,16 +1,20 @@
 // SPDX-License-Identifier: GPL3
 pragma solidity ^0.8.20;
 
-import {IERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {IERC165, IERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 
-import {ITokenLinkedContract} from "./ITokenLinkedContract.sol";
+import {IERC7656Contract} from "../erc/IERC7656Contract.sol";
 
 /**
  * @title TokenLinkedContract
  * @notice Abstract contract to link a contract to an NFT
  */
-abstract contract TokenLinkedContract is ITokenLinkedContract {
+abstract contract TokenLinkedContract is IERC7656Contract, IERC165 {
+  function supportsInterface(bytes4 interfaceId) external pure returns (bool) {
+    return interfaceId == type(IERC7656Contract).interfaceId;
+  }
+
   /**
    * @notice Returns the token linked to the contract
    */

@@ -1,13 +1,17 @@
 # Change log
 
+**0.3.0**
+- Rename `CrunaRegistry` as `ERC7656Registry` 
+- Remove required version from `CrunaGuardian`
+
 **0.2.10**
-- Add supportsInterface to CrunaRegistry contract for generic implementations
+- Add supportsInterface to `CrunaRegistry` contract for generic implementations
 
 **0.2.9**
-- Optimize the code for CrunaRegistry and deploy new bytecode
+- Optimize the code for `CrunaRegistry` and deploy new bytecode
 
 **0.2.8**
-- Add more view in CrunaProtectedNFT to retrieve deployed plugins' addresses
+- Add more view in `CrunaProtectedNFT` to retrieve deployed plugins' addresses
 
 **0.2.7**
 - Make `CrunaProtectedNFT` variables `_nftConf` and `_managerHistory` internal

@@ -7,13 +7,13 @@ pragma solidity ^0.8.20;
 // We deploy our own registry to avoid misleading observers that may believe
 // that managers and plugins are accounts.
 
-import {ICrunaRegistry} from "./ICrunaRegistry.sol";
+import {IERC7656Registry} from "../erc/IERC7656Registry.sol";
 
 /**
  * @title CrunaRegistry
  * @notice Manages the creation of token bound accounts
  */
-contract CrunaRegistry is ICrunaRegistry {
+contract ERC7656Registry is IERC7656Registry {
   /**
    * @notice The registry MUST revert with TokenLinkedContractCreationFailed error if the create2 operation fails.
    */

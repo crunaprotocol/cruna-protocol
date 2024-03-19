@@ -13,7 +13,7 @@ function findUnusedCustomErrors(contractContent) {
   return errors.filter((error) => !RegExp("revert " + error + "\\(", "g").test(contractContent));
 }
 
-const skipFiles = ["CrunaRegistry"];
+const skipFiles = ["ERC7656Registry"];
 
 function analyzeContracts(dir) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });

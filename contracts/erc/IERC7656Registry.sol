@@ -8,9 +8,9 @@ pragma solidity ^0.8.20;
  *
  * @notice Manages the creation of token bound accounts
  */
-interface ICrunaRegistry {
+interface IERC7656Registry {
   /**
-   * @notice The registry MUST emit the ERC6551AccountCreated event upon successful account creation.
+   * @notice The registry MUST emit the TokenLinkedContractCreated event upon successful account creation.
    * @param contractAddress The address of the created account
    * @param implementation The address of the implementation contract
    * @param salt The salt to use for the create2 operation
