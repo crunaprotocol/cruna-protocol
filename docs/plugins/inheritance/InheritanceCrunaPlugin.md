@@ -28,6 +28,14 @@ function requiresToManageTransfer() external pure returns (bool)
 
 Allows the beneficiary to inherit the token
 
+### requiresManagerVersion
+
+```solidity
+function requiresManagerVersion() external pure virtual returns (uint256)
+```
+
+Returns the minimum version of the manager required by the plugin
+
 ### isERC6551Account
 
 ```solidity

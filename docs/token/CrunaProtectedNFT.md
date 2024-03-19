@@ -268,7 +268,7 @@ Deploys a plugin
 | pluginImplementation | address | The address of the plugin implementation |
 | salt | bytes32 | The salt |
 | tokenId | uint256 | The tokenId |
-| isERC6551Account | bool | Specifies the registry to use True if the tokenId must be deployed via ERC6551Registry, false, it must be deployed via CrunaRegistry |
+| isERC6551Account | bool | Specifies the registry to use True if the tokenId must be deployed via ERC6551Registry, false, it must be deployed via ERC7656Registry |
 
 ### isDeployed
 
@@ -285,7 +285,7 @@ Returns if a plugin is deployed
 | implementation | address | The address of the plugin implementation |
 | salt | bytes32 | The salt |
 | tokenId | uint256 | The tokenId |
-| isERC6551Account | bool | Specifies the registry to use True if the tokenId was deployed via ERC6551Registry, false, it was deployed via CrunaRegistry |
+| isERC6551Account | bool | Specifies the registry to use True if the tokenId was deployed via ERC6551Registry, false, it was deployed via ERC7656Registry |
 
 ### managerOf
 
@@ -336,7 +336,7 @@ Returns the address of a deployed manager or plugin
 | implementation | address | The address of the manager or plugin implementation |
 | salt | bytes32 | The salt |
 | tokenId | uint256 | The tokenId |
-| isERC6551Account | bool | Specifies the registry to use True if the tokenId was deployed via ERC6551Registry, false, it was deployed via CrunaRegistry |
+| isERC6551Account | bool | Specifies the registry to use True if the tokenId was deployed via ERC6551Registry, false, it was deployed via ERC7656Registry |
 
 #### Return Values
 
@@ -379,7 +379,7 @@ Internal function to return the address of a deployed token bound contract
 | implementation | address | The address of the implementation |
 | salt | bytes32 | The salt |
 | tokenId | uint256 | The tokenId |
-| isERC6551Account | bool | If true, the tokenId has been deployed via ERC6551Registry, if false, via CrunaRegistry |
+| isERC6551Account | bool | If true, the tokenId has been deployed via ERC6551Registry, if false, via ERC7656Registry |
 
 ### _canManage
 
@@ -482,5 +482,5 @@ This function deploys a token-bound contract (manager or plugin)
 | implementation | address | The address of the implementation |
 | salt | bytes32 | The salt |
 | tokenId | uint256 | The tokenId |
-| isERC6551Account | bool | If true, the tokenId will be deployed via ERC6551Registry, if false, via CrunaRegistry |
+| isERC6551Account | bool | If true, the tokenId will be deployed via ERC6551Registry, if false, via ERC7656Registry |
 

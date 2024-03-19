@@ -283,7 +283,7 @@ Returns the address of a deployed manager or plugin
 | implementation | address | The address of the manager or plugin implementation |
 | salt | bytes32 | The salt |
 | tokenId | uint256 | The tokenId |
-| isERC6551Account | bool | Specifies the registry to use True if the tokenId was deployed via ERC6551Registry, false, it was deployed via CrunaRegistry |
+| isERC6551Account | bool | Specifies the registry to use True if the tokenId was deployed via ERC6551Registry, false, it was deployed via ERC7656Registry |
 
 #### Return Values
 
@@ -306,7 +306,7 @@ Deploys a plugin
 | pluginImplementation | address | The address of the plugin implementation |
 | salt | bytes32 | The salt |
 | tokenId | uint256 | The tokenId |
-| isERC6551Account | bool | Specifies the registry to use True if the tokenId must be deployed via ERC6551Registry, false, it must be deployed via CrunaRegistry |
+| isERC6551Account | bool | Specifies the registry to use True if the tokenId must be deployed via ERC6551Registry, false, it must be deployed via ERC7656Registry |
 
 ### isDeployed
 
@@ -323,5 +323,5 @@ Returns if a plugin is deployed
 | implementation | address | The address of the plugin implementation |
 | salt | bytes32 | The salt |
 | tokenId | uint256 | The tokenId |
-| isERC6551Account | bool | Specifies the registry to use True if the tokenId was deployed via ERC6551Registry, false, it was deployed via CrunaRegistry |
+| isERC6551Account | bool | Specifies the registry to use True if the tokenId was deployed via ERC6551Registry, false, it was deployed via ERC7656Registry |
 

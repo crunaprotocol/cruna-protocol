@@ -46,17 +46,6 @@ Returns the version of the contract.
 The format is similar to semver, where any element takes 3 digits.
 For example, version 1.2.14 is 1_002_014.
 
-### upgrade
-
-```solidity
-function upgrade(address implementation_) external virtual
-```
-
-Upgrade the implementation of the manager/plugin
-Notice that the owner can upgrade active or disable plugins
-so that, if a plugin is compromised, the user can disable it,
-wait for a new trusted implementation and upgrade it.
-
 ### resetOnTransfer
 
 ```solidity

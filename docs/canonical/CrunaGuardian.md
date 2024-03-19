@@ -46,7 +46,7 @@ For example, version 1.2.14 is 1_002_014.
 ### setTrustedImplementation
 
 ```solidity
-function setTrustedImplementation(bytes4 nameId, address implementation, bool trusted, uint256 requires) external
+function setTrustedImplementation(bytes4 nameId, address implementation, bool trusted) external
 ```
 
 Sets a given implementation address as trusted, allowing accounts to upgrade to this implementation.
@@ -57,13 +57,12 @@ Sets a given implementation address as trusted, allowing accounts to upgrade to 
 | ---- | ---- | ----------- |
 | nameId | bytes4 | The bytes4 nameId of the implementation |
 | implementation | address | The address of the implementation |
-| trusted | bool | When true, it set the implementation as trusted, when false it removes the implementation from the trusted list |
-| requires | uint256 | The version of the manager required by the implementation (for plugins) Notice that for managers requires will always be 1 |
+| trusted | bool | When true, it set the implementation as trusted, when false it removes the implementation from the trusted list Notice that for managers requires will always be 1 |
 
 ### trustedImplementation
 
 ```solidity
-function trustedImplementation(bytes4 nameId, address implementation) external view returns (uint256)
+function trustedImplementation(bytes4 nameId, address implementation) external view returns (bool)
 ```
 
 Returns the manager version required by a trusted implementation
@@ -79,5 +78,5 @@ Returns the manager version required by a trusted implementation
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| [0] | uint256 | The version of the manager required by a trusted implementation. If it is 0, it means the implementation is not trusted |
+| [0] | bool | True if a trusted implementation |
 

@@ -7,13 +7,14 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 import {IInheritanceCrunaPlugin} from "./IInheritanceCrunaPlugin.sol";
-import {ICrunaPlugin, CrunaPluginBase} from "../CrunaPluginBase.sol";
+import {ICrunaPlugin} from "../ICrunaPlugin.sol";
+import {CrunaPluginBaseUpgradeable} from "../CrunaPluginBaseUpgradeable.sol";
 
 /**
  * @title InheritanceCrunaPlugin
  * @notice This contract manages inheritance
  */
-contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaPluginBase {
+contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaPluginBaseUpgradeable {
   using ECDSA for bytes32;
   using Strings for uint256;
 
@@ -42,7 +43,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     return true;
   }
 
-  function requiredManagerVersion() external pure virtual override returns (uint256) {
+  function requiresManagerVersion() external pure virtual override returns (uint256) {
     return 1;
   }
 

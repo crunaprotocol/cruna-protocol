@@ -23,15 +23,13 @@ abstract contract CrunaManagerBase is ICrunaManager, CommonBase, ReentrancyGuard
   function upgrade(address implementation_) external virtual override nonReentrant {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     if (implementation_ == address(0)) revert ZeroAddress();
-    uint256 requires = Canonical.crunaGuardian().trustedImplementation(bytes4(keccak256("CrunaManager")), implementation_);
-    if (0 == requires) revert UntrustedImplementation(implementation_);
+    if (!Canonical.crunaGuardian().trustedImplementation(bytes4(keccak256("CrunaManager")), implementation_))
+      revert UntrustedImplementation(implementation_);
     INamedAndVersioned impl = INamedAndVersioned(implementation_);
     uint256 currentVersion = _version();
     uint256 newVersion = impl.version();
     if (newVersion <= _version()) revert InvalidVersion(_version(), newVersion);
     if (impl.nameId() != _stringToBytes4("CrunaManager")) revert NotAManager(_msgSender());
-    INamedAndVersioned manager = INamedAndVersioned(_vault().managerOf(tokenId()));
-    if (manager.version() < requires) revert PluginRequiresUpdatedManager(requires);
     StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
     emit ImplementationUpgraded(implementation_, currentVersion, newVersion);
     CrunaManagerBase _newManager = CrunaManagerBase(address(this));

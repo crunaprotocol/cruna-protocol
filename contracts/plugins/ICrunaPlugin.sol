@@ -71,7 +71,7 @@ interface ICrunaPlugin is IERC7656Contract, IVersioned {
   /**
    * @notice Returns the minimum version of the manager required by the plugin
    */
-  function requiredManagerVersion() external pure returns (uint256);
+  function requiresManagerVersion() external pure returns (uint256);
 
   /**
    * @notice Called by the manager to know if the plugin is an ERC721 account
@@ -85,14 +85,6 @@ interface ICrunaPlugin is IERC7656Contract, IVersioned {
 
   // @dev During transfer, to reduce gas consumption, should set _conf.mustBeReset to 1
   function resetOnTransfer() external;
-
-  /**
-   * @notice Upgrade the implementation of the manager/plugin
-   * Notice that the owner can upgrade active or disable plugins
-   * so that, if a plugin is compromised, the user can disable it,
-   * wait for a new trusted implementation and upgrade it.
-   */
-  function upgrade(address implementation_) external;
 
   /**
    * @notice Returns the manager

@@ -337,7 +337,7 @@ const Helpers = {
     return types;
   },
 
-  async trustImplementation(guardian, proposer, executor, delay, nameId, implementation, trusted, requires) {
+  async trustImplementation(guardian, proposer, executor, delay, nameId, implementation, trusted) {
     return thiz.proposeAndExecute(
       guardian,
       proposer,
@@ -347,7 +347,6 @@ const Helpers = {
       nameId,
       implementation,
       trusted,
-      requires,
     );
   },
 

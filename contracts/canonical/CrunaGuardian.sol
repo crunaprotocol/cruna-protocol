@@ -22,7 +22,7 @@ contract CrunaGuardian is ICrunaGuardian, IVersioned, FlexiTimelockController {
   /**
    * @notice Emitted when a trusted implementation is updated
    */
-  mapping(bytes32 nameIdAndImplementationAddress => uint256 requiredManagerVersion) private _trustedImplementations;
+  mapping(bytes32 nameIdAndImplementationAddress => bool trusted) private _trustedImplementations;
 
   /**
    * @notice When deployed to production, proposers and executors will be multi-sig wallets owned by the Cruna DAO
@@ -49,22 +49,18 @@ contract CrunaGuardian is ICrunaGuardian, IVersioned, FlexiTimelockController {
   function setTrustedImplementation(
     bytes4 nameId,
     address implementation,
-    bool trusted,
-    uint256 requires
+    bool trusted
   ) external override onlyThroughTimeController {
-    if (requires == 0 || implementation == address(0)) {
-      revert InvalidArguments();
-    }
     bytes32 _key = bytes32(nameId) | bytes32(uint256(uint160(implementation)));
     if (trusted) {
-      _trustedImplementations[_key] = requires;
+      _trustedImplementations[_key] = true;
     } else {
       delete _trustedImplementations[_key];
     }
-    emit TrustedImplementationUpdated(nameId, implementation, trusted, requires);
+    emit TrustedImplementationUpdated(nameId, implementation, trusted);
   }
 
-  function trustedImplementation(bytes4 nameId, address implementation) external view override returns (uint256) {
+  function trustedImplementation(bytes4 nameId, address implementation) external view override returns (bool) {
     return _trustedImplementations[bytes32(nameId) | bytes32(uint256(uint160(implementation)))];
   }
 }

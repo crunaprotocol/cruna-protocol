@@ -2566,7 +2566,7 @@
     },
     {
       "inputs": [],
-      "name": "requiredManagerVersion",
+      "name": "requiresManagerVersion",
       "outputs": [
         {
           "internalType": "uint256",
@@ -5291,12 +5291,6 @@
           "internalType": "bool",
           "name": "trusted",
           "type": "bool"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "requires",
-          "type": "uint256"
         }
       ],
       "name": "TrustedImplementationUpdated",
@@ -5991,11 +5985,6 @@
           "internalType": "bool",
           "name": "trusted",
           "type": "bool"
-        },
-        {
-          "internalType": "uint256",
-          "name": "requires",
-          "type": "uint256"
         }
       ],
       "name": "setTrustedImplementation",
@@ -6038,9 +6027,9 @@
       "name": "trustedImplementation",
       "outputs": [
         {
-          "internalType": "uint256",
+          "internalType": "bool",
           "name": "",
-          "type": "uint256"
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
