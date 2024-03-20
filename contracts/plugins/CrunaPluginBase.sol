@@ -49,6 +49,21 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
     _conf.mustBeReset = 1;
   }
 
+  /// @dev see {ICrunaPlugin-requiresToManageTransfer}
+  function requiresToManageTransfer() external pure virtual override returns (bool) {
+    return false;
+  }
+
+  /// @dev see {ICrunaPlugin-requiresManagerVersion}
+  function requiresManagerVersion() external pure virtual override returns (uint256) {
+    return 1;
+  }
+
+  /// @dev see {ICrunaPlugin-isERC6551Account}
+  function isERC6551Account() external pure virtual returns (bool) {
+    return false;
+  }
+
   /**
    * @notice Internal function to verify if a signer can pre approve an operation (if the sender is a protector)
    * The params:

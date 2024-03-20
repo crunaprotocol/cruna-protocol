@@ -54,6 +54,31 @@ function resetOnTransfer() external
 
 Reset the plugin to the factory settings
 
+### requiresToManageTransfer
+
+```solidity
+function requiresToManageTransfer() external pure virtual returns (bool)
+```
+
+Called by the manager during the plugging to know if the plugin is asking the
+right to make a managed transfer of the vault
+
+### requiresManagerVersion
+
+```solidity
+function requiresManagerVersion() external pure virtual returns (uint256)
+```
+
+Returns the minimum version of the manager required by the plugin
+
+### isERC6551Account
+
+```solidity
+function isERC6551Account() external pure virtual returns (bool)
+```
+
+Called by the manager to know if the plugin is an ERC721 account
+
 ### _canPreApprove
 
 ```solidity

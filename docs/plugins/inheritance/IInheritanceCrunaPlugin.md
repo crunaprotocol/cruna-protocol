@@ -322,3 +322,17 @@ function inherit() external
 
 Allows the beneficiary to inherit the token
 
+### upgrade
+
+```solidity
+function upgrade(address implementation_) external
+```
+
+Upgrades the implementation of the plugin
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| implementation_ | address | The new implementation |
+

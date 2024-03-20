@@ -75,7 +75,6 @@ This dual-pathway for plugin deployment underscores the protocol's flexibility a
   - [ICrunaManager](./manager/ICrunaManager.md)
 - Plugins
   - [CrunaPluginBase](./plugins/CrunaPluginBase.md)
-  - [CrunaPluginBaseUpgradeable](./plugins/CrunaPluginBaseUpgradeable.md)
   - [ICrunaPlugin](./plugins/ICrunaPlugin.md)
 - Plugins/inheritance
   - [IInheritanceCrunaPlugin](./plugins/inheritance/IInheritanceCrunaPlugin.md)
@@ -95,7 +94,6 @@ This dual-pathway for plugin deployment underscores the protocol's flexibility a
   - [INamed](./utils/INamed.md)
   - [INamedAndVersioned](./utils/INamedAndVersioned.md)
   - [ISignatureValidator](./utils/ISignatureValidator.md)
-  - [ITokenLinkedContract](./utils/ITokenLinkedContract.md)
   - [IVersioned](./utils/IVersioned.md)
   - [SignatureValidator](./utils/SignatureValidator.md)
   - [TokenLinkedContract](./utils/TokenLinkedContract.md)

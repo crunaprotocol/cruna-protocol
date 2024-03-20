@@ -5,16 +5,19 @@ pragma solidity ^0.8.20;
 
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {IInheritanceCrunaPlugin} from "./IInheritanceCrunaPlugin.sol";
 import {ICrunaPlugin} from "../ICrunaPlugin.sol";
-import {CrunaPluginBaseUpgradeable} from "../CrunaPluginBaseUpgradeable.sol";
+import {CrunaPluginBase} from "../CrunaPluginBase.sol";
+import {Canonical} from "../../libs/Canonical.sol";
 
 /**
  * @title InheritanceCrunaPlugin
  * @notice This contract manages inheritance
  */
-contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaPluginBaseUpgradeable {
+contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaPluginBase, ReentrancyGuard {
   using ECDSA for bytes32;
   using Strings for uint256;
 
@@ -38,18 +41,9 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
    */
   Votes internal _votes;
 
-  /// @dev see {IInheritanceCrunaPlugin-requiresToManageTransfer}
-  function requiresToManageTransfer() external pure override returns (bool) {
+  /// @dev see {ICrunaPlugin-requiresToManageTransfer}
+  function requiresToManageTransfer() external pure override(CrunaPluginBase, ICrunaPlugin) returns (bool) {
     return true;
-  }
-
-  function requiresManagerVersion() external pure virtual override returns (uint256) {
-    return 1;
-  }
-
-  /// @dev see {IInheritanceCrunaPlugin-isERC6551Account}
-  function isERC6551Account() external pure virtual returns (bool) {
-    return false;
   }
 
   /// @dev see {IInheritanceCrunaPlugin-setSentinel}
@@ -186,10 +180,29 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     _reset();
   }
 
-  /// @dev see {ICrunaPlugin-requiresResetOnTransfer}
   function requiresResetOnTransfer() external pure returns (bool) {
     return true;
   }
+
+  /// @dev see {IInheritanceCrunaPlugin-upgrade}
+  function upgrade(address implementation_) external virtual nonReentrant {
+    if (owner() != _msgSender()) revert NotTheTokenOwner();
+    if (implementation_ == address(0)) revert ZeroAddress();
+    bool trusted = Canonical.crunaGuardian().trustedImplementation(_nameId(), implementation_);
+    if (!trusted) {
+      // If current implementation is trusted, the new implementation must be trusted too
+      if (Canonical.crunaGuardian().trustedImplementation(_nameId(), implementation()))
+        revert UntrustedImplementation(implementation_);
+    }
+    ICrunaPlugin impl = ICrunaPlugin(implementation_);
+    uint256 version_ = impl.version();
+    if (version_ <= _version()) revert InvalidVersion(_version(), version_);
+    uint256 requiredVersion = impl.requiresManagerVersion();
+    if (_conf.manager.version() < requiredVersion) revert PluginRequiresUpdatedManager(requiredVersion);
+    StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
+  }
+
+  // Internal functions
 
   function _nameId() internal pure virtual override returns (bytes4) {
     return bytes4(keccak256("InheritanceCrunaPlugin"));
