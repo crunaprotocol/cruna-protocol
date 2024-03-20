@@ -277,7 +277,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
   ) internal view virtual returns (address) {
     return
       ERC6551AccountLib.computeAddress(
-        isERC6551Account ? address(Canonical.erc6551Registry()) : address(Canonical.crunaRegistry()),
+        isERC6551Account ? address(Canonical.erc6551Registry()) : address(Canonical.erc7656Registry()),
         implementation,
         salt,
         block.chainid,
@@ -382,6 +382,6 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     if (isERC6551Account) {
       return Canonical.erc6551Registry().createAccount(implementation, salt, block.chainid, _SELF, tokenId);
     }
-    return Canonical.crunaRegistry().createTokenLinkedContract(implementation, salt, block.chainid, _SELF, tokenId);
+    return Canonical.erc7656Registry().createTokenLinkedContract(implementation, salt, block.chainid, _SELF, tokenId);
   }
 }

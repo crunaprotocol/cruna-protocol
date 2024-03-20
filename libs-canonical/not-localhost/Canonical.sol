@@ -19,7 +19,7 @@ library Canonical {
   /**
    * @notice Returns the ERC7656Registry contract
    */
-  function crunaRegistry() internal pure returns (IERC7656Registry) {
+  function erc7656Registry() internal pure returns (IERC7656Registry) {
     return IERC7656Registry(0x75cCa8eb2B7BCD072410562F10824EC0d3CF0d2e);
   }
 
@@ -34,6 +34,6 @@ library Canonical {
    * @notice Returns the CrunaGuardian contract
    */
   function crunaGuardian() internal pure returns (ICrunaGuardian) {
-    return ICrunaGuardian(0xB05B9DA88E462b3F77A01AAB8A0Df0598A4f11DA);
+    return ICrunaGuardian(0x03e2553DE0DfCD44a4536104a0339dcA6fAf8e94);
   }
 }

@@ -10,10 +10,10 @@ and 3rd hardhat standard wallets as proposer and executor).
 This contract is for development and testing purposes only. When the package is published
 to Npm, the addresses will be replaced by the actual addresses of the deployed contracts._
 
-### crunaRegistry
+### erc7656Registry
 
 ```solidity
-function crunaRegistry() internal pure returns (contract IERC7656Registry)
+function erc7656Registry() internal pure returns (contract IERC7656Registry)
 ```
 
 Returns the ERC7656Registry contract

@@ -390,7 +390,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
   function _pluginAddress(bytes4 nameId_, bytes4 salt) internal view virtual returns (address payable) {
     return
       payable(
-        Canonical.crunaRegistry().tokenLinkedContract(
+        Canonical.erc7656Registry().tokenLinkedContract(
           _pluginByKey[_combineBytes4(nameId_, salt)].proxyAddress,
           salt,
           block.chainid,

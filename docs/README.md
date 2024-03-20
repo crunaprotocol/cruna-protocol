@@ -56,10 +56,8 @@ This dual-pathway for plugin deployment underscores the protocol's flexibility a
 
 - Canonical
   - [CrunaGuardian](./canonical/CrunaGuardian.md)
-  - [CrunaRegistry](./canonical/CrunaRegistry.md)
   - [ERC7656Registry](./canonical/ERC7656Registry.md)
   - [ICrunaGuardian](./canonical/ICrunaGuardian.md)
-  - [ICrunaRegistry](./canonical/ICrunaRegistry.md)
 - Erc
   - [IERC6454](./erc/IERC6454.md)
   - [IERC6982](./erc/IERC6982.md)

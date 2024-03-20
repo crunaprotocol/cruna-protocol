@@ -26,7 +26,6 @@ async function main() {
     PLUGIN_ID,
     plugin.address,
     true,
-    1,
   );
 }
 
