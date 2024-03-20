@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+import {TimelockController} from "@openzeppelin/contracts/governance/TimelockController.sol";
+
 import {ICrunaGuardian} from "./ICrunaGuardian.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
-import {FlexiTimelockController} from "../utils/FlexiTimelockController.sol";
 
 /**
  * @title CrunaGuardian
@@ -13,13 +14,26 @@ import {FlexiTimelockController} from "../utils/FlexiTimelockController.sol";
  * - manager and plugins to upgrade its own  implementation
  * - manager to trust a new plugin implementation and allow managed transfers
  */
-contract CrunaGuardian is ICrunaGuardian, IVersioned, FlexiTimelockController {
+contract CrunaGuardian is ICrunaGuardian, IVersioned, TimelockController {
   bool private _allowUntrusted;
 
   /**
    * @notice Error returned when the arguments are invalid
    */
   error InvalidArguments();
+
+  /**
+   * @notice Error returned when the function is not called through the TimelockController
+   */
+  error MustCallThroughTimeController();
+
+  /**
+   * @notice Modifier to allow only the TimelockController to call a function.
+   */
+  modifier onlyThroughTimeController() {
+    if (msg.sender != address(this)) revert MustCallThroughTimeController();
+    _;
+  }
 
   /**
    * @notice Emitted when a trusted implementation is updated
@@ -39,12 +53,12 @@ contract CrunaGuardian is ICrunaGuardian, IVersioned, FlexiTimelockController {
     address[] memory proposers,
     address[] memory executors,
     address admin
-  ) FlexiTimelockController(minDelay, proposers, executors, admin) {}
+  ) TimelockController(minDelay, proposers, executors, admin) {}
 
   /// @dev see {IVersioned-version}
   function version() external pure virtual returns (uint256) {
     // v1.1.0
-    return 1_001_000;
+    return 1_002_000;
   }
 
   /// @dev see {ICrunaGuardian-setTrustedImplementation}

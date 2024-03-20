@@ -7,7 +7,7 @@ Abstract contract to link a contract to an NFT
 ### supportsInterface
 
 ```solidity
-function supportsInterface(bytes4 interfaceId) external pure returns (bool)
+function supportsInterface(bytes4 interfaceId) public pure virtual returns (bool)
 ```
 
 _Returns true if this contract implements the interface defined by

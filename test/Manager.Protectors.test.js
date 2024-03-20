@@ -75,8 +75,8 @@ describe("CrunaManager : Protectors", function () {
     guardian = await ethers.getContractAt("CrunaGuardian", CRUNA_GUARDIAN);
     erc6551Registry = await ethers.getContractAt("ERC6551Registry", ERC6551_REGISTRY);
 
-    expect(await getInterfaceId("IERC7656Registry")).to.equal("0xcd691053");
-    expect(await crunaRegistry.supportsInterface("0xcd691053")).to.equal(true);
+    expect(await getInterfaceId("IERC7656Registry")).to.equal("0xc6bdc908");
+    expect(await crunaRegistry.supportsInterface("0xc6bdc908")).to.equal(true);
   });
 
   beforeEach(async function () {
@@ -113,10 +113,10 @@ describe("CrunaManager : Protectors", function () {
     const nextTokenId = (await vault.nftConf()).nextTokenId;
     const precalculatedAddress = await vault.managerOf(nextTokenId);
 
-    // console.log(keccak256("TokenLinkedContractCreated(address,address,bytes32,uint256,address,uint256)"))
+    // console.log(keccak256("Created(address,address,bytes32,uint256,address,uint256)"))
 
     await expect(factory.connect(bob).buyVaults(usdc.address, 1))
-      .to.emit(crunaRegistry, "TokenLinkedContractCreated")
+      .to.emit(crunaRegistry, "Created")
       .withArgs(
         precalculatedAddress,
         toChecksumAddress(proxy.address),
@@ -131,6 +131,8 @@ describe("CrunaManager : Protectors", function () {
 
     return nextTokenId;
   };
+
+  it("should validate deployAndInit", async function () {});
 
   it("should fail if function not found in proxy", async function () {
     const fakeAbi = [
@@ -167,7 +169,7 @@ describe("CrunaManager : Protectors", function () {
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
 
-    expect(await manager.version()).to.equal(1000002);
+    expect(await manager.version()).to.equal(1001000);
     expect(await manager.tokenId()).to.equal(tokenId);
     expect(await manager.tokenAddress()).to.equal(vault.address);
     expect(await manager.owner()).to.equal(bob.address);

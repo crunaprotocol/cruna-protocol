@@ -6,15 +6,15 @@
 --------------------------------------|----------|----------|----------|----------
 File                                  |  % Stmts | % Branch |  % Funcs |  % Lines 
 --------------------------------------|----------|----------|----------|----------
- canonical/                           |    71.43 |    33.33 |    44.44 |       50 
-  CrunaGuardian.sol                   |    83.33 |    33.33 |    66.67 |    66.67 
+ erc/                                 |        0 |      100 |        0 |        0 
   ERC7656Registry.sol                 |        0 |      100 |        0 |        0 
-  ICrunaGuardian.sol                  |      100 |      100 |      100 |      100 
- erc/                                 |      100 |      100 |      100 |      100 
   IERC6454.sol                        |      100 |      100 |      100 |      100 
   IERC6982.sol                        |      100 |      100 |      100 |      100 
   IERC7656Contract.sol                |      100 |      100 |      100 |      100 
   IERC7656Registry.sol                |      100 |      100 |      100 |      100 
+ guardian/                            |    85.71 |     37.5 |    71.43 |    72.73 
+  CrunaGuardian.sol                   |    85.71 |     37.5 |    71.43 |    72.73 
+  ICrunaGuardian.sol                  |      100 |      100 |      100 |      100 
  libs/                                |      100 |      100 |      100 |      100 
   Canonical.sol                       |      100 |      100 |      100 |      100 
   ExcessivelySafeCall.sol             |      100 |      100 |      100 |      100 
@@ -25,12 +25,12 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   CrunaManagerBase.sol                |      100 |    66.67 |      100 |      100 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   ICrunaManager.sol                   |      100 |      100 |      100 |      100 
- plugins/                             |    92.31 |       50 |    91.67 |    93.75 
-  CrunaPluginBase.sol                 |    92.31 |       50 |    91.67 |    93.75 
+ plugins/                             |    84.62 |       50 |    83.33 |     87.5 
+  CrunaPluginBase.sol                 |    84.62 |       50 |    83.33 |     87.5 
   ICrunaPlugin.sol                    |      100 |      100 |      100 |      100 
- plugins/inheritance/                 |       91 |    65.69 |       96 |    88.81 
+ plugins/inheritance/                 |    91.09 |    65.69 |    96.15 |    88.89 
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
-  InheritanceCrunaPlugin.sol          |       91 |    65.69 |    95.83 |    88.81 
+  InheritanceCrunaPlugin.sol          |    91.09 |    65.69 |       96 |    88.89 
   InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
  token/                               |    98.63 |    65.28 |      100 |     98.8 
   CrunaProtectedNFT.sol               |    98.53 |    64.06 |      100 |    98.73 
@@ -38,10 +38,9 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   CrunaProtectedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaProtectedNFT.sol              |      100 |      100 |      100 |      100 
   IManagedNFT.sol                     |      100 |      100 |      100 |      100 
- utils/                               |    94.74 |    71.15 |    96.77 |    96.88 
+ utils/                               |    93.75 |    82.35 |       96 |     96.3 
   CommonBase.sol                      |      100 |      100 |      100 |      100 
   ERC6551AccountProxy.sol             |       90 |       75 |      100 |    90.91 
-  FlexiTimelockController.sol         |      100 |       50 |      100 |      100 
   ICommonBase.sol                     |      100 |      100 |      100 |      100 
   INamed.sol                          |      100 |      100 |      100 |      100 
   INamedAndVersioned.sol              |      100 |      100 |      100 |      100 
@@ -50,6 +49,6 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   SignatureValidator.sol              |      100 |    86.36 |      100 |      100 
   TokenLinkedContract.sol             |    81.82 |       50 |    83.33 |       90 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    96.16 |    69.46 |    95.08 |    94.26 
+All files                             |     95.9 |    70.19 |    94.41 |    94.02 
 --------------------------------------|----------|----------|----------|----------
 ```

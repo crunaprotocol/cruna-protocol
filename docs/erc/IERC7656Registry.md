@@ -5,31 +5,41 @@
 Manages the creation of token bound accounts
 
 _Modified registry based on ERC6551Registry
-https://github.com/erc6551/reference/blob/main/src/ERC6551Registry.sol_
+https://github.com/erc6551/reference/blob/main/src/ERC6551Registry.sol
 
-### TokenLinkedContractCreated
+The ERC165 interfaceId is 0xc6bdc908_
+
+### Created
 
 ```solidity
-event TokenLinkedContractCreated(address contractAddress, address implementation, bytes32 salt, uint256 chainId, address tokenContract, uint256 tokenId)
+event Created(address contractAddress, address implementation, bytes32 salt, uint256 chainId, address tokenContract, uint256 tokenId)
 ```
 
-The registry MUST emit the TokenLinkedContractCreated event upon successful account creation.
+The registry MUST emit the Created event upon successful contract creation.
 
 #### Parameters
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| contractAddress | address | The address of the created account |
+| contractAddress | address | The address of the created contract |
 | implementation | address | The address of the implementation contract |
 | salt | bytes32 | The salt to use for the create2 operation |
-| chainId | uint256 | The chain id of the chain where the account is being created |
+| chainId | uint256 | The chain id of the chain where the contract is being created |
 | tokenContract | address | The address of the token contract |
 | tokenId | uint256 | The id of the token |
 
-### createTokenLinkedContract
+### CreationFailed
 
 ```solidity
-function createTokenLinkedContract(address implementation, bytes32 salt, uint256 chainId, address tokenContract, uint256 tokenId) external returns (address account)
+error CreationFailed()
+```
+
+The registry MUST revert with CreationFailed error if the create2 operation fails.
+
+### create
+
+```solidity
+function create(address implementation, bytes32 salt, uint256 chainId, address tokenContract, uint256 tokenId) external returns (address account)
 ```
 
 Creates a token bound account for a non-fungible token.
@@ -43,7 +53,7 @@ If account has already been created, returns the account address without calling
 | salt | bytes32 | The salt to use for the create2 operation |
 | chainId | uint256 | The chain id of the chain where the account is being created |
 | tokenContract | address | The address of the token contract |
-| tokenId | uint256 | The id of the token Emits TokenLinkedContractCreated event. |
+| tokenId | uint256 | The id of the token Emits Created event. |
 
 #### Return Values
 
@@ -51,10 +61,10 @@ If account has already been created, returns the account address without calling
 | ---- | ---- | ----------- |
 | account | address | The address of the token bound account |
 
-### tokenLinkedContract
+### compute
 
 ```solidity
-function tokenLinkedContract(address implementation, bytes32 salt, uint256 chainId, address tokenContract, uint256 tokenId) external view returns (address account)
+function compute(address implementation, bytes32 salt, uint256 chainId, address tokenContract, uint256 tokenId) external view returns (address account)
 ```
 
 Returns the computed token bound account address for a non-fungible token.

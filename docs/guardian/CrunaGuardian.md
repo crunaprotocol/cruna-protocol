@@ -16,6 +16,22 @@ error InvalidArguments()
 
 Error returned when the arguments are invalid
 
+### MustCallThroughTimeController
+
+```solidity
+error MustCallThroughTimeController()
+```
+
+Error returned when the function is not called through the TimelockController
+
+### onlyThroughTimeController
+
+```solidity
+modifier onlyThroughTimeController()
+```
+
+Modifier to allow only the TimelockController to call a function.
+
 ### constructor
 
 ```solidity

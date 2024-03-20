@@ -2,20 +2,26 @@
 pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
-//
+
+import {TimelockController} from "@openzeppelin/contracts/governance/TimelockController.sol";
+
 import {CrunaProtectedNFT} from "./CrunaProtectedNFT.sol";
-import {TimelockController, FlexiTimelockController} from "../utils/FlexiTimelockController.sol";
 
 /**
  * @title CrunaProtectedNFTTimeControlled
  * @notice This contract is a base for NFTs with protected transfers.
  * It implements best practices for governance and timelock.
  */
-abstract contract CrunaProtectedNFTTimeControlled is CrunaProtectedNFT, FlexiTimelockController {
+abstract contract CrunaProtectedNFTTimeControlled is CrunaProtectedNFT, TimelockController {
   /**
    * @notice Error returned when the caller is not authorized
    */
   error NotAuthorized();
+
+  /**
+   * @notice Error returned when the function is not called through the TimelockController
+   */
+  error MustCallThroughTimeController();
 
   /**
    * @notice construct the contract with a given name, symbol, minDelay, proposers, executors, and admin.
@@ -33,7 +39,7 @@ abstract contract CrunaProtectedNFTTimeControlled is CrunaProtectedNFT, FlexiTim
     address[] memory proposers,
     address[] memory executors,
     address admin
-  ) CrunaProtectedNFT(name_, symbol_) FlexiTimelockController(minDelay, proposers, executors, admin) {}
+  ) CrunaProtectedNFT(name_, symbol_) TimelockController(minDelay, proposers, executors, admin) {}
 
   /// @dev see {ERC165-supportsInterface}.
   function supportsInterface(

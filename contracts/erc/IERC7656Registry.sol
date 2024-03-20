@@ -2,23 +2,24 @@
 pragma solidity ^0.8.20;
 
 /**
- * @title CrunaRegistry
+ * @title ERC7656
  * @dev Modified registry based on ERC6551Registry
  * https://github.com/erc6551/reference/blob/main/src/ERC6551Registry.sol
  *
- * @notice Manages the creation of token bound accounts
+ * The ERC165 interfaceId is 0xc6bdc908
+ * @notice Manages the creation of token linked accounts
  */
 interface IERC7656Registry {
   /**
-   * @notice The registry MUST emit the TokenLinkedContractCreated event upon successful account creation.
-   * @param contractAddress The address of the created account
+   * @notice The registry MUST emit the Created event upon successful contract creation.
+   * @param contractAddress The address of the created contract
    * @param implementation The address of the implementation contract
    * @param salt The salt to use for the create2 operation
-   * @param chainId The chain id of the chain where the account is being created
+   * @param chainId The chain id of the chain where the contract is being created
    * @param tokenContract The address of the token contract
    * @param tokenId The id of the token
    */
-  event TokenLinkedContractCreated(
+  event Created(
     address contractAddress,
     address indexed implementation,
     bytes32 salt,
@@ -28,17 +29,22 @@ interface IERC7656Registry {
   );
 
   /**
-   * @notice Creates a token bound account for a non-fungible token.
+   * The registry MUST revert with CreationFailed error if the create2 operation fails.
+   */
+  error CreationFailed();
+
+  /**
+   * @notice Creates a token linked account for a non-fungible token.
    * If account has already been created, returns the account address without calling create2.
    * @param implementation The address of the implementation contract
    * @param salt The salt to use for the create2 operation
    * @param chainId The chain id of the chain where the account is being created
    * @param tokenContract The address of the token contract
    * @param tokenId The id of the token
-   * Emits TokenLinkedContractCreated event.
-   * @return account The address of the token bound account
+   * Emits Created event.
+   * @return account The address of the token linked account
    */
-  function createTokenLinkedContract(
+  function create(
     address implementation,
     bytes32 salt,
     uint256 chainId,
@@ -47,15 +53,15 @@ interface IERC7656Registry {
   ) external returns (address account);
 
   /**
-   * @notice Returns the computed token bound account address for a non-fungible token.
+   * @notice Returns the computed token linked account address for a non-fungible token.
    * @param implementation The address of the implementation contract
    * @param salt The salt to use for the create2 operation
    * @param chainId The chain id of the chain where the account is being created
    * @param tokenContract The address of the token contract
    * @param tokenId The id of the token
-   * @return account The address of the token bound account
+   * @return account The address of the token linked account
    */
-  function tokenLinkedContract(
+  function compute(
     address implementation,
     bytes32 salt,
     uint256 chainId,

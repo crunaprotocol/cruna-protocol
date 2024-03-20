@@ -174,6 +174,16 @@ Upgrades the implementation of the plugin
 | ---- | ---- | ----------- |
 | implementation_ | address | The new implementation |
 
+### _version
+
+```solidity
+function _version() internal pure virtual returns (uint256)
+```
+
+Returns the version of the contract.
+The format is similar to semver, where any element takes 3 digits.
+For example, version 1.2.14 is 1_002_014.
+
 ### _nameId
 
 ```solidity

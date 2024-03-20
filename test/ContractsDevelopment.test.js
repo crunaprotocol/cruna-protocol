@@ -43,27 +43,15 @@ describe("Testing contract deployments", function () {
     guardian = await ethers.getContractAt("CrunaGuardian", CRUNA_GUARDIAN);
     erc6551Registry = await ethers.getContractAt("ERC6551Registry", ERC6551_REGISTRY);
 
-    let tx = await crunaRegistry.createTokenLinkedContract(
-      guardian.address,
-      ethers.constants.HashZero,
-      31337,
-      guardian.address,
-      1001,
-    );
+    let tx = await crunaRegistry.create(guardian.address, ethers.constants.HashZero, 31337, guardian.address, 1001);
     await tx.wait();
 
-    let addr = await crunaRegistry.tokenLinkedContract(
-      guardian.address,
-      ethers.constants.HashZero,
-      31337,
-      guardian.address,
-      1001,
-    );
+    let addr = await crunaRegistry.compute(guardian.address, ethers.constants.HashZero, 31337, guardian.address, 1001);
 
     let code = await ethers.provider.getCode(addr);
     expect(code !== "0x").to.be.true;
 
-    addr = await crunaRegistry.tokenLinkedContract(guardian.address, ethers.constants.HashZero, 31337, guardian.address, 1000);
+    addr = await crunaRegistry.compute(guardian.address, ethers.constants.HashZero, 31337, guardian.address, 1000);
 
     code = await ethers.provider.getCode(addr);
     expect(code !== "0x").to.be.false;
@@ -71,7 +59,7 @@ describe("Testing contract deployments", function () {
 
   beforeEach(async function () {
     managerImpl = await deployContract("CrunaManager");
-    expect(await guardian.version()).to.equal(1001000);
+    expect(await guardian.version()).to.equal(1002000);
     proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
     proxy = await deployUtils.attach("CrunaManager", proxy.address);
     // sent 2 ETH to proxy
@@ -126,20 +114,5 @@ describe("Testing contract deployments", function () {
     expect(await manager.tokenId()).to.equal(nextTokenId);
     expect(await manager.vault()).to.equal(vault.address);
     expect(await manager.owner()).to.equal(bob.address);
-  });
-
-  it("should update the parameters", async function () {
-    await expect(proposeAndExecute(vault, proposer, executor, 10, "addProposer", proposer2.address))
-      .to.emit(vault, "RoleGranted")
-      .withArgs(await vault.PROPOSER_ROLE(), proposer2.address, vault.address);
-    await expect(proposeAndExecute(vault, proposer, executor, 10, "addExecutor", executor2.address))
-      .to.emit(vault, "RoleGranted")
-      .withArgs(await vault.EXECUTOR_ROLE(), executor2.address, vault.address);
-    await expect(proposeAndExecute(vault, proposer2, executor, 10, "removeProposer", proposer.address))
-      .to.emit(vault, "RoleRevoked")
-      .withArgs(await vault.PROPOSER_ROLE(), proposer.address, vault.address);
-    await expect(proposeAndExecute(vault, proposer2, executor2, 10, "removeExecutor", executor.address))
-      .to.emit(vault, "RoleRevoked")
-      .withArgs(await vault.EXECUTOR_ROLE(), executor.address, vault.address);
   });
 });

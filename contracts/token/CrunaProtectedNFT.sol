@@ -375,6 +375,6 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     if (isERC6551Account) {
       return Canonical.erc6551Registry().createAccount(implementation, salt, block.chainid, _SELF, tokenId);
     }
-    return Canonical.erc7656Registry().createTokenLinkedContract(implementation, salt, block.chainid, _SELF, tokenId);
+    return Canonical.erc7656Registry().create(implementation, salt, block.chainid, _SELF, tokenId);
   }
 }

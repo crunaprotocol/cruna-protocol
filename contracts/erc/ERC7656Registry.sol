@@ -4,24 +4,10 @@ pragma solidity ^0.8.20;
 // Modified registry based on ERC6551Registry
 // https://github.com/erc6551/reference/blob/main/src/ERC6551Registry.sol
 
-// We deploy our own registry to avoid misleading observers that may believe
-// that managers and plugins are accounts.
+import {IERC7656Registry} from "./IERC7656Registry.sol";
 
-import {IERC7656Registry} from "../erc/IERC7656Registry.sol";
-
-/**
- * @title CrunaRegistry
- * @notice Manages the creation of token bound accounts
- */
 contract ERC7656Registry is IERC7656Registry {
-  /**
-   * @notice The registry MUST revert with TokenLinkedContractCreationFailed error if the create2 operation fails.
-   */
-  error TokenLinkedContractCreationFailed();
-
-  /// @notice Deployes token linked contracts.
-  /// Look at the interface for more information.
-  function createTokenLinkedContract(
+  function create(
     address implementation,
     bytes32 salt,
     uint256 /* chainId */,
@@ -67,18 +53,18 @@ contract ERC7656Registry is IERC7656Registry {
 
         // Revert if the deployment fails
         if iszero(deployed) {
-          mstore(0x00, 0x019134ac) // `TokenLinkedContractCreationFailed()`
+          mstore(0x00, 0xd786d393) // `CreationFailed()`
           revert(0x1c, 0x04)
         }
 
         // Store account address in memory before salt and chainId
         mstore(0x6c, deployed)
 
-        // Emit the TokenLinkedContractCreated event
+        // Emit the Created event
         log4(
           0x6c,
           0x60,
-          0x91dfd55a37c344f31d03488cf913823191690b82681081685733c259c25ace15,
+          0xc6989e4f290074742210cbd6491de7ded9cfe2cd247932a53d31005007a6341a,
           implementation,
           tokenContract,
           tokenId
@@ -94,9 +80,7 @@ contract ERC7656Registry is IERC7656Registry {
     }
   }
 
-  /// @notice Returns the computed address of a token linked contract
-  /// Look at the interface for more information.
-  function tokenLinkedContract(
+  function compute(
     address implementation,
     bytes32 salt,
     uint256 /* chainId */,
@@ -125,11 +109,9 @@ contract ERC7656Registry is IERC7656Registry {
     }
   }
 
-  /**
-   * @dev Returns true if interfaceId is IERC76xxRegistry's interfaceId
-   * This contract does not extend IERC165 to keep the bytecode as small as possible
-   */
-  function supportsInterface(bytes4 interfaceId) external pure returns (bool) {
-    return interfaceId == 0xcd691053;
+  /// @dev Returns true if interfaceId is IERC7656Registry's interfaceId
+  /// This contract does not explicitly extend IERC165 to keep the bytecode as small as possible
+  function supportsInterface(bytes4 interfaceId) external view virtual returns (bool) {
+    return interfaceId == 0xc6bdc908;
   }
 }

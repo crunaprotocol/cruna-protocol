@@ -204,6 +204,10 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
 
   // Internal functions
 
+  function _version() internal pure virtual override returns (uint256) {
+    return 1_001_000;
+  }
+
   function _nameId() internal pure virtual override returns (bytes4) {
     return bytes4(keccak256("InheritanceCrunaPlugin"));
   }
