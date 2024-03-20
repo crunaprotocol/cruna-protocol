@@ -11,7 +11,7 @@ import {IERC7656Contract} from "../erc/IERC7656Contract.sol";
  * @notice Abstract contract to link a contract to an NFT
  */
 abstract contract TokenLinkedContract is IERC7656Contract, IERC165 {
-  function supportsInterface(bytes4 interfaceId) external pure returns (bool) {
+  function supportsInterface(bytes4 interfaceId) public pure virtual returns (bool) {
     return interfaceId == type(IERC7656Contract).interfaceId;
   }
 

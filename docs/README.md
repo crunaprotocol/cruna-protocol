@@ -54,15 +54,15 @@ This dual-pathway for plugin deployment underscores the protocol's flexibility a
 
 # API documentation
 
-- Canonical
-  - [CrunaGuardian](./canonical/CrunaGuardian.md)
-  - [ERC7656Registry](./canonical/ERC7656Registry.md)
-  - [ICrunaGuardian](./canonical/ICrunaGuardian.md)
 - Erc
+  - [ERC7656Registry](./erc/ERC7656Registry.md)
   - [IERC6454](./erc/IERC6454.md)
   - [IERC6982](./erc/IERC6982.md)
   - [IERC7656Contract](./erc/IERC7656Contract.md)
   - [IERC7656Registry](./erc/IERC7656Registry.md)
+- Guardian
+  - [CrunaGuardian](./guardian/CrunaGuardian.md)
+  - [ICrunaGuardian](./guardian/ICrunaGuardian.md)
 - Libs
   - [Canonical](./libs/Canonical.md)
   - [ExcessivelySafeCall](./libs/ExcessivelySafeCall.md)
@@ -89,7 +89,6 @@ This dual-pathway for plugin deployment underscores the protocol's flexibility a
 - Utils
   - [CommonBase](./utils/CommonBase.md)
   - [ERC6551AccountProxy](./utils/ERC6551AccountProxy.md)
-  - [FlexiTimelockController](./utils/FlexiTimelockController.md)
   - [ICommonBase](./utils/ICommonBase.md)
   - [INamed](./utils/INamed.md)
   - [INamedAndVersioned](./utils/INamedAndVersioned.md)

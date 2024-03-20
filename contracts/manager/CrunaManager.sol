@@ -36,7 +36,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
 
   /// @dev see {IVersioned-version}
   function version() external pure virtual override returns (uint256) {
-    return 1_000_002;
+    return 1_001_000;
   }
 
   /// @dev see {ICrunaManager-pluginByKey}
@@ -390,7 +390,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
   function _pluginAddress(bytes4 nameId_, bytes4 salt) internal view virtual returns (address payable) {
     return
       payable(
-        Canonical.erc7656Registry().tokenLinkedContract(
+        Canonical.erc7656Registry().compute(
           _pluginByKey[_combineBytes4(nameId_, salt)].proxyAddress,
           salt,
           block.chainid,

@@ -13,6 +13,14 @@ error NotAuthorized()
 
 Error returned when the caller is not authorized
 
+### MustCallThroughTimeController
+
+```solidity
+error MustCallThroughTimeController()
+```
+
+Error returned when the function is not called through the TimelockController
+
 ### constructor
 
 ```solidity

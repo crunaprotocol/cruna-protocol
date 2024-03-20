@@ -79,10 +79,10 @@ describe("CrunaManager : Upgrades", function () {
     const nextTokenId = (await vault.nftConf()).nextTokenId;
     const precalculatedAddress = await vault.managerOf(nextTokenId);
 
-    // console.log(keccak256("TokenLinkedContractCreated(address,address,bytes32,uint256,address,uint256)"))
+    // console.log(keccak256("Created(address,address,bytes32,uint256,address,uint256)"))
 
     await expect(factory.connect(bob).buyVaults(usdc.address, 1))
-      .to.emit(crunaRegistry, "TokenLinkedContractCreated")
+      .to.emit(crunaRegistry, "Created")
       .withArgs(
         precalculatedAddress,
         toChecksumAddress(managerProxy.address),
@@ -109,7 +109,7 @@ describe("CrunaManager : Upgrades", function () {
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
 
-    expect(await manager.version()).to.equal(1000002);
+    expect(await manager.version()).to.equal(1001000);
     let signature = (
       await signRequest(
         selector,
@@ -173,7 +173,7 @@ describe("CrunaManager : Upgrades", function () {
     const initialManager = await ethers.getContractAt("CrunaManager", history.managerAddress);
 
     await expect(initialManager.migrate(1000000)).to.be.revertedWith("Forbidden");
-    expect(await initialManager.version()).to.equal(1000002);
+    expect(await initialManager.version()).to.equal(1001000);
     await expect(vault.upgradeDefaultManager(proxyV2.address)).to.be.revertedWith("UntrustedImplementation");
 
     await trustImplementation(
@@ -201,6 +201,6 @@ describe("CrunaManager : Upgrades", function () {
     const oldManagerAddress = await vault.defaultManagerImplementation(tokenId);
     const oldManager = await ethers.getContractAt("CrunaManager", oldManagerAddress);
 
-    expect(await oldManager.version()).to.equal(1000002);
+    expect(await oldManager.version()).to.equal(1001000);
   });
 });

@@ -8,7 +8,7 @@ contract InheritanceCrunaPluginV3 is InheritanceCrunaPlugin {
   bool public constant SOME_OTHER_VARIABLE = true;
 
   function _version() internal pure virtual override returns (uint256) {
-    return 1_000_003;
+    return 1_001_003;
   }
 
   // new function in V3

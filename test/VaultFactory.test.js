@@ -77,7 +77,7 @@ describe("VaultFactory", function () {
       await expect(factory.buyVaults(usdc.address, 1))
         .to.emit(vault, "Transfer")
         .withArgs(addr0, deployer.address, nextTokenId)
-        .to.emit(crunaRegistry, "TokenLinkedContractCreated")
+        .to.emit(crunaRegistry, "Created")
         .withArgs(
           precalculatedAddress,
           toChecksumAddress(proxy.address),

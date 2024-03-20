@@ -204,7 +204,7 @@ describe("Sentinel and Inheritance", function () {
     await trustImplementation(newGuardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true);
 
     expect(await newGuardian.trustedImplementation(PLUGIN_ID, inheritancePluginProxy.address)).to.be.true;
-    expect(await newGuardian.version()).to.equal(1001000);
+    expect(await newGuardian.version()).to.equal(1002000);
   });
 
   it("should plug the plugin", async function () {
@@ -1294,7 +1294,7 @@ describe("Sentinel and Inheritance", function () {
 
     const inheritancePlugin = await ethers.getContractAt("InheritanceCrunaPlugin", inheritancePluginAddress);
 
-    expect(await inheritancePlugin.version()).to.equal(1e6);
+    expect(await inheritancePlugin.version()).to.equal(1001000);
 
     await inheritancePlugin.connect(bob).setSentinels([alice.address, fred.address], 0);
 
@@ -1326,7 +1326,7 @@ describe("Sentinel and Inheritance", function () {
     const newInheritancePlugin = await ethers.getContractAt("InheritanceCrunaPluginV3", inheritancePluginAddress);
 
     expect(await newInheritancePlugin.isMock()).to.be.true;
-    expect(await newInheritancePlugin.version()).to.equal(1e6 + 3);
+    expect(await newInheritancePlugin.version()).to.equal(1001003);
     expect(await newInheritancePlugin.SOME_OTHER_VARIABLE()).to.be.true;
     expect(await newInheritancePlugin.SOME_VARIABLE()).to.equal(3);
 

@@ -10,10 +10,10 @@ async function main() {
     ABIs[rename || name] = json.abi;
   }
   abi("CrunaManager", "contracts/manager");
-  abi("ERC7656Registry", "contracts/canonical");
+  abi("ERC7656Registry", "contracts/erc");
   abi("InheritanceCrunaPlugin", "contracts/plugins/inheritance");
   abi("TimeControlledNFT", "contracts/mocks/token");
-  abi("CrunaGuardian", "contracts/canonical");
+  abi("CrunaGuardian", "contracts/guardian");
   abi("VaultFactory", "contracts/mocks/factory");
   abi("ERC6551Registry", "erc6551/");
 

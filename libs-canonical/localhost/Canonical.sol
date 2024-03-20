@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
 
-import {ICrunaGuardian} from "../canonical/ICrunaGuardian.sol";
+import {ICrunaGuardian} from "../guardian/ICrunaGuardian.sol";
 import {IERC7656Registry} from "../erc/IERC7656Registry.sol";
 
 /**
@@ -21,7 +21,7 @@ library Canonical {
    * @notice Returns the ERC7656Registry contract
    */
   function erc7656Registry() internal pure returns (IERC7656Registry) {
-    return IERC7656Registry(0x765600Cc5dFdC3C36259Cb5b938624ebd99D8F33);
+    return IERC7656Registry(0x71da7c4394A7e6b260F13Cb30B180454d30DA867);
   }
 
   /**
@@ -35,6 +35,6 @@ library Canonical {
    * @notice Returns the CrunaGuardian contract
    */
   function crunaGuardian() internal pure returns (ICrunaGuardian) {
-    return ICrunaGuardian(0x699e1956305FA9CD44Fec37CB4c4c65a202b85b8);
+    return ICrunaGuardian(0x6ecBC2324A1F215F1061667D1111DDf1b5eDE817);
   }
 }
