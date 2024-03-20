@@ -1,5 +1,8 @@
 # Change log
 
+**0.3.3**
+- Fix wrong `ERC7656Registry` address in `Canonical`
+
 **0.3.2**
 - Optimize `ERC7656Registry` and re-deploy everything to align all protocol contracts to the registry
 
