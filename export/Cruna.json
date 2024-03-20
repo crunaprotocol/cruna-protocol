@@ -3603,19 +3603,6 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "allowUntrustedTransfers",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
           "internalType": "address",
@@ -4063,11 +4050,6 @@
           "type": "bool"
         },
         {
-          "internalType": "bool",
-          "name": "allowUntrustedTransfers_",
-          "type": "bool"
-        },
-        {
           "internalType": "uint112",
           "name": "nextTokenId_",
           "type": "uint112"
@@ -4365,11 +4347,6 @@
             {
               "internalType": "bool",
               "name": "progressiveTokenIds",
-              "type": "bool"
-            },
-            {
-              "internalType": "bool",
-              "name": "allowUntrustedTransfers",
               "type": "bool"
             },
             {
@@ -5372,6 +5349,32 @@
       "name": "addProposer",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bool",
+          "name": "allowUntrusted_",
+          "type": "bool"
+        }
+      ],
+      "name": "allowUntrusted",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "allowingUntrusted",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {

@@ -3,6 +3,7 @@
 **0.3.0**
 - Rename `CrunaRegistry` as `ERC7656Registry` 
 - Remove required version from `CrunaGuardian`
+- Add setter in `CrunaGuardian` to allow untrusted operations, only for testnets
 
 **0.2.10**
 - Add supportsInterface to `CrunaRegistry` contract for generic implementations

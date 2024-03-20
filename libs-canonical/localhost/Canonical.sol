@@ -35,6 +35,6 @@ library Canonical {
    * @notice Returns the CrunaGuardian contract
    */
   function crunaGuardian() internal pure returns (ICrunaGuardian) {
-    return ICrunaGuardian(0x1AdF15952De891f68772e716ED56EBa66c489402);
+    return ICrunaGuardian(0x699e1956305FA9CD44Fec37CB4c4c65a202b85b8);
   }
 }

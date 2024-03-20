@@ -42,7 +42,7 @@ describe("VaultFactory w/ time controlled vault", function () {
 
     vault = await deployContract("TimeControlledNFT", minDelay, [proposer.address], [executor.address], deployer.address);
 
-    await vault.init(proxy.address, true, false, 1, 0);
+    await vault.init(proxy.address, true, 1, 0);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
 
     await vault.setFactory(factory.address);

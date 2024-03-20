@@ -89,7 +89,7 @@ describe("CrunaManager : Protectors", function () {
     const IManagedNFT = await getInterfaceId("IManagedNFT");
     expect(await vault.supportsInterface(IManagedNFT)).to.equal(true);
 
-    await vault.init(proxy.address, true, false, 1, 0);
+    await vault.init(proxy.address, true, 1, 0);
 
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
     await vault.setFactory(factory.address);

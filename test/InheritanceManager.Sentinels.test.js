@@ -66,7 +66,7 @@ describe("Sentinel and Inheritance", function () {
     proxy = await deployUtils.attach("CrunaManager", deployedProxy.address);
     vault = await deployContract("OwnableNFT", deployer.address);
 
-    await vault.init(proxy.address, true, false, 1, 0);
+    await vault.init(proxy.address, true, 1, 0);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
     await vault.setFactory(factory.address);
 
@@ -94,6 +94,8 @@ describe("Sentinel and Inheritance", function () {
     inheritancePluginImpl = await deployContract("InheritanceCrunaPlugin");
     inheritancePluginProxy = await deployContract("InheritanceCrunaPluginProxy", inheritancePluginImpl.address);
     inheritancePluginProxy = await deployUtils.attach("InheritanceCrunaPlugin", inheritancePluginProxy.address);
+
+    expect(await guardian.allowingUntrusted()).to.be.false;
 
     if (trust) {
       await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true);
@@ -161,6 +163,7 @@ describe("Sentinel and Inheritance", function () {
           manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, salt, 0, 0, 0),
         ).revertedWith("UntrustedImplementationsNotAllowedToMakeTransfers");
       }
+
       await expect(
         manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, trust, false, salt, 0, 0, 0),
       ).to.emit(manager, "PluginStatusChange");
@@ -184,7 +187,12 @@ describe("Sentinel and Inheritance", function () {
     return nextTokenId;
   };
 
-  it("should verify before/beforeEach works", async function () {});
+  it("should verify before/beforeEach works", async function () {
+    await guardian.allowUntrusted(true);
+    expect(await guardian.allowingUntrusted()).to.be.true;
+    // we revert, since this is a singleton
+    await guardian.allowUntrusted(false);
+  });
 
   it("should test the guardian", async function () {
     inheritancePluginImpl = await deployContract("InheritanceCrunaPlugin");

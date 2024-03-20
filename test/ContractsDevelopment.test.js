@@ -57,7 +57,7 @@ describe("Testing contract deployments", function () {
     vault = await deployContract("TimeControlledNFT", delay, [proposer.address], [executor.address], deployer.address);
 
     expect(await vault.version()).to.equal(1000000);
-    await vault.init(proxy.address, true, false, 1, 0);
+    await vault.init(proxy.address, true, 1, 0);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
     await vault.setFactory(factory.address);
     expect(await vault.supportsInterface(getInterfaceId("IAccessControl"))).to.equal(true);

@@ -6,8 +6,8 @@
 --------------------------------------|----------|----------|----------|----------
 File                                  |  % Stmts | % Branch |  % Funcs |  % Lines 
 --------------------------------------|----------|----------|----------|----------
- canonical/                           |    83.33 |       50 |    57.14 |       60 
-  CrunaGuardian.sol                   |      100 |       50 |      100 |    85.71 
+ canonical/                           |    71.43 |    33.33 |    44.44 |       50 
+  CrunaGuardian.sol                   |    83.33 |    33.33 |    66.67 |    66.67 
   ERC7656Registry.sol                 |        0 |      100 |        0 |        0 
   ICrunaGuardian.sol                  |      100 |      100 |      100 |      100 
  erc/                                 |      100 |      100 |      100 |      100 
@@ -32,8 +32,8 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
   InheritanceCrunaPlugin.sol          |       91 |    65.69 |    95.83 |    88.81 
   InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
- token/                               |    98.65 |    65.28 |      100 |    98.81 
-  CrunaProtectedNFT.sol               |    98.55 |    64.06 |      100 |    98.75 
+ token/                               |    98.63 |    65.28 |      100 |     98.8 
+  CrunaProtectedNFT.sol               |    98.53 |    64.06 |      100 |    98.73 
   CrunaProtectedNFTOwnable.sol        |      100 |       50 |      100 |      100 
   CrunaProtectedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaProtectedNFT.sol              |      100 |      100 |      100 |      100 
@@ -50,6 +50,6 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   SignatureValidator.sol              |      100 |    86.36 |      100 |      100 
   TokenLinkedContract.sol             |    81.82 |       50 |    83.33 |       90 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    96.36 |    69.77 |    96.15 |    94.59 
+All files                             |    96.16 |    69.46 |    95.08 |    94.26 
 --------------------------------------|----------|----------|----------|----------
 ```

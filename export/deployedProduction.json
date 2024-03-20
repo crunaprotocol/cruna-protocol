@@ -1,13 +1,13 @@
 {
-  "v0.2.10": {
+  "v0.3.0": {
     "contracts": {
       "ERC7656Registry": "0x765600Cc5dFdC3C36259Cb5b938624ebd99D8F33",
-      "CrunaGuardian": "0x03e2553DE0DfCD44a4536104a0339dcA6fAf8e94",
       "ERC6551Registry": "0x000000006551c19487814612e58FE06813775758",
-      "CrunaManager": "0xBb2ab4056285f6F887979ceA4205c243aA8Df01E",
-      "CrunaManagerProxy": "0x8C1A3D6C0DC84fc1f3396e4CEe037037A734d37F",
-      "InheritanceCrunaPlugin": "0xaD5DA2cA34D46a2Eef5c42a6e27c21a68D0cA7F3",
-      "InheritanceCrunaPluginProxy": "0x1A4C671793D2f597D04f67Ed5Cbdb1b9110b93ef"
+      "CrunaGuardian": "0x583e47b25Bd34575d0E5d8B775Cb40706F4a4842",
+      "CrunaManager": "0xc9d9D2a232FBf18768707BdaFC82d7Cb2999bD0D",
+      "CrunaManagerProxy": "0x169Ff8f4aD5099097FDfB1cb5D4511e9986dFf5e",
+      "InheritanceCrunaPluginProxy": "0x8c193F7719036e2525892A7a30c422bBc4657Cfe",
+      "InheritanceCrunaPlugin": "0xc53E54Af1D1BB307ac60A3527f027484E99c7711"
     },
     "chains": [
       44787,

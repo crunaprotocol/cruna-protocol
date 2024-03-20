@@ -56,7 +56,7 @@ describe("CrunaManager : Upgrades", function () {
 
     vault = await deployContract("OwnableNFT", deployer.address);
 
-    await vault.init(proxy.address, true, false, 1, 0);
+    await vault.init(proxy.address, true, 1, 0);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
 
     await vault.setFactory(factory.address);

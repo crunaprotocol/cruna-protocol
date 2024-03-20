@@ -57,3 +57,34 @@ Returns the manager version required by a trusted implementation
 | ---- | ---- | ----------- |
 | [0] | bool | True if a trusted implementation |
 
+### allowUntrusted
+
+```solidity
+function allowUntrusted(bool allowUntrusted_) external
+```
+
+Allows to set a chain as a testnet
+By default, any chain is a mainnet, i.e., does not allow to plug untrusted plugins
+Since the admin is supposed to renounce to its role in favore of proposers and
+executors, this function is meant to be called only once, immediately after the deployment
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| allowUntrusted_ | bool | True if the chain is a testnet |
+
+### allowingUntrusted
+
+```solidity
+function allowingUntrusted() external view returns (bool)
+```
+
+Returns whether the chain is a testnet
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | bool | True if the chain is a testnet |
+

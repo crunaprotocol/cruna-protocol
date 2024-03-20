@@ -30,4 +30,19 @@ interface ICrunaGuardian {
    * @return True if a trusted implementation
    */
   function trustedImplementation(bytes4 nameId, address implementation) external view returns (bool);
+
+  /**
+   * @notice Allows to set a chain as a testnet
+   * By default, any chain is a mainnet, i.e., does not allow to plug untrusted plugins
+   * Since the admin is supposed to renounce to its role in favore of proposers and
+   * executors, this function is meant to be called only once, immediately after the deployment
+   * @param allowUntrusted_ True if the chain is a testnet
+   */
+  function allowUntrusted(bool allowUntrusted_) external;
+
+  /**
+   * @notice Returns whether the chain is a testnet
+   * @return True if the chain is a testnet
+   */
+  function allowingUntrusted() external view returns (bool);
 }

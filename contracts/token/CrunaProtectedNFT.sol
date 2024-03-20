@@ -94,7 +94,6 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
   function init(
     address managerAddress_,
     bool progressiveTokenIds_,
-    bool allowUntrustedTransfers_,
     uint112 nextTokenId_,
     uint112 maxTokenId_
   ) external virtual override {
@@ -103,18 +102,12 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     if (managerAddress_ == address(0)) revert ZeroAddress();
     _nftConf = NftConf({
       progressiveTokenIds: progressiveTokenIds_,
-      allowUntrustedTransfers: allowUntrustedTransfers_,
       nextTokenId: nextTokenId_,
       maxTokenId: maxTokenId_,
       managerHistoryLength: 1,
       unusedField: 0
     });
     _managerHistory.push(ManagerHistory({managerAddress: managerAddress_, firstTokenId: nextTokenId_, lastTokenId: 0}));
-  }
-
-  /// @dev see {ICrunaProtectedNFT-allowUntrustedTransfers}
-  function allowUntrustedTransfers() external view virtual override returns (bool) {
-    return _nftConf.allowUntrustedTransfers;
   }
 
   /// @dev see {ICrunaProtectedNFT-setMaxTokenId}
