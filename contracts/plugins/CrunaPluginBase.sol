@@ -3,19 +3,15 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
-import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-
 import {CrunaManager} from "../manager/CrunaManager.sol";
-import {ICrunaPlugin, IVersioned} from "./ICrunaPlugin.sol";
+import {ICrunaPlugin} from "./ICrunaPlugin.sol";
 import {CommonBase} from "../utils/CommonBase.sol";
-import {Canonical} from "../libs/Canonical.sol";
 
 /**
  * @title CrunaPluginBase
  * @notice Base contract for plugins
  */
-abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase, ReentrancyGuard {
+abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
   /**
    * @notice The internal configuration of the plugin
    */
@@ -46,29 +42,26 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase, ReentrancyGuard {
     return _version();
   }
 
-  /// @dev see {ICrunaPlugin-upgrade}
-  function upgrade(address implementation_) external virtual override nonReentrant {
-    if (owner() != _msgSender()) revert NotTheTokenOwner();
-    if (implementation_ == address(0)) revert ZeroAddress();
-    uint256 requires = Canonical.crunaGuardian().trustedImplementation(_nameId(), implementation_);
-    if (0 == requires) {
-      // The new implementation is not trusted.
-      // If current implementation is trusted, the new implementation must be trusted too
-      if (Canonical.crunaGuardian().trustedImplementation(_nameId(), implementation()) != 0)
-        revert UntrustedImplementation(implementation_);
-    }
-    IVersioned impl = IVersioned(implementation_);
-    uint256 version_ = impl.version();
-    if (version_ <= _version()) revert InvalidVersion(_version(), version_);
-    if (_conf.manager.version() < requires) revert PluginRequiresUpdatedManager(requires);
-    StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
-  }
-
   /// @dev see {ICrunaPlugin-resetOnTransfer}
   // The manager is not a wallet, it is the NFT Manager contract, owned by the token.
   function resetOnTransfer() external override ifMustNotBeReset {
     if (_msgSender() != address(_conf.manager)) revert Forbidden();
     _conf.mustBeReset = 1;
+  }
+
+  /// @dev see {ICrunaPlugin-requiresToManageTransfer}
+  function requiresToManageTransfer() external pure virtual override returns (bool) {
+    return false;
+  }
+
+  /// @dev see {ICrunaPlugin-requiresManagerVersion}
+  function requiresManagerVersion() external pure virtual override returns (uint256) {
+    return 1;
+  }
+
+  /// @dev see {ICrunaPlugin-isERC6551Account}
+  function isERC6551Account() external pure virtual returns (bool) {
+    return false;
   }
 
   /**

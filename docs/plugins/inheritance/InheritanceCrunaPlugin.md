@@ -26,15 +26,8 @@ The object storing the votes
 function requiresToManageTransfer() external pure returns (bool)
 ```
 
-Allows the beneficiary to inherit the token
-
-### isERC6551Account
-
-```solidity
-function isERC6551Account() external pure virtual returns (bool)
-```
-
-Allows the beneficiary to inherit the token
+Called by the manager during the plugging to know if the plugin is asking the
+right to make a managed transfer of the vault
 
 ### setSentinel
 
@@ -166,6 +159,20 @@ function requiresResetOnTransfer() external pure returns (bool)
 ```
 
 Called by the manager to know it the plugin must be reset when transferring the NFT
+
+### upgrade
+
+```solidity
+function upgrade(address implementation_) external virtual
+```
+
+Upgrades the implementation of the plugin
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| implementation_ | address | The new implementation |
 
 ### _nameId
 

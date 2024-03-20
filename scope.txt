@@ -1,7 +1,7 @@
 contracts/canonical/CrunaGuardian.sol
-contracts/canonical/CrunaRegistry.sol
+contracts/canonical/ERC7656Registry.sol
 contracts/canonical/ICrunaGuardian.sol
-contracts/canonical/ICrunaRegistry.sol
+contracts/canonical/IERC7656Registry.sol
 contracts/erc/IERC6454.sol
 contracts/erc/IERC6982.sol
 contracts/libs/Canonical.sol

@@ -35,17 +35,21 @@ async function main() {
   }
   await deployUtils.deployBytecodeViaNickSFactory(
     deployer,
-    "CrunaRegistry",
-    canonicalBytecodes.CrunaRegistry.bytecode,
-    canonicalBytecodes.CrunaRegistry.salt,
+    "ERC7656Registry",
+    canonicalBytecodes.ERC7656Registry.bytecode,
+    canonicalBytecodes.ERC7656Registry.salt,
   );
 
-  await deployUtils.deployBytecodeViaNickSFactory(
+  const guardian = await deployUtils.deployBytecodeViaNickSFactory(
     deployer,
     "CrunaGuardian",
     bytecodes.CrunaGuardian.bytecode,
     bytecodes.CrunaGuardian.salt,
   );
+
+  if ([80001, 44787].includes(chainId)) {
+    await deployUtils.Tx(guardian.allowUntrusted(true));
+  }
 }
 
 main()

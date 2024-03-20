@@ -9,18 +9,18 @@ In the burgeoning field of digital assets, the need for advanced security and fl
 
 ## Cruna Protocol Architecture
 
-At the foundation of the Cruna Protocol lies a robust architecture designed to ensure security, flexibility, and interoperability of NFTs across the blockchain ecosystem. Central to this architecture are the CrunaRegistry, CrunaGuardian, CrunaManager, and CrunaManagerProxy contracts, each playing a pivotal role in the ecosystem.
+At the foundation of the Cruna Protocol lies a robust architecture designed to ensure security, flexibility, and interoperability of NFTs across the blockchain ecosystem. Central to this architecture are the ERC7656Registry, CrunaGuardian, CrunaManager, and CrunaManagerProxy contracts, each playing a pivotal role in the ecosystem.
 
-### CrunaRegistry and CrunaGuardian: The Backbone of Cruna Protocol
-The protocol initiates with the deployment of two key contracts: the CrunaRegistry and the CrunaGuardian.
+### ERC7656Registry and CrunaGuardian: The Backbone of Cruna Protocol
+The protocol initiates with the deployment of two key contracts: the ERC7656Registry and the CrunaGuardian.
 
-- **CrunaRegistry**: This contract functions as a registry, creating token-linked contracts and predicting/returning their addresses. It serves as the cornerstone for the dynamic interaction between NFTs and their associated functionalities within the Cruna ecosystem.
+- **ERC7656Registry**: This contract functions as a registry, creating token-linked contracts and predicting/returning their addresses. It serves as the cornerstone for the dynamic interaction between NFTs and their associated functionalities within the Cruna ecosystem.
 - **CrunaGuardian**: Operated as a time-controlled contract and managed by a Decentralized Autonomous Organization (DAO), the CrunaGuardian's primary role is to set and retrieve secure implementations for managers and plugins. This governance structure ensures that the protocol remains secure and adaptable over time.
 
-Both the CrunaRegistry and the CrunaGuardian contracts are deployed using Nick's Factory, enabling their addresses to be hardcoded within referring contracts. This approach guarantees address consistency across different deployments, ensuring that these foundational elements maintain stability and reliability within the protocol's architecture.
+Both the ERC7656Registry and the CrunaGuardian contracts are deployed using Nick's Factory, enabling their addresses to be hardcoded within referring contracts. This approach guarantees address consistency across different deployments, ensuring that these foundational elements maintain stability and reliability within the protocol's architecture.
 
 ### Deployment of CrunaManager and CrunaManagerProxy
-Following the establishment of the CrunaRegistry and CrunaGuardian, the deployment of the CrunaManager and CrunaManagerProxy contracts is executed. These contracts are essential for the management and operational functionality of the NFTs within the protocol.
+Following the establishment of the ERC7656Registry and CrunaGuardian, the deployment of the CrunaManager and CrunaManagerProxy contracts is executed. These contracts are essential for the management and operational functionality of the NFTs within the protocol.
 
 - **CrunaManager**: Acts as the central hub for each NFT, facilitating the setting of protectors, management of safe recipients, and integration of plugins. This contract embodies the core principles of security and expandability inherent to the Cruna Protocol.
 - **CrunaManagerProxy**: Utilized for the efficient deployment of CrunaManager instances, this proxy contract ensures a cost-effective and scalable framework for the dynamic creation of NFT-specific management contracts.
@@ -36,9 +36,9 @@ This foundational architecture not only supports the current functionalities of 
 One of the innovative features of the Cruna Protocol is the automated deployment of a unique manager for each NFT at the time of minting. This process is central to ensuring that each NFT within the Cruna ecosystem is equipped with its own secure and customizable management capabilities.
 
 ### Minting Process and Manager Deployment
-The minting of a new token ID through the **CrunaProtectedNFT** contract initiates a call to the **CrunaRegistry**, which in turn deploys an optimized proxy for the **CrunaManager**. This proxy uses the **CrunaManagerProxy** as its implementation, adhering to a variation of the **ERC-6551 Registry** standards for deploying token-linked contracts.
+The minting of a new token ID through the **CrunaProtectedNFT** contract initiates a call to the **ERC7656Registry**, which in turn deploys an optimized proxy for the **CrunaManager**. This proxy uses the **CrunaManagerProxy** as its implementation, adhering to a variation of the **ERC-6551 Registry** standards for deploying token-linked contracts.
 
-The key to this process is the efficiency and cost-effectiveness of the deployment. The bytecode deployed by the **CrunaRegistry** for each manager is only 173 bytes long, significantly reducing the gas cost associated with the creation of these management contracts. This efficiency is critical in maintaining the scalability of the Cruna Protocol, allowing for the widespread minting and management of NFTs without prohibitive costs.
+The key to this process is the efficiency and cost-effectiveness of the deployment. The bytecode deployed by the **ERC7656Registry** for each manager is only 173 bytes long, significantly reducing the gas cost associated with the creation of these management contracts. This efficiency is critical in maintaining the scalability of the Cruna Protocol, allowing for the widespread minting and management of NFTs without prohibitive costs.
 
 ### Binding and Management of the Token ID
 Once deployed, the manager is intrinsically bound to its corresponding NFT, creating a permanent link that ensures the manager can only be operated and controlled by the owner of that specific NFT. This binding guarantees that each NFT has a dedicated management system, enhancing the security and integrity of the asset's management throughout its lifecycle.
@@ -46,10 +46,10 @@ Once deployed, the manager is intrinsically bound to its corresponding NFT, crea
 ### Plugin Deployment and Management
 The deployment and integration of plugins within the Cruna Protocol are designed to enhance the functionality and customization options available for each NFT. This process is carefully tailored based on the nature and purpose of the plugin:
 
-- **General Plugins**: For plugins that extend the NFT's functionalities without acting as wallets, the **CrunaProtectedNFT** utilizes the **CrunaRegistry** for deployment. This approach ensures that these plugins are seamlessly integrated into the NFT's ecosystem, providing a wide range of additional capabilities and services directly linked to the NFT.
+- **General Plugins**: For plugins that extend the NFT's functionalities without acting as wallets, the **CrunaProtectedNFT** utilizes the **ERC7656Registry** for deployment. This approach ensures that these plugins are seamlessly integrated into the NFT's ecosystem, providing a wide range of additional capabilities and services directly linked to the NFT.
 
 - **Token-Bound Account Plugins**: In instances where plugins serve as token-bound accounts, essentially allowing the NFT to operate as a wallet, the deployment process leverages the canonical **ERC-6551 Registry**.
  
-This dual-pathway for plugin deployment underscores the protocol's flexibility and its ability to accommodate a broad spectrum of plugin functionalities, from enhancing the NFT's inherent features to enabling it to act as a fully operational wallet. The use of both the CrunaRegistry and the canonical ERC-6551 Registry for different types of plugins exemplifies the protocol's adaptability and commitment to providing comprehensive management solutions for NFT owners and developers.
+This dual-pathway for plugin deployment underscores the protocol's flexibility and its ability to accommodate a broad spectrum of plugin functionalities, from enhancing the NFT's inherent features to enabling it to act as a fully operational wallet. The use of both the ERC7656Registry and the canonical ERC-6551 Registry for different types of plugins exemplifies the protocol's adaptability and commitment to providing comprehensive management solutions for NFT owners and developers.
 
 # API documentation

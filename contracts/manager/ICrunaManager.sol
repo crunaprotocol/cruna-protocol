@@ -6,9 +6,9 @@ pragma solidity ^0.8.20;
 import {CrunaPluginBase} from "../plugins/CrunaPluginBase.sol";
 
 import {IVersioned} from "../utils/IVersioned.sol";
-import {ITokenLinkedContract} from "../utils/ITokenLinkedContract.sol";
+import {IERC7656Contract} from "../erc/IERC7656Contract.sol";
 
-interface ICrunaManager is ITokenLinkedContract, IVersioned {
+interface ICrunaManager is IERC7656Contract, IVersioned {
   /**
    * @notice A struct to keep info about plugged and unplugged plugins
    * @param proxyAddress The address of the first implementation of the plugin

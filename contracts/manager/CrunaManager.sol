@@ -210,15 +210,12 @@ contract CrunaManager is Actor, CrunaManagerBase {
     bytes4 nameId_ = _stringToBytes4(name);
     bytes8 _key = _combineBytes4(nameId_, salt);
     if (_pluginByKey[_key].proxyAddress != address(0) && !_pluginByKey[_key].unplugged) revert PluginAlreadyPlugged();
-    uint256 requires = Canonical.crunaGuardian().trustedImplementation(nameId_, pluginProxy);
-    if (requires == 0)
+    bool trusted = Canonical.crunaGuardian().trustedImplementation(nameId_, pluginProxy);
+    if (!trusted)
       if (canManageTransfer)
-        if (!_vault().allowUntrustedTransfers()) {
-          // If requires == 0 the plugin is not trusted, for example during development.
-          // If later it is upgraded with a trusted implementation, it can be explicitly trusted using trustPlugin.
+        if (!Canonical.crunaGuardian().allowingUntrusted()) {
           revert UntrustedImplementationsNotAllowedToMakeTransfers();
         }
-    if (requires > _version()) revert PluginRequiresUpdatedManager(requires);
     _preValidateAndCheckSignature(
       this.plug.selector,
       pluginProxy,
@@ -230,7 +227,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
       signature
     );
     if (_pluginByKey[_key].banned) revert PluginHasBeenMarkedAsNotPluggable();
-    _plug(name, pluginProxy, canManageTransfer, isERC6551Account, nameId_, salt, _key, requires);
+    _plug(name, pluginProxy, canManageTransfer, isERC6551Account, nameId_, salt, _key, trusted);
   }
 
   /// @dev see {ICrunaManager-changePluginStatus}
@@ -281,7 +278,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
     bytes8 _key = _combineBytes4(nameId_, salt);
     if (_pluginByKey[_key].proxyAddress == address(0)) revert PluginNotFound();
     if (_pluginByKey[_key].trusted) revert PluginAlreadyTrusted();
-    if (Canonical.crunaGuardian().trustedImplementation(nameId_, _pluginByKey[_key].proxyAddress) != 0) {
+    if (Canonical.crunaGuardian().trustedImplementation(nameId_, _pluginByKey[_key].proxyAddress)) {
       _pluginByKey[_key].trusted = true;
       emit PluginTrusted(name, salt);
     } else revert StillUntrusted();
@@ -355,7 +352,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
     _removeLockIfExpired(pluginNameId, salt);
     if (!_pluginByKey[_key].canManageTransfer) revert PluginNotAuthorizedToManageTransfer();
     if (!_pluginByKey[_key].trusted)
-      if (!_vault().allowUntrustedTransfers()) revert UntrustedImplementationsNotAllowedToMakeTransfers();
+      if (!Canonical.crunaGuardian().allowingUntrusted()) revert UntrustedImplementationsNotAllowedToMakeTransfers();
     _resetOnTransfer(pluginNameId, salt);
     // In theory, the vault may revert, blocking the entire process
     // We allow it, assuming that the vault implementation has the
@@ -393,7 +390,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
   function _pluginAddress(bytes4 nameId_, bytes4 salt) internal view virtual returns (address payable) {
     return
       payable(
-        Canonical.crunaRegistry().tokenLinkedContract(
+        Canonical.erc7656Registry().tokenLinkedContract(
           _pluginByKey[_combineBytes4(nameId_, salt)].proxyAddress,
           salt,
           block.chainid,
@@ -500,7 +497,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
     uint256 timeLock
   ) internal virtual {
     if (!_pluginByKey[_key].trusted)
-      if (!_vault().allowUntrustedTransfers()) revert UntrustedImplementationsNotAllowedToMakeTransfers();
+      if (!Canonical.crunaGuardian().allowingUntrusted()) revert UntrustedImplementationsNotAllowedToMakeTransfers();
     CrunaPluginBase plugin_ = _plugin(nameId_, salt);
     if (!plugin_.requiresToManageTransfer()) revert NotATransferPlugin();
     if (change == PluginChange.Authorize) {
@@ -563,7 +560,6 @@ contract CrunaManager is Actor, CrunaManagerBase {
    * @param nameId_ The nameId of the plugin
    * @param salt The salt used to deploy the plugin
    * @param _key The key of the plugin
-   * @param requires The version of the manager required by the implementation
    */
   function _plug(
     string memory name,
@@ -573,11 +569,13 @@ contract CrunaManager is Actor, CrunaManagerBase {
     bytes4 nameId_,
     bytes4 salt,
     bytes8 _key,
-    uint256 requires
+    bool trusted
   ) internal {
     // If the plugin has been plugged before and later unplugged, the proxy won't be deployed again.
     address pluginAddress_ = _vault().deployPlugin(proxyAddress_, salt, tokenId(), isERC6551Account);
     CrunaPluginBase plugin_ = CrunaPluginBase(payable(pluginAddress_));
+    uint256 requiredVersion = plugin_.requiresManagerVersion();
+    if (requiredVersion > _version()) revert PluginRequiresUpdatedManager(requiredVersion);
     if (plugin_.nameId() != nameId_) revert InvalidImplementation(plugin_.nameId(), nameId_);
     if (plugin_.isERC6551Account() != isERC6551Account) revert InvalidERC6551Status();
     plugin_.init();
@@ -594,7 +592,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
       canBeReset: plugin_.requiresResetOnTransfer(),
       active: true,
       isERC6551Account: isERC6551Account,
-      trusted: requires != 0,
+      trusted: trusted,
       banned: false,
       unplugged: false
     });

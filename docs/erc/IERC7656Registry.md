@@ -1,6 +1,6 @@
 # Solidity API
 
-## ICrunaRegistry
+## IERC7656Registry
 
 Manages the creation of token bound accounts
 
@@ -13,7 +13,7 @@ https://github.com/erc6551/reference/blob/main/src/ERC6551Registry.sol_
 event TokenLinkedContractCreated(address contractAddress, address implementation, bytes32 salt, uint256 chainId, address tokenContract, uint256 tokenId)
 ```
 
-The registry MUST emit the ERC6551AccountCreated event upon successful account creation.
+The registry MUST emit the TokenLinkedContractCreated event upon successful account creation.
 
 #### Parameters
 

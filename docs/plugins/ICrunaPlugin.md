@@ -102,6 +102,14 @@ function requiresResetOnTransfer() external pure returns (bool)
 
 Called by the manager to know it the plugin must be reset when transferring the NFT
 
+### requiresManagerVersion
+
+```solidity
+function requiresManagerVersion() external pure returns (uint256)
+```
+
+Returns the minimum version of the manager required by the plugin
+
 ### isERC6551Account
 
 ```solidity
@@ -123,17 +131,6 @@ Reset the plugin to the factory settings
 ```solidity
 function resetOnTransfer() external
 ```
-
-### upgrade
-
-```solidity
-function upgrade(address implementation_) external
-```
-
-Upgrade the implementation of the manager/plugin
-Notice that the owner can upgrade active or disable plugins
-so that, if a plugin is compromised, the user can disable it,
-wait for a new trusted implementation and upgrade it.
 
 ### manager
 

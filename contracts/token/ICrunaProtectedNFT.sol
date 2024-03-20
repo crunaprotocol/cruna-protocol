@@ -13,14 +13,12 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
    * @notice Optimized configuration structure for the generic NFT
    * Elements:
    * - progressiveTokenIds is used to allow the upgrade of the default manager implementation. It is used to assure that the manager can be upgraded in a safe way.
-   * - allowUntrustedTransfers is used by the managers to allow untrusted plugins to transfer the tokens. Typically, we would set it true for testnets and false for mainnets.
    * - nextTokenId is the next tokenId to be used. It is used to mint new tokens if progressiveTokenIds is true. Notice the limit to a uint112.
    * - maxTokenId is the maximum tokenId that can be minted. It is used to limit the minting of new tokens. Notice the limit to a uint112.
    * - managerHistoryLength is the length of the manager history.
    */
   struct NftConf {
     bool progressiveTokenIds;
-    bool allowUntrustedTransfers;
     uint112 nextTokenId;
     uint112 maxTokenId;
     uint8 managerHistoryLength;
@@ -137,16 +135,9 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
   function setMaxTokenId(uint112 maxTokenId_) external;
 
   /**
-   * @notice Returns true if the token allows untrusted plugins to transfer the tokens
-   * This is usually set to true for testnets and false for mainnets
-   */
-  function allowUntrustedTransfers() external view returns (bool);
-
-  /**
    * @notice Initialize the NFT
    * @param managerAddress_ The address of the manager
    * @param progressiveTokenIds_ If true, the tokenIds will be progressive
-   * @param allowUntrustedTransfers_ If true, the token will allow untrusted plugins to transfer the tokens
    * @param nextTokenId_ The next tokenId to be used.
    * If progressiveTokenIds_ == true and the project must reserve some tokens to
    * special addresses, community, etc. You set the nextTokenId_ to the first not reserved token.
@@ -157,13 +148,7 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
    * the token minted by mistake.
    * @param maxTokenId_ The maximum tokenId that can be minted (it can be 0 if no upper limit)
    */
-  function init(
-    address managerAddress_,
-    bool progressiveTokenIds_,
-    bool allowUntrustedTransfers_,
-    uint112 nextTokenId_,
-    uint112 maxTokenId_
-  ) external;
+  function init(address managerAddress_, bool progressiveTokenIds_, uint112 nextTokenId_, uint112 maxTokenId_) external;
 
   /**
    * @notice Returns the address of the default implementation of the manager for a tokenId
@@ -190,7 +175,7 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
    * @param tokenId The tokenId
    * @param isERC6551Account Specifies the registry to use
    * True if the tokenId was deployed via ERC6551Registry,
-   * false, it was deployed via CrunaRegistry
+   * false, it was deployed via ERC7656Registry
    * @return The address of the deployed manager or plugin
    */
   function addressOfDeployed(
@@ -207,7 +192,7 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
    * @param tokenId The tokenId
    * @param isERC6551Account Specifies the registry to use
    * True if the tokenId must be deployed via ERC6551Registry,
-   * false, it must be deployed via CrunaRegistry
+   * false, it must be deployed via ERC7656Registry
    */
   function deployPlugin(
     address pluginImplementation,
@@ -223,7 +208,7 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
    * @param tokenId The tokenId
    * @param isERC6551Account Specifies the registry to use
    * True if the tokenId was deployed via ERC6551Registry,
-   * false, it was deployed via CrunaRegistry
+   * false, it was deployed via ERC7656Registry
    */
   function isDeployed(
     address implementation,

@@ -37,7 +37,7 @@ describe("CrunaManager : Safe Recipients", function () {
     [deployer, proposer, executor, bob, alice, fred, mark, otto] = await ethers.getSigners();
     chainId = await getChainId();
     [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
-    crunaRegistry = await ethers.getContractAt("CrunaRegistry", CRUNA_REGISTRY);
+    crunaRegistry = await ethers.getContractAt("ERC7656Registry", CRUNA_REGISTRY);
     guardian = await ethers.getContractAt("CrunaGuardian", CRUNA_GUARDIAN);
     erc6551Registry = await ethers.getContractAt("ERC6551Registry", ERC6551_REGISTRY);
   });
@@ -49,7 +49,7 @@ describe("CrunaManager : Safe Recipients", function () {
 
     vault = await deployContract("OwnableNFT", deployer.address);
 
-    await vault.init(proxy.address, true, false, 1, 0);
+    await vault.init(proxy.address, true, 1, 0);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
 
     await vault.setFactory(factory.address);

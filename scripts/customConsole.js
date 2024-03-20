@@ -11,7 +11,7 @@ async function main() {
   const factory = await deployUtils.attach("VaultFactory");
   const usdc = await deployUtils.attach("USDCoin");
   const usdt = await deployUtils.attach("TetherUSD");
-  const registry = await deployUtils.attach("CrunaRegistry");
+  const registry = await deployUtils.attach("ERC7656Registry");
   const guardian = await deployUtils.attach("CrunaGuardian");
   const managerProxy = await deployUtils.attach("CrunaManagerProxy");
 

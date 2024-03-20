@@ -222,4 +222,10 @@ interface IInheritanceCrunaPlugin {
    * @notice Allows the beneficiary to inherit the token
    */
   function inherit() external;
+
+  /**
+   * @notice Upgrades the implementation of the plugin
+   * @param implementation_ The new implementation
+   */
+  function upgrade(address implementation_) external;
 }

@@ -4,20 +4,29 @@ const ethers = hre.ethers;
 const path = require("path");
 const EthDeployUtils = require("eth-deploy-utils");
 let deployUtils;
-const { executeProposal, bytes4, keccak256 } = require("../test/helpers");
+const { proposeAndExecute, bytes4, keccak256 } = require("../test/helpers");
 const { expect } = require("chai");
 
 async function main() {
   deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
 
-  const executor = new ethers.Wallet(process.env.EXECUTOR, ethers.provider);
+  const proposer = new ethers.Wallet(process.env.PROPOSER, ethers.provider);
   const pluginProxy = await deployUtils.attach("InheritanceCrunaPluginProxy");
   const plugin = await deployUtils.attach("InheritanceCrunaPlugin", pluginProxy.address);
   const guardian = await deployUtils.attach("CrunaGuardian");
   let PLUGIN_ID = bytes4(keccak256("InheritanceCrunaPlugin"));
 
   // start the process of trusting the plugin
-  await executeProposal(guardian, executor, process.env.DELAY, "setTrustedImplementation", PLUGIN_ID, plugin.address, true, 1);
+  await proposeAndExecute(
+    guardian,
+    proposer,
+    undefined,
+    process.env.DELAY,
+    "setTrustedImplementation",
+    PLUGIN_ID,
+    plugin.address,
+    true,
+  );
 }
 
 main()

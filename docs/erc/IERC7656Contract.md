@@ -1,6 +1,6 @@
 # Solidity API
 
-## ITokenLinkedContract
+## IERC7656Contract
 
 ### token
 

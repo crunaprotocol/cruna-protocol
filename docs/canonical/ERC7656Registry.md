@@ -1,6 +1,6 @@
 # Solidity API
 
-## CrunaRegistry
+## ERC7656Registry
 
 Manages the creation of token bound accounts
 

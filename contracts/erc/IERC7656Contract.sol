@@ -4,9 +4,9 @@ pragma solidity ^0.8.20;
 // this is a reduction of IERC6551Account focusing purely on the bond between the NFT and the contract
 
 /**
- * @title ITokenLinkedContract
+ * @title IERC7656Contract.sol
  */
-interface ITokenLinkedContract {
+interface IERC7656Contract {
   /**
    * @notice Returns the token linked to the contract
    * @return chainId The chainId of the token

@@ -71,11 +71,11 @@ describe("CrunaManager : Protectors", function () {
     chainId = await getChainId();
     selector = await selectorId("ICrunaManager", "setProtector");
     [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
-    crunaRegistry = await ethers.getContractAt("CrunaRegistry", CRUNA_REGISTRY);
+    crunaRegistry = await ethers.getContractAt("ERC7656Registry", CRUNA_REGISTRY);
     guardian = await ethers.getContractAt("CrunaGuardian", CRUNA_GUARDIAN);
     erc6551Registry = await ethers.getContractAt("ERC6551Registry", ERC6551_REGISTRY);
 
-    expect(await getInterfaceId("ICrunaRegistry")).to.equal("0xcd691053");
+    expect(await getInterfaceId("IERC7656Registry")).to.equal("0xcd691053");
     expect(await crunaRegistry.supportsInterface("0xcd691053")).to.equal(true);
   });
 
@@ -89,7 +89,7 @@ describe("CrunaManager : Protectors", function () {
     const IManagedNFT = await getInterfaceId("IManagedNFT");
     expect(await vault.supportsInterface(IManagedNFT)).to.equal(true);
 
-    await vault.init(proxy.address, true, false, 1, 0);
+    await vault.init(proxy.address, true, 1, 0);
 
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
     await vault.setFactory(factory.address);

@@ -46,17 +46,6 @@ Returns the version of the contract.
 The format is similar to semver, where any element takes 3 digits.
 For example, version 1.2.14 is 1_002_014.
 
-### upgrade
-
-```solidity
-function upgrade(address implementation_) external virtual
-```
-
-Upgrade the implementation of the manager/plugin
-Notice that the owner can upgrade active or disable plugins
-so that, if a plugin is compromised, the user can disable it,
-wait for a new trusted implementation and upgrade it.
-
 ### resetOnTransfer
 
 ```solidity
@@ -64,6 +53,31 @@ function resetOnTransfer() external
 ```
 
 Reset the plugin to the factory settings
+
+### requiresToManageTransfer
+
+```solidity
+function requiresToManageTransfer() external pure virtual returns (bool)
+```
+
+Called by the manager during the plugging to know if the plugin is asking the
+right to make a managed transfer of the vault
+
+### requiresManagerVersion
+
+```solidity
+function requiresManagerVersion() external pure virtual returns (uint256)
+```
+
+Returns the minimum version of the manager required by the plugin
+
+### isERC6551Account
+
+```solidity
+function isERC6551Account() external pure virtual returns (bool)
+```
+
+Called by the manager to know if the plugin is an ERC721 account
 
 ### _canPreApprove
 

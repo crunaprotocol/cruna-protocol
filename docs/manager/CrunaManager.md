@@ -604,7 +604,7 @@ Override required by SignatureValidator to check if a signer is authorized to pr
 ### _plug
 
 ```solidity
-function _plug(string name, address proxyAddress_, bool canManageTransfer, bool isERC6551Account, bytes4 nameId_, bytes4 salt, bytes8 _key, uint256 requires) internal
+function _plug(string name, address proxyAddress_, bool canManageTransfer, bool isERC6551Account, bytes4 nameId_, bytes4 salt, bytes8 _key, bool trusted) internal
 ```
 
 Internal function plug a plugin
@@ -620,7 +620,7 @@ Internal function plug a plugin
 | nameId_ | bytes4 | The nameId of the plugin |
 | salt | bytes4 | The salt used to deploy the plugin |
 | _key | bytes8 | The key of the plugin |
-| requires | uint256 | The version of the manager required by the implementation |
+| trusted | bool |  |
 
 ### _setSignedActor
 

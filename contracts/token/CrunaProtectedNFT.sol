@@ -94,7 +94,6 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
   function init(
     address managerAddress_,
     bool progressiveTokenIds_,
-    bool allowUntrustedTransfers_,
     uint112 nextTokenId_,
     uint112 maxTokenId_
   ) external virtual override {
@@ -103,18 +102,12 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     if (managerAddress_ == address(0)) revert ZeroAddress();
     _nftConf = NftConf({
       progressiveTokenIds: progressiveTokenIds_,
-      allowUntrustedTransfers: allowUntrustedTransfers_,
       nextTokenId: nextTokenId_,
       maxTokenId: maxTokenId_,
       managerHistoryLength: 1,
       unusedField: 0
     });
     _managerHistory.push(ManagerHistory({managerAddress: managerAddress_, firstTokenId: nextTokenId_, lastTokenId: 0}));
-  }
-
-  /// @dev see {ICrunaProtectedNFT-allowUntrustedTransfers}
-  function allowUntrustedTransfers() external view virtual override returns (bool) {
-    return _nftConf.allowUntrustedTransfers;
   }
 
   /// @dev see {ICrunaProtectedNFT-setMaxTokenId}
@@ -137,7 +130,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     _canManage(false);
     if (!_nftConf.progressiveTokenIds) revert NotAvailableIfTokenIdsAreNotProgressive();
     IVersionedManager newManager = IVersionedManager(newManagerProxy);
-    if (Canonical.crunaGuardian().trustedImplementation(newManager.nameId(), newManager.DEFAULT_IMPLEMENTATION()) == 0)
+    if (!Canonical.crunaGuardian().trustedImplementation(newManager.nameId(), newManager.DEFAULT_IMPLEMENTATION()))
       revert UntrustedImplementation(newManagerProxy);
     address lastEmitter = _managerHistory[_nftConf.managerHistoryLength - 1].managerAddress;
     if (newManager.version() <= IVersionedManager(lastEmitter).version()) revert CannotUpgradeToAnOlderVersion();
@@ -267,7 +260,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
    * @param implementation The address of the implementation
    * @param salt The salt
    * @param tokenId The tokenId
-   * @param isERC6551Account If true, the tokenId has been deployed via ERC6551Registry, if false, via CrunaRegistry
+   * @param isERC6551Account If true, the tokenId has been deployed via ERC6551Registry, if false, via ERC7656Registry
    */
   function _addressOfDeployed(
     address implementation,
@@ -277,7 +270,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
   ) internal view virtual returns (address) {
     return
       ERC6551AccountLib.computeAddress(
-        isERC6551Account ? address(Canonical.erc6551Registry()) : address(Canonical.crunaRegistry()),
+        isERC6551Account ? address(Canonical.erc6551Registry()) : address(Canonical.erc7656Registry()),
         implementation,
         salt,
         block.chainid,
@@ -371,7 +364,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
    * @param salt The salt
    * @param tokenId The tokenId
    * @param isERC6551Account If true, the tokenId will be deployed via ERC6551Registry,
-   * if false, via CrunaRegistry
+   * if false, via ERC7656Registry
    */
   function _deploy(
     address implementation,
@@ -382,6 +375,6 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     if (isERC6551Account) {
       return Canonical.erc6551Registry().createAccount(implementation, salt, block.chainid, _SELF, tokenId);
     }
-    return Canonical.crunaRegistry().createTokenLinkedContract(implementation, salt, block.chainid, _SELF, tokenId);
+    return Canonical.erc7656Registry().createTokenLinkedContract(implementation, salt, block.chainid, _SELF, tokenId);
   }
 }

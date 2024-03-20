@@ -6,6 +6,7 @@ cd $root_dir
 
 rm -rf ./backup_contracts
 rm -rf ./tmp/resolved-contracts
+rm -rf ./docs/*
 
 # Backup the contracts
 cp -r ./contracts ./backup_contracts
@@ -26,6 +27,7 @@ if [ $compile_status -eq 0 ] && [ $lint_status -eq 0 ]; then
     # If successful, produce the docs
     SKIP_CRYPTOENV=true npx hardhat docgen
     node scripts/docs/gen-index.js
+    echo "Process completed."
 else
     echo "Compilation or linting failed, skipping documentation generation."
 fi
@@ -34,7 +36,6 @@ fi
 rm -rf ./contracts
 mv ./backup_contracts ./contracts
 
-echo "Process completed."
 
 #rm -rf ./contracts && cp -r ./backup_contracts ./contracts
 

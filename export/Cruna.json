@@ -1531,6 +1531,25 @@
       "type": "function"
     },
     {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "interfaceId",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "token",
       "outputs": [
@@ -1637,7 +1656,7 @@
       "type": "function"
     }
   ],
-  "CrunaRegistry": [
+  "ERC7656Registry": [
     {
       "inputs": [],
       "name": "TokenLinkedContractCreationFailed",
@@ -2547,6 +2566,19 @@
     },
     {
       "inputs": [],
+      "name": "requiresManagerVersion",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "requiresResetOnTransfer",
       "outputs": [
         {
@@ -2634,6 +2666,25 @@
       "name": "setSentinels",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "interfaceId",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "pure",
       "type": "function"
     },
     {
@@ -3552,19 +3603,6 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "allowUntrustedTransfers",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
           "internalType": "address",
@@ -4012,11 +4050,6 @@
           "type": "bool"
         },
         {
-          "internalType": "bool",
-          "name": "allowUntrustedTransfers_",
-          "type": "bool"
-        },
-        {
           "internalType": "uint112",
           "name": "nextTokenId_",
           "type": "uint112"
@@ -4314,11 +4347,6 @@
             {
               "internalType": "bool",
               "name": "progressiveTokenIds",
-              "type": "bool"
-            },
-            {
-              "internalType": "bool",
-              "name": "allowUntrustedTransfers",
               "type": "bool"
             },
             {
@@ -5240,12 +5268,6 @@
           "internalType": "bool",
           "name": "trusted",
           "type": "bool"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "requires",
-          "type": "uint256"
         }
       ],
       "name": "TrustedImplementationUpdated",
@@ -5327,6 +5349,32 @@
       "name": "addProposer",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bool",
+          "name": "allowUntrusted_",
+          "type": "bool"
+        }
+      ],
+      "name": "allowUntrusted",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "allowingUntrusted",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -5940,11 +5988,6 @@
           "internalType": "bool",
           "name": "trusted",
           "type": "bool"
-        },
-        {
-          "internalType": "uint256",
-          "name": "requires",
-          "type": "uint256"
         }
       ],
       "name": "setTrustedImplementation",
@@ -5987,9 +6030,9 @@
       "name": "trustedImplementation",
       "outputs": [
         {
-          "internalType": "uint256",
+          "internalType": "bool",
           "name": "",
-          "type": "uint256"
+          "type": "bool"
         }
       ],
       "stateMutability": "view",

@@ -55,7 +55,7 @@ describe("Sentinel and Inheritance", function () {
     [deployer, proposer, executor, bob, alice, fred, mark, otto, jerry, beneficiary1, beneficiary2] = await ethers.getSigners();
     chainId = await getChainId();
     [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
-    crunaRegistry = await ethers.getContractAt("CrunaRegistry", CRUNA_REGISTRY);
+    crunaRegistry = await ethers.getContractAt("ERC7656Registry", CRUNA_REGISTRY);
     guardian = await ethers.getContractAt("CrunaGuardian", CRUNA_GUARDIAN);
     erc6551Registry = await ethers.getContractAt("ERC6551Registry", ERC6551_REGISTRY);
   });
@@ -66,7 +66,7 @@ describe("Sentinel and Inheritance", function () {
     proxy = await deployUtils.attach("CrunaManager", deployedProxy.address);
     vault = await deployContract("OwnableNFT", deployer.address);
 
-    await vault.init(proxy.address, true, false, 1, 0);
+    await vault.init(proxy.address, true, 1, 0);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
     await vault.setFactory(factory.address);
 
@@ -95,8 +95,10 @@ describe("Sentinel and Inheritance", function () {
     inheritancePluginProxy = await deployContract("InheritanceCrunaPluginProxy", inheritancePluginImpl.address);
     inheritancePluginProxy = await deployUtils.attach("InheritanceCrunaPlugin", inheritancePluginProxy.address);
 
+    expect(await guardian.allowingUntrusted()).to.be.false;
+
     if (trust) {
-      await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true, 10);
+      await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true);
     }
 
     await expect((await manager.pluginByKey(PLUGIN_ID + salt.substring(2))).proxyAddress).to.equal(addr0);
@@ -161,6 +163,7 @@ describe("Sentinel and Inheritance", function () {
           manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, salt, 0, 0, 0),
         ).revertedWith("UntrustedImplementationsNotAllowedToMakeTransfers");
       }
+
       await expect(
         manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, trust, false, salt, 0, 0, 0),
       ).to.emit(manager, "PluginStatusChange");
@@ -184,7 +187,12 @@ describe("Sentinel and Inheritance", function () {
     return nextTokenId;
   };
 
-  it("should verify before/beforeEach works", async function () {});
+  it("should verify before/beforeEach works", async function () {
+    await guardian.allowUntrusted(true);
+    expect(await guardian.allowingUntrusted()).to.be.true;
+    // we revert, since this is a singleton
+    await guardian.allowUntrusted(false);
+  });
 
   it("should test the guardian", async function () {
     inheritancePluginImpl = await deployContract("InheritanceCrunaPlugin");
@@ -193,9 +201,9 @@ describe("Sentinel and Inheritance", function () {
 
     const newGuardian = await deployContract("CrunaGuardian", delay, [proposer.address], [executor.address], deployer.address);
 
-    await trustImplementation(newGuardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true, 10);
+    await trustImplementation(newGuardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true);
 
-    expect(await newGuardian.trustedImplementation(PLUGIN_ID, inheritancePluginProxy.address)).to.equal(10);
+    expect(await newGuardian.trustedImplementation(PLUGIN_ID, inheritancePluginProxy.address)).to.be.true;
     expect(await newGuardian.version()).to.equal(1001000);
   });
 
@@ -837,16 +845,12 @@ describe("Sentinel and Inheritance", function () {
       "UntrustedImplementationsNotAllowedToMakeTransfers",
     );
 
-    await trustImplementation(
-      guardian,
-      proposer,
-      executor,
-      delay,
-      PLUGIN_ID,
-      inheritancePluginProxy.address,
-      PluginChange.Authorize,
-      10,
-    );
+    expect(await guardian.trustedImplementation(PLUGIN_ID, inheritancePluginProxy.address)).to.be.false;
+
+    await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true);
+
+    expect(await guardian.trustedImplementation(PLUGIN_ID, inheritancePluginProxy.address)).to.be.true;
+
     await expect(
       manager.connect(bob).changePluginStatus("InheritanceCrunaPlugin", "0x00000000", PluginChange.Authorize, 0, 0, 0, 0),
     ).revertedWith("UntrustedImplementationsNotAllowedToMakeTransfers");
@@ -1314,8 +1318,8 @@ describe("Sentinel and Inheritance", function () {
 
     expect(toChecksumAddress(iVault.address)).equal(toChecksumAddress(vault.address));
 
-    await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginV2Impl.address, true, 1);
-    await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginV3Impl.address, true, 1);
+    await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginV2Impl.address, true);
+    await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginV3Impl.address, true);
 
     await inheritancePlugin.connect(bob).upgrade(inheritancePluginV3Impl.address);
 
@@ -1349,7 +1353,7 @@ describe("Sentinel and Inheritance", function () {
 
     const inheritancePluginV2Impl = await deployContract("InheritanceCrunaPluginV2");
 
-    await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginV2Impl.address, true, 1e6 + 2e3);
+    await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginV2Impl.address, true);
     await expect(inheritancePlugin.connect(bob).upgrade(inheritancePluginV2Impl.address))
       .revertedWith("PluginRequiresUpdatedManager")
       .withArgs(1e6 + 2e3);
