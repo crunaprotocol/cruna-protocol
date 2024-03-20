@@ -42,6 +42,31 @@ describe("Testing contract deployments", function () {
     crunaRegistry = await ethers.getContractAt("ERC7656Registry", CRUNA_REGISTRY);
     guardian = await ethers.getContractAt("CrunaGuardian", CRUNA_GUARDIAN);
     erc6551Registry = await ethers.getContractAt("ERC6551Registry", ERC6551_REGISTRY);
+
+    let tx = await crunaRegistry.createTokenLinkedContract(
+      guardian.address,
+      ethers.constants.HashZero,
+      31337,
+      guardian.address,
+      1001,
+    );
+    await tx.wait();
+
+    let addr = await crunaRegistry.tokenLinkedContract(
+      guardian.address,
+      ethers.constants.HashZero,
+      31337,
+      guardian.address,
+      1001,
+    );
+
+    let code = await ethers.provider.getCode(addr);
+    expect(code !== "0x").to.be.true;
+
+    addr = await crunaRegistry.tokenLinkedContract(guardian.address, ethers.constants.HashZero, 31337, guardian.address, 1000);
+
+    code = await ethers.provider.getCode(addr);
+    expect(code !== "0x").to.be.false;
   });
 
   beforeEach(async function () {

@@ -1,5 +1,8 @@
 # Change log
 
+**0.3.1**
+- Fix wrong `ERC7656Registry` address in `Canonical`
+
 **0.3.0**
 - Rename `CrunaRegistry` as `ERC7656Registry` 
 - Remove required version from `CrunaGuardian`
