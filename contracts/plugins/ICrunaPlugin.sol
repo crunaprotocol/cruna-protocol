@@ -38,12 +38,6 @@ interface ICrunaPlugin is IERC7656Contract, IVersioned {
 
   /**
    * @notice Error returned when the plugin is reset
-   * @param requiredVersion The version required by the plugin
-   */
-  error PluginRequiresUpdatedManager(uint256 requiredVersion);
-
-  /**
-   * @notice Error returned when the plugin is reset
    */
   error Forbidden();
 

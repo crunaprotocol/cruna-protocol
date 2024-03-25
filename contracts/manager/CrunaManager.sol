@@ -11,6 +11,7 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {CrunaPluginBase} from "../plugins/CrunaPluginBase.sol";
 import {Canonical} from "../libs/Canonical.sol";
+import {TrustedLib} from "../libs/TrustedLib.sol";
 import {ManagerConstants} from "../libs/ManagerConstants.sol";
 
 /**
@@ -213,7 +214,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
     bool trusted = Canonical.crunaGuardian().trustedImplementation(nameId_, pluginProxy);
     if (!trusted)
       if (canManageTransfer)
-        if (!Canonical.crunaGuardian().allowingUntrusted()) {
+        if (!TrustedLib.areUntrustedImplementationsAllowed()) {
           revert UntrustedImplementationsNotAllowedToMakeTransfers();
         }
     _preValidateAndCheckSignature(
@@ -352,7 +353,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
     _removeLockIfExpired(pluginNameId, salt);
     if (!_pluginByKey[_key].canManageTransfer) revert PluginNotAuthorizedToManageTransfer();
     if (!_pluginByKey[_key].trusted)
-      if (!Canonical.crunaGuardian().allowingUntrusted()) revert UntrustedImplementationsNotAllowedToMakeTransfers();
+      if (!TrustedLib.areUntrustedImplementationsAllowed()) revert UntrustedImplementationsNotAllowedToMakeTransfers();
     _resetOnTransfer(pluginNameId, salt);
     // In theory, the vault may revert, blocking the entire process
     // We allow it, assuming that the vault implementation has the
@@ -497,7 +498,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
     uint256 timeLock
   ) internal virtual {
     if (!_pluginByKey[_key].trusted)
-      if (!Canonical.crunaGuardian().allowingUntrusted()) revert UntrustedImplementationsNotAllowedToMakeTransfers();
+      if (!TrustedLib.areUntrustedImplementationsAllowed()) revert UntrustedImplementationsNotAllowedToMakeTransfers();
     CrunaPluginBase plugin_ = _plugin(nameId_, salt);
     if (!plugin_.requiresToManageTransfer()) revert NotATransferPlugin();
     if (change == PluginChange.Authorize) {

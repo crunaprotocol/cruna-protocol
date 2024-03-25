@@ -80,14 +80,4 @@ contract CrunaGuardian is ICrunaGuardian, IVersioned, TimelockController {
   function trustedImplementation(bytes4 nameId, address implementation) external view override returns (bool) {
     return _trustedImplementations[bytes32(nameId) | bytes32(uint256(uint160(implementation)))];
   }
-
-  /// @dev see {ICrunaGuardian-allowUntrusted}
-  function allowUntrusted(bool allowUntrusted_) external onlyRoleOrOpenRole(DEFAULT_ADMIN_ROLE) {
-    _allowUntrusted = allowUntrusted_;
-  }
-
-  /// @dev see {ICrunaGuardian-allowingUntrusted}
-  function allowingUntrusted() external view returns (bool) {
-    return _allowUntrusted;
-  }
 }

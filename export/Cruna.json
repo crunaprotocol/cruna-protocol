@@ -1799,7 +1799,7 @@
           "type": "bool"
         }
       ],
-      "stateMutability": "view",
+      "stateMutability": "pure",
       "type": "function"
     }
   ],
@@ -5228,32 +5228,6 @@
           "internalType": "bytes32",
           "name": "",
           "type": "bytes32"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bool",
-          "name": "allowUntrusted_",
-          "type": "bool"
-        }
-      ],
-      "name": "allowUntrusted",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "allowingUntrusted",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
         }
       ],
       "stateMutability": "view",

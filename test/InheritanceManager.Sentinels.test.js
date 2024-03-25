@@ -95,8 +95,6 @@ describe("Sentinel and Inheritance", function () {
     inheritancePluginProxy = await deployContract("InheritanceCrunaPluginProxy", inheritancePluginImpl.address);
     inheritancePluginProxy = await deployUtils.attach("InheritanceCrunaPlugin", inheritancePluginProxy.address);
 
-    expect(await guardian.allowingUntrusted()).to.be.false;
-
     if (trust) {
       await trustImplementation(guardian, proposer, executor, delay, PLUGIN_ID, inheritancePluginProxy.address, true);
     }
@@ -186,13 +184,6 @@ describe("Sentinel and Inheritance", function () {
     await expect(pluginAddress).to.not.equal(addr0);
     return nextTokenId;
   };
-
-  it("should verify before/beforeEach works", async function () {
-    await guardian.allowUntrusted(true);
-    expect(await guardian.allowingUntrusted()).to.be.true;
-    // we revert, since this is a singleton
-    await guardian.allowUntrusted(false);
-  });
 
   it("should test the guardian", async function () {
     inheritancePluginImpl = await deployContract("InheritanceCrunaPlugin");
