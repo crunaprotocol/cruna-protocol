@@ -11,5 +11,10 @@ FOLDER=""
 if [[ "$2" != "" ]]; then
   FOLDER=$2/
 fi
+
+cp libs-canonical/not-localhost/Canonical.sol contracts/libs/.
+
 NODE_ENV=test npx hardhat flatten contracts/$FOLDER$1.sol > flattened/$1-flattened.sol
 scripts/clean-licenses-in-flattened.js $1
+
+cp libs-canonical/localhost/Canonical.sol contracts/libs/.
