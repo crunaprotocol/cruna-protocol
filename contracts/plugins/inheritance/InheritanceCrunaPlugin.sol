@@ -22,7 +22,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   using Strings for uint256;
 
   /**
- * @notice Storage slot with the address of the current implementation.
+   * @notice Storage slot with the address of the current implementation.
    * This is the keccak-256 hash of "eip1967.proxy.implementation" subtracted by 1, and is
    * validated in the constructor.
    */

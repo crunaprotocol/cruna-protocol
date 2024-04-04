@@ -16,7 +16,6 @@ import {INamedAndVersioned} from "../utils/INamedAndVersioned.sol";
  * @notice Base contract for managers and plugins
  */
 abstract contract CrunaManagerBase is ICrunaManager, CommonBase, ReentrancyGuard {
-
   /**
    * @notice Storage slot with the address of the current implementation.
    * This is the keccak-256 hash of "eip1967.proxy.implementation" subtracted by 1, and is

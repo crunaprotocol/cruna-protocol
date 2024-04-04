@@ -18,7 +18,6 @@ import {Actor} from "../manager/Actor.sol";
  * @notice Base contract for managers and plugins
  */
 abstract contract CommonBase is ICommonBase, INamed, Context, Actor, TokenLinkedContract, SignatureValidator {
-
   /**
    * @notice Error returned when the caller is not the token owner
    */

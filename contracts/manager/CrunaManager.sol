@@ -366,7 +366,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
    * @notice see {IProtectedNFT-protectedTransfer}.
    */
   function protectedTransfer(
-    uint256 tokenId,
+    uint256 tokenId_,
     address to,
     uint256 timestamp,
     uint256 validFor,
@@ -375,7 +375,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
     if (timestamp == 0) revert ToBeUsedOnlyWhenProtectorsAreActive();
     _preValidateAndCheckSignature(this.protectedTransfer.selector, to, 0, 0, 0, timestamp, validFor, signature);
     _resetOnTransfer(bytes4(0), bytes4(0));
-    _vault().managedTransfer(_nameId(), tokenId, to);
+    _vault().managedTransfer(_nameId(), tokenId_, to);
   }
 
   // Internal function to get an instance of the plugin
