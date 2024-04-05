@@ -23,7 +23,7 @@ async function main() {
     bytecodes = JSON.parse(fs.readFileSync(bytecodesPath, "utf8"));
   } else {
     bytecodes = {
-      ERC7656Registry: {}
+      ERC7656Registry: {},
     };
   }
 

@@ -3343,9 +3343,9 @@
       "inputs": [
         {
           "indexed": false,
-          "internalType": "uint112",
+          "internalType": "uint96",
           "name": "maxTokenId",
-          "type": "uint112"
+          "type": "uint96"
         }
       ],
       "name": "MaxTokenIdChange",
@@ -4004,14 +4004,14 @@
           "type": "bool"
         },
         {
-          "internalType": "uint112",
+          "internalType": "uint96",
           "name": "nextTokenId_",
-          "type": "uint112"
+          "type": "uint96"
         },
         {
-          "internalType": "uint112",
+          "internalType": "uint96",
           "name": "maxTokenId_",
-          "type": "uint112"
+          "type": "uint96"
         }
       ],
       "name": "init",
@@ -4237,14 +4237,14 @@
         {
           "components": [
             {
-              "internalType": "uint112",
+              "internalType": "uint96",
               "name": "firstTokenId",
-              "type": "uint112"
+              "type": "uint96"
             },
             {
-              "internalType": "uint112",
+              "internalType": "uint96",
               "name": "lastTokenId",
-              "type": "uint112"
+              "type": "uint96"
             },
             {
               "internalType": "address",
@@ -4299,19 +4299,19 @@
         {
           "components": [
             {
+              "internalType": "uint96",
+              "name": "nextTokenId",
+              "type": "uint96"
+            },
+            {
+              "internalType": "uint96",
+              "name": "maxTokenId",
+              "type": "uint96"
+            },
+            {
               "internalType": "bool",
               "name": "progressiveTokenIds",
               "type": "bool"
-            },
-            {
-              "internalType": "uint112",
-              "name": "nextTokenId",
-              "type": "uint112"
-            },
-            {
-              "internalType": "uint112",
-              "name": "maxTokenId",
-              "type": "uint112"
             },
             {
               "internalType": "uint8",
@@ -4678,9 +4678,9 @@
     {
       "inputs": [
         {
-          "internalType": "uint112",
+          "internalType": "uint96",
           "name": "maxTokenId_",
-          "type": "uint112"
+          "type": "uint96"
         }
       ],
       "name": "setMaxTokenId",

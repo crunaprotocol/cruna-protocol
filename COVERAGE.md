@@ -26,8 +26,8 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   CrunaManagerBase.sol                |      100 |    66.67 |      100 |      100 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   ICrunaManager.sol                   |      100 |      100 |      100 |      100 
- plugins/                             |    84.62 |       50 |    83.33 |     87.5 
-  CrunaPluginBase.sol                 |    84.62 |       50 |    83.33 |     87.5 
+ plugins/                             |    85.71 |       50 |    84.62 |    88.24 
+  CrunaPluginBase.sol                 |    85.71 |       50 |    84.62 |    88.24 
   ICrunaPlugin.sol                    |      100 |      100 |      100 |      100 
  plugins/inheritance/                 |    91.09 |    65.69 |    96.15 |    88.89 
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
@@ -50,6 +50,6 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   SignatureValidator.sol              |      100 |    86.36 |      100 |      100 
   TokenLinkedContract.sol             |    81.82 |       50 |    83.33 |       90 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    96.11 |    67.65 |    95.51 |    94.36 
+All files                             |    96.12 |    67.34 |    95.53 |    94.37 
 --------------------------------------|----------|----------|----------|----------
 ```

@@ -94,8 +94,8 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
   function init(
     address managerAddress_,
     bool progressiveTokenIds_,
-    uint112 nextTokenId_,
-    uint112 maxTokenId_
+    uint96 nextTokenId_,
+    uint96 maxTokenId_
   ) external virtual override {
     _canManage(true);
     if (_nftConf.managerHistoryLength != 0) revert AlreadyInitiated();
@@ -111,7 +111,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
   }
 
   /// @dev see {ICrunaProtectedNFT-setMaxTokenId}
-  function setMaxTokenId(uint112 maxTokenId_) external virtual {
+  function setMaxTokenId(uint96 maxTokenId_) external virtual {
     _canManage(_nftConf.maxTokenId == 0);
     if (maxTokenId_ == 0) revert InvalidMaxTokenId();
     if (_nftConf.progressiveTokenIds)
@@ -331,7 +331,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
         ++i;
       }
     }
-    _nftConf.nextTokenId = uint112(tokenId);
+    _nftConf.nextTokenId = uint96(tokenId);
   }
 
   /**
@@ -350,7 +350,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
   function _mintAndActivate(address to, uint256 tokenId) internal virtual {
     if (_nftConf.managerHistoryLength == 0) revert NftNotInitiated();
     if (
-      tokenId > type(uint112).max ||
+      tokenId > type(uint96).max ||
       (_nftConf.maxTokenId != 0 && tokenId > _nftConf.maxTokenId) ||
       (tokenId < _managerHistory[0].firstTokenId)
     ) revert InvalidTokenId();

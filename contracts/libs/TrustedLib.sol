@@ -9,7 +9,7 @@ library TrustedLib {
    * @notice Returns if untrusted implementations are allowed
    * @dev When on those chain, it is possible to skip the requirement that an implementation is trusted.
    *
-   * To keep this function efficient, we support only the 10 most popular chains.
+   * To keep this function efficient, we support only the most popular chains at the moment.
    *
    * - Goerli
    * - BNB Testnet
@@ -21,6 +21,7 @@ library TrustedLib {
    * - Polygon Mumbai
    * - Arbitrum Testnet
    * - Sepolia
+   * - Base Sepolia
    */
   function areUntrustedImplementationsAllowed() internal view returns (bool) {
     uint256 chainId = block.chainid;
@@ -28,10 +29,11 @@ library TrustedLib {
       chainId == 97 || // bsc testnet
       chainId == 338 || // chronos testnet
       chainId == 4002 || // fantom testnet
+      chainId == 10200 || // gnosis testnet
       chainId == 43113 || // avalanche fuji
       chainId == 44787 || // celo alfajores
-      chainId == 10200 || // gnosis testnet
       chainId == 80001 || // polygon mumbai
+      chainId == 84532 || // base sepolia
       chainId == 421614 || // arbitrum testnet
       chainId == 11155111); // sepolia
   }
