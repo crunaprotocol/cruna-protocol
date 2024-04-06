@@ -18,7 +18,14 @@ async function main() {
     chainId === 1337 ? "../test/helpers/bytecodes.json" : "../contracts/canonicalBytecodes.json",
   );
 
-  const bytecodes = JSON.parse(fs.readFileSync(bytecodesPath, "utf8"));
+  let bytecodes;
+  if (fs.existsSync(bytecodesPath)) {
+    bytecodes = JSON.parse(fs.readFileSync(bytecodesPath, "utf8"));
+  } else {
+    bytecodes = {
+      ERC7656Registry: {},
+    };
+  }
 
   const canonicalPath = path.resolve(__dirname, `../libs-canonical/${chainId === 1337 ? "not-" : ""}localhost/Canonical.sol`);
 
@@ -26,7 +33,9 @@ async function main() {
   // It should not happen after the first guardian as been deployed, except if very serious
   // issues are found and a new guardian is needed. In that unfortunate case, all managers
   // and plugins will have to be upgraded by tokens' owners.
-  let salt = bytecodes.ERC7656Registry.salt;
+  let salt = bytecodes.ERC7656Registry.salt || ethers.constants.HashZero;
+  bytecodes.ERC7656Registry.salt = salt;
+
   bytecodes.ERC7656Registry.bytecode = await deployUtils.getBytecodeToBeDeployedViaNickSFactory(deployer, "ERC7656Registry");
 
   let canonical = fs.readFileSync(canonicalPath, "utf8");

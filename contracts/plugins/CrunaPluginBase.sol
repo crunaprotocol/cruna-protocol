@@ -25,10 +25,15 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
     _;
   }
 
+  function _onBeforeInit() internal virtual {
+    // does nothing
+  }
+
   /// @dev see {ICrunaPlugin-init}
   function init() external {
     address managerAddress = _vault().managerOf(tokenId());
     if (_msgSender() != managerAddress) revert Forbidden();
+    _onBeforeInit();
     _conf.manager = CrunaManager(managerAddress);
   }
 

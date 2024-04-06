@@ -11,16 +11,23 @@ import {IManagedNFT} from "./IManagedNFT.sol";
 interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
   /**
    * @notice Optimized configuration structure for the generic NFT
+   *
+   * TokenIds are uint96 for optimization purposes. In particular, having the tokenId as a uint96 allows
+   * to encode the tokenId in the first 12 bytes of the storage slot, leaving the last 20 bytes for the token address
+   * That allows plugins and other tools to save storage because tokenAddress + tokenId will take a single word.
+   * For example, tokenAddress and tokenId can be encoded as
+   * uint256 tokenAddressAndTokenId = uint256(tokenAddress) << 96 | tokenId;
+   *
    * Elements:
    * - progressiveTokenIds is used to allow the upgrade of the default manager implementation. It is used to assure that the manager can be upgraded in a safe way.
-   * - nextTokenId is the next tokenId to be used. It is used to mint new tokens if progressiveTokenIds is true. Notice the limit to a uint112.
-   * - maxTokenId is the maximum tokenId that can be minted. It is used to limit the minting of new tokens. Notice the limit to a uint112.
+   * - nextTokenId is the next tokenId to be used. It is used to mint new tokens if progressiveTokenIds is true.
+   * - maxTokenId is the maximum tokenId that can be minted. It is used to limit the minting of new tokens.
    * - managerHistoryLength is the length of the manager history.
    */
   struct NftConf {
+    uint96 nextTokenId;
+    uint96 maxTokenId;
     bool progressiveTokenIds;
-    uint112 nextTokenId;
-    uint112 maxTokenId;
     uint8 managerHistoryLength;
     // for future changes
     uint8 unusedField;
@@ -34,8 +41,8 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
    * - managerAddress is the address of the manager.
    */
   struct ManagerHistory {
-    uint112 firstTokenId;
-    uint112 lastTokenId;
+    uint96 firstTokenId;
+    uint96 lastTokenId;
     address managerAddress;
   }
 
@@ -51,7 +58,7 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
    * @notice Emitted when the maxTokenId is changed
    * @param maxTokenId The new maxTokenId
    */
-  event MaxTokenIdChange(uint112 maxTokenId);
+  event MaxTokenIdChange(uint96 maxTokenId);
 
   // errors
 
@@ -132,7 +139,7 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
    * @notice set the maximum tokenId that can be minted
    * @param maxTokenId_ The new maxTokenId
    */
-  function setMaxTokenId(uint112 maxTokenId_) external;
+  function setMaxTokenId(uint96 maxTokenId_) external;
 
   /**
    * @notice Initialize the NFT
@@ -148,7 +155,7 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
    * the token minted by mistake.
    * @param maxTokenId_ The maximum tokenId that can be minted (it can be 0 if no upper limit)
    */
-  function init(address managerAddress_, bool progressiveTokenIds_, uint112 nextTokenId_, uint112 maxTokenId_) external;
+  function init(address managerAddress_, bool progressiveTokenIds_, uint96 nextTokenId_, uint96 maxTokenId_) external;
 
   /**
    * @notice Returns the address of the default implementation of the manager for a tokenId

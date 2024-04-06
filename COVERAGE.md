@@ -1,7 +1,7 @@
 # Test coverage
 
 ```
-  52 passing
+  51 passing
 
 --------------------------------------|----------|----------|----------|----------
 File                                  |  % Stmts | % Branch |  % Funcs |  % Lines 
@@ -12,21 +12,22 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   IERC6982.sol                        |      100 |      100 |      100 |      100 
   IERC7656Contract.sol                |      100 |      100 |      100 |      100 
   IERC7656Registry.sol                |      100 |      100 |      100 |      100 
- guardian/                            |    85.71 |     37.5 |    71.43 |    72.73 
-  CrunaGuardian.sol                   |    85.71 |     37.5 |    71.43 |    72.73 
+ guardian/                            |      100 |       50 |      100 |    88.89 
+  CrunaGuardian.sol                   |      100 |       50 |      100 |    88.89 
   ICrunaGuardian.sol                  |      100 |      100 |      100 |      100 
- libs/                                |      100 |      100 |      100 |      100 
+ libs/                                |      100 |        0 |      100 |      100 
   Canonical.sol                       |      100 |      100 |      100 |      100 
   ExcessivelySafeCall.sol             |      100 |      100 |      100 |      100 
   ManagerConstants.sol                |      100 |      100 |      100 |      100 
+  TrustedLib.sol                      |      100 |        0 |      100 |      100 
  manager/                             |    98.71 |    74.26 |    98.46 |    96.67 
   Actor.sol                           |      100 |    57.14 |      100 |      100 
   CrunaManager.sol                    |    98.51 |    76.14 |    98.15 |     96.1 
   CrunaManagerBase.sol                |      100 |    66.67 |      100 |      100 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   ICrunaManager.sol                   |      100 |      100 |      100 |      100 
- plugins/                             |    84.62 |       50 |    83.33 |     87.5 
-  CrunaPluginBase.sol                 |    84.62 |       50 |    83.33 |     87.5 
+ plugins/                             |    85.71 |       50 |    84.62 |    88.24 
+  CrunaPluginBase.sol                 |    85.71 |       50 |    84.62 |    88.24 
   ICrunaPlugin.sol                    |      100 |      100 |      100 |      100 
  plugins/inheritance/                 |    91.09 |    65.69 |    96.15 |    88.89 
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
@@ -49,6 +50,6 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   SignatureValidator.sol              |      100 |    86.36 |      100 |      100 
   TokenLinkedContract.sol             |    81.82 |       50 |    83.33 |       90 
 --------------------------------------|----------|----------|----------|----------
-All files                             |     95.9 |    70.19 |    94.41 |    94.02 
+All files                             |    96.12 |    67.34 |    95.53 |    94.37 
 --------------------------------------|----------|----------|----------|----------
 ```

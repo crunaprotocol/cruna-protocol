@@ -141,6 +141,12 @@ interface IInheritanceCrunaPlugin {
    */
   error InvalidParameters();
 
+  /**
+   * @notice Error returned when the plugin is upgraded if requires an updated manager
+   * @param requiredVersion The version required by the plugin
+   */
+  error PluginRequiresUpdatedManager(uint256 requiredVersion);
+
   // beneficiaries
 
   /**

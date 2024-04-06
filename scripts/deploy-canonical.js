@@ -30,7 +30,7 @@ async function main() {
       deployer,
       "ERC6551Registry",
       canonicalBytecodes.ERC6551Registry.bytecode,
-      "0x0000000000000000000000000000000000000000fd8eb4e1dca713016c518e31",
+      canonicalBytecodes.ERC6551Registry.salt,
     );
   }
   await deployUtils.deployBytecodeViaNickSFactory(
