@@ -24,21 +24,16 @@ async function main() {
     fs.writeFileSync(bytecodesPath, JSON.stringify({}));
   }
 
-  let salt = ethers.constants.HashZero;
-
   const bytecodes = JSON.parse(fs.readFileSync(bytecodesPath));
 
   if (!bytecodes.CrunaManager) {
+    let salt = ethers.constants.HashZero;
     bytecodes.CrunaManager = {
       salt,
     };
     bytecodes.CrunaManagerProxy = {
       salt,
     };
-  }
-
-  if (!bytecodes.CrunaManager.hash !== salt) {
-    bytecodes.CrunaManager.hash = salt;
   }
 
   if (!bytecodes.CrunaManager.bytecode || process.env.OVERRIDE) {
@@ -49,7 +44,7 @@ async function main() {
     deployer,
     "CrunaManager",
     bytecodes.CrunaManager.bytecode,
-    salt,
+    bytecodes.CrunaManager.salt,
   );
 
   bytecodes.CrunaManager.address = manager.address;
@@ -63,15 +58,11 @@ async function main() {
     );
   }
 
-  if (!bytecodes.CrunaManagerProxy.hash !== salt) {
-    bytecodes.CrunaManagerProxy.hash = salt;
-  }
-
   let proxy = await deployUtils.deployBytecodeViaNickSFactory(
     deployer,
     "CrunaManagerProxy",
     bytecodes.CrunaManagerProxy.bytecode,
-    salt,
+    bytecodes.CrunaManagerProxy.salt,
   );
   bytecodes.CrunaManagerProxy.address = proxy.address;
 
