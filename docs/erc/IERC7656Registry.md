@@ -2,7 +2,7 @@
 
 ## IERC7656Registry
 
-Manages the creation of token bound accounts
+Manages the creation of token linked accounts
 
 _Modified registry based on ERC6551Registry
 https://github.com/erc6551/reference/blob/main/src/ERC6551Registry.sol
@@ -42,7 +42,7 @@ The registry MUST revert with CreationFailed error if the create2 operation fail
 function create(address implementation, bytes32 salt, uint256 chainId, address tokenContract, uint256 tokenId) external returns (address account)
 ```
 
-Creates a token bound account for a non-fungible token.
+Creates a token linked account for a non-fungible token.
 If account has already been created, returns the account address without calling create2.
 
 #### Parameters
@@ -59,7 +59,7 @@ If account has already been created, returns the account address without calling
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| account | address | The address of the token bound account |
+| account | address | The address of the token linked account |
 
 ### compute
 
@@ -67,7 +67,7 @@ If account has already been created, returns the account address without calling
 function compute(address implementation, bytes32 salt, uint256 chainId, address tokenContract, uint256 tokenId) external view returns (address account)
 ```
 
-Returns the computed token bound account address for a non-fungible token.
+Returns the computed token linked account address for a non-fungible token.
 
 #### Parameters
 
@@ -83,5 +83,5 @@ Returns the computed token bound account address for a non-fungible token.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| account | address | The address of the token bound account |
+| account | address | The address of the token linked account |
 

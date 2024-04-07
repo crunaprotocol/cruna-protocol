@@ -434,7 +434,7 @@ see {IProtectedNFT-managedTransfer}.
 ### protectedTransfer
 
 ```solidity
-function protectedTransfer(uint256 tokenId, address to, uint256 timestamp, uint256 validFor, bytes signature) external
+function protectedTransfer(uint256 tokenId_, address to, uint256 timestamp, uint256 validFor, bytes signature) external
 ```
 
 see {IProtectedNFT-protectedTransfer}.

@@ -5,17 +5,24 @@
 ### NftConf
 
 Optimized configuration structure for the generic NFT
+
+TokenIds are uint96 for optimization purposes. In particular, having the tokenId as a uint96 allows
+to encode the tokenId in the first 12 bytes of the storage slot, leaving the last 20 bytes for the token address
+That allows plugins and other tools to save storage because tokenAddress + tokenId will take a single word.
+For example, tokenAddress and tokenId can be encoded as
+uint256 tokenAddressAndTokenId = uint256(tokenAddress) << 96 | tokenId;
+
 Elements:
 - progressiveTokenIds is used to allow the upgrade of the default manager implementation. It is used to assure that the manager can be upgraded in a safe way.
-- nextTokenId is the next tokenId to be used. It is used to mint new tokens if progressiveTokenIds is true. Notice the limit to a uint112.
-- maxTokenId is the maximum tokenId that can be minted. It is used to limit the minting of new tokens. Notice the limit to a uint112.
+- nextTokenId is the next tokenId to be used. It is used to mint new tokens if progressiveTokenIds is true.
+- maxTokenId is the maximum tokenId that can be minted. It is used to limit the minting of new tokens.
 - managerHistoryLength is the length of the manager history.
 
 ```solidity
 struct NftConf {
+  uint96 nextTokenId;
+  uint96 maxTokenId;
   bool progressiveTokenIds;
-  uint112 nextTokenId;
-  uint112 maxTokenId;
   uint8 managerHistoryLength;
   uint8 unusedField;
 }
@@ -31,8 +38,8 @@ Elements:
 
 ```solidity
 struct ManagerHistory {
-  uint112 firstTokenId;
-  uint112 lastTokenId;
+  uint96 firstTokenId;
+  uint96 lastTokenId;
   address managerAddress;
 }
 ```
@@ -54,7 +61,7 @@ Emitted when the default manager is upgraded
 ### MaxTokenIdChange
 
 ```solidity
-event MaxTokenIdChange(uint112 maxTokenId)
+event MaxTokenIdChange(uint96 maxTokenId)
 ```
 
 Emitted when the maxTokenId is changed
@@ -63,7 +70,7 @@ Emitted when the maxTokenId is changed
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| maxTokenId | uint112 | The new maxTokenId |
+| maxTokenId | uint96 | The new maxTokenId |
 
 ### NotTransferable
 
@@ -186,7 +193,7 @@ Returns the manager history for a specific index
 ### setMaxTokenId
 
 ```solidity
-function setMaxTokenId(uint112 maxTokenId_) external
+function setMaxTokenId(uint96 maxTokenId_) external
 ```
 
 set the maximum tokenId that can be minted
@@ -195,12 +202,12 @@ set the maximum tokenId that can be minted
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| maxTokenId_ | uint112 | The new maxTokenId |
+| maxTokenId_ | uint96 | The new maxTokenId |
 
 ### init
 
 ```solidity
-function init(address managerAddress_, bool progressiveTokenIds_, uint112 nextTokenId_, uint112 maxTokenId_) external
+function init(address managerAddress_, bool progressiveTokenIds_, uint96 nextTokenId_, uint96 maxTokenId_) external
 ```
 
 Initialize the NFT
@@ -211,8 +218,8 @@ Initialize the NFT
 | ---- | ---- | ----------- |
 | managerAddress_ | address | The address of the manager |
 | progressiveTokenIds_ | bool | If true, the tokenIds will be progressive |
-| nextTokenId_ | uint112 | The next tokenId to be used. If progressiveTokenIds_ == true and the project must reserve some tokens to special addresses, community, etc. You set the nextTokenId_ to the first not reserved token. Be careful, your function minting by tokenId MUST check that the tokenId is not higher than nextTokenId. If not, when trying to mint tokens by amount, as soon as nextTokenId reaches the minted tokenId, the function will revert, blocking any future minting. If you code may risk so, set a function that allow you to correct the nextTokenId to skip the token minted by mistake. |
-| maxTokenId_ | uint112 | The maximum tokenId that can be minted (it can be 0 if no upper limit) |
+| nextTokenId_ | uint96 | The next tokenId to be used. If progressiveTokenIds_ == true and the project must reserve some tokens to special addresses, community, etc. You set the nextTokenId_ to the first not reserved token. Be careful, your function minting by tokenId MUST check that the tokenId is not higher than nextTokenId. If not, when trying to mint tokens by amount, as soon as nextTokenId reaches the minted tokenId, the function will revert, blocking any future minting. If you code may risk so, set a function that allow you to correct the nextTokenId to skip the token minted by mistake. |
+| maxTokenId_ | uint96 | The maximum tokenId that can be minted (it can be 0 if no upper limit) |
 
 ### defaultManagerImplementation
 

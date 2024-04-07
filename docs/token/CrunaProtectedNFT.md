@@ -115,7 +115,7 @@ constructor(string name_, string symbol_) internal
 ### init
 
 ```solidity
-function init(address managerAddress_, bool progressiveTokenIds_, uint112 nextTokenId_, uint112 maxTokenId_) external virtual
+function init(address managerAddress_, bool progressiveTokenIds_, uint96 nextTokenId_, uint96 maxTokenId_) external virtual
 ```
 
 Initialize the NFT
@@ -126,13 +126,13 @@ Initialize the NFT
 | ---- | ---- | ----------- |
 | managerAddress_ | address | The address of the manager |
 | progressiveTokenIds_ | bool | If true, the tokenIds will be progressive |
-| nextTokenId_ | uint112 | The next tokenId to be used. If progressiveTokenIds_ == true and the project must reserve some tokens to special addresses, community, etc. You set the nextTokenId_ to the first not reserved token. Be careful, your function minting by tokenId MUST check that the tokenId is not higher than nextTokenId. If not, when trying to mint tokens by amount, as soon as nextTokenId reaches the minted tokenId, the function will revert, blocking any future minting. If you code may risk so, set a function that allow you to correct the nextTokenId to skip the token minted by mistake. |
-| maxTokenId_ | uint112 | The maximum tokenId that can be minted (it can be 0 if no upper limit) |
+| nextTokenId_ | uint96 | The next tokenId to be used. If progressiveTokenIds_ == true and the project must reserve some tokens to special addresses, community, etc. You set the nextTokenId_ to the first not reserved token. Be careful, your function minting by tokenId MUST check that the tokenId is not higher than nextTokenId. If not, when trying to mint tokens by amount, as soon as nextTokenId reaches the minted tokenId, the function will revert, blocking any future minting. If you code may risk so, set a function that allow you to correct the nextTokenId to skip the token minted by mistake. |
+| maxTokenId_ | uint96 | The maximum tokenId that can be minted (it can be 0 if no upper limit) |
 
 ### setMaxTokenId
 
 ```solidity
-function setMaxTokenId(uint112 maxTokenId_) external virtual
+function setMaxTokenId(uint96 maxTokenId_) external virtual
 ```
 
 set the maximum tokenId that can be minted
@@ -141,7 +141,7 @@ set the maximum tokenId that can be minted
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| maxTokenId_ | uint112 | The new maxTokenId |
+| maxTokenId_ | uint96 | The new maxTokenId |
 
 ### defaultManagerImplementation
 

@@ -20,6 +20,12 @@ modifier ifMustNotBeReset()
 
 Verifies that the plugin must not be reset
 
+### _onBeforeInit
+
+```solidity
+function _onBeforeInit() internal virtual
+```
+
 ### init
 
 ```solidity

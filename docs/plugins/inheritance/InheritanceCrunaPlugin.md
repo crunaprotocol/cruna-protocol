@@ -4,6 +4,16 @@
 
 This contract manages inheritance
 
+### _IMPLEMENTATION_SLOT
+
+```solidity
+bytes32 _IMPLEMENTATION_SLOT
+```
+
+Storage slot with the address of the current implementation.
+This is the keccak-256 hash of "eip1967.proxy.implementation" subtracted by 1, and is
+validated in the constructor.
+
 ### _inheritanceConf
 
 ```solidity

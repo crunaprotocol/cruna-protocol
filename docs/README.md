@@ -67,6 +67,7 @@ This dual-pathway for plugin deployment underscores the protocol's flexibility a
   - [Canonical](./libs/Canonical.md)
   - [ExcessivelySafeCall](./libs/ExcessivelySafeCall.md)
   - [ManagerConstants](./libs/ManagerConstants.md)
+  - [TrustedLib](./libs/TrustedLib.md)
 - Manager
   - [Actor](./manager/Actor.md)
   - [CrunaManager](./manager/CrunaManager.md)

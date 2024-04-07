@@ -47,20 +47,6 @@ Error returned when the plugin is reset
 | oldVersion | uint256 | The version of the current implementation |
 | newVersion | uint256 | The version of the new implementation |
 
-### PluginRequiresUpdatedManager
-
-```solidity
-error PluginRequiresUpdatedManager(uint256 requiredVersion)
-```
-
-Error returned when the plugin is reset
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| requiredVersion | uint256 | The version required by the plugin |
-
 ### Forbidden
 
 ```solidity
