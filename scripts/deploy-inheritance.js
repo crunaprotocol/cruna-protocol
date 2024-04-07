@@ -24,7 +24,7 @@ async function main() {
     fs.writeFileSync(bytecodesPath, JSON.stringify({}));
   }
 
-  let salt = "0xccccc" + "0".repeat(59);
+  let salt = ethers.utils.HashZero;
 
   const bytecodes = JSON.parse(fs.readFileSync(bytecodesPath));
 
@@ -44,6 +44,10 @@ async function main() {
     );
   }
 
+  if (bytecodes.InheritanceCrunaPlugin.salt !== salt) {
+    bytecodes.InheritanceCrunaPlugin.salt = salt;
+  }
+
   let plugin = await deployUtils.deployBytecodeViaNickSFactory(
     deployer,
     "InheritanceCrunaPlugin",
@@ -60,6 +64,10 @@ async function main() {
       ["address"],
       [plugin.address],
     );
+  }
+
+  if (bytecodes.InheritanceCrunaPluginProxy.salt !== salt) {
+    bytecodes.InheritanceCrunaPluginProxy.salt = salt;
   }
 
   let proxy = await deployUtils.deployBytecodeViaNickSFactory(

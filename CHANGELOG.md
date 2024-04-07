@@ -1,5 +1,12 @@
 # Change log
 
+**0.4.0**
+- Remove manager's version from `CrunaGuardian` and add `requiresManagerVersion` to `ICrunaPluginBase`
+- Explicitly add list of testnets where the plugin is allowed to transfer the NFT even if the plugin is not trusted
+- Remove `_IMPLEMENTATION_SLOT` variable from `CommonBase` not being needed for most plugins and move it in `CrunaManager` and `InheritanceCrunaPlugin`
+- Adding `_onBeforeInit` hook in `CrunaPluginBase` to allow plugins to execute code before the initialization of the NFT, since `init` is not virtual and cannot be overridden.
+- Changed the restriction on tokenIDs to a `uint96` to allow encoding of token address and token ID in a single word variable. 
+
 **0.3.3**
 - Fix wrong `ERC7656Registry` address in `Canonical`
 
