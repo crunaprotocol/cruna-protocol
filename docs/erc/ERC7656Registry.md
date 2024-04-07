@@ -17,7 +17,7 @@ function compute(address implementation, bytes32 salt, uint256, address, uint256
 ### supportsInterface
 
 ```solidity
-function supportsInterface(bytes4 interfaceId) external view virtual returns (bool)
+function supportsInterface(bytes4 interfaceId) external pure returns (bool)
 ```
 
 _Returns true if interfaceId is IERC7656Registry's interfaceId

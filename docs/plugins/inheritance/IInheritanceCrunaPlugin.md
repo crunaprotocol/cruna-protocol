@@ -207,6 +207,20 @@ error InvalidParameters()
 
 Error returned when the parameters are invalid
 
+### PluginRequiresUpdatedManager
+
+```solidity
+error PluginRequiresUpdatedManager(uint256 requiredVersion)
+```
+
+Error returned when the plugin is upgraded if requires an updated manager
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| requiredVersion | uint256 | The version required by the plugin |
+
 ### setSentinel
 
 ```solidity
