@@ -146,7 +146,9 @@ contract MySuperToken is CrunaProtectedNFTOwnable {
 }
 ```
 
-If your goal is to build a plugin, look at the contracts in [contracts/mocks/plugin-example](contracts/mocks/plugins/plugin-example) to start from.
+To go fast, you can use the template for a protected NFT at https://github.com/crunaprotocol/cruna-nft-sample.
+
+If your goal is to build a plugin, use the template at https://github.com/crunaprotocol/cruna-plugin-sample.
 
 ## Technical introduction and API Documentation
 
