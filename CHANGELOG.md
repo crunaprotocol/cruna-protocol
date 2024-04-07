@@ -1,5 +1,8 @@
 # Change log
 
+**0.4.1**
+- Fix address of `CrunaRegistry` in `libs-canonical/not-localhost/Canonical.sol`
+
 **0.4.0**
 - Remove manager's version from `CrunaGuardian` and add `requiresManagerVersion` to `ICrunaPluginBase`
 - Explicitly add list of testnets where the plugin is allowed to transfer the NFT even if the plugin is not trusted
