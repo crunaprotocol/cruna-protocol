@@ -13,5 +13,21 @@
       44787,
       80001
     ]
+  },
+  "v0.4.0": {
+    "contracts": {
+      "ERC6551Registry": "0x000000006551c19487814612e58FE06813775758",
+      "ERC7656Registry": "0x7656CCCC1d93430f4E43A7ea0981C01469c9D6A2",
+      "CrunaGuardian": "0x4DFB2c689A0f87bCeb6C204aCb7e1D0B22139aa2",
+      "CrunaManager": "0x1f961c7d0d435B6429be814C1e4B943334028a15",
+      "CrunaManagerProxy": "0x770E3Ccb1e3fCfB1AFAbbB09913cA70a062f6F7c",
+      "InheritanceCrunaPlugin": "0xa9a8F0ad2220cA23E678007DbBfF74804262Fb49",
+      "InheritanceCrunaPluginProxy": "0xbb93Bcf3F34936CaA56eC2C6b37864Ac78E28b12"
+    },
+    "chains": [
+      43113,
+      44787,
+      80001
+    ]
   }
 }
