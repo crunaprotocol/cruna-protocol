@@ -181,7 +181,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   /// @dev see {ICrunaPlugin-reset}
-  function reset() external override {
+  function reset() external payable override {
     if (_msgSender() != address(_conf.manager)) revert Forbidden();
     delete _conf.mustBeReset;
     _reset();

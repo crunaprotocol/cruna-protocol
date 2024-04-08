@@ -75,7 +75,7 @@ interface ICrunaPlugin is IERC7656Contract, IVersioned {
   /**
    * @notice Reset the plugin to the factory settings
    */
-  function reset() external;
+  function reset() external payable;
 
   // @dev During transfer, to reduce gas consumption, should set _conf.mustBeReset to 1
   function resetOnTransfer() external payable;
