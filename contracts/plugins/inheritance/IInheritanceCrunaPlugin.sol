@@ -166,7 +166,7 @@ interface IInheritanceCrunaPlugin {
    * @param sentinels The sentinel addresses
    * @param emptySignature The signature of the tokensOwner
    */
-  function setSentinels(address[] memory sentinels, bytes calldata emptySignature) external;
+  function setSentinels(address[] calldata sentinels, bytes calldata emptySignature) external;
 
   /**
    * @notice Configures an inheritance

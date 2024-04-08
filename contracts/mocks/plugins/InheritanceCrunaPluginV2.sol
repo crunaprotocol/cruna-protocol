@@ -13,4 +13,5 @@ contract InheritanceCrunaPluginV2 is InheritanceCrunaPlugin {
   function requiresManagerVersion() external pure override(CrunaPluginBase, ICrunaPlugin) returns (uint256) {
     return 1_002_000;
   }
+
 }

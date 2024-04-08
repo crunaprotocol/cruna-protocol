@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {ERC6551AccountProxy} from "../../utils/ERC6551AccountProxy.sol";
+import {ERC6551AccountProxy} from "../../erc/ERC6551AccountProxy.sol";
 
 /**
  * @title InheritanceCrunaPluginProxy

@@ -1,5 +1,8 @@
 # Change log
 
+**0.4.2**
+- Lot of gas optimizations
+
 **0.4.1**
 - Fix address of `CrunaRegistry` in `libs-canonical/not-localhost/Canonical.sol`
 
