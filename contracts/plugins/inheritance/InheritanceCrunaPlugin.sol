@@ -245,15 +245,15 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
       timestamp * _TIMESTAMP_MULTIPLIER + validFor,
       signature
     );
-    if (!status) {
+    if (status) {
+      // will revert if more than 16 sentinels
+      _addActor(sentinel, _SENTINEL);
+    } else {
       _removeActor(sentinel, _SENTINEL);
       uint256 shares = _actorCount(_SENTINEL);
       if (_inheritanceConf.quorum > shares) {
         _inheritanceConf.quorum = uint8(shares);
       }
-    } else {
-      // will revert if more than 16 sentinels
-      _addActor(sentinel, _SENTINEL);
     }
     emit SentinelUpdated(_msgSender(), sentinel, status);
   }

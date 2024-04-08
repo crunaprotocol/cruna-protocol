@@ -623,18 +623,18 @@ contract CrunaManager is Actor, CrunaManagerBase {
     if (actor == address(0)) revert ZeroAddress();
     if (actor == sender) revert CannotBeYourself();
     _preValidateAndCheckSignature(_functionSelector, actor, status ? 1 : 0, 0, 0, timestamp, validFor, signature);
-    if (!status) {
+    if (status) {
       if (timestamp != 0)
+        if (_functionSelector == this.setProtector.selector)
+          if (_isActiveActor(actor, ManagerConstants.protectorId())) revert ProtectorAlreadySetByYou(actor);
+      _addActor(actor, role_);
+    } else {
+    if (timestamp != 0)
         if (_functionSelector == this.setProtector.selector)
           if (!_isActiveActor(actor, ManagerConstants.protectorId()))
             // setProtector
             revert ProtectorNotFound(actor);
       _removeActor(actor, role_);
-    } else {
-      if (timestamp != 0)
-        if (_functionSelector == this.setProtector.selector)
-          if (_isActiveActor(actor, ManagerConstants.protectorId())) revert ProtectorAlreadySetByYou(actor);
-      _addActor(actor, role_);
     }
   }
 

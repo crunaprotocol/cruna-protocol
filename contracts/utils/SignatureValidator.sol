@@ -49,6 +49,10 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
    */
   mapping(bytes32 signatureHash => uint256 used) private _usedSignatures;
 
+  bytes32 private constant _AUTH = keccak256(
+"Auth(bytes4 selector,address owner,address actor,address tokenAddress,uint256 tokenId,uint256 extra,uint256 extra2,uint256 extra3,uint256 timeValidation)"
+);
+
   /**
    * @notice EIP712 constructor
    */
@@ -208,9 +212,7 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
     return
       _hashBytes(
         abi.encode(
-          keccak256(
-            "Auth(bytes4 selector,address owner,address actor,address tokenAddress,uint256 tokenId,uint256 extra,uint256 extra2,uint256 extra3,uint256 timeValidation)"
-          ),
+          _AUTH,
           selector,
           owner,
           actor,
