@@ -196,8 +196,8 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     if (implementation_ == address(0)) revert ZeroAddress();
     if (!Canonical.crunaGuardian().trustedImplementation(_nameId(), implementation_))
-      // If new implementation is untrusted, the current one must be untrusted too
       if (Canonical.crunaGuardian().trustedImplementation(_nameId(), implementation()))
+        // If new implementation is untrusted, the current one must be untrusted too
         revert UntrustedImplementation(implementation_);
     ICrunaPlugin impl = ICrunaPlugin(implementation_);
     uint256 version_ = impl.version();

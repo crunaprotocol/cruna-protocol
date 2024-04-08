@@ -49,14 +49,15 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
    */
   mapping(bytes32 signatureHash => uint256 used) private _usedSignatures;
 
-  bytes32 private constant _AUTH = keccak256(
-"Auth(bytes4 selector,address owner,address actor,address tokenAddress,uint256 tokenId,uint256 extra,uint256 extra2,uint256 extra3,uint256 timeValidation)"
-);
+  bytes32 private constant _AUTH =
+    keccak256(
+      "Auth(bytes4 selector,address owner,address actor,address tokenAddress,uint256 tokenId,uint256 extra,uint256 extra2,uint256 extra3,uint256 timeValidation)"
+    );
 
   /**
    * @notice EIP712 constructor
    */
-  constructor() EIP712("Cruna", "1") payable {}
+  constructor() payable EIP712("Cruna", "1") {}
 
   /// @dev see {ISignatureValidator-preApprovals}
   function preApprovals(bytes32 hash) external view override returns (address) {
@@ -86,15 +87,17 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
     uint256 timeValidation,
     bytes calldata signature
   ) public view override returns (address, bytes32) {
-    uint256 timestamp = timeValidation / _TIMESTAMP_MULTIPLIER;
-    if (timestamp != 0)
-      if (timestamp > block.timestamp || timestamp < block.timestamp - (timeValidation % _TIMESTAMP_MULTIPLIER))
-        revert TimestampInvalidOrExpired();
-    bytes32 hash = _hashData(selector, owner, actor, tokenAddress, tokenId, extra, extra2, extra3, timeValidation);
-    if (65 == signature.length) {
-      return (_hashTypedDataV4(hash).recover(signature), hash);
+    unchecked {
+      uint256 timestamp = timeValidation / _TIMESTAMP_MULTIPLIER;
+      if (timestamp != 0)
+        if (timestamp > block.timestamp || timestamp < block.timestamp - (timeValidation % _TIMESTAMP_MULTIPLIER))
+          revert TimestampInvalidOrExpired();
+      bytes32 hash = _hashData(selector, owner, actor, tokenAddress, tokenId, extra, extra2, extra3, timeValidation);
+      if (65 == signature.length) {
+        return (_hashTypedDataV4(hash).recover(signature), hash);
+      }
+      return (_preApprovals[hash], hash);
     }
-    return (_preApprovals[hash], hash);
   }
 
   /// @dev see {ISignatureValidator-preApprove}
@@ -209,21 +212,7 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
     uint256 extra3,
     uint256 timeValidation
   ) internal pure returns (bytes32) {
-    return
-      _hashBytes(
-        abi.encode(
-          _AUTH,
-          selector,
-          owner,
-          actor,
-          tokenAddress,
-          tokenId,
-          extra,
-          extra2,
-          extra3,
-          timeValidation
-        )
-      );
+    return _hashBytes(abi.encode(_AUTH, selector, owner, actor, tokenAddress, tokenId, extra, extra2, extra3, timeValidation));
   }
 
   /**

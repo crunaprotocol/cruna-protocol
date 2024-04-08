@@ -2614,7 +2614,7 @@
       "inputs": [],
       "name": "resetOnTransfer",
       "outputs": [],
-      "stateMutability": "nonpayable",
+      "stateMutability": "payable",
       "type": "function"
     },
     {
@@ -3700,7 +3700,7 @@
       ],
       "name": "emitLockedEvent",
       "outputs": [],
-      "stateMutability": "nonpayable",
+      "stateMutability": "payable",
       "type": "function"
     },
     {

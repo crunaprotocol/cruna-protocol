@@ -629,7 +629,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
           if (_isActiveActor(actor, ManagerConstants.protectorId())) revert ProtectorAlreadySetByYou(actor);
       _addActor(actor, role_);
     } else {
-    if (timestamp != 0)
+      if (timestamp != 0)
         if (_functionSelector == this.setProtector.selector)
           if (!_isActiveActor(actor, ManagerConstants.protectorId()))
             // setProtector

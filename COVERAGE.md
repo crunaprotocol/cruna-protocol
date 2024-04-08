@@ -6,7 +6,8 @@
 --------------------------------------|----------|----------|----------|----------
 File                                  |  % Stmts | % Branch |  % Funcs |  % Lines 
 --------------------------------------|----------|----------|----------|----------
- erc/                                 |        0 |      100 |        0 |        0 
+ erc/                                 |    81.82 |       75 |       50 |    71.43 
+  ERC6551AccountProxy.sol             |       90 |       75 |      100 |    90.91 
   ERC7656Registry.sol                 |        0 |      100 |        0 |        0 
   IERC6454.sol                        |      100 |      100 |      100 |      100 
   IERC6982.sol                        |      100 |      100 |      100 |      100 
@@ -20,28 +21,27 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   ExcessivelySafeCall.sol             |      100 |      100 |      100 |      100 
   ManagerConstants.sol                |      100 |      100 |      100 |      100 
   TrustedLib.sol                      |      100 |        0 |      100 |      100 
- manager/                             |    98.71 |    74.26 |    98.46 |    96.67 
+ manager/                             |    99.15 |    74.75 |    98.46 |    97.05 
   Actor.sol                           |      100 |    57.14 |      100 |      100 
-  CrunaManager.sol                    |    98.51 |    76.14 |    98.15 |     96.1 
+  CrunaManager.sol                    |       99 |     76.7 |    98.15 |    96.54 
   CrunaManagerBase.sol                |      100 |    66.67 |      100 |      100 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   ICrunaManager.sol                   |      100 |      100 |      100 |      100 
  plugins/                             |    85.71 |       50 |    84.62 |    88.24 
   CrunaPluginBase.sol                 |    85.71 |       50 |    84.62 |    88.24 
   ICrunaPlugin.sol                    |      100 |      100 |      100 |      100 
- plugins/inheritance/                 |    91.09 |    65.69 |    96.15 |    88.89 
+ plugins/inheritance/                 |       91 |    65.69 |    96.15 |    88.81 
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
-  InheritanceCrunaPlugin.sol          |    91.09 |    65.69 |       96 |    88.89 
+  InheritanceCrunaPlugin.sol          |       91 |    65.69 |       96 |    88.81 
   InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
- token/                               |    98.63 |    65.28 |      100 |     98.8 
-  CrunaProtectedNFT.sol               |    98.53 |    64.06 |      100 |    98.73 
+ token/                               |    98.65 |    65.28 |      100 |    98.81 
+  CrunaProtectedNFT.sol               |    98.55 |    64.06 |      100 |    98.75 
   CrunaProtectedNFTOwnable.sol        |      100 |       50 |      100 |      100 
   CrunaProtectedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaProtectedNFT.sol              |      100 |      100 |      100 |      100 
   IManagedNFT.sol                     |      100 |      100 |      100 |      100 
- utils/                               |    93.75 |    82.35 |       96 |     96.3 
+ utils/                               |    94.59 |    84.62 |    95.24 |    97.67 
   CommonBase.sol                      |      100 |      100 |      100 |      100 
-  ERC6551AccountProxy.sol             |       90 |       75 |      100 |    90.91 
   ICommonBase.sol                     |      100 |      100 |      100 |      100 
   INamed.sol                          |      100 |      100 |      100 |      100 
   INamedAndVersioned.sol              |      100 |      100 |      100 |      100 
@@ -50,6 +50,6 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   SignatureValidator.sol              |      100 |    86.36 |      100 |      100 
   TokenLinkedContract.sol             |    81.82 |       50 |    83.33 |       90 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    96.12 |    67.34 |    95.53 |    94.37 
+All files                             |    96.33 |    67.57 |    95.51 |    94.55 
 --------------------------------------|----------|----------|----------|----------
 ```

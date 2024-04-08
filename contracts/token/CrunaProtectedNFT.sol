@@ -86,7 +86,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     return 1_000_000;
   }
 
-  constructor(string memory name_, string memory symbol_) ERC721(name_, symbol_) payable{
+  constructor(string memory name_, string memory symbol_) payable ERC721(name_, symbol_) {
     emit DefaultLocked(false);
   }
 
@@ -182,7 +182,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
    * called by the manager (when protectors are set/unset)
    * Making it payable reduces the gas cost.
    */
-  function emitLockedEvent(uint256 tokenId, bool locked_) external onlyManagerOf(tokenId) payable {
+  function emitLockedEvent(uint256 tokenId, bool locked_) external payable onlyManagerOf(tokenId) {
     emit Locked(tokenId, locked_);
   }
 
@@ -243,8 +243,8 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
    */
   function _defaultManagerImplementation(uint256 _tokenId) internal view virtual returns (address) {
     if (_nftConf.managerHistoryLength == 1) return _managerHistory[0].managerAddress;
-    uint256 l = _nftConf.managerHistoryLength;
-    for (uint256 i; i < l; ) {
+    uint256 len = _nftConf.managerHistoryLength;
+    for (uint256 i; i < len; ) {
       if (
         _tokenId >= _managerHistory[i].firstTokenId &&
         (_managerHistory[i].lastTokenId == 0 || _tokenId <= _managerHistory[i].lastTokenId)
