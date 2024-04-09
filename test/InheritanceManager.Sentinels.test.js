@@ -216,8 +216,9 @@ describe("Sentinel and Inheritance", function () {
     const inheritancePlugin = await ethers.getContractAt("InheritanceCrunaPlugin", inheritancePluginAddress);
 
     expect(await vault.managerOf(tokenId)).to.equal(await inheritancePlugin.manager());
-
+    expect(await inheritancePlugin.version()).to.equal(1001000);
     expect(await inheritancePlugin.requiresToManageTransfer()).to.be.true;
+    expect(await inheritancePlugin.isERC6551Account()).to.be.false;
 
     // console.log(inheritancePluginProxy.address);
     await expect(inheritancePlugin.connect(bob).setSentinel(alice.address, true, 0, 0, 0))

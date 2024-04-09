@@ -58,7 +58,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
    * @notice internal variable used to make protected NFT temporarily transferable.
    * It is set before the transfer and removed after it, during the manager transfer process.
    */
-  mapping(uint256 tokenId => bool approved) internal _approvedTransfers;
+  mapping(uint256 tokenId => uint256 approved) internal _approvedTransfers;
 
   /**
    * @notice allows only the manager of a certain tokenId to call the function.
@@ -143,8 +143,12 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
   /**
    * @notice see {ICrunaProtectedNFT-managedTransfer}.
    */
-  function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external virtual override onlyManagerOf(tokenId) {
-    _approvedTransfers[tokenId] = true;
+  function managedTransfer(
+    bytes4 pluginNameId,
+    uint256 tokenId,
+    address to
+  ) external payable virtual override onlyManagerOf(tokenId) {
+    _approvedTransfers[tokenId] = 1;
     _approve(_managerOf(tokenId), tokenId, address(0));
     safeTransferFrom(ownerOf(tokenId), to, tokenId);
     _approve(address(0), tokenId, address(0));
@@ -192,7 +196,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     bytes32 salt,
     uint256 tokenId,
     bool isERC6551Account
-  ) external virtual override onlyManagerOf(tokenId) returns (address) {
+  ) external payable virtual override onlyManagerOf(tokenId) returns (address) {
     return _deploy(pluginImplementation, salt, tokenId, isERC6551Account);
   }
 
@@ -314,7 +318,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     // if from zero, it is minting
     if (from == address(0)) return true;
     _requireOwned(tokenId);
-    return manager.isTransferable(to) || _approvedTransfers[tokenId];
+    return manager.isTransferable(to) || _approvedTransfers[tokenId] == 1;
   }
 
   /**

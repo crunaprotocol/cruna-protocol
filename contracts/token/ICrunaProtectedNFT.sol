@@ -206,7 +206,7 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
     bytes32 salt,
     uint256 tokenId,
     bool isERC6551Account
-  ) external returns (address);
+  ) external payable returns (address);
 
   /**
    * @notice Returns if a plugin is deployed

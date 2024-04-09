@@ -235,7 +235,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
 
   /// @dev see {ICrunaManager-changePluginStatus}
   function changePluginStatus(
-    string memory name,
+    string calldata name,
     bytes4 salt,
     PluginChange change,
     uint256 timeLock_,
@@ -276,7 +276,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   /// @dev see {ICrunaManager-trustPlugin}
-  function trustPlugin(string memory name, bytes4 salt) external virtual override onlyTokenOwner {
+  function trustPlugin(string calldata name, bytes4 salt) external virtual override onlyTokenOwner {
     bytes4 nameId_ = _stringToBytes4(name);
     bytes8 _key = _combineBytes4(nameId_, salt);
     if (_pluginByKey[_key].proxyAddress == address(0)) revert PluginNotFound();
@@ -303,7 +303,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   /// @dev see {ICrunaManager-plugged}
-  function plugged(string memory name, bytes4 salt) external view virtual returns (bool) {
+  function plugged(string calldata name, bytes4 salt) external view virtual returns (bool) {
     bytes4 nameId_ = _stringToBytes4(name);
     return
       _pluginByKey[_combineBytes4(nameId_, salt)].proxyAddress != address(0) &&
@@ -311,12 +311,12 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   /// @dev see {ICrunaManager-pluginIndex}
-  function pluginIndex(string memory name, bytes4 salt) external view virtual returns (bool, uint256) {
+  function pluginIndex(string calldata name, bytes4 salt) external view virtual returns (bool, uint256) {
     return _pluginIndex(_stringToBytes4(name), salt);
   }
 
   /// @dev see {ICrunaManager-isPluginActive}
-  function isPluginActive(string memory name, bytes4 salt) external view virtual returns (bool) {
+  function isPluginActive(string calldata name, bytes4 salt) external view virtual returns (bool) {
     bytes4 nameId_ = _stringToBytes4(name);
     bytes8 _key = _combineBytes4(nameId_, salt);
     if (_pluginByKey[_key].proxyAddress == address(0)) revert PluginNotFound();
@@ -341,7 +341,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   /// @dev see {ICrunaManager-pseudoAddress}
-  function pseudoAddress(string memory name, bytes4 _salt) external view virtual returns (address) {
+  function pseudoAddress(string calldata name, bytes4 _salt) external view virtual returns (address) {
     return _pseudoAddress(name, _salt);
   }
 
@@ -417,7 +417,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
    * @param _salt The salt used to deploy the plugin
    * @return The pseudoaddress
    */
-  function _pseudoAddress(string memory name, bytes4 _salt) internal view virtual returns (address) {
+  function _pseudoAddress(string calldata name, bytes4 _salt) internal view virtual returns (address) {
     return address(uint160(uint256(keccak256(abi.encodePacked(name, _salt)))));
   }
 

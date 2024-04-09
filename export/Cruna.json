@@ -3682,7 +3682,7 @@
           "type": "address"
         }
       ],
-      "stateMutability": "nonpayable",
+      "stateMutability": "payable",
       "type": "function"
     },
     {
@@ -4221,7 +4221,7 @@
       ],
       "name": "managedTransfer",
       "outputs": [],
-      "stateMutability": "nonpayable",
+      "stateMutability": "payable",
       "type": "function"
     },
     {
