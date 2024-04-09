@@ -168,8 +168,9 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
     if (timeValidation < _TIMESTAMP_MULTIPLIER) {
       if (_isProtected()) revert NotPermittedWhenProtectorsAreActive();
     } else {
-      if (_usedSignatures[_hashBytes(signature)] == 1) revert SignatureAlreadyUsed();
-      _usedSignatures[_hashBytes(signature)] = 1;
+      bytes32 signatureHash = _hashBytes(signature);
+      if (_usedSignatures[signatureHash] == 1) revert SignatureAlreadyUsed();
+      _usedSignatures[signatureHash] = 1;
       (address signer, bytes32 hash) = recoverSigner(
         selector,
         owner,

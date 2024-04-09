@@ -40,7 +40,7 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   CrunaProtectedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaProtectedNFT.sol              |      100 |      100 |      100 |      100 
   IManagedNFT.sol                     |      100 |      100 |      100 |      100 
- utils/                               |    94.59 |    84.62 |    95.24 |    97.67 
+ utils/                               |    94.74 |    84.62 |    95.24 |    97.73 
   CommonBase.sol                      |      100 |      100 |      100 |      100 
   ICommonBase.sol                     |      100 |      100 |      100 |      100 
   INamed.sol                          |      100 |      100 |      100 |      100 
@@ -50,6 +50,6 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   SignatureValidator.sol              |      100 |    86.36 |      100 |      100 
   TokenLinkedContract.sol             |    81.82 |       50 |    83.33 |       90 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    96.33 |    67.57 |    95.51 |    94.55 
+All files                             |    96.33 |    67.57 |    95.51 |    94.56 
 --------------------------------------|----------|----------|----------|----------
 ```
