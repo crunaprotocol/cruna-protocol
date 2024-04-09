@@ -143,7 +143,11 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
   /**
    * @notice see {ICrunaProtectedNFT-managedTransfer}.
    */
-  function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external virtual override onlyManagerOf(tokenId) {
+  function managedTransfer(
+    bytes4 pluginNameId,
+    uint256 tokenId,
+    address to
+  ) external payable virtual override onlyManagerOf(tokenId) {
     _approvedTransfers[tokenId] = true;
     _approve(_managerOf(tokenId), tokenId, address(0));
     safeTransferFrom(ownerOf(tokenId), to, tokenId);
@@ -192,7 +196,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     bytes32 salt,
     uint256 tokenId,
     bool isERC6551Account
-  ) external virtual override onlyManagerOf(tokenId) returns (address) {
+  ) external payable virtual override onlyManagerOf(tokenId) returns (address) {
     return _deploy(pluginImplementation, salt, tokenId, isERC6551Account);
   }
 
