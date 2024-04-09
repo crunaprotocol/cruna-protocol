@@ -69,6 +69,15 @@ describe("Testing contract deployments", function () {
 
     vault = await deployContract("TimeControlledNFT", delay, [proposer.address], [executor.address], deployer.address);
 
+    const registryMock = await deployContract("RegistryMock");
+
+    let computedAddress = await registryMock.compute(managerImpl.address, ethers.constants.HashZero, 31337, vault.address, 1);
+    await expect(registryMock.create(managerImpl.address, ethers.constants.HashZero, 31337, vault.address, 1))
+      .to.emit(registryMock, "Created")
+      .withArgs(computedAddress, managerImpl.address, ethers.constants.HashZero, 31337, vault.address, 1);
+
+    expect(await registryMock.supportsInterface("0xc6bdc908")).to.be.true;
+
     expect(await vault.version()).to.equal(1000000);
     await vault.init(proxy.address, true, 1, 0);
     factory = await deployContractUpgradeable("VaultFactory", [vault.address, deployer.address]);
