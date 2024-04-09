@@ -470,7 +470,7 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
    * No need for a signature by a protector because the safety of the plugin is
    * guaranteed by the CrunaGuardian.
    */
-  function trustPlugin(string memory name, bytes4 salt) external;
+  function trustPlugin(string calldata name, bytes4 salt) external;
 
   /**
    * @dev It returns the address of a plugin
@@ -499,7 +499,7 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
   /**
    * @dev Says if a plugin is currently plugged
    */
-  function plugged(string memory name, bytes4 salt) external view returns (bool);
+  function plugged(string calldata name, bytes4 salt) external view returns (bool);
 
   /**
    * @dev Returns the index of a plugin
@@ -507,7 +507,7 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
    * @param salt The salt used during the deployment of the plugin
    * @return a tuple with a true if the plugin is found, and the index of the plugin
    */
-  function pluginIndex(string memory name, bytes4 salt) external view returns (bool, uint256);
+  function pluginIndex(string calldata name, bytes4 salt) external view returns (bool, uint256);
 
   /**
    * @dev Checks if a plugin is active
@@ -515,7 +515,7 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
    * @param salt The salt used during the deployment of the plugin
    * @return True if the plugin is active
    */
-  function isPluginActive(string memory name, bytes4 salt) external view returns (bool);
+  function isPluginActive(string calldata name, bytes4 salt) external view returns (bool);
 
   /**
    * @dev returns the list of plugins' keys
@@ -536,7 +536,7 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
    * @param _salt The salt used during the deployment of the plugin
    * @return The pseudo address of the plugin
    */
-  function pseudoAddress(string memory name, bytes4 _salt) external view returns (address);
+  function pseudoAddress(string calldata name, bytes4 _salt) external view returns (address);
 
   /**
    * @dev A special function that can be called only by authorized plugins to transfer the NFT.
