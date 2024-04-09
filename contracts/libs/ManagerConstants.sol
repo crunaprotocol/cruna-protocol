@@ -33,13 +33,13 @@ library ManagerConstants {
    * @notice The gas passed to the Protected NFT when asking to emit a Locked event
    */
   function gasToEmitLockedEvent() internal pure returns (uint256) {
-    return 10_000;
+    return 9_000;
   }
 
   /**
    * @notice The gas passed to plugins when asking to them mark the plugin as must-be-reset
    */
   function gasToResetPlugin() internal pure returns (uint256) {
-    return 17_000;
+    return 9_000;
   }
 }

@@ -106,9 +106,10 @@ contract Actor {
   function _removeActorByIndex(uint256 i, bytes4 role) internal virtual {
     address[] storage actors = _actors[role];
     unchecked {
-      if (actors.length == 0 || i + 1 > actors.length) revert ActorNotFound();
-      if (i != actors.length - 1) {
-        actors[i] = actors[actors.length - 1];
+      uint256 len = actors.length;
+      if (len == 0 || i + 1 > len) revert ActorNotFound();
+      if (i != len - 1) {
+        actors[i] = actors[len - 1];
       }
     }
     actors.pop();

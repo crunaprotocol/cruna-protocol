@@ -7,6 +7,8 @@ import {CrunaManager} from "../manager/CrunaManager.sol";
 import {ICrunaPlugin} from "./ICrunaPlugin.sol";
 import {CommonBase} from "../utils/CommonBase.sol";
 
+//import "hardhat/console.sol";
+
 /**
  * @title CrunaPluginBase
  * @notice Base contract for plugins
@@ -48,8 +50,11 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
   }
 
   /// @dev see {ICrunaPlugin-resetOnTransfer}
-  // The manager is not a wallet, it is the NFT Manager contract, owned by the token.
-  function resetOnTransfer() external override ifMustNotBeReset {
+  function resetOnTransfer() external payable override ifMustNotBeReset {
+    /**
+     * @notice The manager is not a wallet, it is the NFT Manager contract, owned by the token.
+     * Making it payable reduce the gas cost for the manager to call this function.
+     */
     if (_msgSender() != address(_conf.manager)) revert Forbidden();
     _conf.mustBeReset = 1;
   }

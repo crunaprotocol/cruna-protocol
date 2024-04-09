@@ -66,7 +66,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
 
   /// @dev see {IInheritanceCrunaPlugin-setSentinels}
   function setSentinels(
-    address[] memory sentinels,
+    address[] calldata sentinels,
     bytes calldata emptySignature
   ) external virtual override onlyTokenOwner ifMustNotBeReset {
     uint256 len = sentinels.length;
@@ -181,7 +181,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   }
 
   /// @dev see {ICrunaPlugin-reset}
-  function reset() external override {
+  function reset() external payable override {
     if (_msgSender() != address(_conf.manager)) revert Forbidden();
     delete _conf.mustBeReset;
     _reset();
@@ -195,12 +195,10 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
   function upgrade(address implementation_) external virtual nonReentrant {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     if (implementation_ == address(0)) revert ZeroAddress();
-    bool trusted = Canonical.crunaGuardian().trustedImplementation(_nameId(), implementation_);
-    if (!trusted) {
-      // If current implementation is trusted, the new implementation must be trusted too
+    if (!Canonical.crunaGuardian().trustedImplementation(_nameId(), implementation_))
       if (Canonical.crunaGuardian().trustedImplementation(_nameId(), implementation()))
+        // If new implementation is untrusted, the current one must be untrusted too
         revert UntrustedImplementation(implementation_);
-    }
     ICrunaPlugin impl = ICrunaPlugin(implementation_);
     uint256 version_ = impl.version();
     if (version_ <= _version()) revert InvalidVersion(_version(), version_);
@@ -247,15 +245,15 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
       timestamp * _TIMESTAMP_MULTIPLIER + validFor,
       signature
     );
-    if (!status) {
+    if (status) {
+      // will revert if more than 16 sentinels
+      _addActor(sentinel, _SENTINEL);
+    } else {
       _removeActor(sentinel, _SENTINEL);
       uint256 shares = _actorCount(_SENTINEL);
       if (_inheritanceConf.quorum > shares) {
         _inheritanceConf.quorum = uint8(shares);
       }
-    } else {
-      // will revert if more than 16 sentinels
-      _addActor(sentinel, _SENTINEL);
     }
     emit SentinelUpdated(_msgSender(), sentinel, status);
   }
@@ -299,7 +297,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
       unchecked {
         uint256 votes;
         uint256 len2 = sentinels.length;
-        for (uint256 j; j < len2; j++) {
+        for (uint256 j; j < len2; ++j) {
           if (_votes.favorites[sentinels[j]] == _votes.nominations[i]) {
             votes++;
             if (votes == _inheritanceConf.quorum) {

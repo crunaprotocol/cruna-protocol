@@ -45,14 +45,19 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
   /**
    * @notice All the used signatures
    * - signatureHash The hash of the signature
-   * - used If the signature has been used
+   * - used 1 if the signature has been use, 0 (default) if not
    */
-  mapping(bytes32 signatureHash => bool used) private _usedSignatures;
+  mapping(bytes32 signatureHash => uint256 used) private _usedSignatures;
+
+  bytes32 private constant _AUTH =
+    keccak256(
+      "Auth(bytes4 selector,address owner,address actor,address tokenAddress,uint256 tokenId,uint256 extra,uint256 extra2,uint256 extra3,uint256 timeValidation)"
+    );
 
   /**
    * @notice EIP712 constructor
    */
-  constructor() EIP712("Cruna", "1") {}
+  constructor() payable EIP712("Cruna", "1") {}
 
   /// @dev see {ISignatureValidator-preApprovals}
   function preApprovals(bytes32 hash) external view override returns (address) {
@@ -66,7 +71,7 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
 
   /// @dev see {ISignatureValidator-isSignatureUsed}
   function isSignatureUsed(bytes32 hash) external view override returns (bool) {
-    return _usedSignatures[hash];
+    return _usedSignatures[hash] == 1;
   }
 
   /// @dev see {ISignatureValidator-recoverSigner}
@@ -82,12 +87,17 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
     uint256 timeValidation,
     bytes calldata signature
   ) public view override returns (address, bytes32) {
-    _validate(timeValidation);
-    bytes32 hash = _hashData(selector, owner, actor, tokenAddress, tokenId, extra, extra2, extra3, timeValidation);
-    if (65 == signature.length) {
-      return (_hashTypedDataV4(hash).recover(signature), hash);
+    unchecked {
+      uint256 timestamp = timeValidation / _TIMESTAMP_MULTIPLIER;
+      if (timestamp != 0)
+        if (timestamp > block.timestamp || timestamp < block.timestamp - (timeValidation % _TIMESTAMP_MULTIPLIER))
+          revert TimestampInvalidOrExpired();
+      bytes32 hash = _hashData(selector, owner, actor, tokenAddress, tokenId, extra, extra2, extra3, timeValidation);
+      if (65 == signature.length) {
+        return (_hashTypedDataV4(hash).recover(signature), hash);
+      }
+      return (_preApprovals[hash], hash);
     }
-    return (_preApprovals[hash], hash);
   }
 
   /// @dev see {ISignatureValidator-preApprove}
@@ -116,17 +126,6 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
    * @param signer The signer of the operation (the protector)
    */
   function _canPreApprove(bytes4 selector, address actor, address signer) internal view virtual returns (bool);
-
-  /**
-   * @notice Validates the timeValidation parameter.
-   * @param timeValidation The timeValidation parameter
-   */
-  function _validate(uint256 timeValidation) internal view {
-    uint256 timestamp = timeValidation / _TIMESTAMP_MULTIPLIER;
-    if (timestamp > 0)
-      if (timestamp > block.timestamp || timestamp < block.timestamp - (timeValidation % _TIMESTAMP_MULTIPLIER))
-        revert TimestampInvalidOrExpired();
-  }
 
   /**
    * @notice Checks if the NFT is protected.
@@ -169,8 +168,8 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
     if (timeValidation < _TIMESTAMP_MULTIPLIER) {
       if (_isProtected()) revert NotPermittedWhenProtectorsAreActive();
     } else {
-      if (_usedSignatures[_hashBytes(signature)]) revert SignatureAlreadyUsed();
-      _usedSignatures[_hashBytes(signature)] = true;
+      if (_usedSignatures[_hashBytes(signature)] == 1) revert SignatureAlreadyUsed();
+      _usedSignatures[_hashBytes(signature)] = 1;
       (address signer, bytes32 hash) = recoverSigner(
         selector,
         owner,
@@ -213,23 +212,7 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
     uint256 extra3,
     uint256 timeValidation
   ) internal pure returns (bytes32) {
-    return
-      _hashBytes(
-        abi.encode(
-          keccak256(
-            "Auth(bytes4 selector,address owner,address actor,address tokenAddress,uint256 tokenId,uint256 extra,uint256 extra2,uint256 extra3,uint256 timeValidation)"
-          ),
-          selector,
-          owner,
-          actor,
-          tokenAddress,
-          tokenId,
-          extra,
-          extra2,
-          extra3,
-          timeValidation
-        )
-      );
+    return _hashBytes(abi.encode(_AUTH, selector, owner, actor, tokenAddress, tokenId, extra, extra2, extra3, timeValidation));
   }
 
   /**

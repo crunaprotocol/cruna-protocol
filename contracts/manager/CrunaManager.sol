@@ -14,6 +14,8 @@ import {Canonical} from "../libs/Canonical.sol";
 import {TrustedLib} from "../libs/TrustedLib.sol";
 import {ManagerConstants} from "../libs/ManagerConstants.sol";
 
+//import "hardhat/console.sol";
+
 /**
  * @title CrunaManager
  * @notice The manager of the Cruna NFT
@@ -327,7 +329,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
     bytes8[] memory _keys = new bytes8[](active ? actives : disabled);
     uint256 len = _allPlugins.length;
     for (uint256 i; i < len; ) {
-      PluginElement memory plugin_ = _allPlugins[i];
+      PluginElement storage plugin_ = _allPlugins[i];
       if (plugin_.active == active) {
         _keys[i] = _combineBytes4(plugin_.nameId, plugin_.salt);
       }
@@ -621,18 +623,18 @@ contract CrunaManager is Actor, CrunaManagerBase {
     if (actor == address(0)) revert ZeroAddress();
     if (actor == sender) revert CannotBeYourself();
     _preValidateAndCheckSignature(_functionSelector, actor, status ? 1 : 0, 0, 0, timestamp, validFor, signature);
-    if (!status) {
+    if (status) {
+      if (timestamp != 0)
+        if (_functionSelector == this.setProtector.selector)
+          if (_isActiveActor(actor, ManagerConstants.protectorId())) revert ProtectorAlreadySetByYou(actor);
+      _addActor(actor, role_);
+    } else {
       if (timestamp != 0)
         if (_functionSelector == this.setProtector.selector)
           if (!_isActiveActor(actor, ManagerConstants.protectorId()))
             // setProtector
             revert ProtectorNotFound(actor);
       _removeActor(actor, role_);
-    } else {
-      if (timestamp != 0)
-        if (_functionSelector == this.setProtector.selector)
-          if (_isActiveActor(actor, ManagerConstants.protectorId())) revert ProtectorAlreadySetByYou(actor);
-      _addActor(actor, role_);
     }
   }
 
@@ -669,7 +671,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
   function _getKeyAndSalt(bytes4 pluginNameId) internal view returns (bytes8, bytes4) {
     uint256 len = _allPlugins.length;
     for (uint256 i; i < len; ) {
-      PluginElement memory plugin_ = _allPlugins[i];
+      PluginElement storage plugin_ = _allPlugins[i];
       bytes4 nameId_ = plugin_.nameId;
       if (nameId_ == pluginNameId) {
         bytes8 key_ = _combineBytes4(nameId_, plugin_.salt);
@@ -795,7 +797,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
     // disable all plugins
     uint256 len = _allPlugins.length;
     for (uint256 i; i < len; ) {
-      PluginElement memory plugin_ = _allPlugins[i];
+      PluginElement storage plugin_ = _allPlugins[i];
       bytes4 _nameId_ = plugin_.nameId;
       if (_nameId_ != nameId_ || plugin_.salt != salt) {
         if (_pluginByKey[_combineBytes4(_nameId_, plugin_.salt)].canBeReset) _resetPluginOnTransfer(_nameId_, plugin_.salt);
