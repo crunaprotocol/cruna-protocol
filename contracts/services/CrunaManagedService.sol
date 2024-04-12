@@ -107,7 +107,7 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
   /**
    * @notice internal function to check if the NFT is currently protected
    */
-  function _isProtected() internal view virtual override returns (bool) {
+  function _isProtected() internal view override returns (bool) {
     return _conf.manager.hasProtectors();
   }
 
@@ -115,7 +115,7 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
    * @notice Internal function to check if an address is a protector
    * @param protector The address to check
    */
-  function _isProtector(address protector) internal view virtual override returns (bool) {
+  function _isProtector(address protector) internal view override returns (bool) {
     return _conf.manager.isProtector(protector);
   }
 

@@ -1,6 +1,6 @@
 # Change log
 
-**0.5.1**
+**0.5.2**
 - Introduce Cruna services, managed and unmanaged, so that only the managed ones need to be plugged by `CrunaManager`, while the unmanaged can be simply connected by the `CrunaProtectedNFT`
 
 **0.4.3**

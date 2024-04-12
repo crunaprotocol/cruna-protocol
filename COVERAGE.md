@@ -24,7 +24,7 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   TrustedLib.sol                      |      100 |        0 |      100 |      100 
  manager/                             |    99.16 |    74.02 |    98.51 |    97.09 
   Actor.sol                           |      100 |    57.14 |      100 |      100 
-  CrunaManager.sol                    |    99.01 |    75.84 |    98.15 |    96.57 
+  CrunaManager.sol                    |       99 |    75.84 |    98.04 |    96.52 
   CrunaManagerBase.sol                |      100 |    66.67 |      100 |      100 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   ICrunaManager.sol                   |      100 |      100 |      100 |      100 

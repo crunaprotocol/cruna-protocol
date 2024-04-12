@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 // Author: Francesco Sullo <francesco@sullo.co>
 
 import {Actor} from "./Actor.sol";
-import {CrunaManagerBase} from "./CrunaManagerBase.sol";
+import {ManagerConstants, CrunaManagerBase} from "./CrunaManagerBase.sol";
 import {ExcessivelySafeCall} from "../libs/ExcessivelySafeCall.sol";
 
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
@@ -12,7 +12,6 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {CrunaManagedService} from "../services/CrunaManagedService.sol";
 import {Canonical} from "../libs/Canonical.sol";
 import {TrustedLib} from "../libs/TrustedLib.sol";
-import {ManagerConstants} from "../libs/ManagerConstants.sol";
 import {Deployed} from "../utils/Deployed.sol";
 
 //import "hardhat/console.sol";
@@ -509,28 +508,6 @@ contract CrunaManager is Actor, CrunaManagerBase, Deployed {
       _pluginByKey[_key].timeLock = uint32(block.timestamp + timeLock);
       delete _pluginByKey[_key].canManageTransfer;
     }
-  }
-
-  /**
-   * @notice Utility function to combine two bytes4 into a bytes8
-   */
-  function _combineBytes4(bytes4 a, bytes4 b) internal pure returns (bytes8) {
-    return bytes8(bytes32(a) | (bytes32(b) >> 32));
-  }
-
-  /**
-   * @notice Check if the NFT is protected
-   */
-  function _isProtected() internal view virtual override returns (bool) {
-    return _actorCount(ManagerConstants.protectorId()) != 0;
-  }
-
-  /**
-   * @notice Checks if an address is a protector
-   * @param protector_ The address to check
-   */
-  function _isProtector(address protector_) internal view virtual override returns (bool) {
-    return _isActiveActor(protector_, ManagerConstants.protectorId());
   }
 
   /**
