@@ -1,16 +1,19 @@
 # Change log
 
-**0.4.2**
+**0.5.0**
+- Introduce Cruna services, managed and unmanaged, so that only the managed ones need to be plugged by `CrunaManager`, while the unmanaged can be simply connected by the `CrunaProtectedNFT`
+
+**0.4.3**
 - Lot of gas optimizations
 
 **0.4.1**
 - Fix address of `CrunaRegistry` in `libs-canonical/not-localhost/Canonical.sol`
 
 **0.4.0**
-- Remove manager's version from `CrunaGuardian` and add `requiresManagerVersion` to `ICrunaPluginBase`
+- Remove manager's version from `CrunaGuardian` and add `requiresManagerVersion` to `ICrunaManagedService`
 - Explicitly add list of testnets where the plugin is allowed to transfer the NFT even if the plugin is not trusted
 - Remove `_IMPLEMENTATION_SLOT` variable from `CommonBase` not being needed for most plugins and move it in `CrunaManager` and `InheritanceCrunaPlugin`
-- Adding `_onBeforeInit` hook in `CrunaPluginBase` to allow plugins to execute code before the initialization of the NFT, since `init` is not virtual and cannot be overridden.
+- Adding `_onBeforeInit` hook in `CrunaManagedService` to allow plugins to execute code before the initialization of the NFT, since `init` is not virtual and cannot be overridden.
 - Changed the restriction on tokenIDs to a `uint96` to allow encoding of token address and token ID in a single word variable. 
 
 **0.3.3**
@@ -50,7 +53,7 @@
 - Increase coverage
 
 **0.2.3**
-- Move 'isProtected' and 'isProtector' from 'InheritanceCrunaPlugin' to 'CrunaPluginBase'
+- Move 'isProtected' and 'isProtector' from 'InheritanceCrunaPlugin' to 'CrunaManagedService'
 
 **0.2.2**
 - Many optimizations
@@ -104,7 +107,7 @@
 - Fix canonical addresses and deploy bytecodes to avoid that changes in the dependencies alters the addresses of the canonical contracts
 
 **1.0.0-rc.9**
-- `CrunaPluginBase` extends now `SignatureValidator`
+- `CrunaManagedService` extends now `SignatureValidator`
 
 **1.0.0-rc.8**
 - Non-blocking approach to beneficiary nominations in `InheritanceCrunaPlugin`

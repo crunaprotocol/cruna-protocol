@@ -10,12 +10,14 @@ import {ICrunaManager} from "./ICrunaManager.sol";
 import {CommonBase} from "../utils/CommonBase.sol";
 import {Canonical} from "../libs/Canonical.sol";
 import {INamedAndVersioned} from "../utils/INamedAndVersioned.sol";
+import {SignatureValidator} from "../utils/SignatureValidator.sol";
+import {Actor} from "../manager/Actor.sol";
 
 /**
  * @title CrunaManagerBase.sol
- * @notice Base contract for managers and plugins
+ * @notice Base contract for managers and services
  */
-abstract contract CrunaManagerBase is ICrunaManager, CommonBase, ReentrancyGuard {
+abstract contract CrunaManagerBase is ICrunaManager, CommonBase, Actor, SignatureValidator, ReentrancyGuard {
   /**
    * @notice Storage slot with the address of the current implementation.
    * This is the keccak-256 hash of "eip1967.proxy.implementation" subtracted by 1, and is
@@ -52,6 +54,31 @@ abstract contract CrunaManagerBase is ICrunaManager, CommonBase, ReentrancyGuard
   // @notice Returns the version of the manager
   function _version() internal pure virtual returns (uint256) {
     return 1_000_000;
+  }
+
+  /**
+   * @notice Returns the keccak256 of a string variable.
+   * It saves gas compared to keccak256(abi.encodePacked(string)).
+   * @param input The string to hash
+   */
+  function _hashString(string memory input) internal pure returns (bytes32 result) {
+    // solhint-disable-next-line no-inline-assembly
+    assembly {
+      // Load the pointer to the free memory slot
+      let ptr := mload(0x40)
+      // Copy data using Solidity's default encoding, which includes the length
+      mstore(ptr, mload(add(input, 32)))
+      // Calculate keccak256 hash
+      result := keccak256(ptr, mload(input))
+    }
+  }
+
+  /**
+   * @notice Returns the equivalent of bytes4(keccak256(str).
+   * @param str The string to hash
+   */
+  function _stringToBytes4(string memory str) internal pure returns (bytes4) {
+    return bytes4(_hashString(str));
   }
 
   // @notice This empty reserved space is put in place to allow future versions to add new

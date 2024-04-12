@@ -11,7 +11,7 @@ async function main() {
   }
   abi("CrunaManager", "contracts/manager");
   abi("ERC7656Registry", "contracts/erc");
-  abi("InheritanceCrunaPlugin", "contracts/plugins/inheritance");
+  abi("InheritanceCrunaPlugin", "contracts/services/inheritance");
   abi("TimeControlledNFT", "contracts/mocks/token");
   abi("CrunaGuardian", "contracts/guardian");
   abi("VaultFactory", "contracts/mocks/factory");

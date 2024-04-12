@@ -9,10 +9,11 @@ import {ExcessivelySafeCall} from "../libs/ExcessivelySafeCall.sol";
 
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import {CrunaPluginBase} from "../plugins/CrunaPluginBase.sol";
+import {CrunaManagedService} from "../services/CrunaManagedService.sol";
 import {Canonical} from "../libs/Canonical.sol";
 import {TrustedLib} from "../libs/TrustedLib.sol";
 import {ManagerConstants} from "../libs/ManagerConstants.sol";
+import {Deployed} from "../utils/Deployed.sol";
 
 //import "hardhat/console.sol";
 
@@ -20,20 +21,20 @@ import {ManagerConstants} from "../libs/ManagerConstants.sol";
  * @title CrunaManager
  * @notice The manager of the Cruna NFT
  * It is the only contract that can manage the NFT. It sets protectors and safe recipients,
- * plugs and manages plugins, and has the ability to transfer the NFT if there are protectors.
+ * plugs and manages services, and has the ability to transfer the NFT if there are protectors.
  */
-contract CrunaManager is Actor, CrunaManagerBase {
+contract CrunaManager is Actor, CrunaManagerBase, Deployed {
   using ECDSA for bytes32;
   using Strings for uint256;
   using ExcessivelySafeCall for address;
 
   /**
-   * @notice The array of all plugged plugins. The max length is set to 16 to avoid gas issues.
+   * @notice The array of all plugged services. The max length is set to 16 to avoid gas issues.
    */
   PluginElement[] private _allPlugins;
 
   /**
-   * @notice The mapping of all plugins by key. A key is the combination of the nameId and the salt.
+   * @notice The mapping of all services by key. A key is the combination of the nameId and the salt.
    */
   mapping(bytes8 pluginKey => PluginConfig pluginDetails) private _pluginByKey;
 
@@ -206,7 +207,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
     bytes calldata signature
   ) external virtual override nonReentrant onlyTokenOwner {
     if (_allPlugins.length == 16) {
-      // We do not allow more than 16 plugins to avoid risks of going out-of-gas while
+      // We do not allow more than 16 services to avoid risks of going out-of-gas while
       // looping through allPlugins.
       revert PluginNumberOverflow();
     }
@@ -293,7 +294,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   /// @dev see {ICrunaManager-plugin}
-  function plugin(bytes4 nameId_, bytes4 salt) external view virtual override returns (CrunaPluginBase) {
+  function plugin(bytes4 nameId_, bytes4 salt) external view virtual override returns (CrunaManagedService) {
     return _plugin(nameId_, salt);
   }
 
@@ -381,8 +382,8 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   // Internal function to get an instance of the plugin
-  function _plugin(bytes4 nameId_, bytes4 salt) internal view virtual returns (CrunaPluginBase) {
-    return CrunaPluginBase(_pluginAddress(nameId_, salt));
+  function _plugin(bytes4 nameId_, bytes4 salt) internal view virtual returns (CrunaManagedService) {
+    return CrunaManagedService(_pluginAddress(nameId_, salt));
   }
 
   /**
@@ -391,16 +392,8 @@ contract CrunaManager is Actor, CrunaManagerBase {
    * @param salt The salt of the plugin
    */
   function _pluginAddress(bytes4 nameId_, bytes4 salt) internal view virtual returns (address payable) {
-    return
-      payable(
-        Canonical.erc7656Registry().compute(
-          _pluginByKey[_combineBytes4(nameId_, salt)].proxyAddress,
-          salt,
-          block.chainid,
-          tokenAddress(),
-          tokenId()
-        )
-      );
+    PluginConfig storage config_ = _pluginByKey[_combineBytes4(nameId_, salt)];
+    return payable(_addressOfDeployed(config_.proxyAddress, salt, tokenAddress(), tokenId(), config_.isERC6551Account));
   }
 
   /**
@@ -422,7 +415,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
   }
 
   /**
-   * @notice Counts the active and disabled plugins
+   * @notice Counts the active and disabled services
    */
   function _countPlugins() internal view virtual returns (uint256, uint256) {
     uint256 active;
@@ -490,7 +483,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
 
   /**
    * @notice Id removing the authorization, it blocks a plugin for a maximum of 30 days from transferring
-   * the NFT. If the plugins must be blocked for more time, disable it at your peril of making it useless.
+   * the NFT. If the services must be blocked for more time, disable it at your peril of making it useless.
    */
   function _authorizePluginToTransfer(
     bytes4 nameId_,
@@ -501,7 +494,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
   ) internal virtual {
     if (!_pluginByKey[_key].trusted)
       if (!TrustedLib.areUntrustedImplementationsAllowed()) revert UntrustedImplementationsNotAllowedToMakeTransfers();
-    CrunaPluginBase plugin_ = _plugin(nameId_, salt);
+    CrunaManagedService plugin_ = _plugin(nameId_, salt);
     if (!plugin_.requiresToManageTransfer()) revert NotATransferPlugin();
     if (change == PluginChange.Authorize) {
       if (timeLock != 0) revert InvalidTimeLock(timeLock);
@@ -575,8 +568,9 @@ contract CrunaManager is Actor, CrunaManagerBase {
     bool trusted
   ) internal {
     // If the plugin has been plugged before and later unplugged, the proxy won't be deployed again.
-    address pluginAddress_ = _vault().deployPlugin(proxyAddress_, salt, tokenId(), isERC6551Account);
-    CrunaPluginBase plugin_ = CrunaPluginBase(payable(pluginAddress_));
+    address pluginAddress_ = _deploy(proxyAddress_, salt, tokenAddress(), tokenId(), isERC6551Account);
+    CrunaManagedService plugin_ = CrunaManagedService(payable(pluginAddress_));
+    if (!plugin_.isManaged()) revert UnmanagedService();
     uint256 requiredVersion = plugin_.requiresManagerVersion();
     if (requiredVersion > _version()) revert PluginRequiresUpdatedManager(requiredVersion);
     if (plugin_.nameId() != nameId_) revert InvalidImplementation(plugin_.nameId(), nameId_);
@@ -745,7 +739,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
    * @param salt The salt of the plugin
    */
   function _resetPlugin(bytes4 nameId_, bytes4 salt) internal virtual {
-    CrunaPluginBase plugin_ = _plugin(nameId_, salt);
+    CrunaManagedService plugin_ = _plugin(nameId_, salt);
     plugin_.reset();
   }
 
@@ -766,7 +760,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
       abi.encodeWithSignature("resetOnTransfer()")
     );
     if (!success) {
-      // This should never happen. But it can happen if the user replace CrunaPluginBase
+      // This should never happen. But it can happen if the user replace CrunaManagedService
       // with its own implementation — not advised to do :-(
       emit PluginResetAttemptFailed(nameId_, salt);
     }
@@ -794,7 +788,7 @@ contract CrunaManager is Actor, CrunaManagerBase {
   function _resetOnTransfer(bytes4 nameId_, bytes4 salt) internal virtual {
     _deleteActors(ManagerConstants.protectorId());
     _deleteActors(ManagerConstants.safeRecipientId());
-    // disable all plugins
+    // disable all services
     uint256 len = _allPlugins.length;
     for (uint256 i; i < len; ) {
       PluginElement storage plugin_ = _allPlugins[i];

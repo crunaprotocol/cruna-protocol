@@ -3,14 +3,14 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {CrunaPluginBase} from "../plugins/CrunaPluginBase.sol";
+import {CrunaManagedService} from "../services/CrunaManagedService.sol";
 
 import {IVersioned} from "../utils/IVersioned.sol";
 import {IERC7656Contract} from "../erc/IERC7656Contract.sol";
 
 interface ICrunaManager is IERC7656Contract, IVersioned {
   /**
-   * @notice A struct to keep info about plugged and unplugged plugins
+   * @notice A struct to keep info about plugged and unplugged services
    * @param proxyAddress The address of the first implementation of the plugin
    * @param salt The salt used during the deployment of the plugin.
    * It allows to  have multiple instances of the same plugin
@@ -39,10 +39,10 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
   /**
    * @notice The plugin element
    * @param nameId The bytes4 of the hash of the name of the plugin
-   * All plugins' names must be unique, as well as their bytes4 Ids
-   * An official registry will be set up to avoid collisions when plugins
+   * All services' names must be unique, as well as their bytes4 Ids
+   * An official registry will be set up to avoid collisions when services
    * development will be more active. Using the proxy address as a key is
-   * not viable because plugins can be upgraded and the address can change.
+   * not viable because services can be upgraded and the address can change.
    * @param salt The salt of the plugin
    * @param active True if the plugin is active
    */
@@ -94,7 +94,7 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
   event PluginStatusChange(string indexed name, bytes4 salt, address pluginAddress, uint256 change);
 
   /**
-   * @notice Emitted when protectors and safe recipients are removed and all plugins are disabled (if they require it)
+   * @notice Emitted when protectors and safe recipients are removed and all services are disabled (if they require it)
    * This event overrides any specific ProtectorChange, SafeRecipientChange and PluginStatusChange event
    */
   event Reset();
@@ -169,7 +169,12 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
   error NotTheAuthorizedPlugin(address callingPlugin);
 
   /**
-   * @notice Returned when there is no more space for plugins
+   * @notice Returned when the pluggin service is not a managed service
+   */
+  error UnmanagedService();
+
+  /**
+   * @notice Returned when there is no more space for services
    */
   error PluginNumberOverflow();
 
@@ -305,12 +310,12 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
   function pluginByKey(bytes8 key) external view returns (PluginConfig memory);
 
   /**
-   * @dev It returns the configuration of all currently plugged plugins
+   * @dev It returns the configuration of all currently plugged services
    */
   function allPlugins() external view returns (PluginElement[] memory);
 
   /**
-   * @dev It returns an element of the array of all plugged plugins
+   * @dev It returns an element of the array of all plugged services
    * @param index The index of the plugin in the array
    */
   function pluginByIndex(uint256 index) external view returns (PluginElement memory);
@@ -489,10 +494,10 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
    * revert during the execution.
    * @return The plugin
    */
-  function plugin(bytes4 nameId_, bytes4 salt) external view returns (CrunaPluginBase);
+  function plugin(bytes4 nameId_, bytes4 salt) external view returns (CrunaManagedService);
 
   /**
-   * @dev It returns the number of plugins
+   * @dev It returns the number of services
    */
   function countPlugins() external view returns (uint256, uint256);
 
@@ -518,13 +523,13 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
   function isPluginActive(string calldata name, bytes4 salt) external view returns (bool);
 
   /**
-   * @dev returns the list of plugins' keys
-   * Since the names of the plugins are not saved in the contract, the app calling for this function
-   * is responsible for knowing the names of all the plugins.
-   * In the future it would be good to have an official registry of all plugins to be able to reverse
+   * @dev returns the list of services' keys
+   * Since the names of the services are not saved in the contract, the app calling for this function
+   * is responsible for knowing the names of all the services.
+   * In the future it would be good to have an official registry of all services to be able to reverse
    * from the nameId to the name as a string.
-   * @param active True to get the list of active plugins, false to get the list of inactive plugins
-   * @return The list of plugins' keys
+   * @param active True to get the list of active services, false to get the list of inactive services
+   * @return The list of services' keys
    */
   function listPluginsKeys(bool active) external view returns (bytes8[] memory);
 
@@ -539,7 +544,7 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
   function pseudoAddress(string calldata name, bytes4 _salt) external view returns (address);
 
   /**
-   * @dev A special function that can be called only by authorized plugins to transfer the NFT.
+   * @dev A special function that can be called only by authorized services to transfer the NFT.
    * @param pluginNameId The bytes4 of the hash of the name of the plugin
    * The plugin must be searched by the pluginNameId and the salt, and the function must verify that
    * the current sender is the plugin.

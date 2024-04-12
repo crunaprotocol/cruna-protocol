@@ -32,7 +32,7 @@ async function main() {
   // This is supposed to happen only during development when there are breaking changes.
   // It should not happen after the first guardian as been deployed, except if very serious
   // issues are found and a new guardian is needed. In that unfortunate case, all managers
-  // and plugins will have to be upgraded by tokens' owners.
+  // and services will have to be upgraded by tokens' owners.
   let salt = bytecodes.ERC7656Registry.salt || ethers.constants.HashZero;
   bytecodes.ERC7656Registry.salt = salt;
 

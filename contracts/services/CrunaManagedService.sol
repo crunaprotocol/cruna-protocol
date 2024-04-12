@@ -4,16 +4,17 @@ pragma solidity ^0.8.20;
 // Author: Francesco Sullo <francesco@sullo.co>
 
 import {CrunaManager} from "../manager/CrunaManager.sol";
-import {ICrunaPlugin} from "./ICrunaPlugin.sol";
+import {ICrunaManagedService} from "./ICrunaManagedService.sol";
 import {CommonBase} from "../utils/CommonBase.sol";
-
+import {SignatureValidator} from "../utils/SignatureValidator.sol";
+import {Actor} from "../manager/Actor.sol";
 //import "hardhat/console.sol";
 
 /**
- * @title CrunaPluginBase
- * @notice Base contract for plugins
+ * @title CrunaManagedService
+ * @notice Base contract for services
  */
-abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
+abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase, SignatureValidator {
   /**
    * @notice The internal configuration of the plugin
    */
@@ -31,7 +32,7 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
     // does nothing
   }
 
-  /// @dev see {ICrunaPlugin-init}
+  /// @dev see {ICrunaManagedService.sol-init}
   function init() external {
     address managerAddress = _vault().managerOf(tokenId());
     if (_msgSender() != managerAddress) revert Forbidden();
@@ -39,7 +40,7 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
     _conf.manager = CrunaManager(managerAddress);
   }
 
-  /// @dev see {ICrunaPlugin-manager}
+  /// @dev see {ICrunaManagedService.sol-manager}
   function manager() external view virtual override returns (CrunaManager) {
     return _conf.manager;
   }
@@ -49,7 +50,7 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
     return _version();
   }
 
-  /// @dev see {ICrunaPlugin-resetOnTransfer}
+  /// @dev see {ICrunaManagedService.sol-resetOnTransfer}
   function resetOnTransfer() external payable override ifMustNotBeReset {
     /**
      * @notice The manager is not a wallet, it is the NFT Manager contract, owned by the token.
@@ -59,19 +60,23 @@ abstract contract CrunaPluginBase is ICrunaPlugin, CommonBase {
     _conf.mustBeReset = 1;
   }
 
-  /// @dev see {ICrunaPlugin-requiresToManageTransfer}
+  /// @dev see {ICrunaManagedService.sol-requiresToManageTransfer}
   function requiresToManageTransfer() external pure virtual override returns (bool) {
     return false;
   }
 
-  /// @dev see {ICrunaPlugin-requiresManagerVersion}
+  /// @dev see {ICrunaManagedService.sol-requiresManagerVersion}
   function requiresManagerVersion() external pure virtual override returns (uint256) {
     return 1;
   }
 
-  /// @dev see {ICrunaPlugin-isERC6551Account}
+  /// @dev see {ICrunaManagedService.sol-isERC6551Account}
   function isERC6551Account() external pure virtual returns (bool) {
     return false;
+  }
+
+  function isManaged() external pure returns (bool) {
+    return true;
   }
 
   /**

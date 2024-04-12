@@ -1,6 +1,6 @@
 # Solidity API
 
-## CrunaPluginBase
+## CrunaManagedService
 
 Base contract for plugins
 
