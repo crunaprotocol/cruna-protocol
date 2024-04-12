@@ -10,6 +10,11 @@ import {IVersioned} from "../utils/IVersioned.sol";
  */
 interface ICrunaService is IERC7656Contract, IVersioned {
   /**
+   * @notice Error returned when trying to initialize the service if not authorized
+   */
+  error Forbidden();
+
+  /**
    * @notice Initialize the plugin. It must be implemented, but can do nothing is no init is needed.
    */
   function init() external;

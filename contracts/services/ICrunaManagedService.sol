@@ -36,11 +36,6 @@ interface ICrunaManagedService is ICrunaService {
   error InvalidVersion(uint256 oldVersion, uint256 newVersion);
 
   /**
-   * @notice Error returned when the plugin is reset
-   */
-  error Forbidden();
-
-  /**
    * @notice Error returned when the plugin must be reset before using it
    */
   error PluginMustBeReset();

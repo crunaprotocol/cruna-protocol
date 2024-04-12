@@ -29,13 +29,13 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
   }
 
   function _onBeforeInit() internal virtual {
-    // does nothing
+    // does nothing, override if needed
   }
 
   /// @dev see {ICrunaManagedService.sol-init}
   function init() external {
     address managerAddress = _vault().managerOf(tokenId());
-    if (_msgSender() != managerAddress) revert Forbidden();
+    if (msg.sender != managerAddress) revert Forbidden();
     _onBeforeInit();
     _conf.manager = CrunaManager(managerAddress);
   }
@@ -56,7 +56,7 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
      * @notice The manager is not a wallet, it is the NFT Manager contract, owned by the token.
      * Making it payable reduce the gas cost for the manager to call this function.
      */
-    if (_msgSender() != address(_conf.manager)) revert Forbidden();
+    if (msg.sender != address(_conf.manager)) revert Forbidden();
     _conf.mustBeReset = 1;
   }
 

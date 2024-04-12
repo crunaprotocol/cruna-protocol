@@ -7,6 +7,7 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 import {IInheritanceCrunaPlugin} from "./IInheritanceCrunaPlugin.sol";
 import {ICrunaManagedService} from "../ICrunaManagedService.sol";
@@ -17,7 +18,13 @@ import {Canonical} from "../../libs/Canonical.sol";
  * @title InheritanceCrunaPlugin
  * @notice This contract manages inheritance
  */
-contract InheritanceCrunaPlugin is ICrunaManagedService, IInheritanceCrunaPlugin, CrunaManagedService, ReentrancyGuard {
+contract InheritanceCrunaPlugin is
+  ICrunaManagedService,
+  IInheritanceCrunaPlugin,
+  Context,
+  CrunaManagedService,
+  ReentrancyGuard
+{
   using ECDSA for bytes32;
   using Strings for uint256;
 
