@@ -65,6 +65,11 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
     return false;
   }
 
+  /// @dev see {ICrunaManagedService.sol-requiresResetOnTransfer}
+  function requiresResetOnTransfer() external pure virtual override returns (bool) {
+    return false;
+  }
+
   /// @dev see {ICrunaManagedService.sol-requiresManagerVersion}
   function requiresManagerVersion() external pure virtual override returns (uint256) {
     return 1;
@@ -77,6 +82,10 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
 
   function isManaged() external pure returns (bool) {
     return true;
+  }
+
+  function reset() external payable virtual override {
+    // doing nothing
   }
 
   /**

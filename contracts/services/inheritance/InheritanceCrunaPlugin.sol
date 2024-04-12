@@ -181,13 +181,13 @@ contract InheritanceCrunaPlugin is ICrunaManagedService, IInheritanceCrunaPlugin
   }
 
   /// @dev see {ICrunaManagedService.sol-reset}
-  function reset() external payable override {
+  function reset() external payable override(CrunaManagedService, ICrunaManagedService) {
     if (_msgSender() != address(_conf.manager)) revert Forbidden();
     delete _conf.mustBeReset;
     _reset();
   }
 
-  function requiresResetOnTransfer() external pure returns (bool) {
+  function requiresResetOnTransfer() external pure override(CrunaManagedService, ICrunaManagedService) returns (bool) {
     return true;
   }
 
