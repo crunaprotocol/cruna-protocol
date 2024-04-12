@@ -1,7 +1,7 @@
 # Test coverage
 
 ```
-  51 passing
+  52 passing
 
 --------------------------------------|----------|----------|----------|----------
 File                                  |  % Stmts | % Branch |  % Funcs |  % Lines 
@@ -28,17 +28,17 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   CrunaManagerBase.sol                |      100 |    66.67 |      100 |      100 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   ICrunaManager.sol                   |      100 |      100 |      100 |      100 
- services/                            |    59.09 |       50 |    54.55 |       64 
+ services/                            |    72.73 |       60 |    63.64 |       76 
   CrunaManagedService.sol             |    81.25 |     62.5 |       75 |    84.21 
-  CrunaService.sol                    |        0 |        0 |        0 |        0 
+  CrunaService.sol                    |       50 |       50 |    33.33 |       50 
   ICrunaManagedService.sol            |      100 |      100 |      100 |      100 
   ICrunaService.sol                   |      100 |      100 |      100 |      100 
  services/inheritance/                |       91 |    65.69 |    96.15 |    88.81 
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
   InheritanceCrunaPlugin.sol          |       91 |    65.69 |       96 |    88.81 
   InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
- token/                               |    89.19 |    59.46 |    96.67 |    90.36 
-  CrunaProtectedNFT.sol               |    88.41 |    57.58 |       96 |    89.87 
+ token/                               |    98.65 |    63.51 |      100 |    98.81 
+  CrunaProtectedNFT.sol               |    98.55 |    62.12 |      100 |    98.75 
   CrunaProtectedNFTOwnable.sol        |      100 |       50 |      100 |      100 
   CrunaProtectedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaProtectedNFT.sol              |      100 |      100 |      100 |      100 
@@ -53,6 +53,6 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   IVersioned.sol                      |      100 |      100 |      100 |      100 
   SignatureValidator.sol              |      100 |    86.36 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |     93.9 |    66.37 |    92.55 |    92.89 
+All files                             |    95.87 |    67.26 |    94.15 |    94.55 
 --------------------------------------|----------|----------|----------|----------
 ```

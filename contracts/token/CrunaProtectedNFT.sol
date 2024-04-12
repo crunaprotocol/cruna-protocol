@@ -18,6 +18,8 @@ import {Deployed} from "../utils/Deployed.sol";
 import {Canonical} from "../libs/Canonical.sol";
 import {ICrunaService} from "../services/ICrunaService.sol";
 
+//import "hardhat/console.sol";
+
 /**
  * A convenient interface to mix nameId, version and default implementations
  */
@@ -202,8 +204,9 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     ICrunaService service = ICrunaService(implementation);
     if (service.isManaged()) revert ManagedService();
     bool previouslyDeployed = _isDeployed(implementation, salt, _SELF, tokenId, isERC6551Account);
-    _deploy(implementation, salt, _SELF, tokenId, isERC6551Account);
+    address addr = _deploy(implementation, salt, _SELF, tokenId, isERC6551Account);
     if (!previouslyDeployed) {
+      service = ICrunaService(addr);
       service.init();
     }
   }

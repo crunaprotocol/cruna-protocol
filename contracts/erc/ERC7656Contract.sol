@@ -6,6 +6,8 @@ import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 
 import {IERC7656Contract} from "./IERC7656Contract.sol";
 
+//import "hardhat/console.sol";
+
 /**
  * @title ERC7656Contract.sol
  * @notice Abstract contract to link a contract to an NFT
