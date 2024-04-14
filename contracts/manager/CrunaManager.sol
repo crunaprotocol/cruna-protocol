@@ -202,6 +202,7 @@ contract CrunaManager is Actor, CrunaManagerBase, Deployed {
     bool canManageTransfer,
     bool isERC6551Account,
     bytes4 salt,
+    bytes memory data,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
@@ -231,7 +232,7 @@ contract CrunaManager is Actor, CrunaManagerBase, Deployed {
       signature
     );
     if (_pluginByKey[_key].banned) revert PluginHasBeenMarkedAsNotPluggable();
-    _plug(name, pluginProxy, canManageTransfer, isERC6551Account, nameId_, salt, _key, trusted);
+    _plug(name, pluginProxy, canManageTransfer, isERC6551Account, nameId_, salt, data, _key, trusted);
   }
 
   /// @dev see {ICrunaManager-changePluginStatus}
@@ -564,6 +565,7 @@ contract CrunaManager is Actor, CrunaManagerBase, Deployed {
     bool isERC6551Account,
     bytes4 nameId_,
     bytes4 salt,
+    bytes memory data,
     bytes8 _key,
     bool trusted
   ) internal {
@@ -575,7 +577,7 @@ contract CrunaManager is Actor, CrunaManagerBase, Deployed {
     if (requiredVersion > _version()) revert PluginRequiresUpdatedManager(requiredVersion);
     if (plugin_.nameId() != nameId_) revert InvalidImplementation(plugin_.nameId(), nameId_);
     if (plugin_.isERC6551Account() != isERC6551Account) revert InvalidERC6551Status();
-    plugin_.init();
+    plugin_.init(data);
     _allPlugins.push(PluginElement({active: true, salt: salt, nameId: nameId_}));
     if (_pluginByKey[_key].unplugged) {
       if (_pluginByKey[_key].proxyAddress != proxyAddress_)

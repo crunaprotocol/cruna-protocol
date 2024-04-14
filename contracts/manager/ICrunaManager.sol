@@ -443,6 +443,7 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
     bool canManageTransfer,
     bool isERC6551Account,
     bytes4 salt,
+    bytes memory data,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature

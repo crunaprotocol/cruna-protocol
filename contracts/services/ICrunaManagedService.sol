@@ -48,7 +48,7 @@ interface ICrunaManagedService is ICrunaService {
   /**
    * @notice Initialize the plugin. It must be implemented, but can do nothing is no init is needed.
    */
-  function init() external;
+  function init(bytes memory data) external;
 
   /**
    * @notice Called by the manager during the plugging to know if the plugin is asking the

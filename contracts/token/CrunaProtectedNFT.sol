@@ -196,7 +196,8 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     address implementation,
     bytes32 salt,
     uint256 tokenId,
-    bool isERC6551Account
+    bool isERC6551Account,
+    bytes memory data
   ) external payable virtual override {
     if (_msgSender() != ownerOf(tokenId)) revert NotTheTokenOwner();
     ICrunaService service = ICrunaService(implementation);
@@ -204,7 +205,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     bool previouslyDeployed = _isDeployed(implementation, salt, _SELF, tokenId, isERC6551Account);
     _deploy(implementation, salt, _SELF, tokenId, isERC6551Account);
     if (!previouslyDeployed) {
-      service.init();
+      service.init(data);
     }
   }
 

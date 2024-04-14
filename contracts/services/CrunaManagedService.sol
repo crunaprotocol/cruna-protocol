@@ -28,15 +28,15 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
     _;
   }
 
-  function _onBeforeInit() internal virtual {
+  function _onBeforeInit(bytes memory data) internal virtual {
     // does nothing
   }
 
   /// @dev see {ICrunaManagedService.sol-init}
-  function init() external {
+  function init(bytes memory data) external {
     address managerAddress = _vault().managerOf(tokenId());
     if (_msgSender() != managerAddress) revert Forbidden();
-    _onBeforeInit();
+    _onBeforeInit(data);
     _conf.manager = CrunaManager(managerAddress);
   }
 
