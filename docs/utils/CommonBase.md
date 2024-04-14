@@ -2,7 +2,7 @@
 
 ## CommonBase
 
-Base contract for managers and plugins
+Base contract for managers and services
 
 ### onlyTokenOwner
 
@@ -36,35 +36,6 @@ function vault() external view virtual returns (contract CrunaProtectedNFT)
 ```
 
 Returns the vault, i.e., the CrunaProtectedNFT contract
-
-### _hashString
-
-```solidity
-function _hashString(string input) internal pure returns (bytes32 result)
-```
-
-Returns the keccak256 of a string variable.
-It saves gas compared to keccak256(abi.encodePacked(string)).
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| input | string | The string to hash |
-
-### _stringToBytes4
-
-```solidity
-function _stringToBytes4(string str) internal pure returns (bytes4)
-```
-
-Returns the equivalent of bytes4(keccak256(str).
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| str | string | The string to hash |
 
 ### _vault
 

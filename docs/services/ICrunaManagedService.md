@@ -1,10 +1,10 @@
 # Solidity API
 
-## ICrunaPlugin
+## ICrunaManagedService
 
-Interface for plugins
+Interface for services
 
-_Technically, plugins are secondary managers, pluggable in
+_Technically, services are secondary managers, pluggable in
 the primary manage, which is CrunaManager.sol_
 
 ### Conf
@@ -47,14 +47,6 @@ Error returned when the plugin is reset
 | oldVersion | uint256 | The version of the current implementation |
 | newVersion | uint256 | The version of the new implementation |
 
-### Forbidden
-
-```solidity
-error Forbidden()
-```
-
-Error returned when the plugin is reset
-
 ### PluginMustBeReset
 
 ```solidity
@@ -66,7 +58,7 @@ Error returned when the plugin must be reset before using it
 ### init
 
 ```solidity
-function init() external
+function init(bytes data) external
 ```
 
 Initialize the plugin. It must be implemented, but can do nothing is no init is needed.
@@ -107,7 +99,7 @@ Called by the manager to know if the plugin is an ERC721 account
 ### reset
 
 ```solidity
-function reset() external
+function reset() external payable
 ```
 
 Reset the plugin to the factory settings
@@ -115,7 +107,7 @@ Reset the plugin to the factory settings
 ### resetOnTransfer
 
 ```solidity
-function resetOnTransfer() external
+function resetOnTransfer() external payable
 ```
 
 ### manager

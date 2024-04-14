@@ -24,7 +24,7 @@ The multiplier for the timestamp in the timeValidation parameter.
 ### constructor
 
 ```solidity
-constructor() internal
+constructor() internal payable
 ```
 
 EIP712 constructor
@@ -141,20 +141,6 @@ Must be implemented by the contract using this base contract
 | selector | bytes4 | The selector of the function being called. |
 | actor | address | The actor being authorized. |
 | signer | address | The signer of the operation (the protector) |
-
-### _validate
-
-```solidity
-function _validate(uint256 timeValidation) internal view
-```
-
-Validates the timeValidation parameter.
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| timeValidation | uint256 | The timeValidation parameter |
 
 ### _isProtected
 

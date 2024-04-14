@@ -3,8 +3,6 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
-
 import {ERC7656Contract} from "../erc/ERC7656Contract.sol";
 import {CrunaProtectedNFT} from "../token/CrunaProtectedNFT.sol";
 import {INamed} from "../utils/INamed.sol";
@@ -15,12 +13,12 @@ import {ICommonBase} from "./ICommonBase.sol";
  * @title CommonBase.sol
  * @notice Base contract for managers and services
  */
-abstract contract CommonBase is ICommonBase, INamed, Context, ERC7656Contract {
+abstract contract CommonBase is ICommonBase, INamed, ERC7656Contract {
   /**
    * @notice Error returned when the caller is not the token owner
    */
   modifier onlyTokenOwner() {
-    if (owner() != _msgSender()) revert NotTheTokenOwner();
+    if (owner() != msg.sender) revert NotTheTokenOwner();
     _;
   }
 

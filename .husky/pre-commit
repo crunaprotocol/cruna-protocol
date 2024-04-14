@@ -3,6 +3,6 @@
 
 # to skip it call git commit with HUSKY=0 git commit ...
 if [[ "$HUSKY" != "0" ]]; then
- npm run lint && bin/get-coverage.sh && bin/export.sh && git add -A
+ npm run lint && bin/get-coverage.sh && bin/export.sh && bin/docgen.sh && git add -A
 fi
 

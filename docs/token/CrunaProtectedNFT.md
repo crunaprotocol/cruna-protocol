@@ -54,7 +54,7 @@ The manager history
 ### _approvedTransfers
 
 ```solidity
-mapping(uint256 => bool) _approvedTransfers
+mapping(uint256 => uint256) _approvedTransfers
 ```
 
 internal variable used to make protected NFT temporarily transferable.
@@ -109,7 +109,7 @@ For example, version 1.2.14 is 1_002_014.
 ### constructor
 
 ```solidity
-constructor(string name_, string symbol_) internal
+constructor(string name_, string symbol_) internal payable
 ```
 
 ### init
@@ -174,7 +174,7 @@ Upgrade the default manager for any following tokenId
 ### managedTransfer
 
 ```solidity
-function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external virtual
+function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external payable virtual
 ```
 
 see {ICrunaProtectedNFT-managedTransfer}.
@@ -236,29 +236,31 @@ The function MUST revert if the token does not exist.
 ### emitLockedEvent
 
 ```solidity
-function emitLockedEvent(uint256 tokenId, bool locked_) external
+function emitLockedEvent(uint256 tokenId, bool locked_) external payable
 ```
 
 Emit a Locked event when a protector is set and the token becomes locked.
 This function is not virtual because should not be overridden to avoid issues when
 called by the manager (when protectors are set/unset)
+Making it payable reduces the gas cost.
 
 ### deployService
 
 ```solidity
-function deployService(address serviceImplementation, bytes32 salt, uint256 tokenId, bool isERC6551Account) external virtual returns (address)
+function deployService(address implementation, bytes32 salt, uint256 tokenId, bool isERC6551Account, bytes data) external payable virtual
 ```
 
-Deploys a plugin
+Deploys an unmanaged service
 
 #### Parameters
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| serviceImplementation | address | The address of the plugin implementation |
+| implementation | address | The address of the service implementation |
 | salt | bytes32 | The salt |
 | tokenId | uint256 | The tokenId |
 | isERC6551Account | bool | Specifies the registry to use True if the tokenId must be deployed via ERC6551Registry, false, it must be deployed via ERC7656Registry |
+| data | bytes |  |
 
 ### isDeployed
 
@@ -354,23 +356,6 @@ Returns the default implementation of the manager for a specific tokenId
 | ---- | ---- | ----------- |
 | [0] | address | The address of the implementation |
 
-### _addressOfDeployed
-
-```solidity
-function _addressOfDeployed(address implementation, bytes32 salt, uint256 tokenId, bool isERC6551Account) internal view virtual returns (address)
-```
-
-Internal function to return the address of a deployed token bound contract
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| implementation | address | The address of the implementation |
-| salt | bytes32 | The salt |
-| tokenId | uint256 | The tokenId |
-| isERC6551Account | bool | If true, the tokenId has been deployed via ERC6551Registry, if false, via ERC7656Registry |
-
 ### _canManage
 
 ```solidity
@@ -456,21 +441,4 @@ the function will revert and the error may be unfixable._
 | ---- | ---- | ----------- |
 | to | address | The address of the recipient. |
 | tokenId | uint256 | The id of the token. |
-
-### _deploy
-
-```solidity
-function _deploy(address implementation, bytes32 salt, uint256 tokenId, bool isERC6551Account) internal virtual returns (address)
-```
-
-This function deploys a token-bound contract (manager or plugin)
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| implementation | address | The address of the implementation |
-| salt | bytes32 | The salt |
-| tokenId | uint256 | The tokenId |
-| isERC6551Account | bool | If true, the tokenId will be deployed via ERC6551Registry, if false, via ERC7656Registry |
 

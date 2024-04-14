@@ -4,7 +4,7 @@
 
 The manager of the Cruna NFT
 It is the only contract that can manage the NFT. It sets protectors and safe recipients,
-plugs and manages plugins, and has the ability to transfer the NFT if there are protectors.
+plugs and manages services, and has the ability to transfer the NFT if there are protectors.
 
 ### version
 
@@ -36,7 +36,7 @@ _It returns the configuration of a plugin by key_
 function allPlugins() external view returns (struct ICrunaManager.PluginElement[])
 ```
 
-_It returns the configuration of all currently plugged plugins_
+_It returns the configuration of all currently plugged services_
 
 ### pluginByIndex
 
@@ -44,7 +44,7 @@ _It returns the configuration of all currently plugged plugins_
 function pluginByIndex(uint256 index) external view returns (struct ICrunaManager.PluginElement)
 ```
 
-_It returns an element of the array of all plugged plugins_
+_It returns an element of the array of all plugged services_
 
 #### Parameters
 
@@ -222,7 +222,7 @@ _Gets all safe recipients_
 ### plug
 
 ```solidity
-function plug(string name, address pluginProxy, bool canManageTransfer, bool isERC6551Account, bytes4 salt, uint256 timestamp, uint256 validFor, bytes signature) external virtual
+function plug(string name, address pluginProxy, bool canManageTransfer, bool isERC6551Account, bytes4 salt, bytes data, uint256 timestamp, uint256 validFor, bytes signature) external virtual
 ```
 
 _It plugs a new plugin_
@@ -236,6 +236,7 @@ _It plugs a new plugin_
 | canManageTransfer | bool | True if the plugin can manage transfers |
 | isERC6551Account | bool | True if the plugin is an ERC6551 account |
 | salt | bytes4 | The salt used during the deployment of the plugin |
+| data | bytes |  |
 | timestamp | uint256 | The timestamp of the signature |
 | validFor | uint256 | The validity of the signature |
 | signature | bytes | The signature of the protector |
@@ -323,7 +324,7 @@ _It returns a plugin by name and salt_
 function countPlugins() external view virtual returns (uint256, uint256)
 ```
 
-_It returns the number of plugins_
+_It returns the number of services_
 
 ### plugged
 
@@ -382,23 +383,23 @@ _Checks if a plugin is active_
 function listPluginsKeys(bool active) external view virtual returns (bytes8[])
 ```
 
-_returns the list of plugins' keys
-Since the names of the plugins are not saved in the contract, the app calling for this function
-is responsible for knowing the names of all the plugins.
-In the future it would be good to have an official registry of all plugins to be able to reverse
+_returns the list of services' keys
+Since the names of the services are not saved in the contract, the app calling for this function
+is responsible for knowing the names of all the services.
+In the future it would be good to have an official registry of all services to be able to reverse
 from the nameId to the name as a string._
 
 #### Parameters
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| active | bool | True to get the list of active plugins, false to get the list of inactive plugins |
+| active | bool | True to get the list of active services, false to get the list of inactive services |
 
 #### Return Values
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| [0] | bytes8[] | The list of plugins' keys |
+| [0] | bytes8[] | The list of services' keys |
 
 ### pseudoAddress
 
@@ -496,7 +497,7 @@ to deploy it. This is needed to pass a valid address as an actor to the Signatur
 function _countPlugins() internal view virtual returns (uint256, uint256)
 ```
 
-Counts the active and disabled plugins
+Counts the active and disabled services
 
 ### _disablePlugin
 
@@ -553,37 +554,7 @@ function _authorizePluginToTransfer(bytes4 nameId_, bytes4 salt, bytes8 _key, en
 ```
 
 Id removing the authorization, it blocks a plugin for a maximum of 30 days from transferring
-the NFT. If the plugins must be blocked for more time, disable it at your peril of making it useless.
-
-### _combineBytes4
-
-```solidity
-function _combineBytes4(bytes4 a, bytes4 b) internal pure returns (bytes8)
-```
-
-Utility function to combine two bytes4 into a bytes8
-
-### _isProtected
-
-```solidity
-function _isProtected() internal view virtual returns (bool)
-```
-
-Check if the NFT is protected
-
-### _isProtector
-
-```solidity
-function _isProtector(address protector_) internal view virtual returns (bool)
-```
-
-Checks if an address is a protector
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| protector_ | address | The address to check |
+the NFT. If the services must be blocked for more time, disable it at your peril of making it useless.
 
 ### _canPreApprove
 
@@ -604,7 +575,7 @@ Override required by SignatureValidator to check if a signer is authorized to pr
 ### _plug
 
 ```solidity
-function _plug(string name, address proxyAddress_, bool canManageTransfer, bool isERC6551Account, bytes4 nameId_, bytes4 salt, bytes8 _key, bool trusted) internal
+function _plug(string name, address proxyAddress_, bool canManageTransfer, bool isERC6551Account, bytes4 nameId_, bytes4 salt, bytes data, bytes8 _key, bool trusted) internal
 ```
 
 Internal function plug a plugin
@@ -619,8 +590,9 @@ Internal function plug a plugin
 | isERC6551Account | bool | If the plugin is an ERC6551 account |
 | nameId_ | bytes4 | The nameId of the plugin |
 | salt | bytes4 | The salt used to deploy the plugin |
+| data | bytes | Optional data to be passed to the service |
 | _key | bytes8 | The key of the plugin |
-| trusted | bool |  |
+| trusted | bool | true if the implementation is trusted |
 
 ### _setSignedActor
 

@@ -29,7 +29,7 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
   }
 
   function _onBeforeInit(bytes memory data) internal virtual {
-    // does nothing
+    // does nothing, override if needed
   }
 
   /// @dev see {ICrunaManagedService.sol-init}
@@ -56,12 +56,17 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
      * @notice The manager is not a wallet, it is the NFT Manager contract, owned by the token.
      * Making it payable reduce the gas cost for the manager to call this function.
      */
-    if (_msgSender() != address(_conf.manager)) revert Forbidden();
+    if (msg.sender != address(_conf.manager)) revert Forbidden();
     _conf.mustBeReset = 1;
   }
 
   /// @dev see {ICrunaManagedService.sol-requiresToManageTransfer}
   function requiresToManageTransfer() external pure virtual override returns (bool) {
+    return false;
+  }
+
+  /// @dev see {ICrunaManagedService.sol-requiresResetOnTransfer}
+  function requiresResetOnTransfer() external pure virtual override returns (bool) {
     return false;
   }
 
@@ -77,6 +82,10 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
 
   function isManaged() external pure returns (bool) {
     return true;
+  }
+
+  function reset() external payable virtual override {
+    // doing nothing
   }
 
   /**
@@ -98,7 +107,7 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
   /**
    * @notice internal function to check if the NFT is currently protected
    */
-  function _isProtected() internal view virtual override returns (bool) {
+  function _isProtected() internal view override returns (bool) {
     return _conf.manager.hasProtectors();
   }
 
@@ -106,7 +115,7 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
    * @notice Internal function to check if an address is a protector
    * @param protector The address to check
    */
-  function _isProtector(address protector) internal view virtual override returns (bool) {
+  function _isProtector(address protector) internal view override returns (bool) {
     return _conf.manager.isProtector(protector);
   }
 

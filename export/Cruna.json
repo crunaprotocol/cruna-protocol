@@ -1043,6 +1043,11 @@
           "type": "bytes4"
         },
         {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        },
+        {
           "internalType": "uint256",
           "name": "timestamp",
           "type": "uint256"
@@ -2344,7 +2349,13 @@
       "type": "function"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
       "name": "init",
       "outputs": [],
       "stateMutability": "nonpayable",
@@ -3700,6 +3711,11 @@
           "internalType": "bool",
           "name": "isERC6551Account",
           "type": "bool"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
         }
       ],
       "name": "deployService",

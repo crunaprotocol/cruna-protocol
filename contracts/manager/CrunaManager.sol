@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 // Author: Francesco Sullo <francesco@sullo.co>
 
 import {Actor} from "./Actor.sol";
-import {CrunaManagerBase} from "./CrunaManagerBase.sol";
+import {ManagerConstants, CrunaManagerBase} from "./CrunaManagerBase.sol";
 import {ExcessivelySafeCall} from "../libs/ExcessivelySafeCall.sol";
 
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
@@ -12,7 +12,6 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {CrunaManagedService} from "../services/CrunaManagedService.sol";
 import {Canonical} from "../libs/Canonical.sol";
 import {TrustedLib} from "../libs/TrustedLib.sol";
-import {ManagerConstants} from "../libs/ManagerConstants.sol";
 import {Deployed} from "../utils/Deployed.sol";
 
 //import "hardhat/console.sol";
@@ -224,9 +223,9 @@ contract CrunaManager is Actor, CrunaManagerBase, Deployed {
     _preValidateAndCheckSignature(
       this.plug.selector,
       pluginProxy,
-      canManageTransfer ? 1 : 0,
-      isERC6551Account ? 1 : 0,
+      (canManageTransfer ? 1 : 0) * 1e6 + (isERC6551Account ? 1 : 0),
       uint256(bytes32(salt)),
+      uint256(_hashBytes(data)),
       timestamp,
       validFor,
       signature
@@ -513,28 +512,6 @@ contract CrunaManager is Actor, CrunaManagerBase, Deployed {
   }
 
   /**
-   * @notice Utility function to combine two bytes4 into a bytes8
-   */
-  function _combineBytes4(bytes4 a, bytes4 b) internal pure returns (bytes8) {
-    return bytes8(bytes32(a) | (bytes32(b) >> 32));
-  }
-
-  /**
-   * @notice Check if the NFT is protected
-   */
-  function _isProtected() internal view virtual override returns (bool) {
-    return _actorCount(ManagerConstants.protectorId()) != 0;
-  }
-
-  /**
-   * @notice Checks if an address is a protector
-   * @param protector_ The address to check
-   */
-  function _isProtector(address protector_) internal view virtual override returns (bool) {
-    return _isActiveActor(protector_, ManagerConstants.protectorId());
-  }
-
-  /**
    * @notice Override required by SignatureValidator to check if a signer is authorized to pre-approve an operation
    * @param selector The selector of the called function
    * @param actor The actor to be approved
@@ -556,7 +533,9 @@ contract CrunaManager is Actor, CrunaManagerBase, Deployed {
    * @param isERC6551Account If the plugin is an ERC6551 account
    * @param nameId_ The nameId of the plugin
    * @param salt The salt used to deploy the plugin
+   * @param data Optional data to be passed to the service
    * @param _key The key of the plugin
+   * @param trusted true if the implementation is trusted
    */
   function _plug(
     string memory name,

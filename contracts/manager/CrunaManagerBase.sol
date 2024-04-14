@@ -12,6 +12,7 @@ import {Canonical} from "../libs/Canonical.sol";
 import {INamedAndVersioned} from "../utils/INamedAndVersioned.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {Actor} from "../manager/Actor.sol";
+import {ManagerConstants} from "../libs/ManagerConstants.sol";
 
 /**
  * @title CrunaManagerBase.sol
@@ -50,6 +51,30 @@ abstract contract CrunaManagerBase is ICrunaManager, CommonBase, Actor, Signatur
    * @param previousVersion The previous version
    */
   function migrate(uint256 previousVersion) external virtual;
+
+  /**
+   * @notice Utility function to combine two bytes4 into a bytes8
+   */
+  function _combineBytes4(bytes4 a, bytes4 b) internal pure returns (bytes8) {
+    return bytes8(bytes32(a) | (bytes32(b) >> 32));
+  }
+
+  /**
+   * @notice Check if the NFT is protected
+   * Required by SignatureValidator
+   */
+  function _isProtected() internal view override returns (bool) {
+    return _actorCount(ManagerConstants.protectorId()) != 0;
+  }
+
+  /**
+   * @notice Checks if an address is a protector
+   * Required by SignatureValidator
+   * @param protector_ The address to check
+   */
+  function _isProtector(address protector_) internal view override returns (bool) {
+    return _isActiveActor(protector_, ManagerConstants.protectorId());
+  }
 
   // @notice Returns the version of the manager
   function _version() internal pure virtual returns (uint256) {

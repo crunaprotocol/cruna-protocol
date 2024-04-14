@@ -1,6 +1,9 @@
 # Change log
 
-**0.5.0**
+**0.6.0**
+- Add a `bytes memory data` parameter to services' `init` to allow a preset of the service when needed
+
+**0.5.5**
 - Introduce Cruna services, managed and unmanaged, so that only the managed ones need to be plugged by `CrunaManager`, while the unmanaged can be simply connected by the `CrunaProtectedNFT`
 
 **0.4.3**

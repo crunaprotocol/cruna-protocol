@@ -18,6 +18,7 @@ abstract contract CrunaService is ICrunaService, CommonBase {
 
   /// @dev see {ICrunaManagedService.sol-init}
   function init(bytes memory data) external virtual {
+    if (msg.sender != tokenAddress()) revert Forbidden();
     _onBeforeInit(data);
   }
 
