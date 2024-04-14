@@ -1,17 +1,16 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.20;
 
-import {IERC7656Contract} from "../erc/IERC7656Contract.sol";
-import {IVersioned} from "../utils/IVersioned.sol";
 import {CrunaManager} from "../manager/CrunaManager.sol";
+import {ICrunaService} from "./ICrunaService.sol";
 
 /**
- * @title ICrunaPlugin.sol
- * @notice Interface for plugins
- * @dev Technically, plugins are secondary managers, pluggable in
+ * @title ICrunaManagedService.sol
+ * @notice Interface for services
+ * @dev Technically, services are secondary managers, pluggable in
  * the primary manage, which is CrunaManager.sol
  */
-interface ICrunaPlugin is IERC7656Contract, IVersioned {
+interface ICrunaManagedService is ICrunaService {
   /**
    * @notice The configuration of the plugin
    */
@@ -35,11 +34,6 @@ interface ICrunaPlugin is IERC7656Contract, IVersioned {
    * @param newVersion The version of the new implementation
    */
   error InvalidVersion(uint256 oldVersion, uint256 newVersion);
-
-  /**
-   * @notice Error returned when the plugin is reset
-   */
-  error Forbidden();
 
   /**
    * @notice Error returned when the plugin must be reset before using it

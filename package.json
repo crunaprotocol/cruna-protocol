@@ -1,6 +1,6 @@
 {
   "name": "@cruna/protocol",
-  "version": "0.4.3",
+  "version": "0.5.5",
   "description": "The Cruna protocol",
   "publishConfig": {
     "access": "public"
@@ -74,10 +74,10 @@
     "pretty-quick": "^4.0.0",
     "require-or-mock": "^0.2.1",
     "rimraf": "^5.0.5",
-    "solhint": "^4.5.2",
+    "solhint": "^4.5.4",
     "solidity-coverage": "^0.8.12",
     "solidity-docgen": "0.6.0-beta.36",
-    "typescript": "^5.4.4"
+    "typescript": "^5.4.5"
   },
   "lint-staged": {
     "*.js": "prettier --write",

@@ -13,7 +13,7 @@ contracts/manager/CrunaManager.sol
 contracts/manager/CrunaManagerBase.sol
 contracts/manager/CrunaManagerProxy.sol
 contracts/manager/ICrunaManager.sol
-contracts/plugins/CrunaPluginBase.sol
+contracts/plugins/CrunaManagedService.sol
 contracts/plugins/ICrunaPlugin.sol
 contracts/plugins/inheritance/IInheritanceCrunaPlugin.sol
 contracts/plugins/inheritance/InheritanceCrunaPlugin.sol

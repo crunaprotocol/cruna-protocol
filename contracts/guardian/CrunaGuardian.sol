@@ -11,7 +11,7 @@ import {IVersioned} from "../utils/IVersioned.sol";
  * @notice Manages a registry of trusted implementations and their required manager versions
  *
  * It is used by
- * - manager and plugins to upgrade its own  implementation
+ * - manager and services to upgrade its own  implementation
  * - manager to trust a new plugin implementation and allow managed transfers
  */
 contract CrunaGuardian is ICrunaGuardian, IVersioned, TimelockController {

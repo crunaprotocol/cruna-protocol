@@ -299,7 +299,7 @@ _It returns the address of a plugin_
 ### plugin
 
 ```solidity
-function plugin(bytes4 nameId_, bytes4 salt) external view virtual returns (contract CrunaPluginBase)
+function plugin(bytes4 nameId_, bytes4 salt) external view virtual returns (contract CrunaManagedService)
 ```
 
 _It returns a plugin by name and salt_
@@ -315,7 +315,7 @@ _It returns a plugin by name and salt_
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| [0] | contract CrunaPluginBase | The plugin |
+| [0] | contract CrunaManagedService | The plugin |
 
 ### countPlugins
 
@@ -442,7 +442,7 @@ see {IProtectedNFT-protectedTransfer}.
 ### _plugin
 
 ```solidity
-function _plugin(bytes4 nameId_, bytes4 salt) internal view virtual returns (contract CrunaPluginBase)
+function _plugin(bytes4 nameId_, bytes4 salt) internal view virtual returns (contract CrunaManagedService)
 ```
 
 ### _pluginAddress

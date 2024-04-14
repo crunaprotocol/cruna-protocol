@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {InheritanceCrunaPlugin} from "../../plugins/inheritance/InheritanceCrunaPlugin.sol";
+import {InheritanceCrunaPlugin} from "../../services/inheritance/InheritanceCrunaPlugin.sol";
 
 contract InheritanceCrunaPluginV3 is InheritanceCrunaPlugin {
   uint256 public constant SOME_VARIABLE = 3;

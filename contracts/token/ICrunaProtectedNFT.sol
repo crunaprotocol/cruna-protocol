@@ -14,7 +14,7 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
    *
    * TokenIds are uint96 for optimization purposes. In particular, having the tokenId as a uint96 allows
    * to encode the tokenId in the first 12 bytes of the storage slot, leaving the last 20 bytes for the token address
-   * That allows plugins and other tools to save storage because tokenAddress + tokenId will take a single word.
+   * That allows services and other tools to save storage because tokenAddress + tokenId will take a single word.
    * For example, tokenAddress and tokenId can be encoded as
    * uint256 tokenAddressAndTokenId = uint256(tokenAddress) << 96 | tokenId;
    *
@@ -122,6 +122,16 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
    */
   error InvalidIndex();
 
+  /**
+   * @notice Error returned if the sender is neither the manager nor the token owner
+   */
+  error OnlyTokenOwnerOrManager();
+
+  /**
+   * @notice Error returned when the token owner tries to deploy a service that must be managed
+   */
+  error ManagedService();
+
   // views
 
   /**
@@ -193,20 +203,15 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
   ) external view returns (address);
 
   /**
-   * @notice Deploys a plugin
-   * @param pluginImplementation The address of the plugin implementation
+   * @notice Deploys an unmanaged service
+   * @param implementation The address of the service implementation
    * @param salt The salt
    * @param tokenId The tokenId
    * @param isERC6551Account Specifies the registry to use
    * True if the tokenId must be deployed via ERC6551Registry,
    * false, it must be deployed via ERC7656Registry
    */
-  function deployPlugin(
-    address pluginImplementation,
-    bytes32 salt,
-    uint256 tokenId,
-    bool isERC6551Account
-  ) external payable returns (address);
+  function deployService(address implementation, bytes32 salt, uint256 tokenId, bool isERC6551Account) external payable;
 
   /**
    * @notice Returns if a plugin is deployed

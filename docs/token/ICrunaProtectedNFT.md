@@ -286,10 +286,10 @@ Returns the address of a deployed manager or plugin
 | ---- | ---- | ----------- |
 | [0] | address | The address of the deployed manager or plugin |
 
-### deployPlugin
+### deployService
 
 ```solidity
-function deployPlugin(address pluginImplementation, bytes32 salt, uint256 tokenId, bool isERC6551Account) external returns (address)
+function deployService(address serviceImplementation, bytes32 salt, uint256 tokenId, bool isERC6551Account) external returns (address)
 ```
 
 Deploys a plugin
@@ -298,7 +298,7 @@ Deploys a plugin
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| pluginImplementation | address | The address of the plugin implementation |
+| serviceImplementation | address | The address of the plugin implementation |
 | salt | bytes32 | The salt |
 | tokenId | uint256 | The tokenId |
 | isERC6551Account | bool | Specifies the registry to use True if the tokenId must be deployed via ERC6551Registry, false, it must be deployed via ERC7656Registry |

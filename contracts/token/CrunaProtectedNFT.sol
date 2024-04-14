@@ -7,7 +7,6 @@ import {IERC165, ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {IManagedNFT, ICrunaProtectedNFT} from "./ICrunaProtectedNFT.sol";
@@ -15,7 +14,11 @@ import {IERC6454} from "../erc/IERC6454.sol";
 import {IERC6982} from "../erc/IERC6982.sol";
 import {ICrunaManager} from "../manager/ICrunaManager.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
+import {Deployed} from "../utils/Deployed.sol";
 import {Canonical} from "../libs/Canonical.sol";
+import {ICrunaService} from "../services/ICrunaService.sol";
+
+//import "hardhat/console.sol";
 
 /**
  * A convenient interface to mix nameId, version and default implementations
@@ -34,7 +37,7 @@ interface IVersionedManager {
  * @notice This contracts is a base for NFTs with protected transfers. It must be extended implementing
  * the _canManage function to define who can alter the contract. Two versions are provided in this repo,CrunaProtectedNFTTimeControlled.sol and CrunaProtectedNFTOwnable.sol. The first is the recommended one, since it allows a governance aligned with best practices. The second is simpler, and can be used in less critical scenarios. If none of them fits your needs, you can implement your own policy.
  */
-abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454, IERC6982, ERC721, ReentrancyGuard {
+abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454, IERC6982, Deployed, ERC721, ReentrancyGuard {
   using ECDSA for bytes32;
   using Strings for uint256;
   using Address for address;
@@ -190,14 +193,22 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     emit Locked(tokenId, locked_);
   }
 
-  /// @dev see {ICrunaProtectedNFT-deployPlugin}
-  function deployPlugin(
-    address pluginImplementation,
+  /// @dev see {ICrunaProtectedNFT-deployService}
+  function deployService(
+    address implementation,
     bytes32 salt,
     uint256 tokenId,
     bool isERC6551Account
-  ) external payable virtual override onlyManagerOf(tokenId) returns (address) {
-    return _deploy(pluginImplementation, salt, tokenId, isERC6551Account);
+  ) external payable virtual override {
+    if (_msgSender() != ownerOf(tokenId)) revert NotTheTokenOwner();
+    ICrunaService service = ICrunaService(implementation);
+    if (service.isManaged()) revert ManagedService();
+    bool previouslyDeployed = _isDeployed(implementation, salt, _SELF, tokenId, isERC6551Account);
+    address addr = _deploy(implementation, salt, _SELF, tokenId, isERC6551Account);
+    if (!previouslyDeployed) {
+      service = ICrunaService(addr);
+      service.init();
+    }
   }
 
   /// @dev see {ICrunaProtectedNFT-isDeployed}
@@ -207,13 +218,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     uint256 tokenId,
     bool isERC6551Account
   ) external view virtual returns (bool) {
-    address _addr = _addressOfDeployed(implementation, salt, tokenId, isERC6551Account);
-    uint32 size;
-    // solhint-disable-next-line no-inline-assembly
-    assembly {
-      size := extcodesize(_addr)
-    }
-    return (size != 0);
+    return _isDeployed(implementation, salt, _SELF, tokenId, isERC6551Account);
   }
 
   /// @dev see {ICrunaProtectedNFT-managerOf}
@@ -227,7 +232,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
    * @return the address of the manager
    */
   function _managerOf(uint256 tokenId) internal view virtual returns (address) {
-    return _addressOfDeployed(_defaultManagerImplementation(tokenId), 0x00, tokenId, false);
+    return _addressOfDeployed(_defaultManagerImplementation(tokenId), 0x00, _SELF, tokenId, false);
   }
 
   /// @dev see {ICrunaProtectedNFT-addressOfDeployed}
@@ -237,7 +242,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     uint256 tokenId,
     bool isERC6551Account
   ) external view virtual override returns (address) {
-    return _addressOfDeployed(implementation, salt, tokenId, isERC6551Account);
+    return _addressOfDeployed(implementation, salt, _SELF, tokenId, isERC6551Account);
   }
 
   /**
@@ -259,30 +264,6 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     }
     // should never happen
     return address(0);
-  }
-
-  /**
-   * @notice Internal function to return the address of a deployed token bound contract
-   * @param implementation The address of the implementation
-   * @param salt The salt
-   * @param tokenId The tokenId
-   * @param isERC6551Account If true, the tokenId has been deployed via ERC6551Registry, if false, via ERC7656Registry
-   */
-  function _addressOfDeployed(
-    address implementation,
-    bytes32 salt,
-    uint256 tokenId,
-    bool isERC6551Account
-  ) internal view virtual returns (address) {
-    return
-      ERC6551AccountLib.computeAddress(
-        isERC6551Account ? address(Canonical.erc6551Registry()) : address(Canonical.erc7656Registry()),
-        implementation,
-        salt,
-        block.chainid,
-        _SELF,
-        tokenId
-      );
   }
 
   /**
@@ -360,27 +341,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
       (_nftConf.maxTokenId != 0 && tokenId > _nftConf.maxTokenId) ||
       (tokenId < _managerHistory[0].firstTokenId)
     ) revert InvalidTokenId();
-    _deploy(_defaultManagerImplementation(tokenId), 0x00, tokenId, false);
+    _deploy(_defaultManagerImplementation(tokenId), 0x00, _SELF, tokenId, false);
     _safeMint(to, tokenId++);
-  }
-
-  /**
-   * @notice This function deploys a token-bound contract (manager or plugin)
-   * @param implementation The address of the implementation
-   * @param salt The salt
-   * @param tokenId The tokenId
-   * @param isERC6551Account If true, the tokenId will be deployed via ERC6551Registry,
-   * if false, via ERC7656Registry
-   */
-  function _deploy(
-    address implementation,
-    bytes32 salt,
-    uint256 tokenId,
-    bool isERC6551Account
-  ) internal virtual returns (address) {
-    if (isERC6551Account) {
-      return Canonical.erc6551Registry().createAccount(implementation, salt, block.chainid, _SELF, tokenId);
-    }
-    return Canonical.erc7656Registry().create(implementation, salt, block.chainid, _SELF, tokenId);
   }
 }

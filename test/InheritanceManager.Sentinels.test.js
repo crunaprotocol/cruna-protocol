@@ -494,7 +494,7 @@ describe("Sentinel and Inheritance", function () {
       "WaitingForBeneficiary",
     );
 
-    // we plug a few extra plugins before inheriting, to test the call to reset
+    // we plug a few extra services before inheriting, to test the call to reset
 
     await expect(
       manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, false, false, "0x99999999", 0, 0, 0),

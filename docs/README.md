@@ -75,7 +75,7 @@ This dual-pathway for plugin deployment underscores the protocol's flexibility a
   - [CrunaManagerProxy](./manager/CrunaManagerProxy.md)
   - [ICrunaManager](./manager/ICrunaManager.md)
 - Plugins
-  - [CrunaPluginBase](./plugins/CrunaPluginBase.md)
+  - [CrunaManagedService](./plugins/CrunaManagedService.md)
   - [ICrunaPlugin](./plugins/ICrunaPlugin.md)
 - Plugins/inheritance
   - [IInheritanceCrunaPlugin](./plugins/inheritance/IInheritanceCrunaPlugin.md)

@@ -7,17 +7,24 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 import {IInheritanceCrunaPlugin} from "./IInheritanceCrunaPlugin.sol";
-import {ICrunaPlugin} from "../ICrunaPlugin.sol";
-import {CrunaPluginBase} from "../CrunaPluginBase.sol";
+import {ICrunaManagedService} from "../ICrunaManagedService.sol";
+import {CrunaManagedService} from "../CrunaManagedService.sol";
 import {Canonical} from "../../libs/Canonical.sol";
 
 /**
  * @title InheritanceCrunaPlugin
  * @notice This contract manages inheritance
  */
-contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaPluginBase, ReentrancyGuard {
+contract InheritanceCrunaPlugin is
+  ICrunaManagedService,
+  IInheritanceCrunaPlugin,
+  Context,
+  CrunaManagedService,
+  ReentrancyGuard
+{
   using ECDSA for bytes32;
   using Strings for uint256;
 
@@ -48,8 +55,8 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
    */
   Votes internal _votes;
 
-  /// @dev see {ICrunaPlugin-requiresToManageTransfer}
-  function requiresToManageTransfer() external pure override(CrunaPluginBase, ICrunaPlugin) returns (bool) {
+  /// @dev see {ICrunaManagedService.sol-requiresToManageTransfer}
+  function requiresToManageTransfer() external pure override(CrunaManagedService, ICrunaManagedService) returns (bool) {
     return true;
   }
 
@@ -180,14 +187,14 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
     _conf.manager.managedTransfer(_nameId(), _msgSender());
   }
 
-  /// @dev see {ICrunaPlugin-reset}
-  function reset() external payable override {
+  /// @dev see {ICrunaManagedService.sol-reset}
+  function reset() external payable override(CrunaManagedService, ICrunaManagedService) {
     if (_msgSender() != address(_conf.manager)) revert Forbidden();
     delete _conf.mustBeReset;
     _reset();
   }
 
-  function requiresResetOnTransfer() external pure returns (bool) {
+  function requiresResetOnTransfer() external pure override(CrunaManagedService, ICrunaManagedService) returns (bool) {
     return true;
   }
 
@@ -199,7 +206,7 @@ contract InheritanceCrunaPlugin is ICrunaPlugin, IInheritanceCrunaPlugin, CrunaP
       if (Canonical.crunaGuardian().trustedImplementation(_nameId(), implementation()))
         // If new implementation is untrusted, the current one must be untrusted too
         revert UntrustedImplementation(implementation_);
-    ICrunaPlugin impl = ICrunaPlugin(implementation_);
+    ICrunaManagedService impl = ICrunaManagedService(implementation_);
     uint256 version_ = impl.version();
     if (version_ <= _version()) revert InvalidVersion(_version(), version_);
     uint256 requiredVersion = impl.requiresManagerVersion();

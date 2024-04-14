@@ -3,26 +3,22 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
-
-import {TokenLinkedContract} from "../utils/TokenLinkedContract.sol";
+import {ERC7656Contract} from "../erc/ERC7656Contract.sol";
 import {CrunaProtectedNFT} from "../token/CrunaProtectedNFT.sol";
-import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {INamed} from "../utils/INamed.sol";
 
 import {ICommonBase} from "./ICommonBase.sol";
-import {Actor} from "../manager/Actor.sol";
 
 /**
  * @title CommonBase.sol
- * @notice Base contract for managers and plugins
+ * @notice Base contract for managers and services
  */
-abstract contract CommonBase is ICommonBase, INamed, Context, Actor, TokenLinkedContract, SignatureValidator {
+abstract contract CommonBase is ICommonBase, INamed, ERC7656Contract {
   /**
    * @notice Error returned when the caller is not the token owner
    */
   modifier onlyTokenOwner() {
-    if (owner() != _msgSender()) revert NotTheTokenOwner();
+    if (owner() != msg.sender) revert NotTheTokenOwner();
     _;
   }
 
@@ -44,31 +40,6 @@ abstract contract CommonBase is ICommonBase, INamed, Context, Actor, TokenLinked
    */
   function vault() external view virtual returns (CrunaProtectedNFT) {
     return _vault();
-  }
-
-  /**
-   * @notice Returns the keccak256 of a string variable.
-   * It saves gas compared to keccak256(abi.encodePacked(string)).
-   * @param input The string to hash
-   */
-  function _hashString(string memory input) internal pure returns (bytes32 result) {
-    // solhint-disable-next-line no-inline-assembly
-    assembly {
-      // Load the pointer to the free memory slot
-      let ptr := mload(0x40)
-      // Copy data using Solidity's default encoding, which includes the length
-      mstore(ptr, mload(add(input, 32)))
-      // Calculate keccak256 hash
-      result := keccak256(ptr, mload(input))
-    }
-  }
-
-  /**
-   * @notice Returns the equivalent of bytes4(keccak256(str).
-   * @param str The string to hash
-   */
-  function _stringToBytes4(string memory str) internal pure returns (bytes4) {
-    return bytes4(_hashString(str));
   }
 
   /**
