@@ -17,11 +17,10 @@ To keep this function efficient, we support only the most popular chains at the 
 - Goerli
 - BNB Testnet
 - Chronos Testnet
-- Fantom
+- Fantom testnet
 - Avalance Fuji
 - Celo Alfajores
 - Gnosis Testnet
-- Polygon Mumbai
 - Arbitrum Testnet
 - Sepolia
 - Base Sepolia_
