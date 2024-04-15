@@ -244,10 +244,10 @@ This function is not virtual because should not be overridden to avoid issues wh
 called by the manager (when protectors are set/unset)
 Making it payable reduces the gas cost.
 
-### deployService
+### plug
 
 ```solidity
-function deployService(address implementation, bytes32 salt, uint256 tokenId, bool isERC6551Account, bytes data) external payable virtual
+function plug(address implementation, bytes32 salt, uint256 tokenId, bool isERC6551Account, bytes data) external payable virtual
 ```
 
 Deploys an unmanaged service

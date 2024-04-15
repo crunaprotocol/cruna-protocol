@@ -302,10 +302,10 @@ Returns the address of a deployed manager or plugin
 | ---- | ---- | ----------- |
 | [0] | address | The address of the deployed manager or plugin |
 
-### deployService
+### plug
 
 ```solidity
-function deployService(address implementation, bytes32 salt, uint256 tokenId, bool isERC6551Account, bytes data) external payable
+function plug(address implementation, bytes32 salt, uint256 tokenId, bool isERC6551Account, bytes data) external payable
 ```
 
 Deploys an unmanaged service

@@ -100,7 +100,7 @@ describe("Unmanaged service", function () {
         ["CIP Token", "CIPT"], // Values to encode
       );
 
-      await vault.connect(bob).deployService(fungibleService.address, salt, nextTokenId, false, data);
+      await vault.connect(bob).plug(fungibleService.address, salt, nextTokenId, false, data);
 
       fungibleService = await ethers.getContractAt("FungibleService", fungibleAt);
       expect(await fungibleService.name()).equal(`CIP Token`);

@@ -193,8 +193,8 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     emit Locked(tokenId, locked_);
   }
 
-  /// @dev see {ICrunaProtectedNFT-deployService}
-  function deployService(
+  /// @dev see {ICrunaProtectedNFT-plug}
+  function plug(
     address implementation,
     bytes32 salt,
     uint256 tokenId,
