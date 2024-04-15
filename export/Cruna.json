@@ -2205,6 +2205,19 @@
     },
     {
       "inputs": [],
+      "name": "crunaManager",
+      "outputs": [
+        {
+          "internalType": "contract CrunaManager",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "eip712Domain",
       "outputs": [
         {
@@ -2401,19 +2414,6 @@
           "internalType": "bool",
           "name": "",
           "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "manager",
-      "outputs": [
-        {
-          "internalType": "contract CrunaManager",
-          "name": "",
-          "type": "address"
         }
       ],
       "stateMutability": "view",
@@ -2634,14 +2634,14 @@
     },
     {
       "inputs": [],
-      "name": "reset",
+      "name": "resetOnTransfer",
       "outputs": [],
       "stateMutability": "payable",
       "type": "function"
     },
     {
       "inputs": [],
-      "name": "resetOnTransfer",
+      "name": "resetService",
       "outputs": [],
       "stateMutability": "payable",
       "type": "function"

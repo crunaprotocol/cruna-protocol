@@ -41,7 +41,7 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
   }
 
   /// @dev see {ICrunaManagedService.sol-manager}
-  function manager() external view virtual override returns (CrunaManager) {
+  function crunaManager() external view virtual override returns (CrunaManager) {
     return _conf.manager;
   }
 
@@ -84,7 +84,7 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
     return true;
   }
 
-  function reset() external payable virtual override {
+  function resetService() external payable virtual override {
     // doing nothing
   }
 

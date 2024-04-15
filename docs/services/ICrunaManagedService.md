@@ -96,10 +96,10 @@ function isERC6551Account() external pure returns (bool)
 
 Called by the manager to know if the plugin is an ERC721 account
 
-### reset
+### resetService
 
 ```solidity
-function reset() external payable
+function resetService() external payable
 ```
 
 Reset the plugin to the factory settings
@@ -110,10 +110,10 @@ Reset the plugin to the factory settings
 function resetOnTransfer() external payable
 ```
 
-### manager
+### crunaManager
 
 ```solidity
-function manager() external view returns (contract CrunaManager)
+function crunaManager() external view returns (contract CrunaManager)
 ```
 
 Returns the manager

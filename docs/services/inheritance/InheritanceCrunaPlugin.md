@@ -153,10 +153,10 @@ function inherit() external virtual
 
 Allows the beneficiary to inherit the token
 
-### reset
+### resetService
 
 ```solidity
-function reset() external payable
+function resetService() external payable
 ```
 
 _see {ICrunaManagedService.sol-reset}_
@@ -327,10 +327,10 @@ Checks if the grace period has expired
 | ---- | ---- | ----------- |
 | [0] | bool | True if the grace period has expired, false otherwise |
 
-### _reset
+### _resetService
 
 ```solidity
-function _reset() internal
+function _resetService() internal
 ```
 
 Reset the plugin configuration

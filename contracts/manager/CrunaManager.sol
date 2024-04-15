@@ -721,7 +721,7 @@ contract CrunaManager is Actor, CrunaManagerBase, Deployed {
    */
   function _resetPlugin(bytes4 nameId_, bytes4 salt) internal virtual {
     CrunaManagedService plugin_ = _plugin(nameId_, salt);
-    plugin_.reset();
+    plugin_.resetService();
   }
 
   /**

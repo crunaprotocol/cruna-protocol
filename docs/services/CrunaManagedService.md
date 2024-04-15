@@ -34,10 +34,10 @@ function init(bytes data) external
 
 _see {ICrunaManagedService.sol-init}_
 
-### manager
+### crunaManager
 
 ```solidity
-function manager() external view virtual returns (contract CrunaManager)
+function crunaManager() external view virtual returns (contract CrunaManager)
 ```
 
 _see {ICrunaManagedService.sol-manager}_
@@ -100,10 +100,10 @@ function isManaged() external pure returns (bool)
 
 Called when deploying the service to check if it must be managed
 
-### reset
+### resetService
 
 ```solidity
-function reset() external payable virtual
+function resetService() external payable virtual
 ```
 
 Reset the plugin to the factory settings

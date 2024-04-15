@@ -183,15 +183,15 @@ contract InheritanceCrunaPlugin is
     if (_inheritanceConf.beneficiary == address(0)) revert BeneficiaryNotSet();
     if (_inheritanceConf.beneficiary != _msgSender()) revert NotTheBeneficiary();
     _checkIfStillAlive();
-    _reset();
+    _resetService();
     _conf.manager.managedTransfer(_nameId(), _msgSender());
   }
 
   /// @dev see {ICrunaManagedService.sol-reset}
-  function reset() external payable override(CrunaManagedService, ICrunaManagedService) {
+  function resetService() external payable override(CrunaManagedService, ICrunaManagedService) {
     if (_msgSender() != address(_conf.manager)) revert Forbidden();
     delete _conf.mustBeReset;
-    _reset();
+    _resetService();
   }
 
   function requiresResetOnTransfer() external pure override(CrunaManagedService, ICrunaManagedService) returns (bool) {
@@ -412,7 +412,7 @@ contract InheritanceCrunaPlugin is
   /**
    * Reset the plugin configuration
    */
-  function _reset() internal {
+  function _resetService() internal {
     delete _actors[_SENTINEL];
     delete _inheritanceConf;
     delete _votes;
