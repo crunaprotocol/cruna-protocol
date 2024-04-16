@@ -19,7 +19,7 @@ const {
   selectorId,
   trustImplementation,
   combineTimestampAndValidFor,
-
+  getInterfaceId,
   deployCanonical,
   pseudoAddress,
   setFakeCanonicalIfCoverage,
@@ -516,6 +516,24 @@ describe("Sentinel and Inheritance", function () {
     await expect(
       manager.connect(bob).plug("SomeInheritancePlugin", proxy.address, false, true, "0x00000000", dataBytes, 0, 0, 0),
     ).to.emit(manager, "PluginStatusChange");
+
+    let crunaManagedServiceMock = await deployContract("CrunaManagedServiceMock");
+
+    await expect(
+      manager
+        .connect(bob)
+        .plug("CrunaManagedServiceMock", crunaManagedServiceMock.address, false, false, "0x00000000", dataBytes, 0, 0, 0),
+    ).to.emit(manager, "PluginStatusChange");
+
+    const serviceAddr = await manager.pluginAddress(bytes4(keccak256("CrunaManagedServiceMock")), "0x00000000");
+
+    crunaManagedServiceMock = await ethers.getContractAt("CrunaManagedServiceMock", serviceAddr);
+    expect(await crunaManagedServiceMock.requiresToManageTransfer()).to.be.false;
+    expect(await crunaManagedServiceMock.requiresResetOnTransfer()).to.be.false;
+    expect(await crunaManagedServiceMock.version()).equal(1e6);
+    expect((await crunaManagedServiceMock.resetService()).hash !== undefined);
+    expect(await crunaManagedServiceMock.crunaManager()).to.equal(manager.address);
+    expect(await crunaManagedServiceMock.supportsInterface(getInterfaceId("IERC7656Contract"))).to.be.true;
 
     await expect(inheritancePlugin.connect(beneficiary1).inherit())
       .to.emit(vault, "ManagedTransfer")

@@ -433,6 +433,8 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
    * @param canManageTransfer True if the plugin can manage transfers
    * @param isERC6551Account True if the plugin is an ERC6551 account
    * @param salt The salt used during the deployment of the plugin
+   * @param data The data to be used during the initialization of the plugin
+   * Notice that data cannot be verified by the Manager since they are used by the plugin
    * @param timestamp The timestamp of the signature
    * @param validFor The validity of the signature
    * @param signature The signature of the protector

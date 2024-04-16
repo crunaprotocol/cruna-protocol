@@ -207,7 +207,7 @@ contract CrunaManager is Actor, CrunaManagerBase, Deployed {
     bytes calldata signature
   ) external virtual override nonReentrant onlyTokenOwner {
     if (_allPlugins.length == 16) {
-      // We do not allow more than 16 services to avoid risks of going out-of-gas while
+      // We do not allow more than 16 managed services to avoid risks of going out-of-gas while
       // looping through allPlugins.
       revert PluginNumberOverflow();
     }
@@ -556,6 +556,11 @@ contract CrunaManager is Actor, CrunaManagerBase, Deployed {
     if (requiredVersion > _version()) revert PluginRequiresUpdatedManager(requiredVersion);
     if (plugin_.nameId() != nameId_) revert InvalidImplementation(plugin_.nameId(), nameId_);
     if (plugin_.isERC6551Account() != isERC6551Account) revert InvalidERC6551Status();
+    /**
+     * @dev it is the service responsibility to assure that `init` can be called only one time
+     * The rationale for call `init` anytime is that an hostile agent can use the registry to deploy
+     * a service that later cannot be initiated if the can be initiated only at the deployment.
+     */
     plugin_.init(data);
     _allPlugins.push(PluginElement({active: true, salt: salt, nameId: nameId_}));
     if (_pluginByKey[_key].unplugged) {

@@ -36,7 +36,10 @@ contract FungibleService is CrunaService, Initializable, ERC20Upgradeable, ERC20
   }
 
   function _onBeforeInit(bytes memory data) internal override {
-    (string memory name, string memory symbol) = abi.decode(data, (string, string));
-    initialize(name, symbol);
+    // It ensures that we do not call initialize again, causing a revert
+    if (bytes(name()).length == 0) {
+      (string memory name, string memory symbol) = abi.decode(data, (string, string));
+      initialize(name, symbol);
+    }
   }
 }

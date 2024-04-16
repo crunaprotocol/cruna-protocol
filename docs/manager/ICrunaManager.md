@@ -659,7 +659,7 @@ _It plugs a new plugin_
 | canManageTransfer | bool | True if the plugin can manage transfers |
 | isERC6551Account | bool | True if the plugin is an ERC6551 account |
 | salt | bytes4 | The salt used during the deployment of the plugin |
-| data | bytes |  |
+| data | bytes | The data to be used during the initialization of the plugin Notice that data cannot be verified by the Manager since they are used by the plugin |
 | timestamp | uint256 | The timestamp of the signature |
 | validFor | uint256 | The validity of the signature |
 | signature | bytes | The signature of the protector |

@@ -65,6 +65,8 @@ describe("Unmanaged service", function () {
     ts = (await getTimestamp()) - 100;
 
     fungibleService = await deployContract("FungibleService");
+    expect(await fungibleService.version()).equal(1e6);
+    expect(await fungibleService.isERC6551Account()).equal(false);
   }
 
   describe("Buy vaults", function () {
