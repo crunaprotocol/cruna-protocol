@@ -86,7 +86,8 @@ module.exports = {
       accounts: [env.DEPLOYER],
     },
     amoy: {
-      url: "https://rpc-amoy.polygon.technology/",
+      // url: "https://rpc-amoy.polygon.technology/",
+      url: "https://polygon-amoy-bor-rpc.publicnode.com",
       chainId: 80002,
       // gasPrice: 20000000000,
       gasLimit: 6000000,

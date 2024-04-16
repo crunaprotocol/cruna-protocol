@@ -19,7 +19,6 @@ library TrustedLib {
    * - Celo Alfajores
    * - Gnosis Testnet
    * - Polygon Mumbai (deprecated)
-   * - Polygon Amoy
    * - Arbitrum Testnet
    * - Sepolia
    * - Base Sepolia
@@ -34,7 +33,7 @@ library TrustedLib {
       chainId == 43113 || // avalanche fuji
       chainId == 44787 || // celo alfajores
       chainId == 80001 || // polygon mumbai
-      chainId == 80002 || // polygon amoy
+      //      chainId == 80002 || // polygon amoy looks very unstable
       chainId == 84532 || // base sepolia
       chainId == 421614 || // arbitrum testnet
       chainId == 11155111); // sepolia

@@ -22,7 +22,6 @@ To keep this function efficient, we support only the most popular chains at the 
 - Celo Alfajores
 - Gnosis Testnet
 - Polygon Mumbai (deprecated)
-- Polygon Amoy
 - Arbitrum Testnet
 - Sepolia
 - Base Sepolia_
