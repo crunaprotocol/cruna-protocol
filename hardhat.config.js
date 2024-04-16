@@ -86,7 +86,6 @@ module.exports = {
       accounts: [env.DEPLOYER],
     },
     amoy: {
-      // url: "https://rpc-mumbai.maticvigil.com",
       url: "https://rpc-amoy.polygon.technology/",
       chainId: 80002,
       // gasPrice: 20000000000,

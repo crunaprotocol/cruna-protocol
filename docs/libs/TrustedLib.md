@@ -14,13 +14,15 @@ _When on those chain, it is possible to skip the requirement that an implementat
 
 To keep this function efficient, we support only the most popular chains at the moment.
 
-- Goerli
+- Goerli (soon to be dismissed)
 - BNB Testnet
 - Chronos Testnet
 - Fantom testnet
 - Avalance Fuji
 - Celo Alfajores
 - Gnosis Testnet
+- Polygon Mumbai (deprecated)
+- Polygon Amoy
 - Arbitrum Testnet
 - Sepolia
 - Base Sepolia_
