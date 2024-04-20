@@ -37,7 +37,9 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
     address managerAddress = _vault().managerOf(tokenId());
     if (_msgSender() != managerAddress) revert Forbidden();
     _onBeforeInit(data);
-    _conf.manager = CrunaManager(managerAddress);
+    if (address(_conf.manager) == address(0)) {
+      _conf.manager = CrunaManager(managerAddress);
+    } // else the service is being plugged again after been plugged and unplugged
   }
 
   /// @dev see {ICrunaManagedService.sol-manager}

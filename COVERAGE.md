@@ -28,8 +28,8 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   CrunaManagerBase.sol                |      100 |    66.67 |      100 |      100 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   ICrunaManager.sol                   |      100 |      100 |      100 |      100 
- services/                            |      100 |       60 |    95.45 |      100 
-  CrunaManagedService.sol             |      100 |     62.5 |      100 |      100 
+ services/                            |      100 |    66.67 |    95.45 |      100 
+  CrunaManagedService.sol             |      100 |       70 |      100 |      100 
   CrunaService.sol                    |      100 |       50 |    83.33 |      100 
   ICrunaManagedService.sol            |      100 |      100 |      100 |      100 
   ICrunaService.sol                   |      100 |      100 |      100 |      100 
@@ -53,6 +53,6 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   IVersioned.sol                      |      100 |      100 |      100 |      100 
   SignatureValidator.sol              |      100 |    86.36 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    97.23 |    67.56 |     98.4 |     95.7 
+All files                             |    97.24 |     67.7 |     98.4 |     95.7 
 --------------------------------------|----------|----------|----------|----------
 ```

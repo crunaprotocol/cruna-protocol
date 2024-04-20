@@ -1,5 +1,8 @@
 # Change log
 
+**0.6.1**
+- Minor improvements in the `CrunaManagedService` to avoid overriding `_conf.manager` if unnecessary
+
 **0.6.0**
 - Add a `bytes memory data` parameter to services' `init` to allow a preset of the service when needed
 
