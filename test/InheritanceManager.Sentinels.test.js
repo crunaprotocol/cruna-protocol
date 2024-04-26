@@ -150,6 +150,8 @@ describe("Sentinel and Inheritance", function () {
         )
       )[0];
 
+      // console.log("signature.length", signature.length)
+
       expect(await vault.isDeployed(inheritancePluginProxy.address, ethers.constants.HashZero, nextTokenId, false)).to.be.false;
 
       await expect(

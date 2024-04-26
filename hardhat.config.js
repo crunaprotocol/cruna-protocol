@@ -115,8 +115,8 @@ module.exports = {
     // Your API key for Etherscan
     // Obtain one at https://etherscan.io/
     apiKey:
-    env.POLYGONSCAN_API_KEY
-    // env.ETHERSCAN_API_KEY
+    // env.POLYGONSCAN_API_KEY
+    env.ETHERSCAN_API_KEY
   },
   gasReporter: {
     currency: "USD",
