@@ -1,6 +1,6 @@
 # Solidity API
 
-## TokenLinkedContract
+## ERC7656Contract
 
 Abstract contract to link a contract to an NFT
 

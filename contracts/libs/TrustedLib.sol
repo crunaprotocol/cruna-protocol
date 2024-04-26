@@ -11,14 +11,14 @@ library TrustedLib {
    *
    * To keep this function efficient, we support only the most popular chains at the moment.
    *
-   * - Goerli
+   * - Goerli (soon to be dismissed)
    * - BNB Testnet
    * - Chronos Testnet
-   * - Fantom
+   * - Fantom testnet
    * - Avalance Fuji
    * - Celo Alfajores
    * - Gnosis Testnet
-   * - Polygon Mumbai
+   * - Polygon Mumbai (deprecated)
    * - Arbitrum Testnet
    * - Sepolia
    * - Base Sepolia
@@ -33,6 +33,7 @@ library TrustedLib {
       chainId == 43113 || // avalanche fuji
       chainId == 44787 || // celo alfajores
       chainId == 80001 || // polygon mumbai
+      //      chainId == 80002 || // polygon amoy looks very unstable
       chainId == 84532 || // base sepolia
       chainId == 421614 || // arbitrum testnet
       chainId == 11155111); // sepolia

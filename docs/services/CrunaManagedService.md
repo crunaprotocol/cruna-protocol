@@ -2,12 +2,12 @@
 
 ## CrunaManagedService
 
-Base contract for plugins
+Base contract for services
 
 ### _conf
 
 ```solidity
-struct ICrunaPlugin.Conf _conf
+struct ICrunaManagedService.Conf _conf
 ```
 
 The internal configuration of the plugin
@@ -23,24 +23,24 @@ Verifies that the plugin must not be reset
 ### _onBeforeInit
 
 ```solidity
-function _onBeforeInit() internal virtual
+function _onBeforeInit(bytes data) internal virtual
 ```
 
 ### init
 
 ```solidity
-function init() external
+function init(bytes data) external
 ```
 
-Initialize the plugin. It must be implemented, but can do nothing is no init is needed.
+_see {ICrunaManagedService.sol-init}_
 
-### manager
+### crunaManager
 
 ```solidity
-function manager() external view virtual returns (contract CrunaManager)
+function crunaManager() external view virtual returns (contract CrunaManager)
 ```
 
-Returns the manager
+_see {ICrunaManagedService.sol-manager}_
 
 ### version
 
@@ -55,10 +55,10 @@ For example, version 1.2.14 is 1_002_014.
 ### resetOnTransfer
 
 ```solidity
-function resetOnTransfer() external
+function resetOnTransfer() external payable
 ```
 
-Reset the plugin to the factory settings
+_see {ICrunaManagedService.sol-resetOnTransfer}_
 
 ### requiresToManageTransfer
 
@@ -66,8 +66,15 @@ Reset the plugin to the factory settings
 function requiresToManageTransfer() external pure virtual returns (bool)
 ```
 
-Called by the manager during the plugging to know if the plugin is asking the
-right to make a managed transfer of the vault
+_see {ICrunaManagedService.sol-requiresToManageTransfer}_
+
+### requiresResetOnTransfer
+
+```solidity
+function requiresResetOnTransfer() external pure virtual returns (bool)
+```
+
+_see {ICrunaManagedService.sol-requiresResetOnTransfer}_
 
 ### requiresManagerVersion
 
@@ -75,7 +82,7 @@ right to make a managed transfer of the vault
 function requiresManagerVersion() external pure virtual returns (uint256)
 ```
 
-Returns the minimum version of the manager required by the plugin
+_see {ICrunaManagedService.sol-requiresManagerVersion}_
 
 ### isERC6551Account
 
@@ -83,7 +90,23 @@ Returns the minimum version of the manager required by the plugin
 function isERC6551Account() external pure virtual returns (bool)
 ```
 
-Called by the manager to know if the plugin is an ERC721 account
+_see {ICrunaManagedService.sol-isERC6551Account}_
+
+### isManaged
+
+```solidity
+function isManaged() external pure returns (bool)
+```
+
+Called when deploying the service to check if it must be managed
+
+### resetService
+
+```solidity
+function resetService() external payable virtual
+```
+
+Reset the plugin to the factory settings
 
 ### _canPreApprove
 
@@ -110,7 +133,7 @@ For example, version 1.2.14 is 1_002_014.
 ### _isProtected
 
 ```solidity
-function _isProtected() internal view virtual returns (bool)
+function _isProtected() internal view returns (bool)
 ```
 
 internal function to check if the NFT is currently protected
@@ -118,7 +141,7 @@ internal function to check if the NFT is currently protected
 ### _isProtector
 
 ```solidity
-function _isProtector(address protector) internal view virtual returns (bool)
+function _isProtector(address protector) internal view returns (bool)
 ```
 
 Internal function to check if an address is a protector

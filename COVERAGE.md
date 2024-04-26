@@ -6,9 +6,9 @@
 --------------------------------------|----------|----------|----------|----------
 File                                  |  % Stmts | % Branch |  % Funcs |  % Lines 
 --------------------------------------|----------|----------|----------|----------
- erc/                                 |    86.36 |       70 |    91.67 |    91.67 
+ erc/                                 |    90.91 |       70 |      100 |    95.83 
   ERC6551AccountProxy.sol             |       90 |       75 |      100 |    90.91 
-  ERC7656Contract.sol                 |    81.82 |       50 |    83.33 |       90 
+  ERC7656Contract.sol                 |    90.91 |       50 |      100 |      100 
   ERC7656Registry.sol                 |      100 |      100 |      100 |      100 
   IERC6454.sol                        |      100 |      100 |      100 |      100 
   IERC6982.sol                        |      100 |      100 |      100 |      100 
@@ -22,23 +22,23 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   ExcessivelySafeCall.sol             |      100 |      100 |      100 |      100 
   ManagerConstants.sol                |      100 |      100 |      100 |      100 
   TrustedLib.sol                      |      100 |        0 |      100 |      100 
- manager/                             |    99.16 |    74.02 |    98.51 |    97.09 
+ manager/                             |    99.16 |    74.51 |    98.51 |    97.09 
   Actor.sol                           |      100 |    57.14 |      100 |      100 
-  CrunaManager.sol                    |       99 |    75.84 |    98.04 |    96.52 
+  CrunaManager.sol                    |       99 |     76.4 |    98.04 |    96.52 
   CrunaManagerBase.sol                |      100 |    66.67 |      100 |      100 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   ICrunaManager.sol                   |      100 |      100 |      100 |      100 
- services/                            |    72.73 |       60 |    63.64 |       76 
-  CrunaManagedService.sol             |    81.25 |     62.5 |       75 |    84.21 
-  CrunaService.sol                    |       50 |       50 |    33.33 |       50 
+ services/                            |      100 |    66.67 |    95.45 |      100 
+  CrunaManagedService.sol             |      100 |       70 |      100 |      100 
+  CrunaService.sol                    |      100 |       50 |    83.33 |      100 
   ICrunaManagedService.sol            |      100 |      100 |      100 |      100 
   ICrunaService.sol                   |      100 |      100 |      100 |      100 
  services/inheritance/                |       91 |    65.69 |    96.15 |    88.81 
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
   InheritanceCrunaPlugin.sol          |       91 |    65.69 |       96 |    88.81 
   InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
- token/                               |    98.65 |    63.51 |      100 |    98.81 
-  CrunaProtectedNFT.sol               |    98.55 |    62.12 |      100 |    98.75 
+ token/                               |    98.61 |    63.89 |      100 |    98.78 
+  CrunaProtectedNFT.sol               |    98.51 |     62.5 |      100 |    98.72 
   CrunaProtectedNFTOwnable.sol        |      100 |       50 |      100 |      100 
   CrunaProtectedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaProtectedNFT.sol              |      100 |      100 |      100 |      100 
@@ -53,6 +53,6 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   IVersioned.sol                      |      100 |      100 |      100 |      100 
   SignatureValidator.sol              |      100 |    86.36 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    95.87 |    67.26 |    94.15 |    94.55 
+All files                             |    97.24 |     67.7 |     98.4 |     95.7 
 --------------------------------------|----------|----------|----------|----------
 ```

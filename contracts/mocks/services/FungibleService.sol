@@ -26,14 +26,20 @@ contract FungibleService is CrunaService, Initializable, ERC20Upgradeable, ERC20
     _disableInitializers();
   }
 
-  function initialize() public initializer {
-    string memory name = string(abi.encodePacked("FT ", _vault().name(), " #", tokenId().toString()));
-    string memory symbol = string(abi.encodePacked(_vault().symbol(), tokenId().toString()));
+  function initialize(string memory name, string memory symbol) public initializer {
     __ERC20_init(name, symbol);
     __ERC20Permit_init(name);
   }
 
-  function _onBeforeInit() internal override {
-    initialize();
+  function extraName() external view returns (string memory) {
+    return string(abi.encodePacked("FT ", _vault().name(), " #", tokenId().toString()));
+  }
+
+  function _onBeforeInit(bytes memory data) internal override {
+    // It ensures that we do not call initialize again, causing a revert
+    if (bytes(name()).length == 0) {
+      (string memory name, string memory symbol) = abi.decode(data, (string, string));
+      initialize(name, symbol);
+    }
   }
 }

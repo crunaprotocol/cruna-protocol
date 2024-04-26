@@ -4,7 +4,7 @@
 
 ### PluginConfig
 
-A struct to keep info about plugged and unplugged plugins
+A struct to keep info about plugged and unplugged services
 
 #### Parameters
 
@@ -107,7 +107,7 @@ the status of plugin identified by `name` and `salt`, and deployed to `pluginAdd
 event Reset()
 ```
 
-Emitted when protectors and safe recipients are removed and all plugins are disabled (if they require it)
+Emitted when protectors and safe recipients are removed and all services are disabled (if they require it)
 This event overrides any specific ProtectorChange, SafeRecipientChange and PluginStatusChange event
 
 ### PluginTrusted
@@ -223,13 +223,21 @@ error NotTheAuthorizedPlugin(address callingPlugin)
 
 Returned when the managed transfer is called not by the right plugin
 
+### UnmanagedService
+
+```solidity
+error UnmanagedService()
+```
+
+Returned when the pluggin service is not a managed service
+
 ### PluginNumberOverflow
 
 ```solidity
 error PluginNumberOverflow()
 ```
 
-Returned when there is no more space for plugins
+Returned when there is no more space for services
 
 ### PluginHasBeenMarkedAsNotPluggable
 
@@ -451,7 +459,7 @@ _It returns the configuration of a plugin by key_
 function allPlugins() external view returns (struct ICrunaManager.PluginElement[])
 ```
 
-_It returns the configuration of all currently plugged plugins_
+_It returns the configuration of all currently plugged services_
 
 ### pluginByIndex
 
@@ -459,7 +467,7 @@ _It returns the configuration of all currently plugged plugins_
 function pluginByIndex(uint256 index) external view returns (struct ICrunaManager.PluginElement)
 ```
 
-_It returns an element of the array of all plugged plugins_
+_It returns an element of the array of all plugged services_
 
 #### Parameters
 
@@ -637,7 +645,7 @@ _Gets all safe recipients_
 ### plug
 
 ```solidity
-function plug(string name, address pluginProxy, bool canManageTransfer, bool isERC6551Account, bytes4 salt, uint256 timestamp, uint256 validFor, bytes signature) external
+function plug(string name, address pluginProxy, bool canManageTransfer, bool isERC6551Account, bytes4 salt, bytes data, uint256 timestamp, uint256 validFor, bytes signature) external
 ```
 
 _It plugs a new plugin_
@@ -651,6 +659,7 @@ _It plugs a new plugin_
 | canManageTransfer | bool | True if the plugin can manage transfers |
 | isERC6551Account | bool | True if the plugin is an ERC6551 account |
 | salt | bytes4 | The salt used during the deployment of the plugin |
+| data | bytes | The data to be used during the initialization of the plugin Notice that data cannot be verified by the Manager since they are used by the plugin |
 | timestamp | uint256 | The timestamp of the signature |
 | validFor | uint256 | The validity of the signature |
 | signature | bytes | The signature of the protector |
@@ -738,7 +747,7 @@ _It returns a plugin by name and salt_
 function countPlugins() external view returns (uint256, uint256)
 ```
 
-_It returns the number of plugins_
+_It returns the number of services_
 
 ### plugged
 
@@ -797,23 +806,23 @@ _Checks if a plugin is active_
 function listPluginsKeys(bool active) external view returns (bytes8[])
 ```
 
-_returns the list of plugins' keys
-Since the names of the plugins are not saved in the contract, the app calling for this function
-is responsible for knowing the names of all the plugins.
-In the future it would be good to have an official registry of all plugins to be able to reverse
+_returns the list of services' keys
+Since the names of the services are not saved in the contract, the app calling for this function
+is responsible for knowing the names of all the services.
+In the future it would be good to have an official registry of all services to be able to reverse
 from the nameId to the name as a string._
 
 #### Parameters
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| active | bool | True to get the list of active plugins, false to get the list of inactive plugins |
+| active | bool | True to get the list of active services, false to get the list of inactive services |
 
 #### Return Values
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| [0] | bytes8[] | The list of plugins' keys |
+| [0] | bytes8[] | The list of services' keys |
 
 ### pseudoAddress
 
@@ -844,7 +853,7 @@ in the hashed bytes._
 function managedTransfer(bytes4 pluginNameId, address to) external
 ```
 
-_A special function that can be called only by authorized plugins to transfer the NFT._
+_A special function that can be called only by authorized services to transfer the NFT._
 
 #### Parameters
 

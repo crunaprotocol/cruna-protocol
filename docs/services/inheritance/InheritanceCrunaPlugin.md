@@ -36,8 +36,7 @@ The object storing the votes
 function requiresToManageTransfer() external pure returns (bool)
 ```
 
-Called by the manager during the plugging to know if the plugin is asking the
-right to make a managed transfer of the vault
+_see {ICrunaManagedService.sol-requiresToManageTransfer}_
 
 ### setSentinel
 
@@ -154,21 +153,19 @@ function inherit() external virtual
 
 Allows the beneficiary to inherit the token
 
-### reset
+### resetService
 
 ```solidity
-function reset() external
+function resetService() external payable
 ```
 
-Reset the plugin to the factory settings
+_see {ICrunaManagedService.sol-reset}_
 
 ### requiresResetOnTransfer
 
 ```solidity
 function requiresResetOnTransfer() external pure returns (bool)
 ```
-
-Called by the manager to know it the plugin must be reset when transferring the NFT
 
 ### upgrade
 
@@ -330,10 +327,10 @@ Checks if the grace period has expired
 | ---- | ---- | ----------- |
 | [0] | bool | True if the grace period has expired, false otherwise |
 
-### _reset
+### _resetService
 
 ```solidity
-function _reset() internal
+function _resetService() internal
 ```
 
 Reset the plugin configuration

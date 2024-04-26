@@ -65,6 +65,8 @@ describe("Unmanaged service", function () {
     ts = (await getTimestamp()) - 100;
 
     fungibleService = await deployContract("FungibleService");
+    expect(await fungibleService.version()).equal(1e6);
+    expect(await fungibleService.isERC6551Account()).equal(false);
   }
 
   describe("Buy vaults", function () {
@@ -95,11 +97,17 @@ describe("Unmanaged service", function () {
 
       const fungibleAt = await vault.addressOfDeployed(fungibleService.address, salt, nextTokenId, false);
 
-      await vault.connect(bob).deployService(fungibleService.address, salt, nextTokenId, false);
+      const data = ethers.utils.defaultAbiCoder.encode(
+        ["string", "string"], // Types of the parameters
+        ["CIP Token", "CIPT"], // Values to encode
+      );
+
+      await vault.connect(bob).plug(fungibleService.address, salt, nextTokenId, false, data);
 
       fungibleService = await ethers.getContractAt("FungibleService", fungibleAt);
-      expect(await fungibleService.name()).equal(`FT ${await vault.name()} #${nextTokenId}`);
-      expect(await fungibleService.symbol()).equal(`${await vault.symbol()}${nextTokenId}`);
+      expect(await fungibleService.name()).equal(`CIP Token`);
+      expect(await fungibleService.symbol()).equal(`CIPT`);
+      expect(await fungibleService.extraName()).equal(`FT ${await vault.name()} #${nextTokenId}`);
     });
   });
 });

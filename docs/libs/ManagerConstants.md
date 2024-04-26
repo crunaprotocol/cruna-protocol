@@ -42,5 +42,5 @@ The gas passed to the Protected NFT when asking to emit a Locked event
 function gasToResetPlugin() internal pure returns (uint256)
 ```
 
-The gas passed to plugins when asking to them mark the plugin as must-be-reset
+The gas passed to services when asking to them mark the plugin as must-be-reset
 

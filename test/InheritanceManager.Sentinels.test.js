@@ -19,7 +19,7 @@ const {
   selectorId,
   trustImplementation,
   combineTimestampAndValidFor,
-
+  getInterfaceId,
   deployCanonical,
   pseudoAddress,
   setFakeCanonicalIfCoverage,
@@ -39,6 +39,10 @@ describe("Sentinel and Inheritance", function () {
   let SENTINEL = bytes4(keccak256("SENTINEL"));
   let PLUGIN_ID = bytes4(keccak256("InheritanceCrunaPlugin"));
   let CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN;
+  const dataBytes = ethers.utils.defaultAbiCoder.encode([], []);
+  const dataHash = ethers.utils.keccak256(dataBytes);
+  const dataHashAsUint256 = BigInt(dataHash);
+  expect(dataHashAsUint256).equal(89477152217924674838424037953991966239322087453347756267410168184682657981552n);
 
   const PluginChange = {
     Plug: 0,
@@ -135,9 +139,9 @@ describe("Sentinel and Inheritance", function () {
           inheritancePluginProxy.address,
           vault.address,
           nextTokenId,
-          1,
-          0,
+          1e6,
           BigInt(bytes32Salt),
+          dataHashAsUint256,
           ts,
           3600,
           chainId,
@@ -151,19 +155,23 @@ describe("Sentinel and Inheritance", function () {
       await expect(
         manager
           .connect(bob)
-          .plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, trust, false, salt, ts, 3600, signature),
+          .plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, trust, false, salt, dataBytes, ts, 3600, signature),
       ).to.emit(manager, "PluginStatusChange");
 
       expect(await vault.isDeployed(inheritancePluginProxy.address, ethers.constants.HashZero, nextTokenId, false)).to.be.true;
     } else {
       if (!trust) {
         await expect(
-          manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, salt, 0, 0, 0),
+          manager
+            .connect(bob)
+            .plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, salt, dataBytes, 0, 0, 0),
         ).revertedWith("UntrustedImplementationsNotAllowedToMakeTransfers");
       }
 
       await expect(
-        manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, trust, false, salt, 0, 0, 0),
+        manager
+          .connect(bob)
+          .plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, trust, false, salt, dataBytes, 0, 0, 0),
       ).to.emit(manager, "PluginStatusChange");
     }
 
@@ -215,7 +223,7 @@ describe("Sentinel and Inheritance", function () {
     const inheritancePluginAddress = await manager.pluginAddress(nameId, "0x00000000");
     const inheritancePlugin = await ethers.getContractAt("InheritanceCrunaPlugin", inheritancePluginAddress);
 
-    expect(await vault.managerOf(tokenId)).to.equal(await inheritancePlugin.manager());
+    expect(await vault.managerOf(tokenId)).to.equal(await inheritancePlugin.crunaManager());
     expect(await inheritancePlugin.version()).to.equal(1001000);
     expect(await inheritancePlugin.requiresToManageTransfer()).to.be.true;
     expect(await inheritancePlugin.isERC6551Account()).to.be.false;
@@ -497,16 +505,35 @@ describe("Sentinel and Inheritance", function () {
     // we plug a few extra services before inheriting, to test the call to reset
 
     await expect(
-      manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, false, false, "0x99999999", 0, 0, 0),
+      manager
+        .connect(bob)
+        .plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, false, false, "0x99999999", dataBytes, 0, 0, 0),
     ).to.emit(manager, "PluginStatusChange");
 
     const impl = await deployContract("SomeInheritancePlugin");
     const proxy = await deployContract("InheritanceCrunaPluginProxy", impl.address);
 
-    await expect(manager.connect(bob).plug("SomeInheritancePlugin", proxy.address, false, true, "0x00000000", 0, 0, 0)).to.emit(
-      manager,
-      "PluginStatusChange",
-    );
+    await expect(
+      manager.connect(bob).plug("SomeInheritancePlugin", proxy.address, false, true, "0x00000000", dataBytes, 0, 0, 0),
+    ).to.emit(manager, "PluginStatusChange");
+
+    let crunaManagedServiceMock = await deployContract("CrunaManagedServiceMock");
+
+    await expect(
+      manager
+        .connect(bob)
+        .plug("CrunaManagedServiceMock", crunaManagedServiceMock.address, false, false, "0x00000000", dataBytes, 0, 0, 0),
+    ).to.emit(manager, "PluginStatusChange");
+
+    const serviceAddr = await manager.pluginAddress(bytes4(keccak256("CrunaManagedServiceMock")), "0x00000000");
+
+    crunaManagedServiceMock = await ethers.getContractAt("CrunaManagedServiceMock", serviceAddr);
+    expect(await crunaManagedServiceMock.requiresToManageTransfer()).to.be.false;
+    expect(await crunaManagedServiceMock.requiresResetOnTransfer()).to.be.false;
+    expect(await crunaManagedServiceMock.version()).equal(1e6);
+    expect((await crunaManagedServiceMock.resetService()).hash !== undefined);
+    expect(await crunaManagedServiceMock.crunaManager()).to.equal(manager.address);
+    expect(await crunaManagedServiceMock.supportsInterface(getInterfaceId("IERC7656Contract"))).to.be.true;
 
     await expect(inheritancePlugin.connect(beneficiary1).inherit())
       .to.emit(vault, "ManagedTransfer")
@@ -1098,7 +1125,9 @@ describe("Sentinel and Inheritance", function () {
     expect(data[1].proofOfLifeDurationInWeeks).to.equal(0);
 
     await expect(
-      manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, "0x00000000", 0, 0, 0),
+      manager
+        .connect(bob)
+        .plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, "0x00000000", dataBytes, 0, 0, 0),
     )
       .to.emit(manager, "PluginStatusChange")
       .withArgs("InheritanceCrunaPlugin", "0x00000000", inheritancePlugin.address, PluginChange.Plug);
@@ -1109,7 +1138,9 @@ describe("Sentinel and Inheritance", function () {
       .to.emit(manager, "PluginStatusChange")
       .withArgs("InheritanceCrunaPlugin", "0x00000000", inheritancePlugin.address, PluginChange.UnplugForever);
     await expect(
-      manager.connect(bob).plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, "0x00000000", 0, 0, 0),
+      manager
+        .connect(bob)
+        .plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, true, false, "0x00000000", dataBytes, 0, 0, 0),
     ).revertedWith("PluginHasBeenMarkedAsNotPluggable");
   });
 

@@ -22,7 +22,7 @@ Emitted when a token is transferred by a plugin
 ### managedTransfer
 
 ```solidity
-function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external
+function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external payable
 ```
 
 Allow a plugin to transfer the token

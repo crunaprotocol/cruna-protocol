@@ -85,6 +85,14 @@ module.exports = {
       gasLimit: 6000000,
       accounts: [env.DEPLOYER],
     },
+    amoy: {
+      // url: "https://rpc-amoy.polygon.technology/",
+      url: "https://polygon-amoy-bor-rpc.publicnode.com",
+      chainId: 80002,
+      // gasPrice: 20000000000,
+      gasLimit: 6000000,
+      accounts: [env.DEPLOYER],
+    },
     fuji: {
       url: "https://api.avax-test.network/ext/bc/C/rpc",
       gasPrice: 225000000000,

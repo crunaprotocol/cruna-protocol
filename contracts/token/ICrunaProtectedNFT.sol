@@ -211,7 +211,13 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
    * True if the tokenId must be deployed via ERC6551Registry,
    * false, it must be deployed via ERC7656Registry
    */
-  function deployService(address implementation, bytes32 salt, uint256 tokenId, bool isERC6551Account) external payable;
+  function plug(
+    address implementation,
+    bytes32 salt,
+    uint256 tokenId,
+    bool isERC6551Account,
+    bytes memory data
+  ) external payable;
 
   /**
    * @notice Returns if a plugin is deployed

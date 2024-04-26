@@ -193,22 +193,25 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     emit Locked(tokenId, locked_);
   }
 
-  /// @dev see {ICrunaProtectedNFT-deployService}
-  function deployService(
+  /// @dev see {ICrunaProtectedNFT-plug}
+  function plug(
     address implementation,
     bytes32 salt,
     uint256 tokenId,
-    bool isERC6551Account
+    bool isERC6551Account,
+    bytes memory data
   ) external payable virtual override {
     if (_msgSender() != ownerOf(tokenId)) revert NotTheTokenOwner();
     ICrunaService service = ICrunaService(implementation);
     if (service.isManaged()) revert ManagedService();
-    bool previouslyDeployed = _isDeployed(implementation, salt, _SELF, tokenId, isERC6551Account);
     address addr = _deploy(implementation, salt, _SELF, tokenId, isERC6551Account);
-    if (!previouslyDeployed) {
-      service = ICrunaService(addr);
-      service.init();
-    }
+    service = ICrunaService(addr);
+    /**
+     * @dev it is the service responsibility to assure that `init` can be called only one time
+     * The rationale for call `init` anytime is that an hostile agent can use the registry to deploy
+     * a service that later cannot be initiated if the can be initiated only at the deployment.
+     */
+    service.init(data);
   }
 
   /// @dev see {ICrunaProtectedNFT-isDeployed}

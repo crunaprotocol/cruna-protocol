@@ -1,0 +1,48 @@
+{
+  "v0.3.2": {
+    "contracts": {
+      "ERC6551Registry": "0x000000006551c19487814612e58FE06813775758",
+      "ERC7656Registry": "0x71da7c4394A7e6b260F13Cb30B180454d30DA867",
+      "CrunaGuardian": "0x1F1229D3497146ad4A525162B0816B3976969f21",
+      "CrunaManager": "0x13d80410a52d569F93E36684A98c99Dc6634Bcf7",
+      "CrunaManagerProxy": "0x14869beb9596268d63C28c1924B99817c6Ccb30C",
+      "InheritanceCrunaPlugin": "0x15FaF91C8687B125E11617dCbb0BA9D67D7aa1d0",
+      "InheritanceCrunaPluginProxy": "0xB0d07052671c52A84847ca499F7820fb941e6C90"
+    },
+    "chains": [
+      44787,
+      80001
+    ]
+  },
+  "v0.4.0": {
+    "contracts": {
+      "ERC6551Registry": "0x000000006551c19487814612e58FE06813775758",
+      "ERC7656Registry": "0x7656CCCC1d93430f4E43A7ea0981C01469c9D6A2",
+      "CrunaGuardian": "0x4DFB2c689A0f87bCeb6C204aCb7e1D0B22139aa2",
+      "CrunaManager": "0x1f961c7d0d435B6429be814C1e4B943334028a15",
+      "CrunaManagerProxy": "0x770E3Ccb1e3fCfB1AFAbbB09913cA70a062f6F7c",
+      "InheritanceCrunaPlugin": "0xa9a8F0ad2220cA23E678007DbBfF74804262Fb49",
+      "InheritanceCrunaPluginProxy": "0xbb93Bcf3F34936CaA56eC2C6b37864Ac78E28b12"
+    },
+    "chains": [
+      43113,
+      44787,
+      80001
+    ]
+  },
+  "v0.6.0": {
+    "contracts": {
+      "ERC6551Registry": "0x000000006551c19487814612e58FE06813775758",
+      "ERC7656Registry": "0x7656CCCC1d93430f4E43A7ea0981C01469c9D6A2",
+      "CrunaGuardian": "0x4DFB2c689A0f87bCeb6C204aCb7e1D0B22139aa2",
+      "CrunaManager": "0x02Ea71D31840cE4D55182ab2581Fd3A2f507D2C1",
+      "CrunaManagerProxy": "0x0b767B76713b1aBC0d43A83af8B4B3e44adee94F",
+      "InheritanceCrunaPlugin": "0x3eec276BE7474813DD01b779Cf95C2E5D4A97C6A",
+      "InheritanceCrunaPluginProxy": "0x705366d0a3314283372d335A9AE8971be7274361"
+    },
+    "chains": [
+      43113,
+      44787
+    ]
+  }
+}

@@ -43,7 +43,7 @@ interface ICrunaManagedService is ICrunaService {
   /**
    * @notice Initialize the plugin. It must be implemented, but can do nothing is no init is needed.
    */
-  function init() external;
+  function init(bytes memory data) external;
 
   /**
    * @notice Called by the manager during the plugging to know if the plugin is asking the
@@ -69,7 +69,7 @@ interface ICrunaManagedService is ICrunaService {
   /**
    * @notice Reset the plugin to the factory settings
    */
-  function reset() external payable;
+  function resetService() external payable;
 
   // @dev During transfer, to reduce gas consumption, should set _conf.mustBeReset to 1
   function resetOnTransfer() external payable;
@@ -77,5 +77,5 @@ interface ICrunaManagedService is ICrunaService {
   /**
    * @notice Returns the manager
    */
-  function manager() external view returns (CrunaManager);
+  function crunaManager() external view returns (CrunaManager);
 }

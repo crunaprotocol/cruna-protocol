@@ -1043,6 +1043,11 @@
           "type": "bytes4"
         },
         {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        },
+        {
           "internalType": "uint256",
           "name": "timestamp",
           "type": "uint256"
@@ -2200,6 +2205,19 @@
     },
     {
       "inputs": [],
+      "name": "crunaManager",
+      "outputs": [
+        {
+          "internalType": "contract CrunaManager",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "eip712Domain",
       "outputs": [
         {
@@ -2344,7 +2362,13 @@
       "type": "function"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
       "name": "init",
       "outputs": [],
       "stateMutability": "nonpayable",
@@ -2390,19 +2414,6 @@
           "internalType": "bool",
           "name": "",
           "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "manager",
-      "outputs": [
-        {
-          "internalType": "contract CrunaManager",
-          "name": "",
-          "type": "address"
         }
       ],
       "stateMutability": "view",
@@ -2623,14 +2634,14 @@
     },
     {
       "inputs": [],
-      "name": "reset",
+      "name": "resetOnTransfer",
       "outputs": [],
       "stateMutability": "payable",
       "type": "function"
     },
     {
       "inputs": [],
-      "name": "resetOnTransfer",
+      "name": "resetService",
       "outputs": [],
       "stateMutability": "payable",
       "type": "function"
@@ -3682,34 +3693,6 @@
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "implementation",
-          "type": "address"
-        },
-        {
-          "internalType": "bytes32",
-          "name": "salt",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "uint256",
-          "name": "tokenId",
-          "type": "uint256"
-        },
-        {
-          "internalType": "bool",
-          "name": "isERC6551Account",
-          "type": "bool"
-        }
-      ],
-      "name": "deployService",
-      "outputs": [],
-      "stateMutability": "payable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
           "internalType": "uint256",
           "name": "tokenId",
           "type": "uint256"
@@ -4483,6 +4466,39 @@
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "implementation",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "salt",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "isERC6551Account",
+          "type": "bool"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "plug",
+      "outputs": [],
+      "stateMutability": "payable",
       "type": "function"
     },
     {

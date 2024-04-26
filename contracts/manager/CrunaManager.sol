@@ -201,12 +201,13 @@ contract CrunaManager is Actor, CrunaManagerBase, Deployed {
     bool canManageTransfer,
     bool isERC6551Account,
     bytes4 salt,
+    bytes memory data,
     uint256 timestamp,
     uint256 validFor,
     bytes calldata signature
   ) external virtual override nonReentrant onlyTokenOwner {
     if (_allPlugins.length == 16) {
-      // We do not allow more than 16 services to avoid risks of going out-of-gas while
+      // We do not allow more than 16 managed services to avoid risks of going out-of-gas while
       // looping through allPlugins.
       revert PluginNumberOverflow();
     }
@@ -222,15 +223,15 @@ contract CrunaManager is Actor, CrunaManagerBase, Deployed {
     _preValidateAndCheckSignature(
       this.plug.selector,
       pluginProxy,
-      canManageTransfer ? 1 : 0,
-      isERC6551Account ? 1 : 0,
+      (canManageTransfer ? 1 : 0) * 1e6 + (isERC6551Account ? 1 : 0),
       uint256(bytes32(salt)),
+      uint256(_hashBytes(data)),
       timestamp,
       validFor,
       signature
     );
     if (_pluginByKey[_key].banned) revert PluginHasBeenMarkedAsNotPluggable();
-    _plug(name, pluginProxy, canManageTransfer, isERC6551Account, nameId_, salt, _key, trusted);
+    _plug(name, pluginProxy, canManageTransfer, isERC6551Account, nameId_, salt, data, _key, trusted);
   }
 
   /// @dev see {ICrunaManager-changePluginStatus}
@@ -532,7 +533,9 @@ contract CrunaManager is Actor, CrunaManagerBase, Deployed {
    * @param isERC6551Account If the plugin is an ERC6551 account
    * @param nameId_ The nameId of the plugin
    * @param salt The salt used to deploy the plugin
+   * @param data Optional data to be passed to the service
    * @param _key The key of the plugin
+   * @param trusted true if the implementation is trusted
    */
   function _plug(
     string memory name,
@@ -541,6 +544,7 @@ contract CrunaManager is Actor, CrunaManagerBase, Deployed {
     bool isERC6551Account,
     bytes4 nameId_,
     bytes4 salt,
+    bytes memory data,
     bytes8 _key,
     bool trusted
   ) internal {
@@ -552,7 +556,12 @@ contract CrunaManager is Actor, CrunaManagerBase, Deployed {
     if (requiredVersion > _version()) revert PluginRequiresUpdatedManager(requiredVersion);
     if (plugin_.nameId() != nameId_) revert InvalidImplementation(plugin_.nameId(), nameId_);
     if (plugin_.isERC6551Account() != isERC6551Account) revert InvalidERC6551Status();
-    plugin_.init();
+    /**
+     * @dev it is the service responsibility to assure that `init` can be called only one time
+     * The rationale for call `init` anytime is that an hostile agent can use the registry to deploy
+     * a service that later cannot be initiated if the can be initiated only at the deployment.
+     */
+    plugin_.init(data);
     _allPlugins.push(PluginElement({active: true, salt: salt, nameId: nameId_}));
     if (_pluginByKey[_key].unplugged) {
       if (_pluginByKey[_key].proxyAddress != proxyAddress_)
@@ -717,7 +726,7 @@ contract CrunaManager is Actor, CrunaManagerBase, Deployed {
    */
   function _resetPlugin(bytes4 nameId_, bytes4 salt) internal virtual {
     CrunaManagedService plugin_ = _plugin(nameId_, salt);
-    plugin_.reset();
+    plugin_.resetService();
   }
 
   /**

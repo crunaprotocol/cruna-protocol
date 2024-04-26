@@ -55,6 +55,8 @@ This dual-pathway for plugin deployment underscores the protocol's flexibility a
 # API documentation
 
 - Erc
+  - [ERC6551AccountProxy](./erc/ERC6551AccountProxy.md)
+  - [ERC7656Contract](./erc/ERC7656Contract.md)
   - [ERC7656Registry](./erc/ERC7656Registry.md)
   - [IERC6454](./erc/IERC6454.md)
   - [IERC6982](./erc/IERC6982.md)
@@ -74,13 +76,15 @@ This dual-pathway for plugin deployment underscores the protocol's flexibility a
   - [CrunaManagerBase](./manager/CrunaManagerBase.md)
   - [CrunaManagerProxy](./manager/CrunaManagerProxy.md)
   - [ICrunaManager](./manager/ICrunaManager.md)
-- Plugins
-  - [CrunaManagedService](./plugins/CrunaManagedService.md)
-  - [ICrunaPlugin](./plugins/ICrunaPlugin.md)
-- Plugins/inheritance
-  - [IInheritanceCrunaPlugin](./plugins/inheritance/IInheritanceCrunaPlugin.md)
-  - [InheritanceCrunaPlugin](./plugins/inheritance/InheritanceCrunaPlugin.md)
-  - [InheritanceCrunaPluginProxy](./plugins/inheritance/InheritanceCrunaPluginProxy.md)
+- Services
+  - [CrunaManagedService](./services/CrunaManagedService.md)
+  - [CrunaService](./services/CrunaService.md)
+  - [ICrunaManagedService](./services/ICrunaManagedService.md)
+  - [ICrunaService](./services/ICrunaService.md)
+- Services/inheritance
+  - [IInheritanceCrunaPlugin](./services/inheritance/IInheritanceCrunaPlugin.md)
+  - [InheritanceCrunaPlugin](./services/inheritance/InheritanceCrunaPlugin.md)
+  - [InheritanceCrunaPluginProxy](./services/inheritance/InheritanceCrunaPluginProxy.md)
 - Token
   - [CrunaProtectedNFT](./token/CrunaProtectedNFT.md)
   - [CrunaProtectedNFTOwnable](./token/CrunaProtectedNFTOwnable.md)
@@ -89,14 +93,13 @@ This dual-pathway for plugin deployment underscores the protocol's flexibility a
   - [IManagedNFT](./token/IManagedNFT.md)
 - Utils
   - [CommonBase](./utils/CommonBase.md)
-  - [ERC6551AccountProxy](./utils/ERC6551AccountProxy.md)
+  - [Deployed](./utils/Deployed.md)
   - [ICommonBase](./utils/ICommonBase.md)
   - [INamed](./utils/INamed.md)
   - [INamedAndVersioned](./utils/INamedAndVersioned.md)
   - [ISignatureValidator](./utils/ISignatureValidator.md)
   - [IVersioned](./utils/IVersioned.md)
   - [SignatureValidator](./utils/SignatureValidator.md)
-  - [TokenLinkedContract](./utils/TokenLinkedContract.md)
 
 
 The documentation is automatically generated using [solidity-docgen](https://github.com/OpenZeppelin/solidity-docgen)

@@ -28,20 +28,22 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
     _;
   }
 
-  function _onBeforeInit() internal virtual {
+  function _onBeforeInit(bytes memory data) internal virtual {
     // does nothing, override if needed
   }
 
   /// @dev see {ICrunaManagedService.sol-init}
-  function init() external {
+  function init(bytes memory data) external {
     address managerAddress = _vault().managerOf(tokenId());
-    if (msg.sender != managerAddress) revert Forbidden();
-    _onBeforeInit();
-    _conf.manager = CrunaManager(managerAddress);
+    if (_msgSender() != managerAddress) revert Forbidden();
+    _onBeforeInit(data);
+    if (address(_conf.manager) == address(0)) {
+      _conf.manager = CrunaManager(managerAddress);
+    } // else the service is being plugged again after been plugged and unplugged
   }
 
   /// @dev see {ICrunaManagedService.sol-manager}
-  function manager() external view virtual override returns (CrunaManager) {
+  function crunaManager() external view virtual override returns (CrunaManager) {
     return _conf.manager;
   }
 
@@ -84,7 +86,7 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
     return true;
   }
 
-  function reset() external payable virtual override {
+  function resetService() external payable virtual override {
     // doing nothing
   }
 
