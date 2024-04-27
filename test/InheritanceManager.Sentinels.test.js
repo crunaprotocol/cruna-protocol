@@ -150,6 +150,23 @@ describe("Sentinel and Inheritance", function () {
         )
       )[0];
 
+      expect(
+        (
+          await manager.recoverSigner(
+            await selectorId("ICrunaManager", "plug"),
+            bob.address,
+            inheritancePluginProxy.address,
+            vault.address,
+            nextTokenId,
+            1e6,
+            BigInt(bytes32Salt),
+            dataHashAsUint256,
+            combineTimestampAndValidFor(ts, 3600),
+            signature,
+          )
+        )[0],
+      ).to.equal(alice.address);
+
       // console.log("signature.length", signature.length)
 
       expect(await vault.isDeployed(inheritancePluginProxy.address, ethers.constants.HashZero, nextTokenId, false)).to.be.false;

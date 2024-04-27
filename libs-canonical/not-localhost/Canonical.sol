@@ -20,7 +20,7 @@ library Canonical {
    * @notice Returns the ERC7656Registry contract
    */
   function erc7656Registry() internal pure returns (IERC7656Registry) {
-    return IERC7656Registry(0x7656CCCC1d93430f4E43A7ea0981C01469c9D6A2);
+    return IERC7656Registry(0x7656f0fB4Ca6973cf99D910B36705a2dEDA97eA1);
   }
 
   /**
