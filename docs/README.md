@@ -66,8 +66,8 @@ This dual-pathway for plugin deployment underscores the protocol's flexibility a
   - [CrunaGuardian](./guardian/CrunaGuardian.md)
   - [ICrunaGuardian](./guardian/ICrunaGuardian.md)
 - Libs
-  - [Canonical](./libs/Canonical.md)
   - [ExcessivelySafeCall](./libs/ExcessivelySafeCall.md)
+  - [GuardianInstance](./libs/GuardianInstance.md)
   - [ManagerConstants](./libs/ManagerConstants.md)
   - [TrustedLib](./libs/TrustedLib.md)
 - Manager

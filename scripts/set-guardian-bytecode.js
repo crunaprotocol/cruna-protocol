@@ -34,7 +34,7 @@ async function main() {
 
   const bytecodes = JSON.parse(fs.readFileSync(bytecodesPath, "utf8"));
 
-  const canonicalPath = path.resolve(__dirname, `../libs-canonical/${isLocalhost ? "" : "not-"}localhost/Canonical.sol`);
+  const canonicalPath = path.resolve(__dirname, `../libs-canonical/${isLocalhost ? "" : "not-"}localhost/GuardianInstance.sol`);
 
   let salt = bytecodes.CrunaGuardian.salt;
 

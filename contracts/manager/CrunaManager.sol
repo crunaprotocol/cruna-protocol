@@ -10,7 +10,7 @@ import {ExcessivelySafeCall} from "../libs/ExcessivelySafeCall.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {CrunaManagedService} from "../services/CrunaManagedService.sol";
-import {Canonical} from "../libs/Canonical.sol";
+import {GuardianInstance} from "../libs/GuardianInstance.sol";
 import {TrustedLib} from "../libs/TrustedLib.sol";
 import {Deployed} from "../utils/Deployed.sol";
 
@@ -22,7 +22,7 @@ import {Deployed} from "../utils/Deployed.sol";
  * It is the only contract that can manage the NFT. It sets protectors and safe recipients,
  * plugs and manages services, and has the ability to transfer the NFT if there are protectors.
  */
-contract CrunaManager is Actor, CrunaManagerBase, Deployed {
+contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployed {
   using ECDSA for bytes32;
   using Strings for uint256;
   using ExcessivelySafeCall for address;
@@ -214,7 +214,7 @@ contract CrunaManager is Actor, CrunaManagerBase, Deployed {
     bytes4 nameId_ = _stringToBytes4(name);
     bytes8 _key = _combineBytes4(nameId_, salt);
     if (_pluginByKey[_key].proxyAddress != address(0) && !_pluginByKey[_key].unplugged) revert PluginAlreadyPlugged();
-    bool trusted = Canonical.crunaGuardian().trustedImplementation(nameId_, pluginProxy);
+    bool trusted = _crunaGuardian().trustedImplementation(nameId_, pluginProxy);
     if (!trusted)
       if (canManageTransfer)
         if (!TrustedLib.areUntrustedImplementationsAllowed()) {
@@ -282,7 +282,7 @@ contract CrunaManager is Actor, CrunaManagerBase, Deployed {
     bytes8 _key = _combineBytes4(nameId_, salt);
     if (_pluginByKey[_key].proxyAddress == address(0)) revert PluginNotFound();
     if (_pluginByKey[_key].trusted) revert PluginAlreadyTrusted();
-    if (Canonical.crunaGuardian().trustedImplementation(nameId_, _pluginByKey[_key].proxyAddress)) {
+    if (_crunaGuardian().trustedImplementation(nameId_, _pluginByKey[_key].proxyAddress)) {
       _pluginByKey[_key].trusted = true;
       emit PluginTrusted(name, salt);
     } else revert StillUntrusted();

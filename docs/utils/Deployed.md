@@ -4,6 +4,22 @@
 
 This contract manages deploy-related functions
 
+### _erc7656Registry
+
+```solidity
+function _erc7656Registry() internal pure returns (contract IERC7656Registry)
+```
+
+Returns the ERC7656Registry contract
+
+### _erc6551Registry
+
+```solidity
+function _erc6551Registry() internal pure returns (contract IERC6551Registry)
+```
+
+Returns the ERC6551Registry contract
+
 ### _isDeployed
 
 ```solidity

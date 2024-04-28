@@ -1,5 +1,8 @@
 # Change log
 
+**0.7.0**
+- Remove `Canonical` in favor of `GuardianInstance`, with registries hardcoded in `Deployed`
+
 **0.6.2**
 - New canonical address for ERC7656Registry due to errors verifying the source code on Ethereum mainnet 
 

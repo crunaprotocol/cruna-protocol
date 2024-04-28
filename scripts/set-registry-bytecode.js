@@ -27,7 +27,10 @@ async function main() {
     };
   }
 
-  const canonicalPath = path.resolve(__dirname, `../libs-canonical/${chainId === 1337 ? "not-" : ""}localhost/Canonical.sol`);
+  const canonicalPath = path.resolve(
+    __dirname,
+    `../libs-canonical/${chainId === 1337 ? "not-" : ""}localhost/GuardianInstance.sol`,
+  );
 
   // This is supposed to happen only during development when there are breaking changes.
   // It should not happen after the first guardian as been deployed, except if very serious

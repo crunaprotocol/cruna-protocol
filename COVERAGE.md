@@ -18,8 +18,8 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   CrunaGuardian.sol                   |      100 |       50 |      100 |    88.89 
   ICrunaGuardian.sol                  |      100 |      100 |      100 |      100 
  libs/                                |      100 |        0 |      100 |      100 
-  Canonical.sol                       |      100 |      100 |      100 |      100 
   ExcessivelySafeCall.sol             |      100 |      100 |      100 |      100 
+  GuardianInstance.sol                |      100 |      100 |      100 |      100 
   ManagerConstants.sol                |      100 |      100 |      100 |      100 
   TrustedLib.sol                      |      100 |        0 |      100 |      100 
  manager/                             |    99.16 |    74.51 |    98.51 |    97.09 

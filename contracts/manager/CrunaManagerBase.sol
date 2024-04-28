@@ -8,7 +8,7 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 
 import {ICrunaManager} from "./ICrunaManager.sol";
 import {CommonBase} from "../utils/CommonBase.sol";
-import {Canonical} from "../libs/Canonical.sol";
+import {GuardianInstance} from "../libs/GuardianInstance.sol";
 import {INamedAndVersioned} from "../utils/INamedAndVersioned.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {Actor} from "../manager/Actor.sol";
@@ -18,7 +18,7 @@ import {ManagerConstants} from "../libs/ManagerConstants.sol";
  * @title CrunaManagerBase.sol
  * @notice Base contract for managers and services
  */
-abstract contract CrunaManagerBase is ICrunaManager, CommonBase, Actor, SignatureValidator, ReentrancyGuard {
+abstract contract CrunaManagerBase is ICrunaManager, GuardianInstance, CommonBase, Actor, SignatureValidator, ReentrancyGuard {
   /**
    * @notice Storage slot with the address of the current implementation.
    * This is the keccak-256 hash of "eip1967.proxy.implementation" subtracted by 1, and is
@@ -33,7 +33,7 @@ abstract contract CrunaManagerBase is ICrunaManager, CommonBase, Actor, Signatur
   function upgrade(address implementation_) external virtual override nonReentrant {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     if (implementation_ == address(0)) revert ZeroAddress();
-    if (!Canonical.crunaGuardian().trustedImplementation(bytes4(keccak256("CrunaManager")), implementation_))
+    if (!_crunaGuardian().trustedImplementation(bytes4(keccak256("CrunaManager")), implementation_))
       revert UntrustedImplementation(implementation_);
     INamedAndVersioned impl = INamedAndVersioned(implementation_);
     uint256 currentVersion = _version();

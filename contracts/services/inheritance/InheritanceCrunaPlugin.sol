@@ -12,7 +12,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {IInheritanceCrunaPlugin} from "./IInheritanceCrunaPlugin.sol";
 import {ICrunaManagedService} from "../ICrunaManagedService.sol";
 import {CrunaManagedService} from "../CrunaManagedService.sol";
-import {Canonical} from "../../libs/Canonical.sol";
+import {GuardianInstance} from "../../libs/GuardianInstance.sol";
 
 /**
  * @title InheritanceCrunaPlugin
@@ -21,6 +21,7 @@ import {Canonical} from "../../libs/Canonical.sol";
 contract InheritanceCrunaPlugin is
   ICrunaManagedService,
   IInheritanceCrunaPlugin,
+  GuardianInstance,
   Context,
   CrunaManagedService,
   ReentrancyGuard
@@ -202,8 +203,8 @@ contract InheritanceCrunaPlugin is
   function upgrade(address implementation_) external virtual nonReentrant {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     if (implementation_ == address(0)) revert ZeroAddress();
-    if (!Canonical.crunaGuardian().trustedImplementation(_nameId(), implementation_))
-      if (Canonical.crunaGuardian().trustedImplementation(_nameId(), implementation()))
+    if (!_crunaGuardian().trustedImplementation(_nameId(), implementation_))
+      if (_crunaGuardian().trustedImplementation(_nameId(), implementation()))
         // If new implementation is untrusted, the current one must be untrusted too
         revert UntrustedImplementation(implementation_);
     ICrunaManagedService impl = ICrunaManagedService(implementation_);
