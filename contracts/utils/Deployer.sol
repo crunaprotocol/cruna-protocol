@@ -7,11 +7,13 @@ import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
 import {IERC7656Registry} from "../erc/IERC7656Registry.sol";
 
+//import "hardhat/console.sol";
+
 /**
- * @title Deployed
+ * @title Deployer.sol
  * @notice This contract manages deploy-related functions
  */
-abstract contract Deployed {
+abstract contract Deployer {
   /**
    * @notice Returns the ERC7656Registry contract
    */

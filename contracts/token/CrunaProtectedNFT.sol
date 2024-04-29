@@ -14,7 +14,7 @@ import {IERC6454} from "../erc/IERC6454.sol";
 import {IERC6982} from "../erc/IERC6982.sol";
 import {ICrunaManager} from "../manager/ICrunaManager.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
-import {Deployed} from "../utils/Deployed.sol";
+import {Deployer} from "../utils/Deployer.sol";
 import {GuardianInstance} from "../libs/GuardianInstance.sol";
 import {ICrunaService} from "../services/ICrunaService.sol";
 
@@ -43,7 +43,7 @@ abstract contract CrunaProtectedNFT is
   GuardianInstance,
   IERC6454,
   IERC6982,
-  Deployed,
+Deployer,
   ERC721,
   ReentrancyGuard
 {

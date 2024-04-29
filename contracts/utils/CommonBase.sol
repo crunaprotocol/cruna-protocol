@@ -42,6 +42,14 @@ abstract contract CommonBase is ICommonBase, INamed, ERC7656Contract {
     return _vault();
   }
 
+  function key() external view virtual returns (bytes32) {
+    return _key();
+  }
+
+  function _key() internal view virtual returns (bytes32) {
+    return _salt() | bytes32(uint256(uint160(_implementation())) << 32 | uint256(uint32(_nameId())));
+  }
+
   /**
    * @notice Returns the vault, i.e., the CrunaProtectedNFT contract
    */

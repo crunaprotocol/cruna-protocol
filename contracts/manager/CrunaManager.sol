@@ -12,7 +12,7 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {CrunaManagedService} from "../services/CrunaManagedService.sol";
 import {GuardianInstance} from "../libs/GuardianInstance.sol";
 import {TrustedLib} from "../libs/TrustedLib.sol";
-import {Deployed} from "../utils/Deployed.sol";
+import {Deployer} from "../utils/Deployer.sol";
 
 //import "hardhat/console.sol";
 
@@ -22,7 +22,7 @@ import {Deployed} from "../utils/Deployed.sol";
  * It is the only contract that can manage the NFT. It sets protectors and safe recipients,
  * plugs and manages services, and has the ability to transfer the NFT if there are protectors.
  */
-contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployed {
+contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployer {
   using ECDSA for bytes32;
   using Strings for uint256;
   using ExcessivelySafeCall for address;
@@ -197,7 +197,7 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployed {
   /// @dev see {ICrunaManager-plug}
   function plug(
     string memory name,
-    address pluginProxy,
+    address firstImplementation_,
     bool canManageTransfer,
     bool isERC6551Account,
     bytes4 salt,
@@ -213,8 +213,8 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployed {
     }
     bytes4 nameId_ = _stringToBytes4(name);
     bytes8 _key = _combineBytes4(nameId_, salt);
-    if (_pluginByKey[_key].proxyAddress != address(0) && !_pluginByKey[_key].unplugged) revert PluginAlreadyPlugged();
-    bool trusted = _crunaGuardian().trustedImplementation(nameId_, pluginProxy);
+    if (_pluginByKey[_key].firstImplementation != address(0) && !_pluginByKey[_key].unplugged) revert PluginAlreadyPlugged();
+    bool trusted = _crunaGuardian().trustedImplementation(nameId_, firstImplementation_);
     if (!trusted)
       if (canManageTransfer)
         if (!TrustedLib.areUntrustedImplementationsAllowed()) {
@@ -222,7 +222,7 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployed {
         }
     _preValidateAndCheckSignature(
       this.plug.selector,
-      pluginProxy,
+      firstImplementation_,
       (canManageTransfer ? 1 : 0) * 1e6 + (isERC6551Account ? 1 : 0),
       uint256(bytes32(salt)),
       uint256(_hashBytes(data)),
@@ -231,7 +231,7 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployed {
       signature
     );
     if (_pluginByKey[_key].banned) revert PluginHasBeenMarkedAsNotPluggable();
-    _plug(name, pluginProxy, canManageTransfer, isERC6551Account, nameId_, salt, data, _key, trusted);
+    _plug(name, firstImplementation_, canManageTransfer, isERC6551Account, nameId_, salt, data, _key, trusted);
   }
 
   /// @dev see {ICrunaManager-changePluginStatus}
@@ -280,9 +280,9 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployed {
   function trustPlugin(string calldata name, bytes4 salt) external virtual override onlyTokenOwner {
     bytes4 nameId_ = _stringToBytes4(name);
     bytes8 _key = _combineBytes4(nameId_, salt);
-    if (_pluginByKey[_key].proxyAddress == address(0)) revert PluginNotFound();
+    if (_pluginByKey[_key].firstImplementation == address(0)) revert PluginNotFound();
     if (_pluginByKey[_key].trusted) revert PluginAlreadyTrusted();
-    if (_crunaGuardian().trustedImplementation(nameId_, _pluginByKey[_key].proxyAddress)) {
+    if (_crunaGuardian().trustedImplementation(nameId_, _pluginByKey[_key].firstImplementation)) {
       _pluginByKey[_key].trusted = true;
       emit PluginTrusted(name, salt);
     } else revert StillUntrusted();
@@ -307,7 +307,7 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployed {
   function plugged(string calldata name, bytes4 salt) external view virtual returns (bool) {
     bytes4 nameId_ = _stringToBytes4(name);
     return
-      _pluginByKey[_combineBytes4(nameId_, salt)].proxyAddress != address(0) &&
+      _pluginByKey[_combineBytes4(nameId_, salt)].firstImplementation != address(0) &&
       !_pluginByKey[_combineBytes4(nameId_, salt)].unplugged;
   }
 
@@ -320,7 +320,7 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployed {
   function isPluginActive(string calldata name, bytes4 salt) external view virtual returns (bool) {
     bytes4 nameId_ = _stringToBytes4(name);
     bytes8 _key = _combineBytes4(nameId_, salt);
-    if (_pluginByKey[_key].proxyAddress == address(0)) revert PluginNotFound();
+    if (_pluginByKey[_key].firstImplementation == address(0)) revert PluginNotFound();
     return _pluginByKey[_key].active;
   }
 
@@ -393,7 +393,7 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployed {
    */
   function _pluginAddress(bytes4 nameId_, bytes4 salt) internal view virtual returns (address payable) {
     PluginConfig storage config_ = _pluginByKey[_combineBytes4(nameId_, salt)];
-    return payable(_addressOfDeployed(config_.proxyAddress, salt, tokenAddress(), tokenId(), config_.isERC6551Account));
+    return payable(_addressOfDeployed(config_.firstImplementation, salt, tokenAddress(), tokenId(), config_.isERC6551Account));
   }
 
   /**
@@ -528,7 +528,7 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployed {
   /**
    * @notice Internal function plug a plugin
    * @param name The name of the plugin
-   * @param proxyAddress_ The address of the plugin
+   * @param firstImplementation_ The address of the plugin
    * @param canManageTransfer If the plugin can manage the transfer of the NFT
    * @param isERC6551Account If the plugin is an ERC6551 account
    * @param nameId_ The nameId of the plugin
@@ -539,7 +539,7 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployed {
    */
   function _plug(
     string memory name,
-    address proxyAddress_,
+    address firstImplementation_,
     bool canManageTransfer,
     bool isERC6551Account,
     bytes4 nameId_,
@@ -549,7 +549,7 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployed {
     bool trusted
   ) internal {
     // If the plugin has been plugged before and later unplugged, the proxy won't be deployed again.
-    address pluginAddress_ = _deploy(proxyAddress_, salt, tokenAddress(), tokenId(), isERC6551Account);
+    address pluginAddress_ = _deploy(firstImplementation_, salt, tokenAddress(), tokenId(), isERC6551Account);
     CrunaManagedService plugin_ = CrunaManagedService(payable(pluginAddress_));
     if (!plugin_.isManaged()) revert UnmanagedService();
     uint256 requiredVersion = plugin_.requiresManagerVersion();
@@ -564,11 +564,11 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployed {
     plugin_.init(data);
     _allPlugins.push(PluginElement({active: true, salt: salt, nameId: nameId_}));
     if (_pluginByKey[_key].unplugged) {
-      if (_pluginByKey[_key].proxyAddress != proxyAddress_)
-        revert InconsistentProxyAddresses(_pluginByKey[_key].proxyAddress, proxyAddress_);
+      if (_pluginByKey[_key].firstImplementation != firstImplementation_)
+        revert InconsistentProxyAddresses(_pluginByKey[_key].firstImplementation, firstImplementation_);
     }
     _pluginByKey[_key] = PluginConfig({
-      proxyAddress: proxyAddress_,
+      firstImplementation: firstImplementation_,
       salt: salt,
       timeLock: 0,
       canManageTransfer: canManageTransfer,

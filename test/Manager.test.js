@@ -109,6 +109,8 @@ describe("CrunaManager : Upgrades", function () {
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
 
+    expect(await manager.implementation()).to.equal(proxy.address);
+
     expect(await manager.version()).to.equal(1001000);
     let signature = (
       await signRequest(
@@ -161,6 +163,8 @@ describe("CrunaManager : Upgrades", function () {
     const b4 = "0xaabbccdd";
     expect(await managerV2.bytes4ToHexString(b4)).equal(b4);
     expect(await managerV2.migrated()).to.equal(true);
+
+    expect(await managerV2.implementation()).to.equal(proxy.address);
   });
 
   it("should allow deployer to upgrade the default manager", async function () {

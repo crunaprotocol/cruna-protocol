@@ -11,7 +11,7 @@ import {IERC7656Contract} from "../erc/IERC7656Contract.sol";
 interface ICrunaManager is IERC7656Contract, IVersioned {
   /**
    * @notice A struct to keep info about plugged and unplugged services
-   * @param proxyAddress The address of the first implementation of the plugin
+   * @param firstImplementation The address of the first implementation of the plugin
    * @param salt The salt used during the deployment of the plugin.
    * It allows to  have multiple instances of the same plugin
    * @param timeLock The time lock for when a plugin is temporarily unauthorized from making transfers
@@ -24,7 +24,7 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
    * @param unplugged True if the plugin has been unplugged
    */
   struct PluginConfig {
-    address proxyAddress;
+    address firstImplementation;
     bytes4 salt;
     uint32 timeLock;
     bool canManageTransfer;
