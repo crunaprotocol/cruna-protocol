@@ -18,13 +18,14 @@ async function main() {
     chainId === 1337 ? "../test/helpers/bytecodes.json" : "../contracts/canonicalBytecodes.json",
   );
 
+  // console.log(chainId)
+
   const bytecodes = JSON.parse(fs.readFileSync(bytecodesPath, "utf8"));
-  console.log(Object.keys(bytecodes));
+  // console.log(Object.keys(bytecodes));
 
   console.log(
     "The code for registry has changed:",
-    bytecodes.ERC7656Registry.bytecode ===
-      (await deployUtils.getBytecodeToBeDeployedViaNickSFactory(deployer, "ERC7656Registry")),
+    bytecodes.ERC7656Registry.bytecode !== (await deployUtils.getBytecodeToBeDeployedViaNickSFactory("ERC7656Registry")),
   );
 }
 

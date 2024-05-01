@@ -14,11 +14,15 @@ process.on('warning', (warning) => {
 
 require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-waffle");
-require("@nomiclabs/hardhat-etherscan");
+require("@xyrusworx/hardhat-solidity-json");
+
 require("@openzeppelin/hardhat-upgrades");
 require("hardhat-contract-sizer");
 require("solidity-coverage");
 require('solidity-docgen');
+
+// require("@nomicfoundation/hardhat-verify");
+require("@nomiclabs/hardhat-etherscan");
 
 if (process.env.GAS_REPORT === "yes") {
   require("hardhat-gas-reporter");
@@ -78,12 +82,17 @@ module.exports = {
       accounts: [env.DEPLOYER],
     },
     mumbai: {
-      // url: "https://rpc-mumbai.maticvigil.com",
-      url: "https://polygon-mumbai.blockpi.network/v1/rpc/public",
+      url: "https://polygon-mumbai-pokt.nodies.app",
+      // url: "https://polygon-mumbai.blockpi.network/v1/rpc/public",
       chainId: 80001,
       // gasPrice: 20000000000,
       gasLimit: 6000000,
       accounts: [env.DEPLOYER],
+    },
+    polygon: {
+      url: "https://polygon-mainnet.infura.io/v3/" + env.INFURA_KEY,
+      accounts: [env.DEPLOYER],
+      chainId: 137,
     },
     amoy: {
       // url: "https://rpc-amoy.polygon.technology/",
@@ -115,8 +124,14 @@ module.exports = {
     // Your API key for Etherscan
     // Obtain one at https://etherscan.io/
     apiKey:
-    env.POLYGONSCAN_API_KEY
-    // env.ETHERSCAN_API_KEY
+     // env.POLYGONSCAN_API_KEY,
+     env.ETHERSCAN_API_KEY
+
+  },
+  sourcify: {
+    // Disabled by default
+    // Doesn't need an API key
+    enabled: false
   },
   gasReporter: {
     currency: "USD",

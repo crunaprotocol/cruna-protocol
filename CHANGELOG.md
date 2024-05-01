@@ -1,5 +1,8 @@
 # Change log
 
+**0.6.2**
+- New canonical address for ERC7656Registry due to errors verifying the source code on Ethereum mainnet 
+
 **0.6.1**
 - Minor improvements in the `CrunaManagedService` to avoid overriding `_conf.manager` if unnecessary
 
