@@ -180,12 +180,13 @@ const Helpers = {
     return ethers.utils.hexDataSlice(bytes32value, 0, 4);
   },
 
-  pseudoAddress(name, salt) {
-    const nameBytes = ethers.utils.toUtf8Bytes(name);
-    const saltBytes = ethers.utils.arrayify(salt);
-    const packed = ethers.utils.concat([nameBytes, saltBytes]);
-    const hash = ethers.utils.keccak256(packed);
+  pseudoAddress(key) {
+    const hash = ethers.utils.keccak256(key);
     return ethers.utils.getAddress("0x" + hash.substring(hash.length - 40));
+  },
+
+  pluginKey(name, impl, salt) {
+    return salt + "0000" + impl.substring(2).toLowerCase() + "0000" + Helpers.bytes4(Helpers.keccak256(name)).substring(2);
   },
 
   combineBytes4ToBytes32(bytes4value1, bytes4value2) {

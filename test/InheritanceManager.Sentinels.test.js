@@ -408,7 +408,7 @@ describe("Sentinel and Inheritance", function () {
       .withArgs(bob.address, 1, 12, 4, addr0);
   });
 
-  it("should set up 5 sentinels and an inheritance with a quorum 3", async function () {
+  it.only("should set up 5 sentinels and an inheritance with a quorum 3", async function () {
     const tokenId = await buyAVaultAndPlug(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);

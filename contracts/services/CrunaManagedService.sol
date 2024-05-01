@@ -121,6 +121,14 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
     return _conf.manager.isProtector(protector);
   }
 
+  function serviceKey() external view virtual returns (bytes32) {
+    return _serviceKey();
+  }
+
+  function _serviceKey() internal view virtual returns (bytes32) {
+    return _salt() | bytes32((uint256(uint160(_implementation())) << 48) | uint256(uint32(_nameId())));
+  }
+
   // @dev This empty reserved space is put in place to allow future versions to add new
   // variables without shifting down storage in the inheritance chain.
   // See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps

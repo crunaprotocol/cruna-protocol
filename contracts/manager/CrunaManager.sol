@@ -218,9 +218,9 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployer {
         }
     _preValidateAndCheckSignature(
       this.plug.selector,
-      _implFromKey(key_),
+      address(0),
+      uint256(key_),
       (canManageTransfer ? 1 : 0) * 1e6 + (isERC6551Account ? 1 : 0),
-      uint256(bytes32(_saltFromKey(key_))),
       uint256(_hashBytes(data)),
       timestamp,
       validFor,
