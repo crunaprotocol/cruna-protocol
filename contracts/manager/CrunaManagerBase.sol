@@ -65,11 +65,11 @@ abstract contract CrunaManagerBase is ICrunaManager, GuardianInstance, CommonBas
   }
 
   function _nameIdFromKey(bytes32 key_) internal pure returns (bytes4) {
-    return bytes4(key_);
+    return bytes4(uint32(uint256(key_)));
   }
 
   function _saltFromKey(bytes32 key_) internal pure returns (bytes4) {
-    return bytes4(uint32(uint256(key_)));
+    return bytes4(key_);
   }
 
   /**
