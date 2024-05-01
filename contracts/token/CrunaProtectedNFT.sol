@@ -43,7 +43,7 @@ abstract contract CrunaProtectedNFT is
   GuardianInstance,
   IERC6454,
   IERC6982,
-Deployer,
+  Deployer,
   ERC721,
   ReentrancyGuard
 {
@@ -155,17 +155,13 @@ Deployer,
   /**
    * @notice see {ICrunaProtectedNFT-managedTransfer}.
    */
-  function managedTransfer(
-    bytes4 pluginNameId,
-    uint256 tokenId,
-    address to
-  ) external payable virtual override onlyManagerOf(tokenId) {
+  function managedTransfer(bytes32 key, uint256 tokenId, address to) external payable virtual override onlyManagerOf(tokenId) {
     _approvedTransfers[tokenId] = 1;
     _approve(_managerOf(tokenId), tokenId, address(0));
     safeTransferFrom(ownerOf(tokenId), to, tokenId);
     _approve(address(0), tokenId, address(0));
     delete _approvedTransfers[tokenId];
-    emit ManagedTransfer(pluginNameId, tokenId);
+    emit ManagedTransfer(key, tokenId);
   }
 
   /// @dev see {ERC165-supportsInterface}.

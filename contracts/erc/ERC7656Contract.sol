@@ -36,7 +36,7 @@ abstract contract ERC7656Contract is IERC7656ContractExtended, IERC165 {
   /**
    * @notice Returns the salt used when creating the contract
    */
-    function salt() public view virtual override returns (bytes32) {
+  function salt() public view virtual override returns (bytes32) {
     return _salt();
   }
 

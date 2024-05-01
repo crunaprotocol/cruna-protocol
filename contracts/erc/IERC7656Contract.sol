@@ -12,5 +12,4 @@ interface IERC7656Contract {
    * @return tokenId The tokenId of the token
    */
   function token() external view returns (uint256 chainId, address tokenContract, uint256 tokenId);
-
 }

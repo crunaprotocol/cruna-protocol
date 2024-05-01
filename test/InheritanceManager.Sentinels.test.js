@@ -177,7 +177,8 @@ describe("Sentinel and Inheritance", function () {
           .plug("InheritanceCrunaPlugin", inheritancePluginProxy.address, trust, false, salt, dataBytes, ts, 3600, signature),
       ).to.emit(manager, "PluginStatusChange");
 
-      expect(await vault.isDeployed(inheritancePluginProxy.address, "0x12345678" + "0".repeat(56), nextTokenId, false)).to.be.true;
+      expect(await vault.isDeployed(inheritancePluginProxy.address, "0x12345678" + "0".repeat(56), nextTokenId, false)).to.be
+        .true;
     } else {
       if (!trust) {
         await expect(

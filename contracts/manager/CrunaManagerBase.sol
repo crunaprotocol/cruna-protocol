@@ -52,11 +52,24 @@ abstract contract CrunaManagerBase is ICrunaManager, GuardianInstance, CommonBas
    */
   function migrate(uint256 previousVersion) external virtual;
 
-  /**
-   * @notice Utility function to combine two bytes4 into a bytes8
-   */
-  function _combineBytes4(bytes4 a, bytes4 b) internal pure returns (bytes8) {
-    return bytes8(bytes32(a) | (bytes32(b) >> 32));
+  function pluginKey(bytes4 nameId_, address impl_, bytes4 salt_) external view virtual returns (bytes32) {
+    return _pluginKey(salt_, impl_, nameId_);
+  }
+
+  function _pluginKey(bytes4 nameId_, address impl_, bytes4 salt_) internal view virtual returns (bytes32) {
+    return bytes32(salt_) | bytes32((uint256(uint160(impl_)) << 48) | uint256(uint32(nameId_)));
+  }
+
+  function _implFromKey(bytes32 key_) internal pure returns (address) {
+    return address(uint160(uint256(key_) >> 48));
+  }
+
+  function _nameIdFromKey(bytes32 key_) internal pure returns (bytes4) {
+    return bytes4(key_);
+  }
+
+  function _saltFromKey(bytes32 key_) internal pure returns (bytes4) {
+    return bytes4(uint32(uint256(key_)));
   }
 
   /**
