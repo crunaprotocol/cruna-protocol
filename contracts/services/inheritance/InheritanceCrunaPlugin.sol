@@ -14,6 +14,12 @@ import {ICrunaManagedService} from "../ICrunaManagedService.sol";
 import {CrunaManagedService} from "../CrunaManagedService.sol";
 import {GuardianInstance} from "../../libs/GuardianInstance.sol";
 
+interface IManagedService {
+  function requiresManagerVersion() external pure returns (uint256);
+  function nameId() external pure returns (bytes4);
+  function version() external pure returns (uint256);
+}
+
 /**
  * @title InheritanceCrunaPlugin
  * @notice This contract manages inheritance
@@ -203,12 +209,12 @@ contract InheritanceCrunaPlugin is
   function upgrade(address implementation_) external virtual nonReentrant {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     if (implementation_ == address(0)) revert ZeroAddress();
-    if (!_crunaGuardian().trusted(implementation_))
-      if (_crunaGuardian().trusted(implementation()))
-        // If new implementation is untrusted, the current one must be untrusted too
-        revert UntrustedImplementation(implementation_);
-    ICrunaManagedService impl = ICrunaManagedService(implementation_);
+    // If current implementation is trusted, the new one must be trusted too
+    if (_crunaGuardian().trusted(implementation()))
+      if (!_crunaGuardian().trusted(implementation_)) revert UntrustedImplementation(implementation_);
+    IManagedService impl = IManagedService(implementation_);
     uint256 version_ = impl.version();
+    if (impl.nameId() != bytes4(keccak256("InheritanceCrunaPlugin"))) revert NotTheRightPlugin();
     if (version_ <= _version()) revert InvalidVersion(_version(), version_);
     uint256 requiredVersion = impl.requiresManagerVersion();
     if (_conf.manager.version() < requiredVersion) revert PluginRequiresUpdatedManager(requiredVersion);

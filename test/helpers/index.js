@@ -364,6 +364,8 @@ const Helpers = {
     await expect(guardian.connect(proposer).trust(delay, PROPOSAL, implementation, trusted))
       .emit(guardian, "OperationProposed")
       .withArgs(operation, proposer.address, delay);
+    const ts = await thiz.getTimestamp();
+    expect(await guardian.getOperation(operation)).equal(ts + delay);
     await ethers.provider.send("evm_increaseTime", [delay + 1]);
     await ethers.provider.send("evm_mine");
     await guardian.connect(executor).trust(delay, EXECUTION, implementation, trusted);

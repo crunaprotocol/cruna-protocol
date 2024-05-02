@@ -36,7 +36,6 @@ describe("Testing contract deployments", function () {
 
   before(async function () {
     [deployer, proposer, executor, bob, alice, fred, mark, otto, proposer2, executor2] = await ethers.getSigners();
-
     chainId = await getChainId();
     [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
     crunaRegistry = await ethers.getContractAt("ERC7656Registry", CRUNA_REGISTRY);

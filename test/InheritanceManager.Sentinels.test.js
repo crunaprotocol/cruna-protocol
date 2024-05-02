@@ -31,7 +31,7 @@ describe("Sentinel and Inheritance", function () {
   let vault, inheritancePluginProxy, inheritancePluginImpl, validatorMock;
   let factory;
   let usdc, usdt;
-  let deployer, bob, alice, fred, mark, otto, jerry, beneficiary1, beneficiary2, proposer, executor;
+  let deployer, bob, alice, fred, mark, otto, jerry, beneficiary1, beneficiary2, proposer, executor, proposer2, executor2;
   let chainId, ts;
   const days = 24 * 3600;
   // for test only we are setting a 10 seconds delay
@@ -57,7 +57,8 @@ describe("Sentinel and Inheritance", function () {
   };
 
   before(async function () {
-    [deployer, proposer, executor, bob, alice, fred, mark, otto, jerry, beneficiary1, beneficiary2] = await ethers.getSigners();
+    [deployer, proposer, executor, bob, alice, fred, mark, otto, jerry, beneficiary1, beneficiary2, proposer2, executor2] =
+      await ethers.getSigners();
     chainId = await getChainId();
     [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
     crunaRegistry = await ethers.getContractAt("ERC7656Registry", CRUNA_REGISTRY);
@@ -217,6 +218,77 @@ describe("Sentinel and Inheritance", function () {
 
     expect(await newGuardian.trusted(inheritancePluginProxy.address)).to.be.true;
     expect(await newGuardian.version()).to.equal(1003000);
+    expect(await newGuardian.getMinDelay()).to.equal(delay);
+    expect(await newGuardian.getAdmin()).to.equal(deployer.address);
+
+    await newGuardian.setAuthorized(delay, 0, proposer2.address, 0, true);
+    expect(await newGuardian.isAuthorized(proposer2.address, 0)).to.be.true;
+
+    const authorized = await newGuardian.getAuthorized();
+    expect(authorized[0].addr).equal(proposer.address);
+    expect(authorized[0].role).equal(0);
+    expect(authorized[1].addr).equal(executor.address);
+    expect(authorized[1].role).equal(1);
+    expect(authorized[2].addr).equal(proposer2.address);
+    expect(authorized[2].role).equal(0);
+
+    await newGuardian.connect(proposer2).setAuthorized(delay, 0, executor2.address, 1, true);
+
+    await ethers.provider.send("evm_increaseTime", [delay + 1]);
+    await ethers.provider.send("evm_mine");
+
+    await expect(newGuardian.connect(jerry).setAuthorized(delay, 2, executor2.address, 1, true)).revertedWith("Forbidden");
+
+    await newGuardian.connect(executor).setAuthorized(delay, 2, executor2.address, 1, true);
+
+    await newGuardian.connect(proposer2).setAuthorized(delay, 0, alice.address, 1, true);
+    await newGuardian.connect(proposer2).setAuthorized(delay, 1, alice.address, 1, true);
+
+    const [p, e] = await newGuardian.countAuthorized();
+    expect(p).equal(2);
+    expect(e).equal(2);
+
+    await expect(newGuardian.connect(proposer).setAuthorized(delay, 0, bob.address, 2, true)).revertedWith("InvalidRole");
+
+    const newDelay = 5;
+    await newGuardian.connect(proposer2).setMinDelay(delay, 0, newDelay);
+
+    await ethers.provider.send("evm_increaseTime", [delay + 1]);
+    await ethers.provider.send("evm_mine");
+
+    await newGuardian.connect(executor2).setMinDelay(delay, 2, newDelay);
+
+    await newGuardian.connect(proposer2).setAuthorized(newDelay, 0, executor2.address, 1, false);
+
+    await ethers.provider.send("evm_increaseTime", [newDelay + 1]);
+    await ethers.provider.send("evm_mine");
+
+    await newGuardian.connect(executor2).setAuthorized(newDelay, 2, executor2.address, 1, false);
+
+    await expect(newGuardian.connect(proposer).setAuthorized(newDelay, 0, executor.address, 1, false)).revertedWith(
+      "RoleNeeded",
+    );
+
+    const [pp, ee] = await newGuardian.countAuthorized();
+    expect(pp).equal(2);
+    expect(ee).equal(1);
+
+    await expect(newGuardian.connect(proposer).setAuthorized(newDelay, 0, proposer2.address, 1, false)).revertedWith(
+      "InvalidRequest",
+    );
+
+    await newGuardian.connect(proposer).setAuthorized(newDelay, 0, proposer2.address, 0, false);
+
+    await ethers.provider.send("evm_increaseTime", [newDelay + 1]);
+    await ethers.provider.send("evm_mine");
+
+    await newGuardian.connect(executor).setAuthorized(newDelay, 1, proposer2.address, 0, false);
+
+    await expect(newGuardian.connect(proposer).setAuthorized(newDelay, 0, executor.address, 1, false)).revertedWith(
+      "RoleNeeded",
+    );
+
+    await expect(newGuardian.renounceAdmin()).to.emit(newGuardian, "AdminRenounced");
   });
 
   it("should plug the plugin", async function () {

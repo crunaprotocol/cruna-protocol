@@ -46,7 +46,7 @@ contract TimeControlledGovernance is ITimeControlledGovernance {
     return _admin;
   }
 
-  function _isAuthorized(address sender, Role role_) internal view returns (bool) {
+  function isAuthorized(address sender, Role role_) public view returns (bool) {
     for (uint256 i = 0; i < _authorized.length; ) {
       if (_authorized[i].addr == sender)
         if (_authorized[i].role == role_ || role_ == Role.Any) return true;
@@ -57,7 +57,7 @@ contract TimeControlledGovernance is ITimeControlledGovernance {
     return false;
   }
 
-  function _countAuthorized() internal view returns (uint256, uint256) {
+  function countAuthorized() public view returns (uint256, uint256) {
     uint256 proposers;
     uint256 executors;
     for (uint256 i = 0; i < _authorized.length; ) {
@@ -80,22 +80,23 @@ contract TimeControlledGovernance is ITimeControlledGovernance {
   function renounceAdmin() external override {
     if (msg.sender != _admin) revert Forbidden();
     _admin = address(0);
+    emit AdminRenounced();
   }
 
   function setAuthorized(uint256 delay, OperationType oType, address toBeAuthorized, Role role, bool active) external override {
-    if (role == Role.Any) revert InvalidRequest();
+    if (role == Role.Any) revert InvalidRole();
     if (active) {
-      if (_isAuthorized(toBeAuthorized, Role.Any)) revert InvalidRequest();
+      if (isAuthorized(toBeAuthorized, Role.Any)) revert InvalidRequest();
     } else {
-      if (!_isAuthorized(toBeAuthorized, role)) revert InvalidRequest();
+      if (!isAuthorized(toBeAuthorized, role)) revert InvalidRequest();
       // at least one proposer and one executor must be active
-      (uint256 proposers, uint256 executors) = _countAuthorized();
+      (uint256 proposers, uint256 executors) = countAuthorized();
       if (role == Role.Proposer) {
-        if (proposers == 1) revert InvalidRequest();
-      } else if (executors == 1) revert InvalidRequest();
+        if (proposers == 1) revert RoleNeeded();
+      } else if (executors == 1) revert RoleNeeded();
     }
     bytes32 operation = keccak256(abi.encode(this.setAuthorized.selector, toBeAuthorized, role, active));
-    if (_canExecute(delay, oType, operation) || (_admin != address(0) && msg.sender == _admin)) {
+    if ((_admin != address(0) && msg.sender == _admin) || _canExecute(delay, oType, operation)) {
       if (active) {
         _authorized.push(Authorized(toBeAuthorized, role));
       } else {
@@ -124,19 +125,19 @@ contract TimeControlledGovernance is ITimeControlledGovernance {
     } else if (executableAt == 0) revert ProposalNotFound();
     //
     if (oType == OperationType.Proposal) {
-      if (!_isAuthorized(msg.sender, Role.Proposer)) revert Forbidden();
+      if (!isAuthorized(msg.sender, Role.Proposer)) revert Forbidden();
       if (delay < _minDelay) revert InvalidDelay();
       _operations[operation] = block.timestamp + delay;
       emit OperationProposed(operation, msg.sender, delay);
       return false;
     } else if (oType == OperationType.Cancellation) {
       // anyone can cancel a proposal
-      if (!_isAuthorized(msg.sender, Role.Any)) revert Forbidden();
+      if (!isAuthorized(msg.sender, Role.Any)) revert Forbidden();
       delete _operations[operation];
       emit OperationCancelled(operation, msg.sender);
       return false;
     } else if (oType == OperationType.Execution) {
-      if (!_isAuthorized(msg.sender, Role.Executor)) revert Forbidden();
+      if (!isAuthorized(msg.sender, Role.Executor)) revert Forbidden();
       if (block.timestamp < executableAt) revert TooEarlyToExecute();
       delete _operations[operation];
       emit OperationExecuted(operation, msg.sender);

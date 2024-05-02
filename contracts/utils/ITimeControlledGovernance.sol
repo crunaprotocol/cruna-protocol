@@ -35,6 +35,8 @@ interface ITimeControlledGovernance {
   // when cancelling, the executor can also be the proposer
   event OperationCancelled(bytes32 operation, address executor);
 
+  event AdminRenounced();
+
   /**
    * @notice Error returned when the delay is invalid
    */
@@ -42,9 +44,9 @@ interface ITimeControlledGovernance {
   error InvalidRequest();
   error TooEarlyToExecute();
   error AlreadyProposed();
-
+  error InvalidRole();
   error Forbidden();
-
+  error RoleNeeded();
   error ProposalNotFound();
 
   function renounceAdmin() external;
@@ -60,4 +62,8 @@ interface ITimeControlledGovernance {
   function getAuthorized() external view returns (Authorized[] memory);
 
   function getOperation(bytes32 operation) external view returns (uint256);
+
+  function isAuthorized(address sender, Role role_) external view returns (bool);
+
+  function countAuthorized() external view returns (uint256, uint256);
 }

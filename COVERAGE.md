@@ -34,28 +34,28 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   CrunaService.sol                    |       75 |       50 |     62.5 |       75 
   ICrunaManagedService.sol            |      100 |      100 |      100 |      100 
   ICrunaService.sol                   |      100 |      100 |      100 |      100 
- services/inheritance/                |       92 |    67.65 |    96.15 |    88.81 
+ services/inheritance/                |    92.08 |    67.31 |    92.31 |    88.81 
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
-  InheritanceCrunaPlugin.sol          |       92 |    67.65 |       96 |    88.81 
-  InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
- token/                               |    98.61 |    63.89 |      100 |    98.77 
-  CrunaProtectedNFT.sol               |    98.51 |     62.5 |      100 |     98.7 
-  CrunaProtectedNFTOwnable.sol        |      100 |       50 |      100 |      100 
-  CrunaProtectedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
+  InheritanceCrunaPlugin.sol          |    92.08 |    67.31 |       96 |    88.81 
+  InheritanceCrunaPluginProxy.sol     |      100 |      100 |        0 |      100 
+ token/                               |    73.61 |    79.17 |      100 |     96.3 
+  CrunaProtectedNFT.sol               |    74.63 |    79.69 |      100 |     96.1 
+  CrunaProtectedNFTOwnable.sol        |        0 |       50 |      100 |      100 
+  CrunaProtectedNFTTimeControlled.sol |       75 |    83.33 |      100 |      100 
   ICrunaProtectedNFT.sol              |      100 |      100 |      100 |      100 
   IManagedNFT.sol                     |      100 |      100 |      100 |      100 
- utils/                               |    64.04 |    46.51 |    72.41 |    62.26 
+ utils/                               |    86.67 |    95.35 |      100 |    99.07 
   CommonBase.sol                      |      100 |      100 |      100 |      100 
-  Deployer.sol                        |      100 |      100 |      100 |      100 
+  Deployer.sol                        |    88.89 |      100 |      100 |      100 
   ICommonBase.sol                     |      100 |      100 |      100 |      100 
   INamed.sol                          |      100 |      100 |      100 |      100 
   INamedAndVersioned.sol              |      100 |      100 |      100 |      100 
   ISignatureValidator.sol             |      100 |      100 |      100 |      100 
   ITimeControlledGovernance.sol       |      100 |      100 |      100 |      100 
   IVersioned.sol                      |      100 |      100 |      100 |      100 
-  SignatureValidator.sol              |      100 |    86.36 |      100 |      100 
-  TimeControlledGovernance.sol        |    40.74 |    28.33 |    27.27 |     37.5 
+  SignatureValidator.sol              |    95.45 |    95.45 |      100 |      100 
+  TimeControlledGovernance.sol        |    81.82 |       95 |      100 |    98.46 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    91.17 |    63.29 |    92.86 |    90.03 
+All files                             |    91.56 |    73.72 |    96.19 |    95.71 
 --------------------------------------|----------|----------|----------|----------
 ```

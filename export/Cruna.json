@@ -1865,6 +1865,11 @@
     },
     {
       "inputs": [],
+      "name": "NotTheRightPlugin",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "NotTheTokenOwner",
       "type": "error"
     },
@@ -4865,13 +4870,29 @@
     },
     {
       "inputs": [],
+      "name": "InvalidRole",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "ProposalNotFound",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "RoleNeeded",
       "type": "error"
     },
     {
       "inputs": [],
       "name": "TooEarlyToExecute",
       "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "AdminRenounced",
+      "type": "event"
     },
     {
       "anonymous": false,
@@ -4957,6 +4978,24 @@
     },
     {
       "inputs": [],
+      "name": "countAuthorized",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "getAdmin",
       "outputs": [
         {
@@ -5020,6 +5059,30 @@
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "internalType": "enum ITimeControlledGovernance.Role",
+          "name": "role_",
+          "type": "uint8"
+        }
+      ],
+      "name": "isAuthorized",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
