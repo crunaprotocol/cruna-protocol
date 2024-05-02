@@ -203,8 +203,8 @@ contract InheritanceCrunaPlugin is
   function upgrade(address implementation_) external virtual nonReentrant {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     if (implementation_ == address(0)) revert ZeroAddress();
-    if (!_crunaGuardian().trustedImplementation(_nameId(), implementation_))
-      if (_crunaGuardian().trustedImplementation(_nameId(), implementation()))
+    if (!_crunaGuardian().trusted(implementation_))
+      if (_crunaGuardian().trusted(implementation()))
         // If new implementation is untrusted, the current one must be untrusted too
         revert UntrustedImplementation(implementation_);
     ICrunaManagedService impl = ICrunaManagedService(implementation_);

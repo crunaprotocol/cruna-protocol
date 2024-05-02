@@ -33,8 +33,7 @@ abstract contract CrunaManagerBase is ICrunaManager, GuardianInstance, CommonBas
   function upgrade(address implementation_) external virtual override nonReentrant {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     if (implementation_ == address(0)) revert ZeroAddress();
-    if (!_crunaGuardian().trustedImplementation(bytes4(keccak256("CrunaManager")), implementation_))
-      revert UntrustedImplementation(implementation_);
+    if (!_crunaGuardian().trusted(implementation_)) revert UntrustedImplementation(implementation_);
     INamedAndVersioned impl = INamedAndVersioned(implementation_);
     uint256 currentVersion = _version();
     uint256 newVersion = impl.version();

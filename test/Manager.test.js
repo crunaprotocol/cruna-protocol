@@ -141,16 +141,7 @@ describe("CrunaManager : Upgrades", function () {
       .to.be.revertedWith("UntrustedImplementation")
       .withArgs(managerV2Impl.address);
 
-    await trustImplementation(
-      guardian,
-      proposer,
-      executor,
-      delay,
-      bytes4(keccak256("CrunaManager")),
-      managerV2Impl.address,
-      true,
-      1,
-    );
+    await trustImplementation(guardian, proposer, executor, delay, managerV2Impl.address, true, 1);
 
     await expect(manager.connect(bob).upgrade(managerV2Impl.address))
       .emit(manager, "ImplementationUpgraded")
@@ -180,16 +171,7 @@ describe("CrunaManager : Upgrades", function () {
     expect(await initialManager.version()).to.equal(1001000);
     await expect(vault.upgradeDefaultManager(proxyV2.address)).to.be.revertedWith("UntrustedImplementation");
 
-    await trustImplementation(
-      guardian,
-      proposer,
-      executor,
-      delay,
-      bytes4(keccak256("CrunaManager")),
-      managerV2Impl.address,
-      true,
-      1,
-    );
+    await trustImplementation(guardian, proposer, executor, delay, managerV2Impl.address, true, 1);
 
     await expect(vault.upgradeDefaultManager(proxyV2.address))
       .to.emit(vault, "DefaultManagerUpgrade")

@@ -59,7 +59,7 @@ describe("Testing contract deployments", function () {
 
   beforeEach(async function () {
     managerImpl = await deployContract("CrunaManager");
-    expect(await guardian.version()).to.equal(1002000);
+    expect(await guardian.version()).to.equal(1003000);
     proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
     proxy = await deployUtils.attach("CrunaManager", proxy.address);
     // sent 2 ETH to proxy

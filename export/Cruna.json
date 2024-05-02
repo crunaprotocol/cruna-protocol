@@ -303,7 +303,13 @@
       "type": "error"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "key",
+          "type": "bytes32"
+        }
+      ],
       "name": "StillUntrusted",
       "type": "error"
     },
@@ -410,16 +416,10 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
-          "internalType": "bytes4",
-          "name": "_nameId",
-          "type": "bytes4"
-        },
-        {
-          "indexed": false,
-          "internalType": "bytes4",
-          "name": "salt",
-          "type": "bytes4"
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "key",
+          "type": "bytes32"
         }
       ],
       "name": "PluginResetAttemptFailed",
@@ -430,18 +430,12 @@
       "inputs": [
         {
           "indexed": true,
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
+          "internalType": "bytes32",
+          "name": "key",
+          "type": "bytes32"
         },
         {
-          "indexed": false,
-          "internalType": "bytes4",
-          "name": "salt",
-          "type": "bytes4"
-        },
-        {
-          "indexed": false,
+          "indexed": true,
           "internalType": "address",
           "name": "pluginAddress",
           "type": "address"
@@ -461,15 +455,9 @@
       "inputs": [
         {
           "indexed": true,
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "indexed": false,
-          "internalType": "bytes4",
-          "name": "salt",
-          "type": "bytes4"
+          "internalType": "bytes32",
+          "name": "key",
+          "type": "bytes32"
         }
       ],
       "name": "PluginTrusted",
@@ -568,26 +556,9 @@
       "name": "allPlugins",
       "outputs": [
         {
-          "components": [
-            {
-              "internalType": "bytes4",
-              "name": "nameId",
-              "type": "bytes4"
-            },
-            {
-              "internalType": "bytes4",
-              "name": "salt",
-              "type": "bytes4"
-            },
-            {
-              "internalType": "bool",
-              "name": "active",
-              "type": "bool"
-            }
-          ],
-          "internalType": "struct ICrunaManager.PluginElement[]",
+          "internalType": "bytes32[]",
           "name": "",
-          "type": "tuple[]"
+          "type": "bytes32[]"
         }
       ],
       "stateMutability": "view",
@@ -596,14 +567,9 @@
     {
       "inputs": [
         {
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "salt",
-          "type": "bytes4"
+          "internalType": "bytes32",
+          "name": "key_",
+          "type": "bytes32"
         },
         {
           "internalType": "enum ICrunaManager.PluginChange",
@@ -829,14 +795,9 @@
     {
       "inputs": [
         {
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "salt",
-          "type": "bytes4"
+          "internalType": "bytes32",
+          "name": "key_",
+          "type": "bytes32"
         }
       ],
       "name": "isPluginActive",
@@ -937,9 +898,9 @@
       "name": "listPluginsKeys",
       "outputs": [
         {
-          "internalType": "bytes8[]",
+          "internalType": "bytes32[]",
           "name": "",
-          "type": "bytes8[]"
+          "type": "bytes32[]"
         }
       ],
       "stateMutability": "view",
@@ -961,9 +922,9 @@
     {
       "inputs": [
         {
-          "internalType": "bytes4",
-          "name": "pluginNameId",
-          "type": "bytes4"
+          "internalType": "bytes32",
+          "name": "key_",
+          "type": "bytes32"
         },
         {
           "internalType": "address",
@@ -1018,14 +979,9 @@
     {
       "inputs": [
         {
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "internalType": "address",
-          "name": "pluginProxy",
-          "type": "address"
+          "internalType": "bytes32",
+          "name": "key_",
+          "type": "bytes32"
         },
         {
           "internalType": "bool",
@@ -1036,11 +992,6 @@
           "internalType": "bool",
           "name": "isERC6551Account",
           "type": "bool"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "salt",
-          "type": "bytes4"
         },
         {
           "internalType": "bytes",
@@ -1071,14 +1022,9 @@
     {
       "inputs": [
         {
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "salt",
-          "type": "bytes4"
+          "internalType": "bytes32",
+          "name": "key_",
+          "type": "bytes32"
         }
       ],
       "name": "plugged",
@@ -1095,14 +1041,9 @@
     {
       "inputs": [
         {
-          "internalType": "bytes4",
-          "name": "nameId_",
-          "type": "bytes4"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "salt",
-          "type": "bytes4"
+          "internalType": "bytes32",
+          "name": "key_",
+          "type": "bytes32"
         }
       ],
       "name": "plugin",
@@ -1119,14 +1060,9 @@
     {
       "inputs": [
         {
-          "internalType": "bytes4",
-          "name": "nameId_",
-          "type": "bytes4"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "salt",
-          "type": "bytes4"
+          "internalType": "bytes32",
+          "name": "key_",
+          "type": "bytes32"
         }
       ],
       "name": "pluginAddress",
@@ -1151,26 +1087,9 @@
       "name": "pluginByIndex",
       "outputs": [
         {
-          "components": [
-            {
-              "internalType": "bytes4",
-              "name": "nameId",
-              "type": "bytes4"
-            },
-            {
-              "internalType": "bytes4",
-              "name": "salt",
-              "type": "bytes4"
-            },
-            {
-              "internalType": "bool",
-              "name": "active",
-              "type": "bool"
-            }
-          ],
-          "internalType": "struct ICrunaManager.PluginElement",
+          "internalType": "bytes32",
           "name": "",
-          "type": "tuple"
+          "type": "bytes32"
         }
       ],
       "stateMutability": "view",
@@ -1179,9 +1098,9 @@
     {
       "inputs": [
         {
-          "internalType": "bytes8",
+          "internalType": "bytes32",
           "name": "key",
-          "type": "bytes8"
+          "type": "bytes32"
         }
       ],
       "name": "pluginByKey",
@@ -1189,19 +1108,9 @@
         {
           "components": [
             {
-              "internalType": "address",
-              "name": "proxyAddress",
-              "type": "address"
-            },
-            {
-              "internalType": "bytes4",
-              "name": "salt",
-              "type": "bytes4"
-            },
-            {
-              "internalType": "uint32",
-              "name": "timeLock",
-              "type": "uint32"
+              "internalType": "bool",
+              "name": "deployed",
+              "type": "bool"
             },
             {
               "internalType": "bool",
@@ -1237,6 +1146,11 @@
               "internalType": "bool",
               "name": "unplugged",
               "type": "bool"
+            },
+            {
+              "internalType": "uint32",
+              "name": "timeLock",
+              "type": "uint32"
             }
           ],
           "internalType": "struct ICrunaManager.PluginConfig",
@@ -1250,14 +1164,9 @@
     {
       "inputs": [
         {
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "salt",
-          "type": "bytes4"
+          "internalType": "bytes32",
+          "name": "key_",
+          "type": "bytes32"
         }
       ],
       "name": "pluginIndex",
@@ -1271,6 +1180,35 @@
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "nameId_",
+          "type": "bytes4"
+        },
+        {
+          "internalType": "address",
+          "name": "impl_",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes4",
+          "name": "salt_",
+          "type": "bytes4"
+        }
+      ],
+      "name": "pluginKey",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
         }
       ],
       "stateMutability": "view",
@@ -1384,14 +1322,9 @@
     {
       "inputs": [
         {
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "_salt",
-          "type": "bytes4"
+          "internalType": "bytes32",
+          "name": "key_",
+          "type": "bytes32"
         }
       ],
       "name": "pseudoAddress",
@@ -1465,6 +1398,19 @@
           "name": "",
           "type": "address"
         },
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "salt",
+      "outputs": [
         {
           "internalType": "bytes32",
           "name": "",
@@ -1611,14 +1557,9 @@
     {
       "inputs": [
         {
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "internalType": "bytes4",
-          "name": "salt",
-          "type": "bytes4"
+          "internalType": "bytes32",
+          "name": "key_",
+          "type": "bytes32"
         }
       ],
       "name": "trustPlugin",
@@ -2647,6 +2588,32 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "salt",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "serviceKey",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -3363,9 +3330,9 @@
       "inputs": [
         {
           "indexed": true,
-          "internalType": "bytes4",
-          "name": "pluginNameId",
-          "type": "bytes4"
+          "internalType": "bytes32",
+          "name": "key",
+          "type": "bytes32"
         },
         {
           "indexed": true,
@@ -4209,9 +4176,9 @@
     {
       "inputs": [
         {
-          "internalType": "bytes4",
-          "name": "pluginNameId",
-          "type": "bytes4"
+          "internalType": "bytes32",
+          "name": "key",
+          "type": "bytes32"
         },
         {
           "internalType": "uint256",
@@ -4853,14 +4820,14 @@
           "type": "uint256"
         },
         {
-          "internalType": "address[]",
-          "name": "proposers",
-          "type": "address[]"
+          "internalType": "address",
+          "name": "firstProposer",
+          "type": "address"
         },
         {
-          "internalType": "address[]",
-          "name": "executors",
-          "type": "address[]"
+          "internalType": "address",
+          "name": "firstExecutor",
+          "type": "address"
         },
         {
           "internalType": "address",
@@ -4873,28 +4840,12 @@
     },
     {
       "inputs": [],
-      "name": "AccessControlBadConfirmation",
-      "type": "error"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        },
-        {
-          "internalType": "bytes32",
-          "name": "neededRole",
-          "type": "bytes32"
-        }
-      ],
-      "name": "AccessControlUnauthorizedAccount",
+      "name": "AlreadyProposed",
       "type": "error"
     },
     {
       "inputs": [],
-      "name": "FailedInnerCall",
+      "name": "Forbidden",
       "type": "error"
     },
     {
@@ -4904,178 +4855,76 @@
     },
     {
       "inputs": [],
-      "name": "MustCallThroughTimeController",
+      "name": "InvalidDelay",
       "type": "error"
     },
     {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "delay",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "minDelay",
-          "type": "uint256"
-        }
-      ],
-      "name": "TimelockInsufficientDelay",
+      "inputs": [],
+      "name": "InvalidRequest",
       "type": "error"
     },
     {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "targets",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "payloads",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "values",
-          "type": "uint256"
-        }
-      ],
-      "name": "TimelockInvalidOperationLength",
+      "inputs": [],
+      "name": "ProposalNotFound",
       "type": "error"
     },
     {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "caller",
-          "type": "address"
-        }
-      ],
-      "name": "TimelockUnauthorizedCaller",
-      "type": "error"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "predecessorId",
-          "type": "bytes32"
-        }
-      ],
-      "name": "TimelockUnexecutedPredecessor",
-      "type": "error"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "operationId",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "bytes32",
-          "name": "expectedStates",
-          "type": "bytes32"
-        }
-      ],
-      "name": "TimelockUnexpectedOperationState",
+      "inputs": [],
+      "name": "TooEarlyToExecute",
       "type": "error"
     },
     {
       "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
+          "indexed": false,
           "internalType": "bytes32",
-          "name": "id",
+          "name": "operation",
           "type": "bytes32"
-        },
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "index",
-          "type": "uint256"
         },
         {
           "indexed": false,
           "internalType": "address",
-          "name": "target",
+          "name": "executor",
           "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "value",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "bytes",
-          "name": "data",
-          "type": "bytes"
         }
       ],
-      "name": "CallExecuted",
+      "name": "OperationCancelled",
       "type": "event"
     },
     {
       "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
+          "indexed": false,
           "internalType": "bytes32",
-          "name": "id",
+          "name": "operation",
           "type": "bytes32"
         },
         {
           "indexed": false,
-          "internalType": "bytes32",
-          "name": "salt",
-          "type": "bytes32"
+          "internalType": "address",
+          "name": "executor",
+          "type": "address"
         }
       ],
-      "name": "CallSalt",
+      "name": "OperationExecuted",
       "type": "event"
     },
     {
       "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
+          "indexed": false,
           "internalType": "bytes32",
-          "name": "id",
+          "name": "operation",
           "type": "bytes32"
-        },
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "index",
-          "type": "uint256"
         },
         {
           "indexed": false,
           "internalType": "address",
-          "name": "target",
+          "name": "proposer",
           "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "value",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "bytes",
-          "name": "data",
-          "type": "bytes"
-        },
-        {
-          "indexed": false,
-          "internalType": "bytes32",
-          "name": "predecessor",
-          "type": "bytes32"
         },
         {
           "indexed": false,
@@ -5084,125 +4933,12 @@
           "type": "uint256"
         }
       ],
-      "name": "CallScheduled",
+      "name": "OperationProposed",
       "type": "event"
     },
     {
       "anonymous": false,
       "inputs": [
-        {
-          "indexed": true,
-          "internalType": "bytes32",
-          "name": "id",
-          "type": "bytes32"
-        }
-      ],
-      "name": "Cancelled",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "oldDuration",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "newDuration",
-          "type": "uint256"
-        }
-      ],
-      "name": "MinDelayChange",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "bytes32",
-          "name": "role",
-          "type": "bytes32"
-        },
-        {
-          "indexed": true,
-          "internalType": "bytes32",
-          "name": "previousAdminRole",
-          "type": "bytes32"
-        },
-        {
-          "indexed": true,
-          "internalType": "bytes32",
-          "name": "newAdminRole",
-          "type": "bytes32"
-        }
-      ],
-      "name": "RoleAdminChanged",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "bytes32",
-          "name": "role",
-          "type": "bytes32"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "sender",
-          "type": "address"
-        }
-      ],
-      "name": "RoleGranted",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "bytes32",
-          "name": "role",
-          "type": "bytes32"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "sender",
-          "type": "address"
-        }
-      ],
-      "name": "RoleRevoked",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "bytes4",
-          "name": "nameId",
-          "type": "bytes4"
-        },
         {
           "indexed": true,
           "internalType": "address",
@@ -5216,138 +4952,45 @@
           "type": "bool"
         }
       ],
-      "name": "TrustedImplementationUpdated",
+      "name": "Trusted",
       "type": "event"
     },
     {
       "inputs": [],
-      "name": "CANCELLER_ROLE",
+      "name": "getAdmin",
       "outputs": [
-        {
-          "internalType": "bytes32",
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "DEFAULT_ADMIN_ROLE",
-      "outputs": [
-        {
-          "internalType": "bytes32",
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "EXECUTOR_ROLE",
-      "outputs": [
-        {
-          "internalType": "bytes32",
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "PROPOSER_ROLE",
-      "outputs": [
-        {
-          "internalType": "bytes32",
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "id",
-          "type": "bytes32"
-        }
-      ],
-      "name": "cancel",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
         {
           "internalType": "address",
-          "name": "target",
+          "name": "",
           "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "value",
-          "type": "uint256"
-        },
-        {
-          "internalType": "bytes",
-          "name": "payload",
-          "type": "bytes"
-        },
-        {
-          "internalType": "bytes32",
-          "name": "predecessor",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "bytes32",
-          "name": "salt",
-          "type": "bytes32"
         }
       ],
-      "name": "execute",
-      "outputs": [],
-      "stateMutability": "payable",
+      "stateMutability": "view",
       "type": "function"
     },
     {
-      "inputs": [
+      "inputs": [],
+      "name": "getAuthorized",
+      "outputs": [
         {
-          "internalType": "address[]",
-          "name": "targets",
-          "type": "address[]"
-        },
-        {
-          "internalType": "uint256[]",
-          "name": "values",
-          "type": "uint256[]"
-        },
-        {
-          "internalType": "bytes[]",
-          "name": "payloads",
-          "type": "bytes[]"
-        },
-        {
-          "internalType": "bytes32",
-          "name": "predecessor",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "bytes32",
-          "name": "salt",
-          "type": "bytes32"
+          "components": [
+            {
+              "internalType": "address",
+              "name": "addr",
+              "type": "address"
+            },
+            {
+              "internalType": "enum ITimeControlledGovernance.Role",
+              "name": "role",
+              "type": "uint8"
+            }
+          ],
+          "internalType": "struct ITimeControlledGovernance.Authorized[]",
+          "name": "",
+          "type": "tuple[]"
         }
       ],
-      "name": "executeBatch",
-      "outputs": [],
-      "stateMutability": "payable",
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -5367,485 +5010,95 @@
       "inputs": [
         {
           "internalType": "bytes32",
-          "name": "id",
+          "name": "operation",
           "type": "bytes32"
         }
       ],
-      "name": "getOperationState",
+      "name": "getOperation",
       "outputs": [
         {
-          "internalType": "enum TimelockController.OperationState",
+          "internalType": "uint256",
           "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceAdmin",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "delay",
+          "type": "uint256"
+        },
+        {
+          "internalType": "enum ITimeControlledGovernance.OperationType",
+          "name": "oType",
           "type": "uint8"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "role",
-          "type": "bytes32"
-        }
-      ],
-      "name": "getRoleAdmin",
-      "outputs": [
-        {
-          "internalType": "bytes32",
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "id",
-          "type": "bytes32"
-        }
-      ],
-      "name": "getTimestamp",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "role",
-          "type": "bytes32"
         },
         {
           "internalType": "address",
-          "name": "account",
+          "name": "toBeAuthorized",
           "type": "address"
+        },
+        {
+          "internalType": "enum ITimeControlledGovernance.Role",
+          "name": "role",
+          "type": "uint8"
+        },
+        {
+          "internalType": "bool",
+          "name": "active",
+          "type": "bool"
         }
       ],
-      "name": "grantRole",
+      "name": "setAuthorized",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
     {
       "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "role",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        }
-      ],
-      "name": "hasRole",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "target",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "value",
-          "type": "uint256"
-        },
-        {
-          "internalType": "bytes",
-          "name": "data",
-          "type": "bytes"
-        },
-        {
-          "internalType": "bytes32",
-          "name": "predecessor",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "bytes32",
-          "name": "salt",
-          "type": "bytes32"
-        }
-      ],
-      "name": "hashOperation",
-      "outputs": [
-        {
-          "internalType": "bytes32",
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "stateMutability": "pure",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address[]",
-          "name": "targets",
-          "type": "address[]"
-        },
-        {
-          "internalType": "uint256[]",
-          "name": "values",
-          "type": "uint256[]"
-        },
-        {
-          "internalType": "bytes[]",
-          "name": "payloads",
-          "type": "bytes[]"
-        },
-        {
-          "internalType": "bytes32",
-          "name": "predecessor",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "bytes32",
-          "name": "salt",
-          "type": "bytes32"
-        }
-      ],
-      "name": "hashOperationBatch",
-      "outputs": [
-        {
-          "internalType": "bytes32",
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "stateMutability": "pure",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "id",
-          "type": "bytes32"
-        }
-      ],
-      "name": "isOperation",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "id",
-          "type": "bytes32"
-        }
-      ],
-      "name": "isOperationDone",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "id",
-          "type": "bytes32"
-        }
-      ],
-      "name": "isOperationPending",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "id",
-          "type": "bytes32"
-        }
-      ],
-      "name": "isOperationReady",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256[]",
-          "name": "",
-          "type": "uint256[]"
-        },
-        {
-          "internalType": "uint256[]",
-          "name": "",
-          "type": "uint256[]"
-        },
-        {
-          "internalType": "bytes",
-          "name": "",
-          "type": "bytes"
-        }
-      ],
-      "name": "onERC1155BatchReceived",
-      "outputs": [
-        {
-          "internalType": "bytes4",
-          "name": "",
-          "type": "bytes4"
-        }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        },
-        {
-          "internalType": "bytes",
-          "name": "",
-          "type": "bytes"
-        }
-      ],
-      "name": "onERC1155Received",
-      "outputs": [
-        {
-          "internalType": "bytes4",
-          "name": "",
-          "type": "bytes4"
-        }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        },
-        {
-          "internalType": "bytes",
-          "name": "",
-          "type": "bytes"
-        }
-      ],
-      "name": "onERC721Received",
-      "outputs": [
-        {
-          "internalType": "bytes4",
-          "name": "",
-          "type": "bytes4"
-        }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "role",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "address",
-          "name": "callerConfirmation",
-          "type": "address"
-        }
-      ],
-      "name": "renounceRole",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "role",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        }
-      ],
-      "name": "revokeRole",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "target",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "value",
-          "type": "uint256"
-        },
-        {
-          "internalType": "bytes",
-          "name": "data",
-          "type": "bytes"
-        },
-        {
-          "internalType": "bytes32",
-          "name": "predecessor",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "bytes32",
-          "name": "salt",
-          "type": "bytes32"
-        },
         {
           "internalType": "uint256",
           "name": "delay",
           "type": "uint256"
+        },
+        {
+          "internalType": "enum ITimeControlledGovernance.OperationType",
+          "name": "oType",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "minDelay",
+          "type": "uint256"
         }
       ],
-      "name": "schedule",
+      "name": "setMinDelay",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
     {
       "inputs": [
-        {
-          "internalType": "address[]",
-          "name": "targets",
-          "type": "address[]"
-        },
-        {
-          "internalType": "uint256[]",
-          "name": "values",
-          "type": "uint256[]"
-        },
-        {
-          "internalType": "bytes[]",
-          "name": "payloads",
-          "type": "bytes[]"
-        },
-        {
-          "internalType": "bytes32",
-          "name": "predecessor",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "bytes32",
-          "name": "salt",
-          "type": "bytes32"
-        },
         {
           "internalType": "uint256",
           "name": "delay",
           "type": "uint256"
-        }
-      ],
-      "name": "scheduleBatch",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
+        },
         {
-          "internalType": "bytes4",
-          "name": "nameId",
-          "type": "bytes4"
+          "internalType": "enum ITimeControlledGovernance.OperationType",
+          "name": "oType",
+          "type": "uint8"
         },
         {
           "internalType": "address",
@@ -5854,48 +5107,24 @@
         },
         {
           "internalType": "bool",
-          "name": "trusted",
+          "name": "trusted_",
           "type": "bool"
         }
       ],
-      "name": "setTrustedImplementation",
+      "name": "trust",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
     {
       "inputs": [
-        {
-          "internalType": "bytes4",
-          "name": "interfaceId",
-          "type": "bytes4"
-        }
-      ],
-      "name": "supportsInterface",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes4",
-          "name": "nameId",
-          "type": "bytes4"
-        },
         {
           "internalType": "address",
           "name": "implementation",
           "type": "address"
         }
       ],
-      "name": "trustedImplementation",
+      "name": "trusted",
       "outputs": [
         {
           "internalType": "bool",
@@ -5904,19 +5133,6 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "newDelay",
-          "type": "uint256"
-        }
-      ],
-      "name": "updateDelay",
-      "outputs": [],
-      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -5931,10 +5147,6 @@
       ],
       "stateMutability": "pure",
       "type": "function"
-    },
-    {
-      "stateMutability": "payable",
-      "type": "receive"
     }
   ],
   "VaultFactory": [

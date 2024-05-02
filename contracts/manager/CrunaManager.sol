@@ -210,7 +210,7 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployer {
       revert PluginNumberOverflow();
     }
     if (_pluginByKey[key_].deployed && !_pluginByKey[key_].unplugged) revert PluginAlreadyPlugged();
-    bool trusted = _crunaGuardian().trustedImplementation(_nameIdFromKey(key_), _implFromKey(key_));
+    bool trusted = _crunaGuardian().trusted(_implFromKey(key_));
     if (!trusted)
       if (canManageTransfer)
         if (!TrustedLib.areUntrustedImplementationsAllowed()) {
@@ -273,7 +273,7 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployer {
   function trustPlugin(bytes32 key_) external virtual override onlyTokenOwner {
     if (!_pluginByKey[key_].deployed) revert PluginNotFound();
     if (_pluginByKey[key_].trusted) revert PluginAlreadyTrusted();
-    if (_crunaGuardian().trustedImplementation(_nameIdFromKey(key_), _implFromKey(key_))) {
+    if (_crunaGuardian().trusted(_implFromKey(key_))) {
       _pluginByKey[key_].trusted = true;
       emit PluginTrusted(key_);
     } else revert StillUntrusted(key_);

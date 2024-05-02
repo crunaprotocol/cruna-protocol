@@ -17,6 +17,10 @@ function debug(...params) {
 
 let count = 9000;
 
+const PROPOSAL = 0;
+const CANCELLATION = 1;
+const EXECUTION = 2;
+
 const Helpers = {
   async number(bn) {
     return (await bn).toNumber();
@@ -338,7 +342,7 @@ const Helpers = {
     return types;
   },
 
-  async trustImplementation(guardian, proposer, executor, delay, nameId, implementation, trusted) {
+  async trustImplementationV0(guardian, proposer, executor, delay, nameId, implementation, trusted) {
     return thiz.proposeAndExecute(
       guardian,
       proposer,
@@ -349,6 +353,20 @@ const Helpers = {
       implementation,
       trusted,
     );
+  },
+
+  async trustImplementation(guardian, proposer, executor, delay, implementation, trusted) {
+    const bytes = ethers.utils.defaultAbiCoder.encode(
+      ["bytes4", "address", "bool"],
+      [await thiz.selectorId("ICrunaGuardian", "trust"), implementation, trusted],
+    );
+    const operation = ethers.utils.keccak256(bytes);
+    await expect(guardian.connect(proposer).trust(delay, PROPOSAL, implementation, trusted))
+      .emit(guardian, "OperationProposed")
+      .withArgs(operation, proposer.address, delay);
+    await ethers.provider.send("evm_increaseTime", [delay + 1]);
+    await ethers.provider.send("evm_mine");
+    await guardian.connect(executor).trust(delay, EXECUTION, implementation, trusted);
   },
 
   async proposeAndExecute(contract, proposer, executor, delay, funcName, ...params) {

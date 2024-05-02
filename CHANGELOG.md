@@ -1,10 +1,12 @@
 # Change log
 
 **0.7.0**
-- Remove `Canonical` in favor of `GuardianInstance`, with registries hardcoded in `Deployed`
+- Remove `Canonical` in favor of `GuardianInstance` (for the guardians) and `Deployed` which now hardcodes the addresses of `ERC7656Registry` and `ERC6551Registry` contracts
+- Add a `TimeControlledGovernance` contract to replace OpenZeppelin's `TimelockController` contracts, which is more complete but also larger 
+- Simplify `CrunaGuardian` and use `TimeControlledGovernance` to manage the governance
 
 **0.6.2**
-- New canonical address for ERC7656Registry due to errors verifying the source code on Ethereum mainnet 
+- New canonical address for ERC7656Registry due to errors verifying the source code on Ethereum mainnet
 
 **0.6.1**
 - Minor improvements in the `CrunaManagedService` to avoid overriding `_conf.manager` if unnecessary
