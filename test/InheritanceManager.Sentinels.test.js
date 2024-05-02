@@ -408,7 +408,7 @@ describe("Sentinel and Inheritance", function () {
       .withArgs(bob.address, 1, 12, 4, addr0);
   });
 
-  it.only("should set up 5 sentinels and an inheritance with a quorum 3", async function () {
+  it("should set up 5 sentinels and an inheritance with a quorum 3", async function () {
     const tokenId = await buyAVaultAndPlug(bob);
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
@@ -515,7 +515,6 @@ describe("Sentinel and Inheritance", function () {
     expect(data[1].lastProofOfLife).to.equal(lastTs);
 
     // new attempt
-
     await increaseBlockTimestampBy(12 * 7 * days);
     await inheritancePlugin.connect(mark).voteForBeneficiary(beneficiary1.address);
     await inheritancePlugin.connect(fred).voteForBeneficiary(beneficiary1.address);
@@ -526,13 +525,11 @@ describe("Sentinel and Inheritance", function () {
     );
 
     // we plug a few extra services before inheriting, to test the call to reset
-
     await expect(
       manager
         .connect(bob)
         .plug(pluginKey("InheritanceCrunaPlugin", inheritancePluginProxy.address, "0x99999999"), false, false, dataBytes, 0, 0, 0),
     ).to.emit(manager, "PluginStatusChange");
-
     const impl = await deployContract("SomeInheritancePlugin");
     const proxy = await deployContract("InheritanceCrunaPluginProxy", impl.address);
     await expect(
@@ -558,7 +555,6 @@ describe("Sentinel and Inheritance", function () {
     await expect(inheritancePlugin.connect(beneficiary1).inherit())
       .to.emit(vault, "ManagedTransfer")
       .withArgs(pluginKey32, tokenId);
-
     data = await inheritancePlugin.getSentinelsAndInheritanceData();
     expect(data[0].length).to.equal(0);
     expect(data[1].quorum).to.equal(0);

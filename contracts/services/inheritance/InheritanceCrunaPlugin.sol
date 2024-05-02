@@ -185,7 +185,7 @@ contract InheritanceCrunaPlugin is
     if (_inheritanceConf.beneficiary != _msgSender()) revert NotTheBeneficiary();
     _checkIfStillAlive();
     _resetService();
-    _conf.manager.managedTransfer(_nameId(), _msgSender());
+    _conf.manager.managedTransfer(_serviceKey(), _msgSender());
   }
 
   /// @dev see {ICrunaManagedService.sol-reset}
