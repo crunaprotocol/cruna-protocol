@@ -110,6 +110,8 @@ describe("Sentinel and Inheritance", function () {
     await expect((await manager.pluginByKey(pluginKey32)).deployed).to.be.false;
     await expect(manager.pluginByIndex(0)).revertedWith("IndexOutOfBounds");
 
+    expect(await manager.pluginKey(PLUGIN_ID, inheritancePluginProxy.address, salt)).to.equal(pluginKey32);
+
     if (withProtectors) {
       ts = (await getTimestamp()) - 100;
       let signature = (

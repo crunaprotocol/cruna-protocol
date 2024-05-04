@@ -52,7 +52,7 @@ abstract contract CrunaManagerBase is ICrunaManager, GuardianInstance, CommonBas
   function migrate(uint256 previousVersion) external virtual;
 
   function pluginKey(bytes4 nameId_, address impl_, bytes4 salt_) external view virtual returns (bytes32) {
-    return _pluginKey(salt_, impl_, nameId_);
+    return _pluginKey(nameId_, impl_, salt_);
   }
 
   function _pluginKey(bytes4 nameId_, address impl_, bytes4 salt_) internal view virtual returns (bytes32) {

@@ -25,10 +25,10 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   GuardianInstance.sol                |      100 |      100 |      100 |      100 
   ManagerConstants.sol                |      100 |      100 |      100 |      100 
   TrustedLib.sol                      |      100 |        0 |      100 |      100 
- manager/                             |    98.63 |    75.26 |    95.71 |    97.61 
+ manager/                             |    99.54 |    75.26 |    98.57 |    98.41 
   Actor.sol                           |      100 |    57.14 |      100 |      100 
   CrunaManager.sol                    |    99.44 |    77.44 |       98 |    98.03 
-  CrunaManagerBase.sol                |       90 |    66.67 |    81.82 |    90.91 
+  CrunaManagerBase.sol                |      100 |    66.67 |      100 |      100 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   ICrunaManager.sol                   |      100 |      100 |      100 |      100 
  services/                            |      100 |       75 |      100 |      100 
@@ -56,6 +56,6 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   IVersioned.sol                      |      100 |      100 |      100 |      100 
   SignatureValidator.sol              |      100 |    86.36 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |     98.4 |    71.15 |     98.1 |    97.72 
+All files                             |    98.75 |    71.15 |    99.05 |    98.02 
 --------------------------------------|----------|----------|----------|----------
 ```
