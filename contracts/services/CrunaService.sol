@@ -12,9 +12,11 @@ import {CommonBase} from "../utils/CommonBase.sol";
  * @notice Base contract for services
  */
 abstract contract CrunaService is ICrunaService, CommonBase {
-  function _onBeforeInit(bytes memory data) internal virtual {
-    // does nothing
-  }
+  /**
+   * @notice The function to be executed before init
+   * @dev must be implemented in the service
+   */
+  function _onBeforeInit(bytes memory data) internal virtual;
 
   /// @dev see {ICrunaManagedService.sol-init}
   function init(bytes memory data) external virtual {

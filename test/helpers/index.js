@@ -190,7 +190,13 @@ const Helpers = {
   },
 
   pluginKey(name, impl, salt) {
-    return salt + "0000" + impl.substring(2).toLowerCase() + "0000" + Helpers.bytes4(Helpers.keccak256(name)).substring(2);
+    return (
+      salt.substring(0, 10) +
+      "0000" +
+      impl.substring(2).toLowerCase() +
+      "0000" +
+      Helpers.bytes4(Helpers.keccak256(name)).substring(2)
+    );
   },
 
   combineBytes4ToBytes32(bytes4value1, bytes4value2) {

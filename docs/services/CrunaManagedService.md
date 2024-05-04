@@ -26,6 +26,10 @@ Verifies that the plugin must not be reset
 function _onBeforeInit(bytes data) internal virtual
 ```
 
+The function to be executed before init
+
+_must be implemented in the service_
+
 ### init
 
 ```solidity

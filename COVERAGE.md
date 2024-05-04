@@ -6,10 +6,10 @@
 --------------------------------------|----------|----------|----------|----------
 File                                  |  % Stmts | % Branch |  % Funcs |  % Lines 
 --------------------------------------|----------|----------|----------|----------
- erc/                                 |    92.59 |       70 |      100 |    96.55 
+ erc/                                 |    88.89 |       70 |    94.12 |     93.1 
   ERC6551AccountProxy.sol             |       90 |       75 |      100 |    90.91 
   ERC7656Contract.sol                 |    93.75 |       50 |      100 |      100 
-  ERC7656Registry.sol                 |      100 |      100 |      100 |      100 
+  ERC7656Registry.sol                 |        0 |      100 |    66.67 |    66.67 
   IERC6454.sol                        |      100 |      100 |      100 |      100 
   IERC6982.sol                        |      100 |      100 |      100 |      100 
   IERC7656Contract.sol                |      100 |      100 |      100 |      100 
@@ -31,17 +31,17 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   CrunaManagerBase.sol                |       90 |    66.67 |    81.82 |    90.91 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   ICrunaManager.sol                   |      100 |      100 |      100 |      100 
- services/                            |    92.59 |       75 |    88.46 |    93.33 
+ services/                            |      100 |       75 |      100 |      100 
   CrunaManagedService.sol             |      100 |       80 |      100 |      100 
-  CrunaService.sol                    |       75 |       50 |     62.5 |       75 
+  CrunaService.sol                    |      100 |       50 |      100 |      100 
   ICrunaManagedService.sol            |      100 |      100 |      100 |      100 
   ICrunaService.sol                   |      100 |      100 |      100 |      100 
- services/inheritance/                |    92.08 |    67.31 |    96.15 |    88.81 
+ services/inheritance/                |    99.01 |    72.12 |      100 |    96.27 
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
-  InheritanceCrunaPlugin.sol          |    92.08 |    67.31 |       96 |    88.81 
+  InheritanceCrunaPlugin.sol          |    99.01 |    72.12 |      100 |    96.27 
   InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
- token/                               |    98.67 |    63.89 |      100 |    98.81 
-  CrunaProtectedNFT.sol               |    98.57 |     62.5 |      100 |    98.75 
+ token/                               |    98.67 |    69.44 |      100 |    98.81 
+  CrunaProtectedNFT.sol               |    98.57 |    68.75 |      100 |    98.75 
   CrunaProtectedNFTOwnable.sol        |      100 |       50 |      100 |      100 
   CrunaProtectedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaProtectedNFT.sol              |      100 |      100 |      100 |      100 
@@ -56,6 +56,6 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   IVersioned.sol                      |      100 |      100 |      100 |      100 
   SignatureValidator.sol              |      100 |    86.36 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    96.98 |    69.37 |     96.7 |    96.05 
+All files                             |     98.4 |    71.15 |     98.1 |    97.72 
 --------------------------------------|----------|----------|----------|----------
 ```

@@ -7,4 +7,8 @@ contract CrunaManagedServiceMock is CrunaManagedService {
   function _nameId() internal pure virtual override returns (bytes4) {
     return bytes4(keccak256("CrunaManagedServiceMock"));
   }
+
+  function _onBeforeInit(bytes memory data) internal override {
+    // do nothing
+  }
 }

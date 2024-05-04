@@ -271,6 +271,10 @@ contract InheritanceCrunaPlugin is
 
   // Internal functions
 
+  function _onBeforeInit(bytes memory data) internal override {
+    // do nothing
+  }
+
   function _version() internal pure virtual override returns (uint256) {
     return 1_001_000;
   }

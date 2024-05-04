@@ -28,9 +28,11 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
     _;
   }
 
-  function _onBeforeInit(bytes memory data) internal virtual {
-    // does nothing, override if needed
-  }
+  /**
+   * @notice The function to be executed before init
+   * @dev must be implemented in the service
+   */
+  function _onBeforeInit(bytes memory data) internal virtual;
 
   /// @dev see {ICrunaManagedService.sol-init}
   function init(bytes memory data) external {

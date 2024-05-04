@@ -1026,6 +1026,16 @@ describe("Sentinel and Inheritance", function () {
 
     await expect(inheritancePlugin.voteForBeneficiary(beneficiary2.address)).to.be.revertedWith("NotASentinel");
 
+    await expect(inheritancePlugin.connect(mark).voteForBeneficiary(addr0)).revertedWith("NoVoteToRetire");
+
+    await expect(inheritancePlugin.connect(mark).voteForBeneficiary(beneficiary2.address))
+      .to.emit(inheritancePlugin, "VotedForBeneficiary")
+      .withArgs(mark.address, beneficiary2.address);
+
+    await expect(inheritancePlugin.connect(mark).voteForBeneficiary(addr0))
+      .to.emit(inheritancePlugin, "VotedForBeneficiary")
+      .withArgs(mark.address, addr0);
+
     await expect(inheritancePlugin.connect(mark).voteForBeneficiary(beneficiary2.address))
       .to.emit(inheritancePlugin, "VotedForBeneficiary")
       .withArgs(mark.address, beneficiary2.address);

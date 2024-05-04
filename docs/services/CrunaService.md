@@ -10,6 +10,10 @@ Base contract for services
 function _onBeforeInit(bytes data) internal virtual
 ```
 
+The function to be executed before init
+
+_must be implemented in the service_
+
 ### init
 
 ```solidity

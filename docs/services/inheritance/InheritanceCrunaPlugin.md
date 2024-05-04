@@ -201,6 +201,16 @@ Upgrades the implementation of the plugin
 | ---- | ---- | ----------- |
 | implementation_ | address | The new implementation |
 
+### _onBeforeInit
+
+```solidity
+function _onBeforeInit(bytes data) internal
+```
+
+The function to be executed before init
+
+_must be implemented in the service_
+
 ### _version
 
 ```solidity
