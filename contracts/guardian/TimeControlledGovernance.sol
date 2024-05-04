@@ -10,13 +10,26 @@ import {ITimeControlledGovernance} from "./ITimeControlledGovernance.sol";
  * @notice An optimized time controlled proposers/executors contract
  */
 contract TimeControlledGovernance is ITimeControlledGovernance {
+  /**
+   * @notice The minimum delay for time lock operations
+   */
   uint256 private _minDelay;
+  /**
+   * @notice The address that can admin the contract.
+   * It should renounce to the role, as soon as possible.
+   */
   address private _admin;
 
-  // the array should not contain too many elements to avoid
-  // out-of-gas issues when looping over it
+  /**
+   * @notice The authorized addresses
+   * the array should not contain too many elements to avoid
+   * out-of-gas issues when looping over it
+   */
   Authorized[] private _authorized;
 
+  /**
+   * @notice The operations by encoded parameters of the operation
+   */
   mapping(bytes32 => uint256) private _operations;
 
   /**
@@ -34,20 +47,35 @@ contract TimeControlledGovernance is ITimeControlledGovernance {
     _admin = admin;
   }
 
+  /**
+   * @notice Get the list of all authorized addresses
+   */
   function getAuthorized() public view override returns (Authorized[] memory) {
     return _authorized;
   }
 
+  /**
+   * @notice Get the min delay
+   */
   function getMinDelay() public view override returns (uint256) {
     return _minDelay;
   }
 
+  /**
+   * @notice Get the admin
+   */
   function getAdmin() public view override returns (address) {
     return _admin;
   }
 
+  /**
+   * @notice Check if an address is authorized
+   * @param sender The address to check
+   * @param role_ The role to check
+   */
   function isAuthorized(address sender, Role role_) public view returns (bool) {
-    for (uint256 i = 0; i < _authorized.length; ) {
+    uint256 len = _authorized.length;
+    for (uint256 i = 0; i < len; ) {
       if (_authorized[i].addr == sender)
         if (_authorized[i].role == role_ || role_ == Role.Any) return true;
       unchecked {
@@ -57,10 +85,14 @@ contract TimeControlledGovernance is ITimeControlledGovernance {
     return false;
   }
 
+  /**
+   * @notice Count the number of proposers and executors
+   */
   function countAuthorized() public view returns (uint256, uint256) {
     uint256 proposers;
     uint256 executors;
-    for (uint256 i = 0; i < _authorized.length; ) {
+    uint256 len = _authorized.length;
+    for (uint256 i = 0; i < len; ) {
       if (_authorized[i].role == Role.Proposer) proposers++;
       else if (_authorized[i].role == Role.Executor) executors++;
       unchecked {
@@ -70,6 +102,12 @@ contract TimeControlledGovernance is ITimeControlledGovernance {
     return (proposers, executors);
   }
 
+  /**
+   * @notice Set the min delay
+   * @param delay The delay before the operation can be executed
+   * @param oType The type of operation
+   * @param minDelay The new min delay
+   */
   function setMinDelay(uint256 delay, OperationType oType, uint256 minDelay) external override {
     bytes32 operation = keccak256(abi.encode(this.setMinDelay.selector, minDelay));
     if (_canExecute(delay, oType, operation)) {
@@ -77,12 +115,23 @@ contract TimeControlledGovernance is ITimeControlledGovernance {
     }
   }
 
+  /**
+   * @notice Renounce the admin role
+   */
   function renounceAdmin() external override {
     if (msg.sender != _admin) revert Forbidden();
     _admin = address(0);
     emit AdminRenounced();
   }
 
+  /**
+   * @notice Authorize a new proposer/executor
+   * @param delay The delay before the operation can be executed
+   * @param oType The type of operation
+   * @param toBeAuthorized The address to be authorized
+   * @param role The role of the address
+   * @param active If true, the address is active, otherwise if to be removed
+   */
   function setAuthorized(uint256 delay, OperationType oType, address toBeAuthorized, Role role, bool active) external override {
     if (role == Role.Any) revert InvalidRole();
     if (active) {
@@ -114,6 +163,10 @@ contract TimeControlledGovernance is ITimeControlledGovernance {
     }
   }
 
+  /**
+   * @notice Get info about an operation
+   * @param operation The operation
+   */
   function getOperation(bytes32 operation) public view override returns (uint256) {
     return _operations[operation];
   }
@@ -131,7 +184,7 @@ contract TimeControlledGovernance is ITimeControlledGovernance {
       emit OperationProposed(operation, msg.sender, delay);
       return false;
     } else if (oType == OperationType.Cancellation) {
-      // anyone can cancel a proposal
+      // both proposers and executors can cancel a proposal
       if (!isAuthorized(msg.sender, Role.Any)) revert Forbidden();
       delete _operations[operation];
       emit OperationCancelled(operation, msg.sender);

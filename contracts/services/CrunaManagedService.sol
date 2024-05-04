@@ -47,7 +47,11 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
     return _conf.manager;
   }
 
-  /// @dev see {IVersioned-version}
+  /**
+   * @notice Returns the version of the contract.
+   * The format is similar to semver, where any element takes 3 digits.
+   * For example, version 1.2.14 is 1_002_014.
+   */
   function version() external pure virtual override returns (uint256) {
     return _version();
   }
@@ -101,7 +105,11 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
     return _conf.manager.isProtector(signer);
   }
 
-  /// @dev see {IVersioned-version}
+  /**
+   * @notice Returns the version of the contract.
+   * The format is similar to semver, where any element takes 3 digits.
+   * For example, version 1.2.14 is 1_002_014.
+   */
   function _version() internal pure virtual returns (uint256) {
     return 1_000_000;
   }

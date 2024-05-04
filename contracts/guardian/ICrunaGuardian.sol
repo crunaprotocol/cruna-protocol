@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {TimeControlledGovernance} from "../utils/TimeControlledGovernance.sol";
+import {TimeControlledGovernance} from "./TimeControlledGovernance.sol";
 
 /**
  * @title ICrunaGuardian

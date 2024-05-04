@@ -37,71 +37,114 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployer {
    */
   mapping(bytes32 _pluginKey => PluginConfig pluginDetails) private _pluginByKey;
 
-  /// @dev see {IVersioned-version}
+  /**
+   * @notice Returns the version of the contract.
+   * The format is similar to semver, where any element takes 3 digits.
+   * For example, version 1.2.14 is 1_002_014.
+   */
   function version() external pure virtual override returns (uint256) {
     return 1_001_000;
   }
 
-  /// @dev see {ICrunaManager-pluginByKey}
+  /**
+   * @dev It returns the configuration of a plugin by key
+   * @param key The key of the plugin
+   */
   function pluginByKey(bytes32 key) external view returns (PluginConfig memory) {
     return _pluginByKey[key];
   }
 
-  /// @dev see {ICrunaManager-allPlugins}
+  /**
+   * @dev It returns the configuration of all currently plugged services
+   */
   function allPlugins() external view returns (bytes32[] memory) {
     return _allPlugins;
   }
 
-  /// @dev see {ICrunaManager-pluginByIndex}
+  /**
+   * @dev It returns an element of the array of all plugged services
+   * @param index The index of the plugin in the array
+   */
   function pluginByIndex(uint256 index) external view returns (bytes32) {
     if (index >= _allPlugins.length) revert IndexOutOfBounds();
     return _allPlugins[index];
   }
 
-  /// @dev see {ICrunaManager-migrate}
+  /**
+   * @dev During an upgrade allows the manager to perform adjustments if necessary.
+   * The parameter is the version of the manager being replaced. This will allow the
+   * new manager to know what to do to adjust the state of the new manager.
+   */
   function migrate(uint256 /* version */) external virtual override {
     if (_msgSender() != address(this)) revert Forbidden();
     // Nothing, for now, since this is the first version of the manager
   }
 
-  /// @dev see {ICrunaManager-findProtectorIndex}
+  /**
+   * @dev Find a specific protector
+   */
   function findProtectorIndex(address protector_) external view virtual override returns (uint256) {
     return _actorIndex(protector_, ManagerConstants.protectorId());
   }
 
-  /// @dev see {ICrunaManager-isProtector}
+  /**
+   * @dev Returns true if the address is a protector.
+   * @param protector_ The protector address.
+   */
   function isProtector(address protector_) external view virtual override returns (bool) {
     return _isActiveActor(protector_, ManagerConstants.protectorId());
   }
 
-  /// @dev see {ICrunaManager-hasProtectors}
+  /**
+   * @dev Returns true if there are protectors.
+   */
   function hasProtectors() external view virtual override returns (bool) {
     return _actorCount(ManagerConstants.protectorId()) != 0;
   }
 
-  /// @dev see {ICrunaManager-isTransferable}
+  /**
+   * @dev Returns true if the token is transferable (since the NFT is ERC6454)
+   * @param to The address of the recipient.
+   * If the recipient is a safe recipient, it returns true.
+   */
   function isTransferable(address to) external view override returns (bool) {
     return
       _actors[ManagerConstants.protectorId()].length == 0 ||
       _actorIndex(to, ManagerConstants.safeRecipientId()) != ManagerConstants.maxActors();
   }
 
-  /// @dev see {ICrunaManager-locked}
+  /**
+   * @dev Returns true if the token is locked (since the NFT is ERC6982)
+   */
   function locked() external view override returns (bool) {
     return _actors[ManagerConstants.protectorId()].length != 0;
   }
 
-  /// @dev see {ICrunaManager-countProtectors}
+  /**
+   * @dev Counts how many protectors have been set
+   */
   function countProtectors() external view virtual override returns (uint256) {
     return _actorCount(ManagerConstants.protectorId());
   }
 
-  /// @dev see {ICrunaManager-countSafeRecipients}
+  /**
+   * @dev Counts the safe recipients
+   */
   function countSafeRecipients() external view virtual override returns (uint256) {
     return _actorCount(ManagerConstants.safeRecipientId());
   }
 
-  /// @dev see {ICrunaManager-setProtector}
+  /**
+   * @dev Set a protector for the token
+   * @param protector_ The protector address
+   * @param status True to add a protector, false to remove it
+   * @param timestamp The timestamp of the signature
+   * @param validFor The validity of the signature
+   * @param signature The signature of the protector
+   * If no signature is required, the field timestamp must be 0
+   * If the operations has been pre-approved by the protector, the signature should be replaced
+   * by a shorter (invalid) one, to tell the signature validator to look for a pre-approval.
+   */
   function setProtector(
     address protector_,
     bool status,
@@ -123,7 +166,11 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployer {
     _emitLockeEvent(_actors[ManagerConstants.protectorId()].length, status);
   }
 
-  /// @dev see {ICrunaManager-importProtectorsAndSafeRecipientsFrom}
+  /**
+   * @dev Imports protectors and safe recipients from another tokenId owned by the same owner
+   * It requires that there are no protectors and no safe recipients in the current token, and
+   * that the origin token has at least one protector or one safe recipient.
+   */
   function importProtectorsAndSafeRecipientsFrom(uint256 otherTokenId) external virtual override onlyTokenOwner {
     if (_actorCount(ManagerConstants.protectorId()) != 0) revert ProtectorsAlreadySet();
     if (_actorCount(ManagerConstants.safeRecipientId()) != 0) revert SafeRecipientsAlreadySet();
@@ -152,12 +199,22 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployer {
     _emitLockeEvent(1, true);
   }
 
-  /// @dev see {ICrunaManager-getProtectors}
+  /**
+   * @dev get the list of all protectors
+   */
   function getProtectors() external view virtual override returns (address[] memory) {
     return _getActors(ManagerConstants.protectorId());
   }
 
-  /// @dev see {ICrunaManager-setSafeRecipient}
+  /**
+   * @dev Set a safe recipient for the token, i.e., an address that can receive the token without any restriction
+   * even when protectors have been set.
+   * @param recipient The recipient address
+   * @param status True to add a safe recipient, false to remove it
+   * @param timestamp The timestamp of the signature
+   * @param validFor The validity of the signature
+   * @param signature The signature of the protector
+   */
   function setSafeRecipient(
     address recipient,
     bool status,
@@ -178,12 +235,19 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployer {
     emit SafeRecipientChange(recipient, status);
   }
 
-  /// @dev see {ICrunaManager-isSafeRecipient}
+  /**
+   * @dev Check if an address is a safe recipient
+   * @param recipient The recipient address
+   * @return True if the recipient is a safe recipient
+   */
   function isSafeRecipient(address recipient) external view virtual override returns (bool) {
     return _actorIndex(recipient, ManagerConstants.safeRecipientId()) != ManagerConstants.maxActors();
   }
 
-  /// @dev see {ICrunaManager-getSafeRecipients}
+  /**
+   * @dev Gets all safe recipients
+   * @return An array with the list of all safe recipients
+   */
   function getSafeRecipients() external view virtual override returns (address[] memory) {
     return _getActors(ManagerConstants.safeRecipientId());
   }
@@ -194,7 +258,17 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployer {
    *
    */
 
-  /// @dev see {ICrunaManager-plug}
+  /**
+   * @dev It plugs a new plugin
+   * @param key_ The key of the plugin
+   * @param canManageTransfer True if the plugin can manage transfers
+   * @param isERC6551Account True if the plugin is an ERC6551 account
+   * @param data The data to be used during the initialization of the plugin
+   * Notice that data cannot be verified by the Manager since they are used by the plugin
+   * @param timestamp The timestamp of the signature
+   * @param validFor The validity of the signature
+   * @param signature The signature of the protector
+   */
   function plug(
     bytes32 key_,
     bool canManageTransfer,
@@ -230,7 +304,15 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployer {
     _plug(key_, canManageTransfer, isERC6551Account, data, trusted);
   }
 
-  /// @dev see {ICrunaManager-changePluginStatus}
+  /**
+   * @dev It changes the status of a plugin
+   * @param key_ The key of the plugin
+   * @param change The type of change
+   * @param timeLock_ The time lock for when a plugin is temporarily unauthorized from making transfers
+   * @param timestamp The timestamp of the signature
+   * @param validFor The validity of the signature
+   * @param signature The signature of the protector
+   */
   function changePluginStatus(
     bytes32 key_,
     PluginChange change,
@@ -269,7 +351,12 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployer {
     emit PluginStatusChange(key_, _pluginAddress(key_), uint256(change));
   }
 
-  /// @dev see {ICrunaManager-trustPlugin}
+  /**
+   * @dev It trusts a plugin
+   * @param key_ The key of the plugin
+   * No need for a signature by a protector because the safety of the plugin is
+   * guaranteed by the CrunaGuardian.
+   */
   function trustPlugin(bytes32 key_) external virtual override onlyTokenOwner {
     if (!_pluginByKey[key_].deployed) revert PluginNotFound();
     if (_pluginByKey[key_].trusted) revert PluginAlreadyTrusted();
@@ -279,38 +366,70 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployer {
     } else revert StillUntrusted(key_);
   }
 
-  /// @dev see {ICrunaManager-pluginAddress}
+  /**
+   * @dev It returns the address of a plugin
+   * @param key_ The key of the plugin
+   * The address is returned even if a plugin has not deployed yet.
+   * @return The plugin address
+   */
   function pluginAddress(bytes32 key_) external view virtual override returns (address payable) {
     return _pluginAddress(key_);
   }
 
-  /// @dev see {ICrunaManager-plugin}
+  /**
+   * @dev It returns a plugin by name and salt
+   * @param key_ The key of the plugin
+   * The plugin is returned even if a plugin has not deployed yet, which means that it will
+   * revert during the execution.
+   * @return The plugin
+   */
   function plugin(bytes32 key_) external view virtual override returns (CrunaManagedService) {
     return _plugin(key_);
   }
 
-  /// @dev see {ICrunaManager-countPlugins}
+  /**
+   * @dev It returns the number of services
+   */
   function countPlugins() external view virtual override returns (uint256, uint256) {
     return _countPlugins();
   }
 
-  /// @dev see {ICrunaManager-plugged}
+  /**
+   * @dev Says if a plugin is currently plugged
+   * @param key_ The key of the plugin
+   */
   function plugged(bytes32 key_) external view virtual returns (bool) {
     return _pluginByKey[key_].deployed && !_pluginByKey[key_].unplugged;
   }
 
-  /// @dev see {ICrunaManager-pluginIndex}
+  /**
+   * @dev Returns the index of a plugin
+   * @param key_ The key of the plugin
+   * @return a tuple with a true if the plugin is found, and the index of the plugin
+   */
   function pluginIndex(bytes32 key_) external view virtual returns (bool, uint256) {
     return _pluginIndex(key_);
   }
 
-  /// @dev see {ICrunaManager-isPluginActive}
+  /**
+   * @dev Checks if a plugin is active
+   * @param key_ The key of the plugin
+   * @return True if the plugin is active
+   */
   function isPluginActive(bytes32 key_) external view virtual returns (bool) {
     if (!_pluginByKey[key_].deployed) revert PluginNotFound();
     return _pluginByKey[key_].active;
   }
 
-  /// @dev see {ICrunaManager-listPluginsKeys}
+  /**
+   * @dev returns the list of services' keys
+   * Since the names of the services are not saved in the contract, the app calling for this function
+   * is responsible for knowing the names of all the services.
+   * In the future it would be good to have an official registry of all services to be able to reverse
+   * from the nameId to the name as a string.
+   * @param active True to get the list of active services, false to get the list of inactive services
+   * @return The list of services' keys
+   */
   function listPluginsKeys(bool active) external view virtual returns (bytes32[] memory) {
     (uint256 actives, uint256 disabled) = _countPlugins();
     bytes32[] memory _keys = new bytes32[](active ? actives : disabled);

@@ -28,7 +28,15 @@ abstract contract Deployer {
     return IERC6551Registry(0x000000006551c19487814612e58FE06813775758);
   }
 
-  /// @dev see {ICrunaProtectedNFT-isDeployed}
+  /**
+   * @notice Returns if a plugin is deployed
+   * @param implementation The address of the implementation
+   * @param salt The salt
+   * @param tokenId The tokenId
+   * @param isERC6551Account Specifies the registry to use
+   * True if the tokenId was deployed via ERC6551Registry,
+   * false, it was deployed via ERC7656Registry
+   */
   function _isDeployed(
     address implementation,
     bytes32 salt,

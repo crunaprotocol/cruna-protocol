@@ -48,7 +48,13 @@ abstract contract CrunaProtectedNFTTimeControlled is CrunaProtectedNFT, Timelock
     return super.supportsInterface(interfaceId);
   }
 
-  /// @dev see {CrunaProtectedNFT-_canManage}
+  /**
+   * @notice Specify if the caller can call some function.
+   * Must be overridden to specify who can manage changes during initialization and later
+   * @param isInitializing If true, the function is being called during initialization, if false,
+   * it is supposed to the called later. A time controlled NFT can allow the admin to call some
+   * functions during the initialization, requiring later a standard proposal/execition process.
+   */
   function _canManage(bool isInitializing) internal view virtual override {
     if (isInitializing) {
       if (!hasRole(DEFAULT_ADMIN_ROLE, _msgSender())) revert NotAuthorized();

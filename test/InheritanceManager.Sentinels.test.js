@@ -172,14 +172,16 @@ describe("Sentinel and Inheritance", function () {
 
       // console.log("signature.length", signature.length)
 
-      expect(await vault.isDeployed(inheritancePluginProxy.address, ethers.constants.HashZero, nextTokenId, false)).to.be.false;
+      // let key = pluginKey("0x00000000", managerProxy.address, "0x00000000");
+
+      expect(await vault.isDeployed(pluginKey32, nextTokenId, false)).to.be.false;
 
       await expect(manager.connect(bob).plug(pluginKey32, trust, false, dataBytes, ts, 3600, signature)).to.emit(
         manager,
         "PluginStatusChange",
       );
 
-      expect(await vault.isDeployed(inheritancePluginProxy.address, salt + "0".repeat(56), nextTokenId, false)).to.be.true;
+      expect(await vault.isDeployed(pluginKey32, nextTokenId, false)).to.be.true;
     } else {
       if (!trust) {
         await expect(manager.connect(bob).plug(pluginKey32, true, false, dataBytes, 0, 0, 0)).revertedWith(

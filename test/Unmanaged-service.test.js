@@ -13,9 +13,9 @@ const {
   getChainId,
   deployContract,
   getTimestamp,
-  executeAndReturnGasCost,
-  signRequest,
-  selectorId,
+  pluginKey,
+  bytes4,
+  keccak256,
   deployCanonical,
 } = require("./helpers");
 
@@ -94,15 +94,17 @@ describe("Unmanaged service", function () {
         );
 
       // deploy a fungible service
+      const nameId = bytes4(keccak256("FungibleService"));
+      const key = pluginKey(nameId, fungibleService.address, "0x00000000");
 
-      const fungibleAt = await vault.addressOfDeployed(fungibleService.address, salt, nextTokenId, false);
+      const fungibleAt = await vault.addressOfDeployed(key, nextTokenId, false);
 
       const data = ethers.utils.defaultAbiCoder.encode(
         ["string", "string"], // Types of the parameters
         ["CIP Token", "CIPT"], // Values to encode
       );
 
-      await vault.connect(bob).plug(fungibleService.address, salt, nextTokenId, false, data);
+      await vault.connect(bob).plug(key, nextTokenId, false, data);
 
       fungibleService = await ethers.getContractAt("FungibleService", fungibleAt);
       expect(await fungibleService.name()).equal(`CIP Token`);

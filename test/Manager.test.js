@@ -20,6 +20,7 @@ const {
   combineBytes4ToBytes32,
   getInterfaceId,
   selectorId,
+  pluginKey,
   trustImplementation,
 
   deployCanonical,
@@ -92,10 +93,13 @@ describe("CrunaManager : Upgrades", function () {
         nextTokenId,
       );
 
+    let key = pluginKey("0x00000000", managerProxy.address, "0x00000000");
+
     const managerAddress = await vault.managerOf(nextTokenId);
-    const managerAddress2 = await vault.addressOfDeployed(managerProxy.address, ethers.constants.HashZero, nextTokenId, false);
+    const managerAddress2 = await vault.addressOfDeployed(key, nextTokenId, false);
     expect(managerAddress).to.equal(managerAddress2);
-    expect(await vault.isDeployed(managerProxy.address, ethers.constants.HashZero, nextTokenId, false)).to.be.true;
+
+    expect(await vault.isDeployed(key, nextTokenId, false)).to.be.true;
     return nextTokenId;
   };
 

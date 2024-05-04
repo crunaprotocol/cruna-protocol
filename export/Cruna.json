@@ -3536,13 +3536,8 @@
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "implementation",
-          "type": "address"
-        },
-        {
           "internalType": "bytes32",
-          "name": "salt",
+          "name": "key_",
           "type": "bytes32"
         },
         {
@@ -4023,13 +4018,8 @@
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "implementation",
-          "type": "address"
-        },
-        {
           "internalType": "bytes32",
-          "name": "salt",
+          "name": "key_",
           "type": "bytes32"
         },
         {
@@ -4443,13 +4433,8 @@
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "implementation",
-          "type": "address"
-        },
-        {
           "internalType": "bytes32",
-          "name": "salt",
+          "name": "key_",
           "type": "bytes32"
         },
         {

@@ -13,6 +13,6 @@ contract GuardianInstance {
    * @notice Returns the CrunaGuardian contract
    */
   function _crunaGuardian() internal pure returns (ICrunaGuardian) {
-    return ICrunaGuardian(0x9454BF0e882fcC81a6D2364afD231B372956d272);
+    return ICrunaGuardian(0x1FF9EBF619b176E8D2Ff6Ec1532Ce2df8E6d7246);
   }
 }

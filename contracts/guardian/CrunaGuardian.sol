@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {TimeControlledGovernance} from "../utils/TimeControlledGovernance.sol";
+import {TimeControlledGovernance} from "./TimeControlledGovernance.sol";
 
 import {ICrunaGuardian} from "./ICrunaGuardian.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
@@ -38,13 +38,20 @@ contract CrunaGuardian is ICrunaGuardian, IVersioned, TimeControlledGovernance {
     address admin
   ) TimeControlledGovernance(minDelay, firstProposer, firstExecutor, admin) {}
 
-  /// @dev see {IVersioned-version}
+  /**
+   * @notice Returns the version of the contract.
+   * The format is similar to semver, where any element takes 3 digits.
+   * For example, version 1.2.14 is 1_002_014.
+   */
   function version() external pure virtual returns (uint256) {
     // v1.1.0
     return 1_003_000;
   }
 
-  /// @dev see {ICrunaGuardian-setTrustedImplementation}
+  /**
+   * @notice Returns the manager version required by a trusted implementation
+   * @param implementation The address of the implementation
+   */
   function trust(uint256 delay, OperationType oType, address implementation, bool trusted_) external override {
     if (trusted_) {
       if (_trusted[implementation]) revert InvalidRequest();
@@ -57,7 +64,11 @@ contract CrunaGuardian is ICrunaGuardian, IVersioned, TimeControlledGovernance {
     }
   }
 
-  /// @dev see {ICrunaGuardian-trustedImplementation}
+  /**
+   * @notice Returns the manager version required by a trusted implementation
+   * @param implementation The address of the implementation
+   * @return True if a trusted implementation
+   */
   function trusted(address implementation) external view override returns (bool) {
     return _trusted[implementation];
   }
