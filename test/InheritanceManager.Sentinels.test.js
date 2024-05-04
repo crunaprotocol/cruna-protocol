@@ -208,6 +208,9 @@ describe("Sentinel and Inheritance", function () {
 
     const pluginAddress = await manager.plugin(pluginKey32);
     await expect(pluginAddress).to.not.equal(addr0);
+
+    expect((await manager.allPlugins())[0]).to.equal(pluginKey32);
+
     return nextTokenId;
   };
 

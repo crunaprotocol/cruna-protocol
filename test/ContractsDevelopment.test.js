@@ -76,6 +76,7 @@ describe("Testing contract deployments", function () {
     await expect(registryMock.create(managerImpl.address, ethers.constants.HashZero, 31337, vault.address, 1))
       .to.emit(registryMock, "Created")
       .withArgs(computedAddress, managerImpl.address, ethers.constants.HashZero, 31337, vault.address, 1);
+    expect(await registryMock.supportsInterface("0xc6bdc908")).to.be.true;
 
     expect(await vault.supportsInterface(getInterfaceId("IManagedNFT"))).to.be.true;
     expect(await vault.supportsInterface(getInterfaceId("IERC6454"))).to.be.true;

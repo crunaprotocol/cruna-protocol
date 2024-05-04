@@ -147,6 +147,9 @@ describe("CrunaManager : Upgrades", function () {
 
     await trustImplementation(guardian, proposer, executor, delay, managerV2Impl.address, true, 1);
 
+    if (!process.env.IS_COVERAGE) {
+      await expect(guardian.connect(proposer).trust(delay, 0, managerAddress, false)).revertedWith("InvalidRequest");
+    }
     await expect(manager.connect(bob).upgrade(managerV2Impl.address))
       .emit(manager, "ImplementationUpgraded")
       .withArgs(managerV2Impl.address, 1000000, 1002000);
