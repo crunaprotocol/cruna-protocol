@@ -59,7 +59,7 @@ interface ICrunaManagedService is ICrunaService {
   /**
    * @notice Returns the minimum version of the manager required by the plugin
    */
-  function requiresManagerVersion() external pure returns (uint256);
+  function requiredManagerVersion() external pure returns (uint256);
 
   /**
    * @notice Called by the manager to know if the plugin is an ERC721 account

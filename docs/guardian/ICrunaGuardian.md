@@ -4,10 +4,10 @@
 
 Manages upgrade and cross-chain execution settings for accounts
 
-### TrustedImplementationUpdated
+### Trusted
 
 ```solidity
-event TrustedImplementationUpdated(bytes4 nameId, address implementation, bool trusted)
+event Trusted(address implementation, bool trusted)
 ```
 
 Emitted when a trusted implementation is updated
@@ -16,14 +16,13 @@ Emitted when a trusted implementation is updated
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| nameId | bytes4 | The bytes4 nameId of the implementation |
 | implementation | address | The address of the implementation |
 | trusted | bool | Whether the implementation is marked as a trusted or marked as no more trusted |
 
-### setTrustedImplementation
+### trust
 
 ```solidity
-function setTrustedImplementation(bytes4 nameId, address implementation, bool trusted) external
+function trust(uint256 delay, enum ITimeControlledGovernance.OperationType oType, address implementation, bool trusted) external
 ```
 
 Sets a given implementation address as trusted, allowing accounts to upgrade to this implementation.
@@ -32,14 +31,15 @@ Sets a given implementation address as trusted, allowing accounts to upgrade to 
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| nameId | bytes4 | The bytes4 nameId of the implementation |
+| delay | uint256 | The delay for the operation |
+| oType | enum ITimeControlledGovernance.OperationType | The type of operation |
 | implementation | address | The address of the implementation |
 | trusted | bool | When true, it set the implementation as trusted, when false it removes the implementation from the trusted list Notice that for managers requires will always be 1 |
 
-### trustedImplementation
+### trusted
 
 ```solidity
-function trustedImplementation(bytes4 nameId, address implementation) external view returns (bool)
+function trusted(address implementation) external view returns (bool)
 ```
 
 Returns the manager version required by a trusted implementation
@@ -48,7 +48,6 @@ Returns the manager version required by a trusted implementation
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| nameId | bytes4 | The bytes4 nameId of the implementation |
 | implementation | address | The address of the implementation |
 
 #### Return Values

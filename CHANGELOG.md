@@ -1,7 +1,12 @@
 # Change log
 
+**0.7.0**
+- Remove `Canonical` in favor of `GuardianInstance` (for the guardians) and `Deployed` which now hardcodes the addresses of `ERC7656Registry` and `ERC6551Registry` contracts
+- Add a `TimeControlledGovernance` contract to replace OpenZeppelin's `TimelockController` contracts, which is more complete but also larger 
+- Simplify `CrunaGuardian` and use `TimeControlledGovernance` to manage the governance
+
 **0.6.2**
-- New canonical address for ERC7656Registry due to errors verifying the source code on Ethereum mainnet 
+- New canonical address for ERC7656Registry due to errors verifying the source code on Ethereum mainnet
 
 **0.6.1**
 - Minor improvements in the `CrunaManagedService` to avoid overriding `_conf.manager` if unnecessary
@@ -19,7 +24,7 @@
 - Fix address of `CrunaRegistry` in `libs-canonical/not-localhost/Canonical.sol`
 
 **0.4.0**
-- Remove manager's version from `CrunaGuardian` and add `requiresManagerVersion` to `ICrunaManagedService`
+- Remove manager's version from `CrunaGuardian` and add `requiredManagerVersion` to `ICrunaManagedService`
 - Explicitly add list of testnets where the plugin is allowed to transfer the NFT even if the plugin is not trusted
 - Remove `_IMPLEMENTATION_SLOT` variable from `CommonBase` not being needed for most plugins and move it in `CrunaManager` and `InheritanceCrunaPlugin`
 - Adding `_onBeforeInit` hook in `CrunaManagedService` to allow plugins to execute code before the initialization of the NFT, since `init` is not virtual and cannot be overridden.

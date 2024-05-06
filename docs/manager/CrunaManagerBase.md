@@ -42,13 +42,35 @@ Execute actions needed in a new manager based on the previous version
 | ---- | ---- | ----------- |
 | previousVersion | uint256 | The previous version |
 
-### _combineBytes4
+### pluginKey
 
 ```solidity
-function _combineBytes4(bytes4 a, bytes4 b) internal pure returns (bytes8)
+function pluginKey(bytes4 nameId_, address impl_, bytes4 salt_) external view virtual returns (bytes32)
 ```
 
-Utility function to combine two bytes4 into a bytes8
+### _pluginKey
+
+```solidity
+function _pluginKey(bytes4 nameId_, address impl_, bytes4 salt_) internal view virtual returns (bytes32)
+```
+
+### _implFromKey
+
+```solidity
+function _implFromKey(bytes32 key_) internal pure returns (address)
+```
+
+### _nameIdFromKey
+
+```solidity
+function _nameIdFromKey(bytes32 key_) internal pure returns (bytes4)
+```
+
+### _saltFromKey
+
+```solidity
+function _saltFromKey(bytes32 key_) internal pure returns (bytes4)
+```
 
 ### _isProtected
 

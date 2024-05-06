@@ -7,7 +7,7 @@ Interface for a managed NFT
 ### ManagedTransfer
 
 ```solidity
-event ManagedTransfer(bytes4 pluginNameId, uint256 tokenId)
+event ManagedTransfer(bytes32 key, uint256 tokenId)
 ```
 
 Emitted when a token is transferred by a plugin
@@ -16,13 +16,13 @@ Emitted when a token is transferred by a plugin
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| pluginNameId | bytes4 | The hash of the plugin name. |
+| key | bytes32 | The key of the plugin managing the transfer |
 | tokenId | uint256 | The id of the token. |
 
 ### managedTransfer
 
 ```solidity
-function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external payable
+function managedTransfer(bytes32 key, uint256 tokenId, address to) external payable
 ```
 
 Allow a plugin to transfer the token
@@ -31,7 +31,7 @@ Allow a plugin to transfer the token
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| pluginNameId | bytes4 | The hash of the plugin name. |
+| key | bytes32 | The key of the plugin managing the transfer |
 | tokenId | uint256 | The id of the token. |
 | to | address | The address of the recipient. |
 

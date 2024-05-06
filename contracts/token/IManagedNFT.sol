@@ -9,16 +9,16 @@ pragma solidity ^0.8.20;
 interface IManagedNFT {
   /**
    * @notice Emitted when a token is transferred by a plugin
-   * @param pluginNameId The hash of the plugin name.
+   * @param key The key of the plugin managing the transfer
    * @param tokenId The id of the token.
    */
-  event ManagedTransfer(bytes4 indexed pluginNameId, uint256 indexed tokenId);
+  event ManagedTransfer(bytes32 indexed key, uint256 indexed tokenId);
 
   /**
    * @notice Allow a plugin to transfer the token
-   * @param pluginNameId The hash of the plugin name.
+   * @param key The key of the plugin managing the transfer
    * @param tokenId The id of the token.
    * @param to The address of the recipient.
    */
-  function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external payable;
+  function managedTransfer(bytes32 key, uint256 tokenId, address to) external payable;
 }

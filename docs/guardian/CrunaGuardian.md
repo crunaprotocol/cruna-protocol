@@ -16,26 +16,10 @@ error InvalidArguments()
 
 Error returned when the arguments are invalid
 
-### MustCallThroughTimeController
-
-```solidity
-error MustCallThroughTimeController()
-```
-
-Error returned when the function is not called through the TimelockController
-
-### onlyThroughTimeController
-
-```solidity
-modifier onlyThroughTimeController()
-```
-
-Modifier to allow only the TimelockController to call a function.
-
 ### constructor
 
 ```solidity
-constructor(uint256 minDelay, address[] proposers, address[] executors, address admin) public
+constructor(uint256 minDelay, address firstProposer, address firstExecutor, address admin) public
 ```
 
 When deployed to production, proposers and executors will be multi-sig wallets owned by the Cruna DAO
@@ -44,10 +28,10 @@ When deployed to production, proposers and executors will be multi-sig wallets o
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| minDelay | uint256 | The minimum delay for timelock operations |
-| proposers | address[] | The addresses that can propose timelock operations |
-| executors | address[] | The addresses that can execute timelock operations |
-| admin | address | The address that can admin the contract. It will renounce to the role, as soon as the  DAO is stable and there are no risks in doing so. |
+| minDelay | uint256 | The minimum delay for time lock operations |
+| firstProposer | address | The address that can propose time lock operations |
+| firstExecutor | address | The address that can execute time lock operations |
+| admin | address | The address that can admin the contract. |
 
 ### version
 
@@ -59,26 +43,10 @@ Returns the version of the contract.
 The format is similar to semver, where any element takes 3 digits.
 For example, version 1.2.14 is 1_002_014.
 
-### setTrustedImplementation
+### trust
 
 ```solidity
-function setTrustedImplementation(bytes4 nameId, address implementation, bool trusted) external
-```
-
-Sets a given implementation address as trusted, allowing accounts to upgrade to this implementation.
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| nameId | bytes4 | The bytes4 nameId of the implementation |
-| implementation | address | The address of the implementation |
-| trusted | bool | When true, it set the implementation as trusted, when false it removes the implementation from the trusted list Notice that for managers requires will always be 1 |
-
-### trustedImplementation
-
-```solidity
-function trustedImplementation(bytes4 nameId, address implementation) external view returns (bool)
+function trust(uint256 delay, enum ITimeControlledGovernance.OperationType oType, address implementation, bool trusted_) external
 ```
 
 Returns the manager version required by a trusted implementation
@@ -87,7 +55,23 @@ Returns the manager version required by a trusted implementation
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| nameId | bytes4 | The bytes4 nameId of the implementation |
+| delay | uint256 |  |
+| oType | enum ITimeControlledGovernance.OperationType |  |
+| implementation | address | The address of the implementation |
+| trusted_ | bool |  |
+
+### trusted
+
+```solidity
+function trusted(address implementation) external view returns (bool)
+```
+
+Returns the manager version required by a trusted implementation
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
 | implementation | address | The address of the implementation |
 
 #### Return Values

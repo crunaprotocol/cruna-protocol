@@ -28,9 +28,11 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
     _;
   }
 
-  function _onBeforeInit(bytes memory data) internal virtual {
-    // does nothing, override if needed
-  }
+  /**
+   * @notice The function to be executed before init
+   * @dev must be implemented in the service
+   */
+  function _onBeforeInit(bytes memory data) internal virtual;
 
   /// @dev see {ICrunaManagedService.sol-init}
   function init(bytes memory data) external {
@@ -47,7 +49,11 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
     return _conf.manager;
   }
 
-  /// @dev see {IVersioned-version}
+  /**
+   * @notice Returns the version of the contract.
+   * The format is similar to semver, where any element takes 3 digits.
+   * For example, version 1.2.14 is 1_002_014.
+   */
   function version() external pure virtual override returns (uint256) {
     return _version();
   }
@@ -72,8 +78,8 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
     return false;
   }
 
-  /// @dev see {ICrunaManagedService.sol-requiresManagerVersion}
-  function requiresManagerVersion() external pure virtual override returns (uint256) {
+  /// @dev see {ICrunaManagedService.sol-requiredManagerVersion}
+  function requiredManagerVersion() external pure virtual override returns (uint256) {
     return 1;
   }
 
@@ -101,7 +107,11 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
     return _conf.manager.isProtector(signer);
   }
 
-  /// @dev see {IVersioned-version}
+  /**
+   * @notice Returns the version of the contract.
+   * The format is similar to semver, where any element takes 3 digits.
+   * For example, version 1.2.14 is 1_002_014.
+   */
   function _version() internal pure virtual returns (uint256) {
     return 1_000_000;
   }
@@ -119,6 +129,14 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
    */
   function _isProtector(address protector) internal view override returns (bool) {
     return _conf.manager.isProtector(protector);
+  }
+
+  function serviceKey() external view virtual returns (bytes32) {
+    return _serviceKey();
+  }
+
+  function _serviceKey() internal view virtual returns (bytes32) {
+    return _salt() | bytes32((uint256(uint160(_implementation())) << 48) | uint256(uint32(_nameId())));
   }
 
   // @dev This empty reserved space is put in place to allow future versions to add new

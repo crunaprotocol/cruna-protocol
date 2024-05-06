@@ -221,6 +221,12 @@ Error returned when the plugin is upgraded if requires an updated manager
 | ---- | ---- | ----------- |
 | requiredVersion | uint256 | The version required by the plugin |
 
+### NotTheRightPlugin
+
+```solidity
+error NotTheRightPlugin()
+```
+
 ### setSentinel
 
 ```solidity

@@ -10,6 +10,10 @@ Base contract for services
 function _onBeforeInit(bytes data) internal virtual
 ```
 
+The function to be executed before init
+
+_must be implemented in the service_
+
 ### init
 
 ```solidity
@@ -53,4 +57,17 @@ function isManaged() external pure returns (bool)
 ```
 
 Called when deploying the service to check if it must be managed
+An unmanaged service should always return false
+
+### serviceKey
+
+```solidity
+function serviceKey() external view virtual returns (bytes32)
+```
+
+### _serviceKey
+
+```solidity
+function _serviceKey() internal view virtual returns (bytes32)
+```
 

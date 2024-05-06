@@ -14,8 +14,8 @@ import {IERC6454} from "../erc/IERC6454.sol";
 import {IERC6982} from "../erc/IERC6982.sol";
 import {ICrunaManager} from "../manager/ICrunaManager.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
-import {Deployed} from "../utils/Deployed.sol";
-import {Canonical} from "../libs/Canonical.sol";
+import {Deployer} from "../utils/Deployer.sol";
+import {GuardianInstance} from "../libs/GuardianInstance.sol";
 import {ICrunaService} from "../services/ICrunaService.sol";
 
 //import "hardhat/console.sol";
@@ -37,7 +37,16 @@ interface IVersionedManager {
  * @notice This contracts is a base for NFTs with protected transfers. It must be extended implementing
  * the _canManage function to define who can alter the contract. Two versions are provided in this repo,CrunaProtectedNFTTimeControlled.sol and CrunaProtectedNFTOwnable.sol. The first is the recommended one, since it allows a governance aligned with best practices. The second is simpler, and can be used in less critical scenarios. If none of them fits your needs, you can implement your own policy.
  */
-abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454, IERC6982, Deployed, ERC721, ReentrancyGuard {
+abstract contract CrunaProtectedNFT is
+  ICrunaProtectedNFT,
+  IVersioned,
+  GuardianInstance,
+  IERC6454,
+  IERC6982,
+  Deployer,
+  ERC721,
+  ReentrancyGuard
+{
   using ECDSA for bytes32;
   using Strings for uint256;
   using Address for address;
@@ -72,18 +81,27 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     _;
   }
 
-  /// @dev see {ICrunaProtectedNFT-nftConf}
+  /**
+   * @notice Returns the configuration of the NFT
+   */
   function nftConf() external view virtual override returns (NftConf memory) {
     return _nftConf;
   }
 
-  /// @dev see {ICrunaProtectedNFT-managerHistory}
+  /**
+   * @notice Returns the manager history for a specific index
+   * @param index The index
+   */
   function managerHistory(uint256 index) external view virtual override returns (ManagerHistory memory) {
     if (index >= _nftConf.managerHistoryLength) revert InvalidIndex();
     return _managerHistory[index];
   }
 
-  /// @dev see {IVersioned-version}
+  /**
+   * @notice Returns the version of the contract.
+   * The format is similar to semver, where any element takes 3 digits.
+   * For example, version 1.2.14 is 1_002_014.
+   */
   function version() external pure virtual returns (uint256) {
     // semver 1.2.3 => 1002003 = 1e6 + 2e3 + 3
     return 1_000_000;
@@ -93,7 +111,20 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     emit DefaultLocked(false);
   }
 
-  /// @dev see {ICrunaProtectedNFT-init}
+  /**
+   * @notice Initialize the NFT
+   * @param managerAddress_ The address of the manager
+   * @param progressiveTokenIds_ If true, the tokenIds will be progressive
+   * @param nextTokenId_ The next tokenId to be used.
+   * If progressiveTokenIds_ == true and the project must reserve some tokens to
+   * special addresses, community, etc. You set the nextTokenId_ to the first not reserved token.
+   * Be careful, your function minting by tokenId MUST check that the tokenId is
+   * not higher than nextTokenId. If not, when trying to mint tokens by amount, as soon as
+   * nextTokenId reaches the minted tokenId, the function will revert, blocking any future minting.
+   * If your code may risk so, set a function that allow you to correct the nextTokenId to skip
+   * the token minted by mistake.
+   * @param maxTokenId_ The maximum tokenId that can be minted (it can be 0 if no upper limit)
+   */
   function init(
     address managerAddress_,
     bool progressiveTokenIds_,
@@ -113,7 +144,10 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     _managerHistory.push(ManagerHistory({managerAddress: managerAddress_, firstTokenId: nextTokenId_, lastTokenId: 0}));
   }
 
-  /// @dev see {ICrunaProtectedNFT-setMaxTokenId}
+  /**
+   * @notice set the maximum tokenId that can be minted
+   * @param maxTokenId_ The new maxTokenId
+   */
   function setMaxTokenId(uint96 maxTokenId_) external virtual {
     _canManage(_nftConf.maxTokenId == 0);
     if (maxTokenId_ == 0) revert InvalidMaxTokenId();
@@ -123,18 +157,23 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     emit MaxTokenIdChange(maxTokenId_);
   }
 
-  /// @dev see {ICrunaProtectedNFT-defaultManagerImplementation}
+  /**
+   * @notice Returns the address of the default implementation of the manager for a tokenId
+   * @param _tokenId The tokenId
+   */
   function defaultManagerImplementation(uint256 _tokenId) external view virtual override returns (address) {
     return _defaultManagerImplementation(_tokenId);
   }
 
-  /// @dev see {ICrunaProtectedNFT-upgradeDefaultManager}
+  /**
+   * @notice Upgrade the default manager for any following tokenId
+   * @param newManagerProxy The address of the new manager proxy
+   */
   function upgradeDefaultManager(address payable newManagerProxy) external virtual nonReentrant {
     _canManage(false);
     if (!_nftConf.progressiveTokenIds) revert NotAvailableIfTokenIdsAreNotProgressive();
     IVersionedManager newManager = IVersionedManager(newManagerProxy);
-    if (!Canonical.crunaGuardian().trustedImplementation(newManager.nameId(), newManager.DEFAULT_IMPLEMENTATION()))
-      revert UntrustedImplementation(newManagerProxy);
+    if (!_crunaGuardian().trusted(newManager.DEFAULT_IMPLEMENTATION())) revert UntrustedImplementation(newManagerProxy);
     address lastEmitter = _managerHistory[_nftConf.managerHistoryLength - 1].managerAddress;
     if (newManager.version() <= IVersionedManager(lastEmitter).version()) revert CannotUpgradeToAnOlderVersion();
     _managerHistory[_nftConf.managerHistoryLength - 1].lastTokenId = _nftConf.nextTokenId - 1;
@@ -146,17 +185,13 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
   /**
    * @notice see {ICrunaProtectedNFT-managedTransfer}.
    */
-  function managedTransfer(
-    bytes4 pluginNameId,
-    uint256 tokenId,
-    address to
-  ) external payable virtual override onlyManagerOf(tokenId) {
+  function managedTransfer(bytes32 key, uint256 tokenId, address to) external payable virtual override onlyManagerOf(tokenId) {
     _approvedTransfers[tokenId] = 1;
     _approve(_managerOf(tokenId), tokenId, address(0));
     safeTransferFrom(ownerOf(tokenId), to, tokenId);
     _approve(address(0), tokenId, address(0));
     delete _approvedTransfers[tokenId];
-    emit ManagedTransfer(pluginNameId, tokenId);
+    emit ManagedTransfer(key, tokenId);
   }
 
   /// @dev see {ERC165-supportsInterface}.
@@ -168,17 +203,35 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
       super.supportsInterface(interfaceId);
   }
 
-  /// @dev see {IERC6454-isTransferable}
+  /**
+   * @notice Used to check whether the given token is transferable or not.
+   * @notice If this function returns `false`, the transfer of the token MUST revert execution.
+   * If the tokenId does not exist, this method MUST revert execution, unless the token is being checked for
+   *  minting.
+   * The `from` parameter MAY be used to also validate the approval of the token for transfer, but anyone
+   *  interacting with this function SHOULD NOT rely on it as it is not mandated by the proposal.
+   * @param tokenId ID of the token being checked
+   * @param from Address from which the token is being transferred
+   * @param to Address to which the token is being transferred
+   * @return Boolean value indicating whether the given token is transferable
+   */
   function isTransferable(uint256 tokenId, address from, address to) external view virtual override returns (bool) {
     return _isTransferable(tokenId, from, to);
   }
 
-  /// @dev see {IERC6982-defaultLocked}
+  /**
+   * @notice Returns the current default lock status for tokens.
+   * The returned value MUST reflect the status indicated by the most recent `DefaultLocked` event.
+   */
   function defaultLocked() external pure virtual override returns (bool) {
     return false;
   }
 
-  /// @dev see {IERC6982-locked}
+  /**
+   * @notice Returns the lock status of a specific token.
+   * If no `Locked` event has been emitted for the token, it MUST return the current default lock status.
+   * The function MUST revert if the token does not exist.
+   */
   function locked(uint256 tokenId) external view virtual override returns (bool) {
     return ICrunaManager(_managerOf(tokenId)).locked();
   }
@@ -193,18 +246,20 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     emit Locked(tokenId, locked_);
   }
 
-  /// @dev see {ICrunaProtectedNFT-plug}
-  function plug(
-    address implementation,
-    bytes32 salt,
-    uint256 tokenId,
-    bool isERC6551Account,
-    bytes memory data
-  ) external payable virtual override {
+  /**
+   * @notice Deploys an unmanaged service
+   * @param key_ The encoded key of the service
+   * @param tokenId The tokenId
+   * @param isERC6551Account Specifies the registry to use
+   * True if the tokenId must be deployed via ERC6551Registry,
+   * false, it must be deployed via ERC7656Registry
+   */
+  function plug(bytes32 key_, uint256 tokenId, bool isERC6551Account, bytes memory data) external payable virtual override {
     if (_msgSender() != ownerOf(tokenId)) revert NotTheTokenOwner();
+    address implementation = _implFromKey(key_);
     ICrunaService service = ICrunaService(implementation);
     if (service.isManaged()) revert ManagedService();
-    address addr = _deploy(implementation, salt, _SELF, tokenId, isERC6551Account);
+    address addr = _deploy(implementation, _saltFromKey(key_), _SELF, tokenId, isERC6551Account);
     service = ICrunaService(addr);
     /**
      * @dev it is the service responsibility to assure that `init` can be called only one time
@@ -214,17 +269,22 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     service.init(data);
   }
 
-  /// @dev see {ICrunaProtectedNFT-isDeployed}
-  function isDeployed(
-    address implementation,
-    bytes32 salt,
-    uint256 tokenId,
-    bool isERC6551Account
-  ) external view virtual returns (bool) {
-    return _isDeployed(implementation, salt, _SELF, tokenId, isERC6551Account);
+  /**
+   * @notice Returns if a plugin is deployed
+   * @param key_ The encoded key of the service
+   * @param tokenId The tokenId
+   * @param isERC6551Account Specifies the registry to use
+   * True if the tokenId was deployed via ERC6551Registry,
+   * false, it was deployed via ERC7656Registry
+   */
+  function isDeployed(bytes32 key_, uint256 tokenId, bool isERC6551Account) external view virtual returns (bool) {
+    return _isDeployed(_implFromKey(key_), _saltFromKey(key_), _SELF, tokenId, isERC6551Account);
   }
 
-  /// @dev see {ICrunaProtectedNFT-managerOf}
+  /**
+   * @notice Return the address of the manager of a tokenId
+   * @param tokenId The id of the token.
+   */
   function managerOf(uint256 tokenId) external view virtual returns (address) {
     return _managerOf(tokenId);
   }
@@ -238,14 +298,29 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
     return _addressOfDeployed(_defaultManagerImplementation(tokenId), 0x00, _SELF, tokenId, false);
   }
 
-  /// @dev see {ICrunaProtectedNFT-addressOfDeployed}
+  /**
+   * @notice Returns the address of a deployed manager or plugin
+   * @param key_ The encoded key of the service
+   * @param tokenId The tokenId
+   * @param isERC6551Account Specifies the registry to use
+   * True if the tokenId was deployed via ERC6551Registry,
+   * false, it was deployed via ERC7656Registry
+   * @return The address of the deployed manager or plugin
+   */
   function addressOfDeployed(
-    address implementation,
-    bytes32 salt,
+    bytes32 key_,
     uint256 tokenId,
     bool isERC6551Account
   ) external view virtual override returns (address) {
-    return _addressOfDeployed(implementation, salt, _SELF, tokenId, isERC6551Account);
+    return _addressOfDeployed(_implFromKey(key_), _saltFromKey(key_), _SELF, tokenId, isERC6551Account);
+  }
+
+  function _implFromKey(bytes32 key_) internal pure returns (address) {
+    return address(uint160(uint256(key_) >> 48));
+  }
+
+  function _saltFromKey(bytes32 key_) internal pure returns (bytes4) {
+    return bytes4(key_);
   }
 
   /**
@@ -273,7 +348,7 @@ abstract contract CrunaProtectedNFT is ICrunaProtectedNFT, IVersioned, IERC6454,
    * @notice Specify if the caller can call some function.
    * Must be overridden to specify who can manage changes during initialization and later
    * @param isInitializing If true, the function is being called during initialization, if false,
-   * it is supposed to the called later. A time controlled NFT can allow the admin to call some
+   * it is supposed to be called later. A time controlled NFT can allow the admin to call some
    * functions during the initialization, requiring later a standard proposal/execition process.
    */
   function _canManage(bool isInitializing) internal view virtual;

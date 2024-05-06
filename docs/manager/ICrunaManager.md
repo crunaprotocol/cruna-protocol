@@ -13,9 +13,7 @@ A struct to keep info about plugged and unplugged services
 
 ```solidity
 struct PluginConfig {
-  address proxyAddress;
-  bytes4 salt;
-  uint32 timeLock;
+  bool deployed;
   bool canManageTransfer;
   bool canBeReset;
   bool active;
@@ -23,23 +21,7 @@ struct PluginConfig {
   bool trusted;
   bool banned;
   bool unplugged;
-}
-```
-
-### PluginElement
-
-The plugin element
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-
-```solidity
-struct PluginElement {
-  bytes4 nameId;
-  bytes4 salt;
-  bool active;
+  uint32 timeLock;
 }
 ```
 
@@ -95,7 +77,7 @@ Event emitted when the `status` of `recipient` changes
 ### PluginStatusChange
 
 ```solidity
-event PluginStatusChange(string name, bytes4 salt, address pluginAddress, uint256 change)
+event PluginStatusChange(bytes32 key, address pluginAddress, uint256 change)
 ```
 
 Event emitted when
@@ -113,7 +95,7 @@ This event overrides any specific ProtectorChange, SafeRecipientChange and Plugi
 ### PluginTrusted
 
 ```solidity
-event PluginTrusted(string name, bytes4 salt)
+event PluginTrusted(bytes32 key)
 ```
 
 Emitted when a plugin initially plugged despite being not trusted, is trusted by the CrunaGuardian
@@ -137,7 +119,7 @@ Emitted when the implementation of the manager is upgraded
 ### PluginResetAttemptFailed
 
 ```solidity
-event PluginResetAttemptFailed(bytes4 _nameId, bytes4 salt)
+event PluginResetAttemptFailed(bytes32 key)
 ```
 
 Event emitted when the attempt to reset a plugin fails
@@ -370,7 +352,7 @@ _Returned when trying to make a transfer with an untrusted plugin, when the NFT 
 ### StillUntrusted
 
 ```solidity
-error StillUntrusted()
+error StillUntrusted(bytes32 key)
 ```
 
 _Returned if trying to trust a plugin that is still untrusted_
@@ -442,7 +424,7 @@ _Returned when trying to use a function that requires protectors, but no protect
 ### pluginByKey
 
 ```solidity
-function pluginByKey(bytes8 key) external view returns (struct ICrunaManager.PluginConfig)
+function pluginByKey(bytes32 key) external view returns (struct ICrunaManager.PluginConfig)
 ```
 
 _It returns the configuration of a plugin by key_
@@ -451,12 +433,12 @@ _It returns the configuration of a plugin by key_
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| key | bytes8 | The key of the plugin |
+| key | bytes32 | The key of the plugin |
 
 ### allPlugins
 
 ```solidity
-function allPlugins() external view returns (struct ICrunaManager.PluginElement[])
+function allPlugins() external view returns (bytes32[])
 ```
 
 _It returns the configuration of all currently plugged services_
@@ -464,7 +446,7 @@ _It returns the configuration of all currently plugged services_
 ### pluginByIndex
 
 ```solidity
-function pluginByIndex(uint256 index) external view returns (struct ICrunaManager.PluginElement)
+function pluginByIndex(uint256 index) external view returns (bytes32)
 ```
 
 _It returns an element of the array of all plugged services_
@@ -645,7 +627,7 @@ _Gets all safe recipients_
 ### plug
 
 ```solidity
-function plug(string name, address pluginProxy, bool canManageTransfer, bool isERC6551Account, bytes4 salt, bytes data, uint256 timestamp, uint256 validFor, bytes signature) external
+function plug(bytes32 key, bool canManageTransfer, bool isERC6551Account, bytes data, uint256 timestamp, uint256 validFor, bytes signature) external
 ```
 
 _It plugs a new plugin_
@@ -654,11 +636,9 @@ _It plugs a new plugin_
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| name | string | The name of the plugin |
-| pluginProxy | address | The address of the plugin implementation |
+| key | bytes32 | The key of the plugin |
 | canManageTransfer | bool | True if the plugin can manage transfers |
 | isERC6551Account | bool | True if the plugin is an ERC6551 account |
-| salt | bytes4 | The salt used during the deployment of the plugin |
 | data | bytes | The data to be used during the initialization of the plugin Notice that data cannot be verified by the Manager since they are used by the plugin |
 | timestamp | uint256 | The timestamp of the signature |
 | validFor | uint256 | The validity of the signature |
@@ -667,7 +647,7 @@ _It plugs a new plugin_
 ### changePluginStatus
 
 ```solidity
-function changePluginStatus(string name, bytes4 salt, enum ICrunaManager.PluginChange change, uint256 timeLock_, uint256 timestamp, uint256 validFor, bytes signature) external
+function changePluginStatus(bytes32 key, enum ICrunaManager.PluginChange change, uint256 timeLock_, uint256 timestamp, uint256 validFor, bytes signature) external
 ```
 
 _It changes the status of a plugin_
@@ -676,8 +656,7 @@ _It changes the status of a plugin_
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| name | string | The name of the plugin |
-| salt | bytes4 | The salt used during the deployment of the plugin |
+| key | bytes32 | The key of the plugin |
 | change | enum ICrunaManager.PluginChange | The type of change |
 | timeLock_ | uint256 | The time lock for when a plugin is temporarily unauthorized from making transfers |
 | timestamp | uint256 | The timestamp of the signature |
@@ -687,7 +666,7 @@ _It changes the status of a plugin_
 ### trustPlugin
 
 ```solidity
-function trustPlugin(string name, bytes4 salt) external
+function trustPlugin(bytes32 key) external
 ```
 
 _It trusts a plugin_
@@ -696,13 +675,12 @@ _It trusts a plugin_
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| name | string | The name of the plugin |
-| salt | bytes4 | The salt used during the deployment of the plugin No need for a signature by a protector because the safety of the plugin is guaranteed by the CrunaGuardian. |
+| key | bytes32 | The key of the plugin No need for a signature by a protector because the safety of the plugin is guaranteed by the CrunaGuardian. |
 
 ### pluginAddress
 
 ```solidity
-function pluginAddress(bytes4 nameId_, bytes4 salt) external view returns (address payable)
+function pluginAddress(bytes32 key) external view returns (address payable)
 ```
 
 _It returns the address of a plugin_
@@ -711,8 +689,7 @@ _It returns the address of a plugin_
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| nameId_ | bytes4 | The bytes4 of the hash of the name of the plugin |
-| salt | bytes4 | The salt used during the deployment of the plugin The address is returned even if a plugin has not deployed yet. |
+| key | bytes32 | The key of the plugin The address is returned even if a plugin has not deployed yet. |
 
 #### Return Values
 
@@ -723,7 +700,7 @@ _It returns the address of a plugin_
 ### plugin
 
 ```solidity
-function plugin(bytes4 nameId_, bytes4 salt) external view returns (contract CrunaManagedService)
+function plugin(bytes32 key) external view returns (contract CrunaManagedService)
 ```
 
 _It returns a plugin by name and salt_
@@ -732,8 +709,7 @@ _It returns a plugin by name and salt_
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| nameId_ | bytes4 | The bytes4 of the hash of the name of the plugin |
-| salt | bytes4 | The salt used during the deployment of the plugin The plugin is returned even if a plugin has not deployed yet, which means that it will revert during the execution. |
+| key | bytes32 | The key of the plugin The plugin is returned even if a plugin has not deployed yet, which means that it will revert during the execution. |
 
 #### Return Values
 
@@ -752,15 +728,21 @@ _It returns the number of services_
 ### plugged
 
 ```solidity
-function plugged(string name, bytes4 salt) external view returns (bool)
+function plugged(bytes32 key) external view returns (bool)
 ```
 
 _Says if a plugin is currently plugged_
 
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| key | bytes32 | The key of the plugin |
+
 ### pluginIndex
 
 ```solidity
-function pluginIndex(string name, bytes4 salt) external view returns (bool, uint256)
+function pluginIndex(bytes32 key) external view returns (bool, uint256)
 ```
 
 _Returns the index of a plugin_
@@ -769,8 +751,7 @@ _Returns the index of a plugin_
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| name | string | The name of the plugin |
-| salt | bytes4 | The salt used during the deployment of the plugin |
+| key | bytes32 | The key of the plugin |
 
 #### Return Values
 
@@ -782,7 +763,7 @@ _Returns the index of a plugin_
 ### isPluginActive
 
 ```solidity
-function isPluginActive(string name, bytes4 salt) external view returns (bool)
+function isPluginActive(bytes32 key) external view returns (bool)
 ```
 
 _Checks if a plugin is active_
@@ -791,8 +772,7 @@ _Checks if a plugin is active_
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| name | string | The name of the plugin |
-| salt | bytes4 | The salt used during the deployment of the plugin |
+| key | bytes32 | The key of the plugin |
 
 #### Return Values
 
@@ -803,7 +783,7 @@ _Checks if a plugin is active_
 ### listPluginsKeys
 
 ```solidity
-function listPluginsKeys(bool active) external view returns (bytes8[])
+function listPluginsKeys(bool active) external view returns (bytes32[])
 ```
 
 _returns the list of services' keys
@@ -822,12 +802,12 @@ from the nameId to the name as a string._
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| [0] | bytes8[] | The list of services' keys |
+| [0] | bytes32[] | The list of services' keys |
 
 ### pseudoAddress
 
 ```solidity
-function pseudoAddress(string name, bytes4 _salt) external view returns (address)
+function pseudoAddress(bytes32 key) external view returns (address)
 ```
 
 _It returns a pseudo address created from the name of a plugin and the salt used to deploy it.
@@ -838,8 +818,7 @@ in the hashed bytes._
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| name | string | The name of the plugin |
-| _salt | bytes4 | The salt used during the deployment of the plugin |
+| key | bytes32 | The key of the plugin |
 
 #### Return Values
 
@@ -850,7 +829,7 @@ in the hashed bytes._
 ### managedTransfer
 
 ```solidity
-function managedTransfer(bytes4 pluginNameId, address to) external
+function managedTransfer(bytes32 key, address to) external
 ```
 
 _A special function that can be called only by authorized services to transfer the NFT._
@@ -859,7 +838,7 @@ _A special function that can be called only by authorized services to transfer t
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| pluginNameId | bytes4 | The bytes4 of the hash of the name of the plugin The plugin must be searched by the pluginNameId and the salt, and the function must verify that the current sender is the plugin. |
+| key | bytes32 | The key of the plugin |
 | to | address | The address of the recipient |
 
 ### protectedTransfer

@@ -33,6 +33,20 @@ function owner() public view virtual returns (address)
 
 Returns the owner of the token
 
+### salt
+
+```solidity
+function salt() public view virtual returns (bytes32)
+```
+
+Returns the salt used when creating the contract
+
+### _salt
+
+```solidity
+function _salt() internal view returns (bytes32)
+```
+
 ### tokenAddress
 
 ```solidity
@@ -40,6 +54,12 @@ function tokenAddress() public view virtual returns (address)
 ```
 
 Returns the address of the token contract
+
+### _tokenAddress
+
+```solidity
+function _tokenAddress() internal view returns (address)
+```
 
 ### tokenId
 
@@ -49,6 +69,12 @@ function tokenId() public view virtual returns (uint256)
 
 Returns the tokenId of the token
 
+### _tokenId
+
+```solidity
+function _tokenId() internal view returns (uint256)
+```
+
 ### implementation
 
 ```solidity
@@ -56,4 +82,10 @@ function implementation() public view virtual returns (address)
 ```
 
 Returns the implementation used when creating the contract
+
+### _implementation
+
+```solidity
+function _implementation() internal view returns (address)
+```
 

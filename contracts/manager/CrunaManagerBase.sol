@@ -8,7 +8,7 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 
 import {ICrunaManager} from "./ICrunaManager.sol";
 import {CommonBase} from "../utils/CommonBase.sol";
-import {Canonical} from "../libs/Canonical.sol";
+import {GuardianInstance} from "../libs/GuardianInstance.sol";
 import {INamedAndVersioned} from "../utils/INamedAndVersioned.sol";
 import {SignatureValidator} from "../utils/SignatureValidator.sol";
 import {Actor} from "../manager/Actor.sol";
@@ -18,7 +18,7 @@ import {ManagerConstants} from "../libs/ManagerConstants.sol";
  * @title CrunaManagerBase.sol
  * @notice Base contract for managers and services
  */
-abstract contract CrunaManagerBase is ICrunaManager, CommonBase, Actor, SignatureValidator, ReentrancyGuard {
+abstract contract CrunaManagerBase is ICrunaManager, GuardianInstance, CommonBase, Actor, SignatureValidator, ReentrancyGuard {
   /**
    * @notice Storage slot with the address of the current implementation.
    * This is the keccak-256 hash of "eip1967.proxy.implementation" subtracted by 1, and is
@@ -33,8 +33,7 @@ abstract contract CrunaManagerBase is ICrunaManager, CommonBase, Actor, Signatur
   function upgrade(address implementation_) external virtual override nonReentrant {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     if (implementation_ == address(0)) revert ZeroAddress();
-    if (!Canonical.crunaGuardian().trustedImplementation(bytes4(keccak256("CrunaManager")), implementation_))
-      revert UntrustedImplementation(implementation_);
+    if (!_crunaGuardian().trusted(implementation_)) revert UntrustedImplementation(implementation_);
     INamedAndVersioned impl = INamedAndVersioned(implementation_);
     uint256 currentVersion = _version();
     uint256 newVersion = impl.version();
@@ -52,11 +51,24 @@ abstract contract CrunaManagerBase is ICrunaManager, CommonBase, Actor, Signatur
    */
   function migrate(uint256 previousVersion) external virtual;
 
-  /**
-   * @notice Utility function to combine two bytes4 into a bytes8
-   */
-  function _combineBytes4(bytes4 a, bytes4 b) internal pure returns (bytes8) {
-    return bytes8(bytes32(a) | (bytes32(b) >> 32));
+  function pluginKey(bytes4 nameId_, address impl_, bytes4 salt_) external view virtual returns (bytes32) {
+    return _pluginKey(nameId_, impl_, salt_);
+  }
+
+  function _pluginKey(bytes4 nameId_, address impl_, bytes4 salt_) internal view virtual returns (bytes32) {
+    return bytes32(salt_) | bytes32((uint256(uint160(impl_)) << 48) | uint256(uint32(nameId_)));
+  }
+
+  function _implFromKey(bytes32 key_) internal pure returns (address) {
+    return address(uint160(uint256(key_) >> 48));
+  }
+
+  function _nameIdFromKey(bytes32 key_) internal pure returns (bytes4) {
+    return bytes4(uint32(uint256(key_)));
+  }
+
+  function _saltFromKey(bytes32 key_) internal pure returns (bytes4) {
+    return bytes4(key_);
   }
 
   /**

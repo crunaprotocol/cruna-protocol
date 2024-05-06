@@ -16,6 +16,8 @@ interface ICrunaService is IERC7656Contract, IVersioned {
 
   /**
    * @notice Initialize the plugin. It must be implemented, but can do nothing is no init is needed.
+   * We call this function init to avoid conflicts with the `initialize` function used in
+   * upgradeable contracts
    */
   function init(bytes memory data) external;
 
@@ -26,6 +28,7 @@ interface ICrunaService is IERC7656Contract, IVersioned {
 
   /**
    * @notice Called when deploying the service to check if it must be managed
+   * An unmanaged service should always return false
    */
   function isManaged() external pure returns (bool);
 }

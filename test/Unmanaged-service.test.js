@@ -13,9 +13,9 @@ const {
   getChainId,
   deployContract,
   getTimestamp,
-  executeAndReturnGasCost,
-  signRequest,
-  selectorId,
+  pluginKey,
+  bytes4,
+  keccak256,
   deployCanonical,
 } = require("./helpers");
 
@@ -28,7 +28,6 @@ describe("Unmanaged service", function () {
   const delay = 10;
   let CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN;
   let fungibleService;
-  let salt = ethers.constants.HashZero;
 
   before(async function () {
     [deployer, proposer, executor, bob, alice, fred, mike] = await ethers.getSigners();
@@ -69,13 +68,13 @@ describe("Unmanaged service", function () {
     expect(await fungibleService.isERC6551Account()).equal(false);
   }
 
-  describe("Buy vaults", function () {
+  describe("Plug an unmanaged", function () {
     //here we test the contract
     beforeEach(async function () {
       await initAndDeploy();
     });
 
-    it("should buy a vault", async function () {
+    it("should plug it", async function () {
       let price = await factory.finalPrice(usdc.address);
       await usdc.connect(bob).approve(factory.address, price);
       const nextTokenId = (await vault.nftConf()).nextTokenId;
@@ -94,17 +93,21 @@ describe("Unmanaged service", function () {
         );
 
       // deploy a fungible service
+      const key = pluginKey("FungibleService", fungibleService.address, "0x88887777");
 
-      const fungibleAt = await vault.addressOfDeployed(fungibleService.address, salt, nextTokenId, false);
+      const fungibleAt = await vault.addressOfDeployed(key, nextTokenId, false);
 
       const data = ethers.utils.defaultAbiCoder.encode(
         ["string", "string"], // Types of the parameters
         ["CIP Token", "CIPT"], // Values to encode
       );
 
-      await vault.connect(bob).plug(fungibleService.address, salt, nextTokenId, false, data);
+      await vault.connect(bob).plug(key, nextTokenId, false, data);
 
       fungibleService = await ethers.getContractAt("FungibleService", fungibleAt);
+
+      expect(await fungibleService.serviceKey()).equal(key);
+
       expect(await fungibleService.name()).equal(`CIP Token`);
       expect(await fungibleService.symbol()).equal(`CIPT`);
       expect(await fungibleService.extraName()).equal(`FT ${await vault.name()} #${nextTokenId}`);

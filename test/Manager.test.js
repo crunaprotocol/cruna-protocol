@@ -20,6 +20,7 @@ const {
   combineBytes4ToBytes32,
   getInterfaceId,
   selectorId,
+  pluginKey,
   trustImplementation,
 
   deployCanonical,
@@ -92,10 +93,13 @@ describe("CrunaManager : Upgrades", function () {
         nextTokenId,
       );
 
+    let key = pluginKey("0x00000000", managerProxy.address, "0x00000000");
+
     const managerAddress = await vault.managerOf(nextTokenId);
-    const managerAddress2 = await vault.addressOfDeployed(managerProxy.address, ethers.constants.HashZero, nextTokenId, false);
+    const managerAddress2 = await vault.addressOfDeployed(key, nextTokenId, false);
     expect(managerAddress).to.equal(managerAddress2);
-    expect(await vault.isDeployed(managerProxy.address, ethers.constants.HashZero, nextTokenId, false)).to.be.true;
+
+    expect(await vault.isDeployed(key, nextTokenId, false)).to.be.true;
     return nextTokenId;
   };
 
@@ -108,6 +112,8 @@ describe("CrunaManager : Upgrades", function () {
     const managerV2Impl = await deployContract("CrunaManagerV2");
     const managerAddress = await vault.managerOf(tokenId);
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
+
+    expect(await manager.implementation()).to.equal(proxy.address);
 
     expect(await manager.version()).to.equal(1001000);
     let signature = (
@@ -139,17 +145,11 @@ describe("CrunaManager : Upgrades", function () {
       .to.be.revertedWith("UntrustedImplementation")
       .withArgs(managerV2Impl.address);
 
-    await trustImplementation(
-      guardian,
-      proposer,
-      executor,
-      delay,
-      bytes4(keccak256("CrunaManager")),
-      managerV2Impl.address,
-      true,
-      1,
-    );
+    await trustImplementation(guardian, proposer, executor, delay, managerV2Impl.address, true, 1);
 
+    if (!process.env.IS_COVERAGE) {
+      await expect(guardian.connect(proposer).trust(delay, 0, managerAddress, false)).revertedWith("InvalidRequest");
+    }
     await expect(manager.connect(bob).upgrade(managerV2Impl.address))
       .emit(manager, "ImplementationUpgraded")
       .withArgs(managerV2Impl.address, 1000000, 1002000);
@@ -161,6 +161,8 @@ describe("CrunaManager : Upgrades", function () {
     const b4 = "0xaabbccdd";
     expect(await managerV2.bytes4ToHexString(b4)).equal(b4);
     expect(await managerV2.migrated()).to.equal(true);
+
+    expect(await managerV2.implementation()).to.equal(proxy.address);
   });
 
   it("should allow deployer to upgrade the default manager", async function () {
@@ -176,16 +178,7 @@ describe("CrunaManager : Upgrades", function () {
     expect(await initialManager.version()).to.equal(1001000);
     await expect(vault.upgradeDefaultManager(proxyV2.address)).to.be.revertedWith("UntrustedImplementation");
 
-    await trustImplementation(
-      guardian,
-      proposer,
-      executor,
-      delay,
-      bytes4(keccak256("CrunaManager")),
-      managerV2Impl.address,
-      true,
-      1,
-    );
+    await trustImplementation(guardian, proposer, executor, delay, managerV2Impl.address, true, 1);
 
     await expect(vault.upgradeDefaultManager(proxyV2.address))
       .to.emit(vault, "DefaultManagerUpgrade")

@@ -1,8 +1,24 @@
 # Solidity API
 
-## Deployed
+## Deployer
 
 This contract manages deploy-related functions
+
+### _erc7656Registry
+
+```solidity
+function _erc7656Registry() internal pure returns (contract IERC7656Registry)
+```
+
+Returns the ERC7656Registry contract
+
+### _erc6551Registry
+
+```solidity
+function _erc6551Registry() internal pure returns (contract IERC6551Registry)
+```
+
+Returns the ERC6551Registry contract
 
 ### _isDeployed
 
@@ -16,7 +32,7 @@ Returns if a plugin is deployed
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| implementation | address | The address of the plugin implementation |
+| implementation | address | The address of the implementation |
 | salt | bytes32 | The salt |
 | tokenAddress | address |  |
 | tokenId | uint256 | The tokenId |

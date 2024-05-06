@@ -36,10 +36,11 @@ describe("Testing contract deployments", function () {
 
   before(async function () {
     [deployer, proposer, executor, bob, alice, fred, mark, otto, proposer2, executor2] = await ethers.getSigners();
-
     chainId = await getChainId();
     [CRUNA_REGISTRY, ERC6551_REGISTRY, CRUNA_GUARDIAN] = await deployCanonical(deployer, proposer, executor, delay);
     crunaRegistry = await ethers.getContractAt("ERC7656Registry", CRUNA_REGISTRY);
+
+    expect(await crunaRegistry.supportsInterface("0xc6bdc908")).to.be.true;
     guardian = await ethers.getContractAt("CrunaGuardian", CRUNA_GUARDIAN);
     erc6551Registry = await ethers.getContractAt("ERC6551Registry", ERC6551_REGISTRY);
 
@@ -59,7 +60,7 @@ describe("Testing contract deployments", function () {
 
   beforeEach(async function () {
     managerImpl = await deployContract("CrunaManager");
-    expect(await guardian.version()).to.equal(1002000);
+    expect(await guardian.version()).to.equal(1003000);
     proxy = await deployContract("CrunaManagerProxy", managerImpl.address);
     proxy = await deployUtils.attach("CrunaManager", proxy.address);
     // sent 2 ETH to proxy
@@ -75,8 +76,11 @@ describe("Testing contract deployments", function () {
     await expect(registryMock.create(managerImpl.address, ethers.constants.HashZero, 31337, vault.address, 1))
       .to.emit(registryMock, "Created")
       .withArgs(computedAddress, managerImpl.address, ethers.constants.HashZero, 31337, vault.address, 1);
-
     expect(await registryMock.supportsInterface("0xc6bdc908")).to.be.true;
+
+    expect(await vault.supportsInterface(getInterfaceId("IManagedNFT"))).to.be.true;
+    expect(await vault.supportsInterface(getInterfaceId("IERC6454"))).to.be.true;
+    expect(await vault.supportsInterface(getInterfaceId("IERC6982"))).to.be.true;
 
     expect(await vault.version()).to.equal(1000000);
     await vault.init(proxy.address, true, 1, 0);
@@ -106,9 +110,7 @@ describe("Testing contract deployments", function () {
     expect((await vault.nftConf()).maxTokenId).to.equal(20000);
   });
 
-  it("should deploy everything as expected", async function () {
-    // test the beforeEach
-  });
+  it("should deploy everything as expected", async function () {});
 
   it("should get the token parameters from the manager", async function () {
     let price = await factory.finalPrice(usdc.address);

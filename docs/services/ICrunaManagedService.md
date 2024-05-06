@@ -80,10 +80,10 @@ function requiresResetOnTransfer() external pure returns (bool)
 
 Called by the manager to know it the plugin must be reset when transferring the NFT
 
-### requiresManagerVersion
+### requiredManagerVersion
 
 ```solidity
-function requiresManagerVersion() external pure returns (uint256)
+function requiredManagerVersion() external pure returns (uint256)
 ```
 
 Returns the minimum version of the manager required by the plugin

@@ -59,22 +59,46 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
    */
   constructor() payable EIP712("Cruna", "1") {}
 
-  /// @dev see {ISignatureValidator-preApprovals}
+  /**
+   * @dev Returns the address who approved a pre-approved operation.
+   * @param hash The hash of the operation.
+   */
   function preApprovals(bytes32 hash) external view override returns (address) {
     return _preApprovals[hash];
   }
 
-  /// @dev see {ISignatureValidator-hashSignature}
+  /**
+   * @dev Returns the hash of a signature.
+   * @param signature The signature.
+   */
   function hashSignature(bytes calldata signature) external pure override returns (bytes32) {
     return _hashBytes(signature);
   }
 
-  /// @dev see {ISignatureValidator-isSignatureUsed}
+  /**
+   * @dev Returns if a signature has been used.
+   * @param hash The hash of the signature.
+   */
   function isSignatureUsed(bytes32 hash) external view override returns (bool) {
     return _usedSignatures[hash] == 1;
   }
 
-  /// @dev see {ISignatureValidator-recoverSigner}
+  /**
+   * @dev This function validates a signature trying to be as flexible as possible.
+   * As long as called inside the same contract, the cost of adding some more parameters is negligible.
+   * Instead, calling it from other contracts can be expensive.
+   * @param selector The selector of the function being called.
+   * @param owner The owner of the token.
+   * @param actor The actor being authorized.
+   * It can be address(0) if the parameter is not needed.
+   * @param tokenAddress The address of the token.
+   * @param tokenId The id of the token.
+   * @param extra The extra
+   * @param extra2 The extra2
+   * @param extra3 The extra3
+   * @param timeValidation A combination of timestamp and validity of the signature.
+   * @return The signer of the signature and the hash of the signature.
+   */
   function recoverSigner(
     bytes4 selector,
     address owner,
@@ -100,7 +124,19 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
     }
   }
 
-  /// @dev see {ISignatureValidator-preApprove}
+  /**
+   * @dev Pre-approve a signature.
+   * @param selector The selector of the function being called.
+   * @param owner The owner of the token.
+   * @param actor The actor being authorized.
+   * It can be address(0) if the parameter is not needed.
+   * @param tokenAddress The address of the token.
+   * @param tokenId The id of the token.
+   * @param extra The extra
+   * @param extra2 The extra2
+   * @param extra3 The extra3
+   * @param timeValidation A combination of timestamp and validity of the signature.
+   */
   function preApprove(
     bytes4 selector,
     address owner,

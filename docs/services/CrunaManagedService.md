@@ -26,6 +26,10 @@ Verifies that the plugin must not be reset
 function _onBeforeInit(bytes data) internal virtual
 ```
 
+The function to be executed before init
+
+_must be implemented in the service_
+
 ### init
 
 ```solidity
@@ -76,13 +80,13 @@ function requiresResetOnTransfer() external pure virtual returns (bool)
 
 _see {ICrunaManagedService.sol-requiresResetOnTransfer}_
 
-### requiresManagerVersion
+### requiredManagerVersion
 
 ```solidity
-function requiresManagerVersion() external pure virtual returns (uint256)
+function requiredManagerVersion() external pure virtual returns (uint256)
 ```
 
-_see {ICrunaManagedService.sol-requiresManagerVersion}_
+_see {ICrunaManagedService.sol-requiredManagerVersion}_
 
 ### isERC6551Account
 
@@ -99,6 +103,7 @@ function isManaged() external pure returns (bool)
 ```
 
 Called when deploying the service to check if it must be managed
+An unmanaged service should always return false
 
 ### resetService
 
@@ -151,4 +156,16 @@ Internal function to check if an address is a protector
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | protector | address | The address to check |
+
+### serviceKey
+
+```solidity
+function serviceKey() external view virtual returns (bytes32)
+```
+
+### _serviceKey
+
+```solidity
+function _serviceKey() internal view virtual returns (bytes32)
+```
 

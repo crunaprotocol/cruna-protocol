@@ -12,7 +12,13 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {IInheritanceCrunaPlugin} from "./IInheritanceCrunaPlugin.sol";
 import {ICrunaManagedService} from "../ICrunaManagedService.sol";
 import {CrunaManagedService} from "../CrunaManagedService.sol";
-import {Canonical} from "../../libs/Canonical.sol";
+import {GuardianInstance} from "../../libs/GuardianInstance.sol";
+
+interface IManagedService {
+  function requiredManagerVersion() external pure returns (uint256);
+  function nameId() external pure returns (bytes4);
+  function version() external pure returns (uint256);
+}
 
 /**
  * @title InheritanceCrunaPlugin
@@ -21,6 +27,7 @@ import {Canonical} from "../../libs/Canonical.sol";
 contract InheritanceCrunaPlugin is
   ICrunaManagedService,
   IInheritanceCrunaPlugin,
+  GuardianInstance,
   Context,
   CrunaManagedService,
   ReentrancyGuard
@@ -60,7 +67,14 @@ contract InheritanceCrunaPlugin is
     return true;
   }
 
-  /// @dev see {IInheritanceCrunaPlugin-setSentinel}
+  /**
+   * @notice Set a sentinel for the token
+   * @param sentinel The sentinel address
+   * @param status True to activate, false to deactivate
+   * @param timestamp The timestamp of the signature
+   * @param validFor The validity of the signature
+   * @param signature The signature of the tokensOwner
+   */
   function setSentinel(
     address sentinel,
     bool status,
@@ -71,7 +85,13 @@ contract InheritanceCrunaPlugin is
     _setSentinel(sentinel, status, timestamp, validFor, signature);
   }
 
-  /// @dev see {IInheritanceCrunaPlugin-setSentinels}
+  /**
+   * @notice Set a list of sentinels for the token
+   * It is a convenience function to set multiple sentinels at once, but it
+   * works only if no protectors have been set up. Useful for initial settings.
+   * @param sentinels The sentinel addresses
+   * @param emptySignature The signature of the tokensOwner
+   */
   function setSentinels(
     address[] calldata sentinels,
     bytes calldata emptySignature
@@ -86,7 +106,25 @@ contract InheritanceCrunaPlugin is
     }
   }
 
-  /// @dev see {IInheritanceCrunaPlugin-configureInheritance}
+  /**
+   * @notice Configures an inheritance
+   * Some parameters are optional depending on the scenario.
+   * There are three scenarios:
+   *
+   * - The user sets a beneficiary. The beneficiary can inherit the NFT as soon as a Proof-of-Life is missed.
+   * - The user sets more than a single sentinel. The sentinels propose a beneficiary, and when the quorum is reached, the beneficiary can inherit the NFT.
+   * - The user sets a beneficiary and some sentinels. In this case, the beneficiary has a grace period to inherit the NFT. If after that grace period the beneficiary has not inherited the NFT, the sentinels can propose a new beneficiary.
+   *
+   * @param quorum The number of sentinels required to approve a request
+   * @param proofOfLifeDurationInWeeks The duration of the Proof-of-Live, i.e., the number
+   * of days after which the sentinels can start the process to inherit the token if the
+   * owner does not prove to be alive
+   * @param gracePeriodInWeeks The grace period in weeks
+   * @param beneficiary The beneficiary address
+   * @param timestamp The timestamp of the signature
+   * @param validFor The validity of the signature
+   * @param signature The signature of the tokensOwner
+   */
   function configureInheritance(
     uint8 quorum,
     uint8 proofOfLifeDurationInWeeks,
@@ -112,19 +150,25 @@ contract InheritanceCrunaPlugin is
     _configureInheritance(quorum, proofOfLifeDurationInWeeks, gracePeriodInWeeks, beneficiary);
   }
 
-  /// @dev see {IInheritanceCrunaPlugin-countSentinels}
+  /**
+   * @notice Return the number of sentinels
+   */
   function countSentinels() external view virtual override returns (uint256) {
     if (_conf.mustBeReset == 1) return 0;
     return _actorCount(_SENTINEL);
   }
 
-  /// @dev see {IInheritanceCrunaPlugin-getSentinelsAndInheritanceData}
+  /**
+   * @notice Return all the sentinels and the inheritance data
+   */
   function getSentinelsAndInheritanceData() external view virtual override returns (address[] memory, InheritanceConf memory) {
     if (_conf.mustBeReset == 1) return (new address[](0), InheritanceConf(address(0), 0, 0, 0, 0, 0));
     return (_getActors(_SENTINEL), _inheritanceConf);
   }
 
-  /// @dev see {IInheritanceCrunaPlugin-getVotes}
+  /**
+   * @notice Return all the votes
+   */
   function getVotes() external view virtual override returns (address[] memory) {
     address[] memory votes = _conf.mustBeReset == 1 ? new address[](0) : _getActors(_SENTINEL);
     uint256 len = votes.length;
@@ -137,7 +181,9 @@ contract InheritanceCrunaPlugin is
     return votes;
   }
 
-  /// @dev see {IInheritanceCrunaPlugin-proofOfLife}
+  /**
+   * @notice allows the user to trigger a Proof-of-Live
+   */
   function proofOfLife() external virtual override onlyTokenOwner ifMustNotBeReset {
     if (0 == _inheritanceConf.proofOfLifeDurationInWeeks) revert InheritanceNotConfigured();
     // solhint-disable-next-line not-rely-on-time
@@ -147,7 +193,11 @@ contract InheritanceCrunaPlugin is
     emit ProofOfLife(_msgSender());
   }
 
-  /// @dev see {IInheritanceCrunaPlugin-voteForBeneficiary}
+  /**
+   * @notice Allows the sentinels to nominate a beneficiary
+   * @param beneficiary The beneficiary address
+   * If the beneficiary is address(0), the vote is to retire a previously voted beneficiary
+   */
   function voteForBeneficiary(address beneficiary) external virtual override ifMustNotBeReset {
     if (0 == _inheritanceConf.proofOfLifeDurationInWeeks) revert InheritanceNotConfigured();
     if (_inheritanceConf.beneficiary != address(0))
@@ -178,13 +228,15 @@ contract InheritanceCrunaPlugin is
     }
   }
 
-  /// @dev see {IInheritanceCrunaPlugin-inherit}
+  /**
+   * @notice Allows the beneficiary to inherit the token
+   */
   function inherit() external virtual override ifMustNotBeReset {
     if (_inheritanceConf.beneficiary == address(0)) revert BeneficiaryNotSet();
     if (_inheritanceConf.beneficiary != _msgSender()) revert NotTheBeneficiary();
     _checkIfStillAlive();
     _resetService();
-    _conf.manager.managedTransfer(_nameId(), _msgSender());
+    _conf.manager.managedTransfer(_serviceKey(), _msgSender());
   }
 
   /// @dev see {ICrunaManagedService.sol-reset}
@@ -198,23 +250,30 @@ contract InheritanceCrunaPlugin is
     return true;
   }
 
-  /// @dev see {IInheritanceCrunaPlugin-upgrade}
+  /**
+   * @notice Upgrades the implementation of the plugin
+   * @param implementation_ The new implementation
+   */
   function upgrade(address implementation_) external virtual nonReentrant {
     if (owner() != _msgSender()) revert NotTheTokenOwner();
     if (implementation_ == address(0)) revert ZeroAddress();
-    if (!Canonical.crunaGuardian().trustedImplementation(_nameId(), implementation_))
-      if (Canonical.crunaGuardian().trustedImplementation(_nameId(), implementation()))
-        // If new implementation is untrusted, the current one must be untrusted too
-        revert UntrustedImplementation(implementation_);
-    ICrunaManagedService impl = ICrunaManagedService(implementation_);
+    // If current implementation is trusted, the new one must be trusted too
+    if (_crunaGuardian().trusted(implementation()))
+      if (!_crunaGuardian().trusted(implementation_)) revert UntrustedImplementation(implementation_);
+    IManagedService impl = IManagedService(implementation_);
     uint256 version_ = impl.version();
+    if (impl.nameId() != bytes4(keccak256("InheritanceCrunaPlugin"))) revert NotTheRightPlugin();
     if (version_ <= _version()) revert InvalidVersion(_version(), version_);
-    uint256 requiredVersion = impl.requiresManagerVersion();
+    uint256 requiredVersion = impl.requiredManagerVersion();
     if (_conf.manager.version() < requiredVersion) revert PluginRequiresUpdatedManager(requiredVersion);
     StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
   }
 
   // Internal functions
+
+  function _onBeforeInit(bytes memory data) internal override {
+    // do nothing
+  }
 
   function _version() internal pure virtual override returns (uint256) {
     return 1_001_000;

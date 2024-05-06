@@ -147,6 +147,8 @@ interface IInheritanceCrunaPlugin {
    */
   error PluginRequiresUpdatedManager(uint256 requiredVersion);
 
+  error NotTheRightPlugin();
+
   // beneficiaries
 
   /**

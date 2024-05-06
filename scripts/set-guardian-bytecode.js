@@ -34,7 +34,7 @@ async function main() {
 
   const bytecodes = JSON.parse(fs.readFileSync(bytecodesPath, "utf8"));
 
-  const canonicalPath = path.resolve(__dirname, `../libs-canonical/${isLocalhost ? "" : "not-"}localhost/Canonical.sol`);
+  const canonicalPath = path.resolve(__dirname, `../libs-canonical/${isLocalhost ? "" : "not-"}localhost/GuardianInstance.sol`);
 
   let salt = bytecodes.CrunaGuardian.salt;
 
@@ -43,19 +43,17 @@ async function main() {
   // issues are found and a new guardian is needed. In that unfortunate case, all managers
   // and services will have to be upgraded by tokens' owners.
   bytecodes.CrunaGuardian.bytecode = await deployUtils.getBytecodeToBeDeployedViaNickSFactory(
-    deployer,
     "CrunaGuardian",
-    ["uint256", "address[]", "address[]", "address"],
-    [delay, [proposerAddress], [executorAddress], deployer.address],
+    ["uint256", "address", "address", "address"],
+    [delay, proposerAddress, executorAddress, deployer.address],
   );
 
   // const canon
   let canonical = fs.readFileSync(canonicalPath, "utf8");
   let newAddress = await deployUtils.getAddressOfContractDeployedViaNickSFactory(
-    deployer,
     "CrunaGuardian",
-    ["uint256", "address[]", "address[]", "address"],
-    [delay, [proposerAddress], [executorAddress], deployer.address],
+    ["uint256", "address", "address", "address"],
+    [delay, proposerAddress, executorAddress, deployer.address],
     salt,
   );
 

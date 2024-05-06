@@ -61,5 +61,5 @@ Must be overridden to specify who can manage changes during initialization and l
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| isInitializing | bool | If true, the function is being called during initialization, if false, it is supposed to the called later. A time controlled NFT can allow the admin to call some functions during the initialization, requiring later a standard proposal/execition process. |
+| isInitializing | bool | If true, the function is being called during initialization, if false, it is supposed to be called later. A time controlled NFT can allow the admin to call some functions during the initialization, requiring later a standard proposal/execition process. |
 

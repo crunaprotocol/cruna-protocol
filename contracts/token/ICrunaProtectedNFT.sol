@@ -161,7 +161,7 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
    * Be careful, your function minting by tokenId MUST check that the tokenId is
    * not higher than nextTokenId. If not, when trying to mint tokens by amount, as soon as
    * nextTokenId reaches the minted tokenId, the function will revert, blocking any future minting.
-   * If you code may risk so, set a function that allow you to correct the nextTokenId to skip
+   * If your code may risk so, set a function that allow you to correct the nextTokenId to skip
    * the token minted by mistake.
    * @param maxTokenId_ The maximum tokenId that can be minted (it can be 0 if no upper limit)
    */
@@ -187,51 +187,32 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
 
   /**
    * @notice Returns the address of a deployed manager or plugin
-   * @param implementation The address of the manager or plugin implementation
-   * @param salt The salt
+   * @param key_ The encoded key of the service
    * @param tokenId The tokenId
    * @param isERC6551Account Specifies the registry to use
    * True if the tokenId was deployed via ERC6551Registry,
    * false, it was deployed via ERC7656Registry
    * @return The address of the deployed manager or plugin
    */
-  function addressOfDeployed(
-    address implementation,
-    bytes32 salt,
-    uint256 tokenId,
-    bool isERC6551Account
-  ) external view returns (address);
+  function addressOfDeployed(bytes32 key_, uint256 tokenId, bool isERC6551Account) external view returns (address);
 
   /**
    * @notice Deploys an unmanaged service
-   * @param implementation The address of the service implementation
-   * @param salt The salt
+   * @param key_ The encoded key of the service
    * @param tokenId The tokenId
    * @param isERC6551Account Specifies the registry to use
    * True if the tokenId must be deployed via ERC6551Registry,
    * false, it must be deployed via ERC7656Registry
    */
-  function plug(
-    address implementation,
-    bytes32 salt,
-    uint256 tokenId,
-    bool isERC6551Account,
-    bytes memory data
-  ) external payable;
+  function plug(bytes32 key_, uint256 tokenId, bool isERC6551Account, bytes memory data) external payable;
 
   /**
    * @notice Returns if a plugin is deployed
-   * @param implementation The address of the plugin implementation
-   * @param salt The salt
+   * @param key_ The encoded key of the service
    * @param tokenId The tokenId
    * @param isERC6551Account Specifies the registry to use
    * True if the tokenId was deployed via ERC6551Registry,
    * false, it was deployed via ERC7656Registry
    */
-  function isDeployed(
-    address implementation,
-    bytes32 salt,
-    uint256 tokenId,
-    bool isERC6551Account
-  ) external view returns (bool);
+  function isDeployed(bytes32 key_, uint256 tokenId, bool isERC6551Account) external view returns (bool);
 }

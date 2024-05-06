@@ -126,7 +126,7 @@ Initialize the NFT
 | ---- | ---- | ----------- |
 | managerAddress_ | address | The address of the manager |
 | progressiveTokenIds_ | bool | If true, the tokenIds will be progressive |
-| nextTokenId_ | uint96 | The next tokenId to be used. If progressiveTokenIds_ == true and the project must reserve some tokens to special addresses, community, etc. You set the nextTokenId_ to the first not reserved token. Be careful, your function minting by tokenId MUST check that the tokenId is not higher than nextTokenId. If not, when trying to mint tokens by amount, as soon as nextTokenId reaches the minted tokenId, the function will revert, blocking any future minting. If you code may risk so, set a function that allow you to correct the nextTokenId to skip the token minted by mistake. |
+| nextTokenId_ | uint96 | The next tokenId to be used. If progressiveTokenIds_ == true and the project must reserve some tokens to special addresses, community, etc. You set the nextTokenId_ to the first not reserved token. Be careful, your function minting by tokenId MUST check that the tokenId is not higher than nextTokenId. If not, when trying to mint tokens by amount, as soon as nextTokenId reaches the minted tokenId, the function will revert, blocking any future minting. If your code may risk so, set a function that allow you to correct the nextTokenId to skip the token minted by mistake. |
 | maxTokenId_ | uint96 | The maximum tokenId that can be minted (it can be 0 if no upper limit) |
 
 ### setMaxTokenId
@@ -174,7 +174,7 @@ Upgrade the default manager for any following tokenId
 ### managedTransfer
 
 ```solidity
-function managedTransfer(bytes4 pluginNameId, uint256 tokenId, address to) external payable virtual
+function managedTransfer(bytes32 key, uint256 tokenId, address to) external payable virtual
 ```
 
 see {ICrunaProtectedNFT-managedTransfer}.
@@ -247,7 +247,7 @@ Making it payable reduces the gas cost.
 ### plug
 
 ```solidity
-function plug(address implementation, bytes32 salt, uint256 tokenId, bool isERC6551Account, bytes data) external payable virtual
+function plug(bytes32 key_, uint256 tokenId, bool isERC6551Account, bytes data) external payable virtual
 ```
 
 Deploys an unmanaged service
@@ -256,8 +256,7 @@ Deploys an unmanaged service
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| implementation | address | The address of the service implementation |
-| salt | bytes32 | The salt |
+| key_ | bytes32 | The encoded key of the service |
 | tokenId | uint256 | The tokenId |
 | isERC6551Account | bool | Specifies the registry to use True if the tokenId must be deployed via ERC6551Registry, false, it must be deployed via ERC7656Registry |
 | data | bytes |  |
@@ -265,7 +264,7 @@ Deploys an unmanaged service
 ### isDeployed
 
 ```solidity
-function isDeployed(address implementation, bytes32 salt, uint256 tokenId, bool isERC6551Account) external view virtual returns (bool)
+function isDeployed(bytes32 key_, uint256 tokenId, bool isERC6551Account) external view virtual returns (bool)
 ```
 
 Returns if a plugin is deployed
@@ -274,8 +273,7 @@ Returns if a plugin is deployed
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| implementation | address | The address of the plugin implementation |
-| salt | bytes32 | The salt |
+| key_ | bytes32 | The encoded key of the service |
 | tokenId | uint256 | The tokenId |
 | isERC6551Account | bool | Specifies the registry to use True if the tokenId was deployed via ERC6551Registry, false, it was deployed via ERC7656Registry |
 
@@ -316,7 +314,7 @@ internal function to return the manager (for lesser gas consumption)
 ### addressOfDeployed
 
 ```solidity
-function addressOfDeployed(address implementation, bytes32 salt, uint256 tokenId, bool isERC6551Account) external view virtual returns (address)
+function addressOfDeployed(bytes32 key_, uint256 tokenId, bool isERC6551Account) external view virtual returns (address)
 ```
 
 Returns the address of a deployed manager or plugin
@@ -325,8 +323,7 @@ Returns the address of a deployed manager or plugin
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| implementation | address | The address of the manager or plugin implementation |
-| salt | bytes32 | The salt |
+| key_ | bytes32 | The encoded key of the service |
 | tokenId | uint256 | The tokenId |
 | isERC6551Account | bool | Specifies the registry to use True if the tokenId was deployed via ERC6551Registry, false, it was deployed via ERC7656Registry |
 
@@ -335,6 +332,18 @@ Returns the address of a deployed manager or plugin
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | [0] | address | The address of the deployed manager or plugin |
+
+### _implFromKey
+
+```solidity
+function _implFromKey(bytes32 key_) internal pure returns (address)
+```
+
+### _saltFromKey
+
+```solidity
+function _saltFromKey(bytes32 key_) internal pure returns (bytes4)
+```
 
 ### _defaultManagerImplementation
 
@@ -369,7 +378,7 @@ Must be overridden to specify who can manage changes during initialization and l
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| isInitializing | bool | If true, the function is being called during initialization, if false, it is supposed to the called later. A time controlled NFT can allow the admin to call some functions during the initialization, requiring later a standard proposal/execition process. |
+| isInitializing | bool | If true, the function is being called during initialization, if false, it is supposed to be called later. A time controlled NFT can allow the admin to call some functions during the initialization, requiring later a standard proposal/execition process. |
 
 ### _update
 

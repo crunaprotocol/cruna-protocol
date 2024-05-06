@@ -11,10 +11,7 @@ import {IERC7656Contract} from "../erc/IERC7656Contract.sol";
 interface ICrunaManager is IERC7656Contract, IVersioned {
   /**
    * @notice A struct to keep info about plugged and unplugged services
-   * @param proxyAddress The address of the first implementation of the plugin
-   * @param salt The salt used during the deployment of the plugin.
-   * It allows to  have multiple instances of the same plugin
-   * @param timeLock The time lock for when a plugin is temporarily unauthorized from making transfers
+   * @param deployed True all the time. Used to verify if the plugin as been deployed
    * @param canManageTransfer True if the plugin can manage transfers
    * @param canBeReset True if the plugin requires a reset when the vault is transferred
    * @param active True if the plugin is active
@@ -22,11 +19,10 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
    * @param trusted True if the plugin is trusted
    * @param banned True if the plugin is banned during the unplug process
    * @param unplugged True if the plugin has been unplugged
+   * @param timeLock The time lock for when a plugin is temporarily unauthorized from making transfers
    */
   struct PluginConfig {
-    address proxyAddress;
-    bytes4 salt;
-    uint32 timeLock;
+    bool deployed;
     bool canManageTransfer;
     bool canBeReset;
     bool active;
@@ -34,23 +30,7 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
     bool trusted;
     bool banned;
     bool unplugged;
-  }
-
-  /**
-   * @notice The plugin element
-   * @param nameId The bytes4 of the hash of the name of the plugin
-   * All services' names must be unique, as well as their bytes4 Ids
-   * An official registry will be set up to avoid collisions when services
-   * development will be more active. Using the proxy address as a key is
-   * not viable because services can be upgraded and the address can change.
-   * @param salt The salt of the plugin
-   * @param active True if the plugin is active
-   */
-  struct PluginElement {
-    bytes4 nameId;
-    bytes4 salt;
-    // redundant to optimize gas usage
-    bool active;
+    uint32 timeLock;
   }
 
   /**
@@ -91,7 +71,7 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
    * @notice Event emitted when
    * the status of plugin identified by `name` and `salt`, and deployed to `pluginAddress` gets a specific `change`
    */
-  event PluginStatusChange(string indexed name, bytes4 salt, address pluginAddress, uint256 change);
+  event PluginStatusChange(bytes32 indexed key, address indexed pluginAddress, uint256 change);
 
   /**
    * @notice Emitted when protectors and safe recipients are removed and all services are disabled (if they require it)
@@ -102,7 +82,7 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
   /**
    * @notice Emitted when a plugin initially plugged despite being not trusted, is trusted by the CrunaGuardian
    */
-  event PluginTrusted(string indexed name, bytes4 salt);
+  event PluginTrusted(bytes32 indexed key);
 
   /**
    * @notice Emitted when the implementation of the manager is upgraded
@@ -116,7 +96,7 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
    * @notice Event emitted when the attempt to reset a plugin fails
    * When this happens, the token owner can unplug the plugin and mark it as banned to avoid future re-plugs
    */
-  event PluginResetAttemptFailed(bytes4 _nameId, bytes4 salt);
+  event PluginResetAttemptFailed(bytes32 indexed key);
 
   /**
    * @notice Returned when trying to upgrade the manager to an untrusted implementation
@@ -261,7 +241,7 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
   /**
    * @dev Returned if trying to trust a plugin that is still untrusted
    */
-  error StillUntrusted();
+  error StillUntrusted(bytes32 key);
 
   /**
    * @dev Returned if a plugin has already been trusted
@@ -307,18 +287,18 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
    * @dev It returns the configuration of a plugin by key
    * @param key The key of the plugin
    */
-  function pluginByKey(bytes8 key) external view returns (PluginConfig memory);
+  function pluginByKey(bytes32 key) external view returns (PluginConfig memory);
 
   /**
    * @dev It returns the configuration of all currently plugged services
    */
-  function allPlugins() external view returns (PluginElement[] memory);
+  function allPlugins() external view returns (bytes32[] memory);
 
   /**
    * @dev It returns an element of the array of all plugged services
    * @param index The index of the plugin in the array
    */
-  function pluginByIndex(uint256 index) external view returns (PluginElement memory);
+  function pluginByIndex(uint256 index) external view returns (bytes32);
 
   /**
    * @dev During an upgrade allows the manager to perform adjustments if necessary.
@@ -428,11 +408,9 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
 
   /**
    * @dev It plugs a new plugin
-   * @param name The name of the plugin
-   * @param pluginProxy The address of the plugin implementation
+   * @param key The key of the plugin
    * @param canManageTransfer True if the plugin can manage transfers
    * @param isERC6551Account True if the plugin is an ERC6551 account
-   * @param salt The salt used during the deployment of the plugin
    * @param data The data to be used during the initialization of the plugin
    * Notice that data cannot be verified by the Manager since they are used by the plugin
    * @param timestamp The timestamp of the signature
@@ -440,11 +418,9 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
    * @param signature The signature of the protector
    */
   function plug(
-    string memory name,
-    address pluginProxy,
+    bytes32 key,
     bool canManageTransfer,
     bool isERC6551Account,
-    bytes4 salt,
     bytes memory data,
     uint256 timestamp,
     uint256 validFor,
@@ -453,8 +429,7 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
 
   /**
    * @dev It changes the status of a plugin
-   * @param name The name of the plugin
-   * @param salt The salt used during the deployment of the plugin
+   * @param key The key of the plugin
    * @param change The type of change
    * @param timeLock_ The time lock for when a plugin is temporarily unauthorized from making transfers
    * @param timestamp The timestamp of the signature
@@ -462,8 +437,7 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
    * @param signature The signature of the protector
    */
   function changePluginStatus(
-    string memory name,
-    bytes4 salt,
+    bytes32 key,
     PluginChange change,
     uint256 timeLock_,
     uint256 timestamp,
@@ -473,31 +447,28 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
 
   /**
    * @dev It trusts a plugin
-   * @param name The name of the plugin
-   * @param salt The salt used during the deployment of the plugin
+   * @param key The key of the plugin
    * No need for a signature by a protector because the safety of the plugin is
    * guaranteed by the CrunaGuardian.
    */
-  function trustPlugin(string calldata name, bytes4 salt) external;
+  function trustPlugin(bytes32 key) external;
 
   /**
    * @dev It returns the address of a plugin
-   * @param nameId_ The bytes4 of the hash of the name of the plugin
-   * @param salt The salt used during the deployment of the plugin
+   * @param key The key of the plugin
    * The address is returned even if a plugin has not deployed yet.
    * @return The plugin address
    */
-  function pluginAddress(bytes4 nameId_, bytes4 salt) external view returns (address payable);
+  function pluginAddress(bytes32 key) external view returns (address payable);
 
   /**
    * @dev It returns a plugin by name and salt
-   * @param nameId_ The bytes4 of the hash of the name of the plugin
-   * @param salt The salt used during the deployment of the plugin
+   * @param key The key of the plugin
    * The plugin is returned even if a plugin has not deployed yet, which means that it will
    * revert during the execution.
    * @return The plugin
    */
-  function plugin(bytes4 nameId_, bytes4 salt) external view returns (CrunaManagedService);
+  function plugin(bytes32 key) external view returns (CrunaManagedService);
 
   /**
    * @dev It returns the number of services
@@ -506,24 +477,23 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
 
   /**
    * @dev Says if a plugin is currently plugged
+   * @param key The key of the plugin
    */
-  function plugged(string calldata name, bytes4 salt) external view returns (bool);
+  function plugged(bytes32 key) external view returns (bool);
 
   /**
    * @dev Returns the index of a plugin
-   * @param name The name of the plugin
-   * @param salt The salt used during the deployment of the plugin
+   * @param key The key of the plugin
    * @return a tuple with a true if the plugin is found, and the index of the plugin
    */
-  function pluginIndex(string calldata name, bytes4 salt) external view returns (bool, uint256);
+  function pluginIndex(bytes32 key) external view returns (bool, uint256);
 
   /**
    * @dev Checks if a plugin is active
-   * @param name The name of the plugin
-   * @param salt The salt used during the deployment of the plugin
+   * @param key The key of the plugin
    * @return True if the plugin is active
    */
-  function isPluginActive(string calldata name, bytes4 salt) external view returns (bool);
+  function isPluginActive(bytes32 key) external view returns (bool);
 
   /**
    * @dev returns the list of services' keys
@@ -534,26 +504,23 @@ interface ICrunaManager is IERC7656Contract, IVersioned {
    * @param active True to get the list of active services, false to get the list of inactive services
    * @return The list of services' keys
    */
-  function listPluginsKeys(bool active) external view returns (bytes8[] memory);
+  function listPluginsKeys(bool active) external view returns (bytes32[] memory);
 
   /**
    * @dev It returns a pseudo address created from the name of a plugin and the salt used to deploy it.
    * Notice that abi.encodePacked does not risk to create collisions because the salt has fixed length
    * in the hashed bytes.
-   * @param name The name of the plugin
-   * @param _salt The salt used during the deployment of the plugin
+   * @param key The key of the plugin
    * @return The pseudo address of the plugin
    */
-  function pseudoAddress(string calldata name, bytes4 _salt) external view returns (address);
+  function pseudoAddress(bytes32 key) external view returns (address);
 
   /**
    * @dev A special function that can be called only by authorized services to transfer the NFT.
-   * @param pluginNameId The bytes4 of the hash of the name of the plugin
-   * The plugin must be searched by the pluginNameId and the salt, and the function must verify that
-   * the current sender is the plugin.
+   * @param key The key of the plugin
    * @param to The address of the recipient
    */
-  function managedTransfer(bytes4 pluginNameId, address to) external;
+  function managedTransfer(bytes32 key, address to) external;
 
   /**
    * @dev Allows the user to transfer the NFT when protectors are set

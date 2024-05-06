@@ -1,5 +1,25 @@
 # Solidity API
 
+## IManagedService
+
+### requiredManagerVersion
+
+```solidity
+function requiredManagerVersion() external pure returns (uint256)
+```
+
+### nameId
+
+```solidity
+function nameId() external pure returns (bytes4)
+```
+
+### version
+
+```solidity
+function version() external pure returns (uint256)
+```
+
 ## InheritanceCrunaPlugin
 
 This contract manages inheritance
@@ -180,6 +200,16 @@ Upgrades the implementation of the plugin
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | implementation_ | address | The new implementation |
+
+### _onBeforeInit
+
+```solidity
+function _onBeforeInit(bytes data) internal
+```
+
+The function to be executed before init
+
+_must be implemented in the service_
 
 ### _version
 

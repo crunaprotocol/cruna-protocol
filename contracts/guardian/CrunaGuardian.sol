@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {TimelockController} from "@openzeppelin/contracts/governance/TimelockController.sol";
+import {TimeControlledGovernance} from "./TimeControlledGovernance.sol";
 
 import {ICrunaGuardian} from "./ICrunaGuardian.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
+
+//import "hardhat/console.sol";
 
 /**
  * @title CrunaGuardian
@@ -14,70 +16,60 @@ import {IVersioned} from "../utils/IVersioned.sol";
  * - manager and services to upgrade its own  implementation
  * - manager to trust a new plugin implementation and allow managed transfers
  */
-contract CrunaGuardian is ICrunaGuardian, IVersioned, TimelockController {
-  bool private _allowUntrusted;
-
+contract CrunaGuardian is ICrunaGuardian, IVersioned, TimeControlledGovernance {
   /**
    * @notice Error returned when the arguments are invalid
    */
   error InvalidArguments();
 
-  /**
-   * @notice Error returned when the function is not called through the TimelockController
-   */
-  error MustCallThroughTimeController();
-
-  /**
-   * @notice Modifier to allow only the TimelockController to call a function.
-   */
-  modifier onlyThroughTimeController() {
-    if (msg.sender != address(this)) revert MustCallThroughTimeController();
-    _;
-  }
-
-  /**
-   * @notice Emitted when a trusted implementation is updated
-   */
-  mapping(bytes32 nameIdAndImplementationAddress => bool trusted) private _trustedImplementations;
+  mapping(address implementation => bool trusted) private _trusted;
 
   /**
    * @notice When deployed to production, proposers and executors will be multi-sig wallets owned by the Cruna DAO
-   * @param minDelay The minimum delay for timelock operations
-   * @param proposers The addresses that can propose timelock operations
-   * @param executors The addresses that can execute timelock operations
-   * @param admin The address that can admin the contract. It will renounce to the role, as soon as the
-   *  DAO is stable and there are no risks in doing so.
+   * @param minDelay The minimum delay for time lock operations
+   * @param firstProposer The address that can propose time lock operations
+   * @param firstExecutor The address that can execute time lock operations
+   * @param admin The address that can admin the contract.
    */
   constructor(
     uint256 minDelay,
-    address[] memory proposers,
-    address[] memory executors,
+    address firstProposer,
+    address firstExecutor,
     address admin
-  ) TimelockController(minDelay, proposers, executors, admin) {}
+  ) TimeControlledGovernance(minDelay, firstProposer, firstExecutor, admin) {}
 
-  /// @dev see {IVersioned-version}
+  /**
+   * @notice Returns the version of the contract.
+   * The format is similar to semver, where any element takes 3 digits.
+   * For example, version 1.2.14 is 1_002_014.
+   */
   function version() external pure virtual returns (uint256) {
     // v1.1.0
-    return 1_002_000;
+    return 1_003_000;
   }
 
-  /// @dev see {ICrunaGuardian-setTrustedImplementation}
-  function setTrustedImplementation(
-    bytes4 nameId,
-    address implementation,
-    bool trusted
-  ) external override onlyThroughTimeController {
-    bytes32 _key = bytes32(nameId) | bytes32(uint256(uint160(implementation)));
-    if (trusted) {
-      _trustedImplementations[_key] = true;
-    } else {
-      delete _trustedImplementations[_key];
+  /**
+   * @notice Returns the manager version required by a trusted implementation
+   * @param implementation The address of the implementation
+   */
+  function trust(uint256 delay, OperationType oType, address implementation, bool trusted_) external override {
+    if (trusted_) {
+      if (_trusted[implementation]) revert InvalidRequest();
+    } else if (!_trusted[implementation]) revert InvalidRequest();
+    bytes32 operation = keccak256(abi.encode(this.trust.selector, implementation, trusted_));
+    if (_canExecute(delay, oType, operation)) {
+      if (trusted_) _trusted[implementation] = trusted_;
+      else delete _trusted[implementation];
+      emit Trusted(implementation, trusted_);
     }
-    emit TrustedImplementationUpdated(nameId, implementation, trusted);
   }
 
-  /// @dev see {ICrunaGuardian-trustedImplementation}
-  function trustedImplementation(bytes4 nameId, address implementation) external view override returns (bool) {
-    return _trustedImplementations[bytes32(nameId) | bytes32(uint256(uint160(implementation)))];
+  /**
+   * @notice Returns the manager version required by a trusted implementation
+   * @param implementation The address of the implementation
+   * @return True if a trusted implementation
+   */
+  function trusted(address implementation) external view override returns (bool) {
+    return _trusted[implementation];
   }
 }

@@ -17,6 +17,10 @@ function debug(...params) {
 
 let count = 9000;
 
+const PROPOSAL = 0;
+const CANCELLATION = 1;
+const EXECUTION = 2;
+
 const Helpers = {
   async number(bn) {
     return (await bn).toNumber();
@@ -180,12 +184,19 @@ const Helpers = {
     return ethers.utils.hexDataSlice(bytes32value, 0, 4);
   },
 
-  pseudoAddress(name, salt) {
-    const nameBytes = ethers.utils.toUtf8Bytes(name);
-    const saltBytes = ethers.utils.arrayify(salt);
-    const packed = ethers.utils.concat([nameBytes, saltBytes]);
-    const hash = ethers.utils.keccak256(packed);
+  pseudoAddress(key) {
+    const hash = ethers.utils.keccak256(key);
     return ethers.utils.getAddress("0x" + hash.substring(hash.length - 40));
+  },
+
+  pluginKey(name, impl, salt) {
+    return (
+      salt.substring(0, 10) +
+      "0000" +
+      impl.substring(2).toLowerCase() +
+      "0000" +
+      Helpers.bytes4(Helpers.keccak256(name)).substring(2)
+    );
   },
 
   combineBytes4ToBytes32(bytes4value1, bytes4value2) {
@@ -337,7 +348,7 @@ const Helpers = {
     return types;
   },
 
-  async trustImplementation(guardian, proposer, executor, delay, nameId, implementation, trusted) {
+  async trustImplementationV0(guardian, proposer, executor, delay, nameId, implementation, trusted) {
     return thiz.proposeAndExecute(
       guardian,
       proposer,
@@ -348,6 +359,22 @@ const Helpers = {
       implementation,
       trusted,
     );
+  },
+
+  async trustImplementation(guardian, proposer, executor, delay, implementation, trusted) {
+    const bytes = ethers.utils.defaultAbiCoder.encode(
+      ["bytes4", "address", "bool"],
+      [await thiz.selectorId("ICrunaGuardian", "trust"), implementation, trusted],
+    );
+    const operation = ethers.utils.keccak256(bytes);
+    await expect(guardian.connect(proposer).trust(delay, PROPOSAL, implementation, trusted))
+      .emit(guardian, "OperationProposed")
+      .withArgs(operation, proposer.address, delay);
+    const ts = await thiz.getTimestamp();
+    expect(await guardian.getOperation(operation)).equal(ts + delay);
+    await ethers.provider.send("evm_increaseTime", [delay + 1]);
+    await ethers.provider.send("evm_mine");
+    await guardian.connect(executor).trust(delay, EXECUTION, implementation, trusted);
   },
 
   async proposeAndExecute(contract, proposer, executor, delay, funcName, ...params) {
