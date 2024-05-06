@@ -57,6 +57,7 @@ function isManaged() external pure returns (bool)
 ```
 
 Called when deploying the service to check if it must be managed
+An unmanaged service should always return false
 
 ### serviceKey
 

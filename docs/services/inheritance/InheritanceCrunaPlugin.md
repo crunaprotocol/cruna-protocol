@@ -2,10 +2,10 @@
 
 ## IManagedService
 
-### requiresManagerVersion
+### requiredManagerVersion
 
 ```solidity
-function requiresManagerVersion() external pure returns (uint256)
+function requiredManagerVersion() external pure returns (uint256)
 ```
 
 ### nameId

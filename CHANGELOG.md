@@ -24,7 +24,7 @@
 - Fix address of `CrunaRegistry` in `libs-canonical/not-localhost/Canonical.sol`
 
 **0.4.0**
-- Remove manager's version from `CrunaGuardian` and add `requiresManagerVersion` to `ICrunaManagedService`
+- Remove manager's version from `CrunaGuardian` and add `requiredManagerVersion` to `ICrunaManagedService`
 - Explicitly add list of testnets where the plugin is allowed to transfer the NFT even if the plugin is not trusted
 - Remove `_IMPLEMENTATION_SLOT` variable from `CommonBase` not being needed for most plugins and move it in `CrunaManager` and `InheritanceCrunaPlugin`
 - Adding `_onBeforeInit` hook in `CrunaManagedService` to allow plugins to execute code before the initialization of the NFT, since `init` is not virtual and cannot be overridden.

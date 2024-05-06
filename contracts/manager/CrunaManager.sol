@@ -646,7 +646,7 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployer {
     address pluginAddress_ = _deploy(firstImplementation_, salt, tokenAddress(), tokenId(), isERC6551Account);
     CrunaManagedService plugin_ = CrunaManagedService(payable(pluginAddress_));
     if (!plugin_.isManaged()) revert UnmanagedService();
-    uint256 requiredVersion = plugin_.requiresManagerVersion();
+    uint256 requiredVersion = plugin_.requiredManagerVersion();
     if (requiredVersion > _version()) revert PluginRequiresUpdatedManager(requiredVersion);
     if (plugin_.nameId() != nameId_) revert InvalidImplementation(plugin_.nameId(), nameId_);
     if (plugin_.isERC6551Account() != isERC6551Account) revert InvalidERC6551Status();

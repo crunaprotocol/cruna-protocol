@@ -108,7 +108,7 @@ function recoverSigner(bytes4 selector, address owner, address actor, address to
 ```
 
 _This function validates a signature trying to be as flexible as possible.
-As long as called inside the same contract, the cost adding some more parameters is negligible.
+As long as called inside the same contract, the cost of adding some more parameters is negligible.
 Instead, calling it from other contracts can be expensive._
 
 #### Parameters

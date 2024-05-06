@@ -126,7 +126,7 @@ Initialize the NFT
 | ---- | ---- | ----------- |
 | managerAddress_ | address | The address of the manager |
 | progressiveTokenIds_ | bool | If true, the tokenIds will be progressive |
-| nextTokenId_ | uint96 | The next tokenId to be used. If progressiveTokenIds_ == true and the project must reserve some tokens to special addresses, community, etc. You set the nextTokenId_ to the first not reserved token. Be careful, your function minting by tokenId MUST check that the tokenId is not higher than nextTokenId. If not, when trying to mint tokens by amount, as soon as nextTokenId reaches the minted tokenId, the function will revert, blocking any future minting. If you code may risk so, set a function that allow you to correct the nextTokenId to skip the token minted by mistake. |
+| nextTokenId_ | uint96 | The next tokenId to be used. If progressiveTokenIds_ == true and the project must reserve some tokens to special addresses, community, etc. You set the nextTokenId_ to the first not reserved token. Be careful, your function minting by tokenId MUST check that the tokenId is not higher than nextTokenId. If not, when trying to mint tokens by amount, as soon as nextTokenId reaches the minted tokenId, the function will revert, blocking any future minting. If your code may risk so, set a function that allow you to correct the nextTokenId to skip the token minted by mistake. |
 | maxTokenId_ | uint96 | The maximum tokenId that can be minted (it can be 0 if no upper limit) |
 
 ### setMaxTokenId
@@ -378,7 +378,7 @@ Must be overridden to specify who can manage changes during initialization and l
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| isInitializing | bool | If true, the function is being called during initialization, if false, it is supposed to the called later. A time controlled NFT can allow the admin to call some functions during the initialization, requiring later a standard proposal/execition process. |
+| isInitializing | bool | If true, the function is being called during initialization, if false, it is supposed to be called later. A time controlled NFT can allow the admin to call some functions during the initialization, requiring later a standard proposal/execition process. |
 
 ### _update
 

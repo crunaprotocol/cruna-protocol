@@ -15,7 +15,7 @@ import {CrunaManagedService} from "../CrunaManagedService.sol";
 import {GuardianInstance} from "../../libs/GuardianInstance.sol";
 
 interface IManagedService {
-  function requiresManagerVersion() external pure returns (uint256);
+  function requiredManagerVersion() external pure returns (uint256);
   function nameId() external pure returns (bytes4);
   function version() external pure returns (uint256);
 }
@@ -264,7 +264,7 @@ contract InheritanceCrunaPlugin is
     uint256 version_ = impl.version();
     if (impl.nameId() != bytes4(keccak256("InheritanceCrunaPlugin"))) revert NotTheRightPlugin();
     if (version_ <= _version()) revert InvalidVersion(_version(), version_);
-    uint256 requiredVersion = impl.requiresManagerVersion();
+    uint256 requiredVersion = impl.requiredManagerVersion();
     if (_conf.manager.version() < requiredVersion) revert PluginRequiresUpdatedManager(requiredVersion);
     StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementation_;
   }

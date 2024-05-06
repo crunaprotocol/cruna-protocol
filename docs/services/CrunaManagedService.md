@@ -80,13 +80,13 @@ function requiresResetOnTransfer() external pure virtual returns (bool)
 
 _see {ICrunaManagedService.sol-requiresResetOnTransfer}_
 
-### requiresManagerVersion
+### requiredManagerVersion
 
 ```solidity
-function requiresManagerVersion() external pure virtual returns (uint256)
+function requiredManagerVersion() external pure virtual returns (uint256)
 ```
 
-_see {ICrunaManagedService.sol-requiresManagerVersion}_
+_see {ICrunaManagedService.sol-requiredManagerVersion}_
 
 ### isERC6551Account
 
@@ -103,6 +103,7 @@ function isManaged() external pure returns (bool)
 ```
 
 Called when deploying the service to check if it must be managed
+An unmanaged service should always return false
 
 ### resetService
 

@@ -161,7 +161,7 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
    * Be careful, your function minting by tokenId MUST check that the tokenId is
    * not higher than nextTokenId. If not, when trying to mint tokens by amount, as soon as
    * nextTokenId reaches the minted tokenId, the function will revert, blocking any future minting.
-   * If you code may risk so, set a function that allow you to correct the nextTokenId to skip
+   * If your code may risk so, set a function that allow you to correct the nextTokenId to skip
    * the token minted by mistake.
    * @param maxTokenId_ The maximum tokenId that can be minted (it can be 0 if no upper limit)
    */

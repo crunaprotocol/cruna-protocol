@@ -2541,7 +2541,7 @@
     },
     {
       "inputs": [],
-      "name": "requiresManagerVersion",
+      "name": "requiredManagerVersion",
       "outputs": [
         {
           "internalType": "uint256",

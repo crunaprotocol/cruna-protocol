@@ -78,8 +78,8 @@ abstract contract CrunaManagedService is ICrunaManagedService, Actor, CommonBase
     return false;
   }
 
-  /// @dev see {ICrunaManagedService.sol-requiresManagerVersion}
-  function requiresManagerVersion() external pure virtual override returns (uint256) {
+  /// @dev see {ICrunaManagedService.sol-requiredManagerVersion}
+  function requiredManagerVersion() external pure virtual override returns (uint256) {
     return 1;
   }
 

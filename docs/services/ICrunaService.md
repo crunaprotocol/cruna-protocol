@@ -19,6 +19,8 @@ function init(bytes data) external
 ```
 
 Initialize the plugin. It must be implemented, but can do nothing is no init is needed.
+We call this function init to avoid conflicts with the `initialize` function used in
+upgradeable contracts
 
 ### isERC6551Account
 
@@ -35,4 +37,5 @@ function isManaged() external pure returns (bool)
 ```
 
 Called when deploying the service to check if it must be managed
+An unmanaged service should always return false
 
