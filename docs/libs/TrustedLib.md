@@ -23,7 +23,7 @@ To keep this function efficient, we support only the most popular chains at the 
 - Gnosis Testnet
 - Polygon Mumbai (deprecated)
 - Polygon Amoy
+- Base Sepolia
 - Arbitrum Testnet
-- Sepolia
-- Base Sepolia_
+- Sepolia_
 

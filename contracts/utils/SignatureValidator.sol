@@ -84,6 +84,36 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
   }
 
   /**
+   * @dev Pre-approve a signature.
+   * @param selector The selector of the function being called.
+   * @param owner The owner of the token.
+   * @param actor The actor being authorized.
+   * It can be address(0) if the parameter is not needed.
+   * @param tokenAddress The address of the token.
+   * @param tokenId The id of the token.
+   * @param extra The extra
+   * @param extra2 The extra2
+   * @param extra3 The extra3
+   * @param timeValidation A combination of timestamp and validity of the signature.
+   */
+  function preApprove(
+    bytes4 selector,
+    address owner,
+    address actor,
+    address tokenAddress,
+    uint256 tokenId,
+    uint256 extra,
+    uint256 extra2,
+    uint256 extra3,
+    uint256 timeValidation
+  ) external override {
+    if (!_canPreApprove(selector, actor, _msgSender())) revert NotAuthorized();
+    bytes32 hash = _hashData(selector, owner, actor, tokenAddress, tokenId, extra, extra2, extra3, timeValidation);
+    _preApprovals[hash] = _msgSender();
+    emit PreApproved(hash, _msgSender());
+  }
+
+  /**
    * @dev This function validates a signature trying to be as flexible as possible.
    * As long as called inside the same contract, the cost of adding some more parameters is negligible.
    * Instead, calling it from other contracts can be expensive.
@@ -122,36 +152,6 @@ abstract contract SignatureValidator is ISignatureValidator, EIP712, Context {
       }
       return (_preApprovals[hash], hash);
     }
-  }
-
-  /**
-   * @dev Pre-approve a signature.
-   * @param selector The selector of the function being called.
-   * @param owner The owner of the token.
-   * @param actor The actor being authorized.
-   * It can be address(0) if the parameter is not needed.
-   * @param tokenAddress The address of the token.
-   * @param tokenId The id of the token.
-   * @param extra The extra
-   * @param extra2 The extra2
-   * @param extra3 The extra3
-   * @param timeValidation A combination of timestamp and validity of the signature.
-   */
-  function preApprove(
-    bytes4 selector,
-    address owner,
-    address actor,
-    address tokenAddress,
-    uint256 tokenId,
-    uint256 extra,
-    uint256 extra2,
-    uint256 extra3,
-    uint256 timeValidation
-  ) external override {
-    if (!_canPreApprove(selector, actor, _msgSender())) revert NotAuthorized();
-    bytes32 hash = _hashData(selector, owner, actor, tokenAddress, tokenId, extra, extra2, extra3, timeValidation);
-    _preApprovals[hash] = _msgSender();
-    emit PreApproved(hash, _msgSender());
   }
 
   /**

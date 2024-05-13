@@ -71,6 +71,28 @@ _Returns if a signature has been used._
 | ---- | ---- | ----------- |
 | hash | bytes32 | The hash of the signature. |
 
+### preApprove
+
+```solidity
+function preApprove(bytes4 selector, address owner, address actor, address tokenAddress, uint256 tokenId, uint256 extra, uint256 extra2, uint256 extra3, uint256 timeValidation) external
+```
+
+_Pre-approve a signature._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| selector | bytes4 | The selector of the function being called. |
+| owner | address | The owner of the token. |
+| actor | address | The actor being authorized. It can be address(0) if the parameter is not needed. |
+| tokenAddress | address | The address of the token. |
+| tokenId | uint256 | The id of the token. |
+| extra | uint256 | The extra |
+| extra2 | uint256 | The extra2 |
+| extra3 | uint256 | The extra3 |
+| timeValidation | uint256 | A combination of timestamp and validity of the signature. |
+
 ### recoverSigner
 
 ```solidity
@@ -102,28 +124,6 @@ Instead, calling it from other contracts can be expensive._
 | ---- | ---- | ----------- |
 | [0] | address | The signer of the signature and the hash of the signature. |
 | [1] | bytes32 |  |
-
-### preApprove
-
-```solidity
-function preApprove(bytes4 selector, address owner, address actor, address tokenAddress, uint256 tokenId, uint256 extra, uint256 extra2, uint256 extra3, uint256 timeValidation) external
-```
-
-_Pre-approve a signature._
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| selector | bytes4 | The selector of the function being called. |
-| owner | address | The owner of the token. |
-| actor | address | The actor being authorized. It can be address(0) if the parameter is not needed. |
-| tokenAddress | address | The address of the token. |
-| tokenId | uint256 | The id of the token. |
-| extra | uint256 | The extra |
-| extra2 | uint256 | The extra2 |
-| extra3 | uint256 | The extra3 |
-| timeValidation | uint256 | A combination of timestamp and validity of the signature. |
 
 ### _canPreApprove
 

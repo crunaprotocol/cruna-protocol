@@ -20,9 +20,9 @@ library TrustedLib {
    * - Gnosis Testnet
    * - Polygon Mumbai (deprecated)
    * - Polygon Amoy
+   * - Base Sepolia
    * - Arbitrum Testnet
    * - Sepolia
-   * - Base Sepolia
    */
   function areUntrustedImplementationsAllowed() internal view returns (bool) {
     uint256 chainId = block.chainid;
