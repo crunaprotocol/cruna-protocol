@@ -118,6 +118,7 @@ module.exports = {
       url: "https://alfajores-forno.celo-testnet.org",
       accounts: [env.DEPLOYER],
       chainId: 44787,
+      loggingEnabled: true
     },
     base: {
       url: 'https://mainnet.base.org',
