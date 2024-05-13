@@ -44,5 +44,20 @@
       43113,
       44787
     ]
+  },
+  "v0.7.0": {
+    "contracts": {
+      "ERC6551Registry": "0x000000006551c19487814612e58FE06813775758",
+      "ERC7656Registry": "0x7656CCCC1d93430f4E43A7ea0981C01469c9D6A2",
+      "CrunaGuardian": "0xD86DAB165E6FC563e27743E6632B8C61499F5c69",
+      "CrunaManager": "0x02Ea71D31840cE4D55182ab2581Fd3A2f507D2C1",
+      "CrunaManagerProxy": "0x0b767B76713b1aBC0d43A83af8B4B3e44adee94F",
+      "InheritanceCrunaPlugin": "0x79b5e021aEc971fF3412Bc1110D9117E350eF0E0",
+      "InheritanceCrunaPluginProxy": "0x33C3e8a9f7Ce301d171e5ddE8a56613a309EDDC1"
+    },
+    "chains": [
+      43113,
+      44787
+    ]
   }
 }

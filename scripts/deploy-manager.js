@@ -37,7 +37,7 @@ async function main() {
   }
 
   if (!bytecodes.CrunaManager.bytecode || process.env.OVERRIDE) {
-    bytecodes.CrunaManager.bytecode = await deployUtils.getBytecodeToBeDeployedViaNickSFactory(deployer, "CrunaManager");
+    bytecodes.CrunaManager.bytecode = await deployUtils.getBytecodeToBeDeployedViaNickSFactory("CrunaManager");
   }
 
   let manager = await deployUtils.deployBytecodeViaNickSFactory(
@@ -51,7 +51,6 @@ async function main() {
 
   if (!bytecodes.CrunaManagerProxy.bytecode || process.env.OVERRIDE) {
     bytecodes.CrunaManagerProxy.bytecode = await deployUtils.getBytecodeToBeDeployedViaNickSFactory(
-      deployer,
       "CrunaManagerProxy",
       ["address"],
       [manager.address],

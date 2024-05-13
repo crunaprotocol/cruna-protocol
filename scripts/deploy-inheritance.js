@@ -37,10 +37,8 @@ async function main() {
   }
 
   if (!bytecodes.InheritanceCrunaPlugin.bytecode || process.env.OVERRIDE) {
-    bytecodes.InheritanceCrunaPlugin.bytecode = await deployUtils.getBytecodeToBeDeployedViaNickSFactory(
-      deployer,
-      "InheritanceCrunaPlugin",
-    );
+    bytecodes.InheritanceCrunaPlugin.bytecode =
+      await deployUtils.getBytecodeToBeDeployedViaNickSFactory("InheritanceCrunaPlugin");
   }
 
   let plugin = await deployUtils.deployBytecodeViaNickSFactory(
@@ -54,7 +52,6 @@ async function main() {
 
   if (!bytecodes.InheritanceCrunaPluginProxy.bytecode || process.env.OVERRIDE) {
     bytecodes.InheritanceCrunaPluginProxy.bytecode = await deployUtils.getBytecodeToBeDeployedViaNickSFactory(
-      deployer,
       "InheritanceCrunaPluginProxy",
       ["address"],
       [plugin.address],

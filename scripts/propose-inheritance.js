@@ -4,8 +4,19 @@ const ethers = hre.ethers;
 const path = require("path");
 const EthDeployUtils = require("eth-deploy-utils");
 let deployUtils;
-const { proposeAndExecute, bytes4, keccak256 } = require("../test/helpers");
+const { proposeAndExecute, bytes4, keccak256, selectorId } = require("../test/helpers");
 const { expect } = require("chai");
+
+async function trustImplementation(guardian, proposer, executor, delay, implementation, trusted) {
+  const bytes = ethers.utils.defaultAbiCoder.encode(
+    ["bytes4", "address", "bool"],
+    [await selectorId("ICrunaGuardian", "trust"), implementation, trusted],
+  );
+  const operation = ethers.utils.keccak256(bytes);
+  await expect(guardian.connect(proposer).trust(delay, 0, implementation, trusted))
+    .emit(guardian, "OperationProposed")
+    .withArgs(operation, proposer.address, delay);
+}
 
 async function main() {
   deployUtils = new EthDeployUtils(path.resolve(__dirname, ".."), console.log);
@@ -16,21 +27,11 @@ async function main() {
   const proposer = new ethers.Wallet(process.env.PROPOSER, ethers.provider);
   // const pluginProxy = await deployUtils.attach("InheritanceCrunaPluginProxy");
   // const plugin = await deployUtils.attach("InheritanceCrunaPlugin", pluginProxy.address);
-  const plugin = await deployUtils.attach("InheritanceCrunaPlugin", "0x705366d0a3314283372d335A9AE8971be7274361");
-  const guardian = await deployUtils.attach("CrunaGuardian", "0x4DFB2c689A0f87bCeb6C204aCb7e1D0B22139aa2");
-  let PLUGIN_ID = bytes4(keccak256("InheritanceCrunaPlugin"));
+  const plugin = await deployUtils.attach("InheritanceCrunaPlugin");
+  const guardian = await deployUtils.attach("CrunaGuardian");
 
   // start the process of trusting the plugin
-  await proposeAndExecute(
-    guardian,
-    proposer,
-    undefined,
-    process.env.DELAY,
-    "setTrustedImplementation",
-    PLUGIN_ID,
-    plugin.address,
-    true,
-  );
+  await trustImplementation(guardian, proposer, undefined, process.env.DELAY, plugin.address, true);
 }
 
 main()

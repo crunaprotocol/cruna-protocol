@@ -45,7 +45,6 @@ async function main() {
     "CrunaGuardian",
     bytecodes.CrunaGuardian.bytecode,
     bytecodes.CrunaGuardian.salt,
-    {gasLimit: 1000000}
   );
 }
 
