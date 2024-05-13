@@ -119,6 +119,17 @@ module.exports = {
       accounts: [env.DEPLOYER],
       chainId: 44787,
     },
+    base: {
+      url: 'https://mainnet.base.org',
+      accounts: [env.DEPLOYER],
+      gasPrice: 1000000000,
+    },
+    // for testnet
+    basesepolia: {
+      url: 'https://sepolia.base.org',
+      accounts: [env.DEPLOYER],
+      gasPrice: 1000000000,
+    },
   },
   etherscan: {
     // Your API key for Etherscan

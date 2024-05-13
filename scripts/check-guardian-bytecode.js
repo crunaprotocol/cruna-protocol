@@ -45,7 +45,7 @@ async function main() {
         deployer,
         "CrunaGuardian",
         ["uint256", "address[]", "address[]", "address"],
-        [delay, [proposerAddress], [executorAddress], deployer.address],
+        [delay, proposerAddress, executorAddress, deployer.address],
       )),
   );
 }

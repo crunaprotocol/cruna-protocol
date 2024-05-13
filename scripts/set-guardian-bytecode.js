@@ -42,11 +42,18 @@ async function main() {
   // It should not happen after the first guardian as been deployed, except if very serious
   // issues are found and a new guardian is needed. In that unfortunate case, all managers
   // and services will have to be upgraded by tokens' owners.
-  bytecodes.CrunaGuardian.bytecode = await deployUtils.getBytecodeToBeDeployedViaNickSFactory(
+  let newBytecode = await deployUtils.getBytecodeToBeDeployedViaNickSFactory(
     "CrunaGuardian",
     ["uint256", "address", "address", "address"],
     [delay, proposerAddress, executorAddress, deployer.address],
   );
+
+  if (bytecodes.CrunaGuardian.bytecode !== newBytecode) {
+    bytecodes.CrunaGuardian.bytecode = newBytecode;
+  } else {
+    console.log("No change in the bytecode");
+    process.exit(0);
+  }
 
   // const canon
   let canonical = fs.readFileSync(canonicalPath, "utf8");

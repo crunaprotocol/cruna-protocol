@@ -33,12 +33,12 @@ async function main() {
       canonicalBytecodes.ERC6551Registry.salt,
     );
   }
-  await deployUtils.deployBytecodeViaNickSFactory(
-    deployer,
-    "ERC7656Registry",
-    canonicalBytecodes.ERC7656Registry.bytecode,
-    canonicalBytecodes.ERC7656Registry.salt,
-  );
+  // await deployUtils.deployBytecodeViaNickSFactory(
+  //   deployer,
+  //   "ERC7656Registry",
+  //   canonicalBytecodes.ERC7656Registry.bytecode,
+  //   canonicalBytecodes.ERC7656Registry.salt,
+  // );
 
   await deployUtils.deployBytecodeViaNickSFactory(
     deployer,
