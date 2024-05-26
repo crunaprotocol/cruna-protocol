@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {ERC7656Contract} from "../erc/ERC7656Contract.sol";
+import {ERC7656Contract} from "erc7656/ERC7656Contract.sol";
 import {CrunaProtectedNFT} from "../token/CrunaProtectedNFT.sol";
 import {INamed} from "../utils/INamed.sol";
 

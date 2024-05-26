@@ -10,12 +10,12 @@ async function main() {
     ABIs[rename || name] = json.abi;
   }
   abi("CrunaManager", "contracts/manager");
-  abi("ERC7656Registry", "contracts/erc");
+  abi("ERC7656Registry", "erc7656");
   abi("InheritanceCrunaPlugin", "contracts/services/inheritance");
   abi("TimeControlledNFT", "contracts/mocks/token");
   abi("CrunaGuardian", "contracts/guardian");
   abi("VaultFactory", "contracts/mocks/factory");
-  abi("ERC6551Registry", "erc6551/");
+  abi("ERC6551Registry", "erc6551");
 
   await fs.writeFile(path.resolve(__dirname, "../export/Cruna.json"), JSON.stringify(ABIs, null, 2));
 }

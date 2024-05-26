@@ -56,13 +56,8 @@ This dual-pathway for plugin deployment underscores the protocol's flexibility a
 
 - Erc
   - [ERC6551AccountProxy](./erc/ERC6551AccountProxy.md)
-  - [ERC7656Contract](./erc/ERC7656Contract.md)
-  - [ERC7656Registry](./erc/ERC7656Registry.md)
   - [IERC6454](./erc/IERC6454.md)
   - [IERC6982](./erc/IERC6982.md)
-  - [IERC7656Contract](./erc/IERC7656Contract.md)
-  - [IERC7656ContractExtended](./erc/IERC7656ContractExtended.md)
-  - [IERC7656Registry](./erc/IERC7656Registry.md)
 - Guardian
   - [CrunaGuardian](./guardian/CrunaGuardian.md)
   - [ICrunaGuardian](./guardian/ICrunaGuardian.md)
