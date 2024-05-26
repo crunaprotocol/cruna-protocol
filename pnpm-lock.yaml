@@ -116,8 +116,8 @@ devDependencies:
     specifier: ^5.0.7
     version: 5.0.7
   solhint:
-    specifier: ^4.5.4
-    version: 4.5.4(typescript@5.4.5)
+    specifier: ^5.0.1
+    version: 5.0.1(typescript@5.4.5)
   solidity-coverage:
     specifier: ^0.8.12
     version: 0.8.12(hardhat@2.22.4)
@@ -6950,7 +6950,7 @@ packages:
     deprecated: Rimraf versions prior to v4 are no longer supported
     hasBin: true
     dependencies:
-      glob: 7.2.0
+      glob: 7.2.3
     dev: true
 
   /rimraf@5.0.7:
@@ -7346,8 +7346,8 @@ packages:
       - debug
     dev: true
 
-  /solhint@4.5.4(typescript@5.4.5):
-    resolution: {integrity: sha512-Cu1XiJXub2q1eCr9kkJ9VPv1sGcmj3V7Zb76B0CoezDOB9bu3DxKIFFH7ggCl9fWpEPD6xBmRLfZrYijkVmujQ==}
+  /solhint@5.0.1(typescript@5.4.5):
+    resolution: {integrity: sha512-QeQLS9HGCnIiibt+xiOa/+MuP7BWz9N7C5+Mj9pLHshdkNhuo3AzCpWmjfWVZBUuwIUO3YyCRVIcYLR3YOKGfg==}
     hasBin: true
     dependencies:
       '@solidity-parser/parser': 0.18.0
