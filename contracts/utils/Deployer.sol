@@ -44,7 +44,7 @@ abstract contract Deployer {
     uint256 tokenId,
     bool isERC6551Account
   ) internal view virtual returns (bool) {
-    address _addr = _addressOfDeployed(implementation, salt, tokenAddress, tokenId, isERC6551Account);
+    address _addr = _addressOf(implementation, salt, tokenAddress, tokenId, isERC6551Account);
     uint32 size;
     // solhint-disable-next-line no-inline-assembly
     assembly {
@@ -60,7 +60,7 @@ abstract contract Deployer {
    * @param tokenId The tokenId
    * @param isERC6551Account If true, the tokenId has been deployed via ERC6551Registry, if false, via ERC7656Registry
    */
-  function _addressOfDeployed(
+  function _addressOf(
     address implementation,
     bytes32 salt,
     address tokenAddress,

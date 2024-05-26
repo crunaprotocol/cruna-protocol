@@ -8,6 +8,9 @@
 **0.6.2**
 - New canonical address for ERC7656Registry due to errors verifying the source code on Ethereum mainnet
 
+**0.7.2**
+- rename `_addessOfDeployed` to more generic `_addressOf`
+
 **.0.7.1**
 - Use erc7656 as dependency
 

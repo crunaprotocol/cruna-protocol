@@ -295,7 +295,7 @@ abstract contract CrunaProtectedNFT is
    * @return the address of the manager
    */
   function _managerOf(uint256 tokenId) internal view virtual returns (address) {
-    return _addressOfDeployed(_defaultManagerImplementation(tokenId), 0x00, _SELF, tokenId, false);
+    return _addressOf(_defaultManagerImplementation(tokenId), 0x00, _SELF, tokenId, false);
   }
 
   /**
@@ -312,7 +312,7 @@ abstract contract CrunaProtectedNFT is
     uint256 tokenId,
     bool isERC6551Account
   ) external view virtual override returns (address) {
-    return _addressOfDeployed(_implFromKey(key_), _saltFromKey(key_), _SELF, tokenId, isERC6551Account);
+    return _addressOf(_implFromKey(key_), _saltFromKey(key_), _SELF, tokenId, isERC6551Account);
   }
 
   function _implFromKey(bytes32 key_) internal pure returns (address) {

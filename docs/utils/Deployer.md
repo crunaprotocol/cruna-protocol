@@ -38,10 +38,10 @@ Returns if a plugin is deployed
 | tokenId | uint256 | The tokenId |
 | isERC6551Account | bool | Specifies the registry to use True if the tokenId was deployed via ERC6551Registry, false, it was deployed via ERC7656Registry |
 
-### _addressOfDeployed
+### _addressOf
 
 ```solidity
-function _addressOfDeployed(address implementation, bytes32 salt, address tokenAddress, uint256 tokenId, bool isERC6551Account) internal view virtual returns (address)
+function _addressOf(address implementation, bytes32 salt, address tokenAddress, uint256 tokenId, bool isERC6551Account) internal view virtual returns (address)
 ```
 
 Internal function to return the address of a deployed token bound contract

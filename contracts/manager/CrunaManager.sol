@@ -496,13 +496,7 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployer {
   function _pluginAddress(bytes32 key_) internal view virtual returns (address payable) {
     return
       payable(
-        _addressOfDeployed(
-          _implFromKey(key_),
-          _saltFromKey(key_),
-          tokenAddress(),
-          tokenId(),
-          _pluginByKey[key_].isERC6551Account
-        )
+        _addressOf(_implFromKey(key_), _saltFromKey(key_), tokenAddress(), tokenId(), _pluginByKey[key_].isERC6551Account)
       );
   }
 
