@@ -5,7 +5,7 @@ pragma solidity ^0.8.20;
 //
 import {ERC6551AccountLib} from "erc6551/lib/ERC6551AccountLib.sol";
 import {IERC6551Registry} from "erc6551/interfaces/IERC6551Registry.sol";
-import {IERC7656Registry} from "../erc/IERC7656Registry.sol";
+import {IERC7656Registry} from "erc7656/IERC7656Registry.sol";
 
 //import "hardhat/console.sol";
 

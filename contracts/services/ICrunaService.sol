@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.20;
 
-import {IERC7656Contract} from "../erc/IERC7656Contract.sol";
+import {IERC7656Contract} from "erc7656/IERC7656Contract.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 
 /**
