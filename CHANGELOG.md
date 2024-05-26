@@ -8,6 +8,13 @@
 **0.6.2**
 - New canonical address for ERC7656Registry due to errors verifying the source code on Ethereum mainnet
 
+**.0.7.1**
+- Use erc7656 as dependency
+
+**0.7.0**
+- Add a `TimeControlledGovernance` contract to replace OpenZeppelin's `TimelockController` contracts, which is more complete but also larger 
+- Let `CrunaGuardian` use `TimeControlledGovernance` to manage the governance
+
 **0.6.1**
 - Minor improvements in the `CrunaManagedService` to avoid overriding `_conf.manager` if unnecessary
 
