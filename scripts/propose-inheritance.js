@@ -13,7 +13,7 @@ async function trustImplementation(guardian, proposer, executor, delay, implemen
     [await selectorId("ICrunaGuardian", "trust"), implementation, trusted],
   );
   const operation = ethers.utils.keccak256(bytes);
-  await expect(guardian.connect(proposer).trust(delay, 0, implementation, trusted))
+  await expect(guardian.connect(proposer).trust(delay, 0, implementation, trusted, { gasLimit: 60000 }))
     .emit(guardian, "OperationProposed")
     .withArgs(operation, proposer.address, delay);
 }
@@ -27,7 +27,7 @@ async function main() {
   const proposer = new ethers.Wallet(process.env.PROPOSER, ethers.provider);
   // const pluginProxy = await deployUtils.attach("InheritanceCrunaPluginProxy");
   // const plugin = await deployUtils.attach("InheritanceCrunaPlugin", pluginProxy.address);
-  const plugin = await deployUtils.attach("InheritanceCrunaPlugin");
+  const plugin = await deployUtils.attach("InheritanceCrunaPluginProxy");
   const guardian = await deployUtils.attach("CrunaGuardian");
 
   // start the process of trusting the plugin

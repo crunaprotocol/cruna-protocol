@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.20;
 
-import {IERC7656Contract} from "erc7656/IERC7656Contract.sol";
+import {IERC7656Linked} from "erc7656/IERC7656Linked.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 
 /**
  * @title ICrunaService.sol
  * @notice Interface for services
  */
-interface ICrunaService is IERC7656Contract, IVersioned {
+interface ICrunaService is IERC7656Linked, IVersioned {
   /**
    * @notice Error returned when trying to initialize the service if not authorized
    */

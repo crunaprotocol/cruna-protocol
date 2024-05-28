@@ -6,9 +6,9 @@ pragma solidity ^0.8.20;
 import {CrunaManagedService} from "../services/CrunaManagedService.sol";
 
 import {IVersioned} from "../utils/IVersioned.sol";
-import {IERC7656Contract} from "erc7656/IERC7656Contract.sol";
+import {IERC7656Linked} from "erc7656/IERC7656Linked.sol";
 
-interface ICrunaManager is IERC7656Contract, IVersioned {
+interface ICrunaManager is IERC7656Linked, IVersioned {
   /**
    * @notice A struct to keep info about plugged and unplugged services
    * @param deployed True all the time. Used to verify if the plugin as been deployed
