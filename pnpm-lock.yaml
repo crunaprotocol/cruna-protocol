@@ -24,7 +24,7 @@ devDependencies:
     version: 7.0.2
   '@nomicfoundation/hardhat-verify':
     specifier: ^2.0.7
-    version: 2.0.7(hardhat@2.22.4)
+    version: 2.0.8(hardhat@2.22.4)
   '@nomiclabs/hardhat-ethers':
     specifier: ^2.2.3
     version: 2.2.3(ethers@5.7.2)(hardhat@2.22.4)
@@ -1048,8 +1048,8 @@ packages:
       ethereum-cryptography: 0.1.3
     dev: true
 
-  /@nomicfoundation/hardhat-verify@2.0.7(hardhat@2.22.4):
-    resolution: {integrity: sha512-jiYHBX+K6bBN0YhwFHQ5SWWc3dQZliM3pdgpH33C7tnsVACsX1ubZn6gZ9hfwlzG0tyjFM72XQhpaXQ56cE6Ew==}
+  /@nomicfoundation/hardhat-verify@2.0.8(hardhat@2.22.4):
+    resolution: {integrity: sha512-x/OYya7A2Kcz+3W/J78dyDHxr0ezU23DKTrRKfy5wDPCnePqnr79vm8EXqX3gYps6IjPBYyGPZ9K6E5BnrWx5Q==}
     peerDependencies:
       hardhat: ^2.0.4
     dependencies:
