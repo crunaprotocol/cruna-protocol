@@ -12,8 +12,8 @@ dependencies:
     specifier: 0.3.1
     version: 0.3.1
   erc7656:
-    specifier: ^0.0.9
-    version: 0.0.9
+    specifier: ^0.1.0
+    version: 0.1.0
 
 devDependencies:
   '@ethersproject/contracts':
@@ -3486,8 +3486,8 @@ packages:
     resolution: {integrity: sha512-4+O7CJ5gn3/s2Mum1QiJDJUbGE1P1m0t3do2nnFAKWEXLubWfZjS12HqraUJ6Y6su3WJ8EqdWm0270gC0bqpCA==}
     dev: false
 
-  /erc7656@0.0.9:
-    resolution: {integrity: sha512-tVm7s9x+O2+dNRwxAWmibA0j5tpPTSfdG6Z/AgyOpGxb4/lOIfU//9RWy7S4fFnzzrC84/LXAVI5McDV07HmdA==}
+  /erc7656@0.1.0:
+    resolution: {integrity: sha512-s60CbCquLALxqN/v6V2d3Bt0k63ZcWhi5mlqtbG7RSYwWWNVsXiuQFGXFBKulR6O+6nDZW3VOgjFtFhk64To1w==}
     dependencies:
       '@openzeppelin/contracts': 5.0.2
       erc6551: 0.3.1
