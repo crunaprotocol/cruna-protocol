@@ -52,7 +52,22 @@ contract OwnableNFT is CrunaProtectedNFTOwnable {
 
   // @notice This function will mint a new token
   // @param to The address of the recipient
+  // @param amount The amount of tokens to mint
   function safeMintAndActivate(address to, uint256 amount) public virtual onlyFactory {
     _mintAndActivateByAmount(to, amount);
   }
+
+  // @notice This function will mint a new token
+  // @param to The address of the recipient
+  // @param amount The amount of tokens to mint
+  function safeMint(address to, uint256 amount) public virtual onlyFactory {
+    _mintByAmount(to, amount);
+  }
+
+  // @notice This function will mint a new token
+  // @param tokenId The id of the token to activate
+  function activate(uint256 tokenId) public virtual {
+    _activate(tokenId);
+  }
+
 }

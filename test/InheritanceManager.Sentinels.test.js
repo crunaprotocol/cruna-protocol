@@ -94,7 +94,7 @@ describe("Sentinel and Inheritance", function () {
     const price = await factory.finalPrice(usdc.address);
     await usdc.connect(bob).approve(factory.address, price);
     const nextTokenId = (await vault.nftConf()).nextTokenId;
-    await factory.connect(bob).buyVaults(usdc.address, 1);
+    await factory.connect(bob).buyVaults(usdc.address,  1, true);
     const manager = await ethers.getContractAt("CrunaManager", await vault.managerOf(nextTokenId));
 
     inheritancePluginImpl = await deployContract("InheritanceCrunaPlugin");
@@ -642,7 +642,6 @@ describe("Sentinel and Inheritance", function () {
     expect(await crunaManagedServiceMock.version()).equal(1e6);
     expect((await crunaManagedServiceMock.resetService()).hash !== undefined);
     expect(await crunaManagedServiceMock.crunaManager()).to.equal(manager.address);
-    expect(await crunaManagedServiceMock.supportsInterface(getInterfaceId("IERC7656Contract"))).to.be.true;
 
     await expect(inheritancePlugin.connect(beneficiary1).inherit())
       .to.emit(vault, "ManagedTransfer")

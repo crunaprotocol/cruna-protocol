@@ -94,7 +94,7 @@ describe("CrunaManager : importProtectorsAndSafeRecipientsFrom ", function () {
     const price = await factory.finalPrice(usdc.address);
     await usdc.connect(bob).approve(factory.address, price);
     const nextTokenId = (await vault.nftConf()).nextTokenId;
-    await factory.connect(bob).buyVaults(usdc.address, 1);
+    await factory.connect(bob).buyVaults(usdc.address,  1, true);
     const managerAddress = await vault.managerOf(nextTokenId);
     await ethers.getContractAt("CrunaManager", managerAddress);
 
