@@ -94,7 +94,7 @@ describe("Sentinel and Inheritance", function () {
     const price = await factory.finalPrice(usdc.address);
     await usdc.connect(bob).approve(factory.address, price);
     const nextTokenId = (await vault.nftConf()).nextTokenId;
-    await factory.connect(bob).buyVaults(usdc.address,  1, true);
+    await factory.connect(bob).buyVaultsAndActivateThem(usdc.address, 1);
     const manager = await ethers.getContractAt("CrunaManager", await vault.managerOf(nextTokenId));
 
     inheritancePluginImpl = await deployContract("InheritanceCrunaPlugin");

@@ -17,9 +17,10 @@ const {
   signRequest,
   selectorId,
   deployCanonical,
+  hasBeenDeployed,
 } = require("./helpers");
 
-describe("VaultFactory", function () {
+describe.only("VaultFactory", function () {
   let crunaRegistry, proxy, guardian, erc6551Registry;
   let vault;
   let factory;
@@ -74,7 +75,7 @@ describe("VaultFactory", function () {
       await usdc.approve(factory.address, price);
       const nextTokenId = (await vault.nftConf()).nextTokenId;
       const precalculatedAddress = await vault.managerOf(nextTokenId);
-      await expect(factory.buyVaults(usdc.address,  1, true))
+      await expect(factory.buyVaultsAndActivateThem(usdc.address, 1))
         .to.emit(vault, "Transfer")
         .withArgs(addr0, deployer.address, nextTokenId)
         .to.emit(crunaRegistry, "Created")
@@ -88,18 +89,26 @@ describe("VaultFactory", function () {
         );
     });
 
-    async function buyVault(token, amount, buyer) {
+    async function buyVaults(token, amount, buyer, noActivation) {
       let price = await factory.finalPrice(token.address);
       await token.connect(buyer).approve(factory.address, price.mul(amount));
       let nextTokenId = (await vault.nftConf()).nextTokenId;
-
-      await expect(factory.connect(buyer).buyVaults(token.address,  amount, true))
+      let lastTokenId = nextTokenId.add(amount).sub(1);
+      const e = expect(factory.connect(buyer)[noActivation ? "buyVaults" : "buyVaultsAndActivateThem"](token.address, amount))
         .to.emit(vault, "Transfer")
         .withArgs(addr0, buyer.address, nextTokenId)
-        .to.emit(vault, "Transfer")
-        .withArgs(addr0, buyer.address, nextTokenId.add(1))
         .to.emit(token, "Transfer")
         .withArgs(buyer.address, factory.address, price.mul(amount));
+      if (amount > 1) {
+        e.to.emit(vault, "Transfer").withArgs(addr0, buyer.address, lastTokenId);
+      }
+      if (!noActivation) {
+        e.to.emit(vault, "ManagedActivatedFor").withArgs(nextTokenId, await vault.managerOf(nextTokenId));
+        if (amount > 1) {
+          e.to.emit(vault, "ManagedActivatedFor").withArgs(nextTokenId, await vault.managerOf(lastTokenId));
+        }
+      }
+      await e;
     }
 
     it("should not allow bob and alice to purchase vaults when paused", async function () {
@@ -107,12 +116,12 @@ describe("VaultFactory", function () {
       let price = await factory.finalPrice(usdc.address);
       await usdc.connect(fred).approve(factory.address, price);
 
-      await expect(factory.connect(fred).buyVaults(usdc.address,  1, true)).to.be.revertedWith("EnforcedPause");
+      await expect(factory.connect(fred).buyVaultsAndActivateThem(usdc.address, 1)).to.be.revertedWith("EnforcedPause");
 
       await expect(factory.unpause()).to.emit(factory, "Unpaused");
 
-      await buyVault(usdc, 2, bob);
-      await buyVault(usdt, 2, alice);
+      await buyVaults(usdc, 2, bob);
+      await buyVaults(usdt, 2, alice);
 
       price = await factory.finalPrice(usdc.address);
       await expect(price.toString()).to.equal("9900000000000000000");
@@ -129,8 +138,8 @@ describe("VaultFactory", function () {
 
     it("should allow bob and alice to purchase some vaults", async function () {
       let nextTokenId = (await vault.nftConf()).nextTokenId;
-      await buyVault(usdc, 2, bob);
-      await buyVault(usdt, 2, alice);
+      await buyVaults(usdc, 2, bob);
+      await buyVaults(usdt, 2, alice);
 
       let price = await factory.finalPrice(usdc.address);
       await expect(price.toString()).to.equal("9900000000000000000");
@@ -188,8 +197,8 @@ describe("VaultFactory", function () {
       await vault.setMaxTokenId(100);
       expect((await vault.nftConf()).maxTokenId).equal(100);
 
-      await buyVault(usdc, 2, bob);
-      await buyVault(usdt, 2, alice);
+      await buyVaults(usdc, 2, bob);
+      await buyVaults(usdt, 2, alice);
 
       let price = await factory.finalPrice(usdc.address);
       await expect(price.toString()).to.equal("8900000000000000000");
@@ -197,14 +206,38 @@ describe("VaultFactory", function () {
       await expect(price.toString()).to.equal("8900000");
     });
 
+    it("should allow bob and alice to purchase some vaults activating them later", async function () {
+      await factory.setDiscount(100);
+      await vault.setMaxTokenId(100);
+      expect((await vault.nftConf()).maxTokenId).equal(100);
+
+      await buyVaults(usdc, 2, bob);
+      await buyVaults(usdt, 2, alice, "NO_ACTIVATION");
+
+      const man1 = await vault.managerOf(1);
+      const man2 = await vault.managerOf(2);
+      const man3 = await vault.managerOf(3);
+      const man4 = await vault.managerOf(4);
+
+      expect(await hasBeenDeployed(man1)).to.be.true;
+      expect(await hasBeenDeployed(man2)).to.be.true;
+      expect(await hasBeenDeployed(man3)).to.be.false;
+      expect(await hasBeenDeployed(man4)).to.be.false;
+
+      await expect(vault.activate(1)).to.be.revertedWith("NotTheTokenOwner");
+      await expect(vault.connect(bob).activate(1)).to.be.revertedWith("AlreadyActivated").withArgs(1);
+      await expect(vault.connect(alice).activate(3)).to.emit(vault, "ManagedActivatedFor").withArgs(3, man3);
+      expect(await hasBeenDeployed(man3)).to.be.true;
+    });
+
     it("should fail if max supply reached", async function () {
       await factory.setDiscount(100);
 
-      await buyVault(usdc, 2, bob);
+      await buyVaults(usdc, 3, bob);
       await vault.setMaxTokenId(3);
       expect((await vault.nftConf()).maxTokenId).equal(3);
 
-      await expect(buyVault(usdt, 2, alice)).revertedWith("InvalidTokenId");
+      await expect(buyVaults(usdt, 1, alice)).revertedWith("InvalidTokenId");
     });
 
     it("should remove a stableCoin when active is false", async function () {
@@ -213,54 +246,17 @@ describe("VaultFactory", function () {
       const updatedStableCoins = await factory.getStableCoins();
       await expect(updatedStableCoins).to.not.include(usdc.address);
     });
-
-    it.only("should allow batch purchase of vaults", async function () {
-      const stableCoin = usdc.address;
-      const buyers = [bob.address, fred.address, alice.address];
-      const amounts = [1, 3, 2];
-      let nextTokenId = (await vault.nftConf()).nextTokenId;
-
-      // console.log(nextTokenId);
-
-      let pricePerVault = await factory.finalPrice(stableCoin);
-
-      await usdc.connect(bob).approve(factory.address, pricePerVault.mul(6));
-
-      const bobBalanceBefore = await vault.balanceOf(bob.address);
-      const fredBalanceBefore = await vault.balanceOf(fred.address);
-      const aliceBalanceBefore = await vault.balanceOf(alice.address);
-
-      await expect(factory.connect(bob).buyVaultsBatch(stableCoin, buyers, amounts, [true, true, true]))
-        .to.emit(vault, "Transfer")
-        .withArgs(addr0, bob.address, nextTokenId)
-        .to.emit(vault, "Transfer")
-        .withArgs(addr0, fred.address, nextTokenId.add(1))
-        .to.emit(vault, "Transfer")
-        .withArgs(addr0, fred.address, nextTokenId.add(2))
-        .to.emit(vault, "Transfer")
-        .withArgs(addr0, fred.address, nextTokenId.add(3))
-        .to.emit(vault, "Transfer")
-        .withArgs(addr0, alice.address, nextTokenId.add(4))
-        .to.emit(vault, "Transfer")
-        .withArgs(addr0, alice.address, nextTokenId.add(5));
-
-      expect(await vault.balanceOf(bob.address)).to.equal(bobBalanceBefore.add(1));
-      expect(await vault.balanceOf(fred.address)).to.equal(fredBalanceBefore.add(3));
-      expect(await vault.balanceOf(alice.address)).to.equal(aliceBalanceBefore.add(2));
-
-      expect(await usdc.balanceOf(factory.address)).to.equal(pricePerVault.mul(6));
-    });
   });
-  async function expectedUsedGas(account, amount) {
+  async function expectedUsedGas(account, amount, noActivation = false) {
     const initialBalance = (await vault.balanceOf(account.address)).toNumber() - amount;
     // it is 1 because we execute it after the minting
-    return 86000 + (initialBalance === 0 ? 60000 : 0) + 105000 * amount + (amount < 3 ? 10000 : 0);
+    return 86000 + (initialBalance === 0 ? 60000 : 0) + (noActivation ? 30000 : 105000) * amount + (amount < 3 ? 10000 : 0);
   }
 
-  async function verifyGas(gasUsed, account, amount) {
+  async function verifyGas(gasUsed, account, amount, noActivation) {
     gasUsed = gasUsed.div(1e9).toNumber();
-    const expected = await expectedUsedGas(account, amount);
-    console.log("gasUsed", gasUsed, "expected", expected);
+    const expected = await expectedUsedGas(account, amount, noActivation);
+    // console.log("gasUsed", gasUsed, "expected", expected);
     expect(gasUsed < expected + 10000).to.be.true;
   }
 
@@ -269,69 +265,25 @@ describe("VaultFactory", function () {
       await initAndDeploy();
     });
 
-    it.only("should verify gasLimit for batch buy vaults", async function () {
+    it("should verify gasLimit for batch buy vaults", async function () {
       const stableCoin = usdc.address;
       let pricePerVault = await factory.finalPrice(stableCoin);
       await usdc.connect(mike).approve(factory.address, pricePerVault.mul(100));
 
       // the first call must add 60000 gas, needed to set up the account
-      await verifyGas(
-        await executeAndReturnGasCost(factory.connect(mike).buyVaultsBatch(stableCoin, [mike.address], [1], [true])),
-        mike,
-        1,
-      );
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaultsAndActivateThem(stableCoin, 1)), mike, 1);
       // any successive call is much cheaper
-      await verifyGas(
-        await executeAndReturnGasCost(factory.connect(mike).buyVaultsBatch(stableCoin, [mike.address], [1], [true])),
-        mike,
-        1,
-      );
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaultsAndActivateThem(stableCoin, 1)), mike, 1);
 
-      await verifyGas(
-        await executeAndReturnGasCost(factory.connect(mike).buyVaultsBatch(stableCoin, [mike.address], [2], [true])),
-        mike,
-        2,
-      );
-      await verifyGas(
-        await executeAndReturnGasCost(factory.connect(mike).buyVaultsBatch(stableCoin, [mike.address], [3], [true])),
-        mike,
-        3,
-      );
-      await verifyGas(
-        await executeAndReturnGasCost(factory.connect(mike).buyVaultsBatch(stableCoin, [mike.address], [4], [true])),
-        mike,
-        4,
-      );
-      await verifyGas(
-        await executeAndReturnGasCost(factory.connect(mike).buyVaultsBatch(stableCoin, [mike.address], [5], [true])),
-        mike,
-        5,
-      );
-      await verifyGas(
-        await executeAndReturnGasCost(factory.connect(mike).buyVaultsBatch(stableCoin, [mike.address], [6], [true])),
-        mike,
-        6,
-      );
-      await verifyGas(
-        await executeAndReturnGasCost(factory.connect(mike).buyVaultsBatch(stableCoin, [mike.address], [7], [true])),
-        mike,
-        7,
-      );
-      await verifyGas(
-        await executeAndReturnGasCost(factory.connect(mike).buyVaultsBatch(stableCoin, [mike.address], [8], [true])),
-        mike,
-        8,
-      );
-      await verifyGas(
-        await executeAndReturnGasCost(factory.connect(mike).buyVaultsBatch(stableCoin, [mike.address], [9], [true])),
-        mike,
-        9,
-      );
-      await verifyGas(
-        await executeAndReturnGasCost(factory.connect(mike).buyVaultsBatch(stableCoin, [mike.address], [10], [true])),
-        mike,
-        10,
-      );
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaultsAndActivateThem(stableCoin, 2)), mike, 2);
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaultsAndActivateThem(stableCoin, 3)), mike, 3);
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaultsAndActivateThem(stableCoin, 4)), mike, 4);
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaultsAndActivateThem(stableCoin, 5)), mike, 5);
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaultsAndActivateThem(stableCoin, 6)), mike, 6);
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaultsAndActivateThem(stableCoin, 7)), mike, 7);
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaultsAndActivateThem(stableCoin, 8)), mike, 8);
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaultsAndActivateThem(stableCoin, 9)), mike, 9);
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaultsAndActivateThem(stableCoin, 10)), mike, 10);
     });
 
     it("should verify gasLimit for batch buy vaults", async function () {
@@ -340,65 +292,19 @@ describe("VaultFactory", function () {
       await usdc.connect(mike).approve(factory.address, pricePerVault.mul(100));
 
       // the first call must add 60000 gas, needed to set up the account
-      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin,  1, true)), mike, 1);
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 1)), mike, 1, true);
       // any successive call is much cheaper
-      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin,  1, true)), mike, 1);
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 1)), mike, 1, true);
 
-      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin,  2, true)), mike, 2);
-      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin,  3, true)), mike, 3);
-      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin,  4, true)), mike, 4);
-      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin,  5, true)), mike, 5);
-      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin,  6, true)), mike, 6);
-      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin,  7, true)), mike, 7);
-      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin,  8, true)), mike, 8);
-      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin,  9, true)), mike, 9);
-      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin,  10, true)), mike, 10);
-    });
-
-    it("should verify gasLimit for batch buy vaults", async function () {
-      const stableCoin = usdc.address;
-      let pricePerVault = await factory.finalPrice(stableCoin);
-      await usdc.connect(mike).approve(factory.address, pricePerVault.mul(100));
-
-      // the first call must add 60000 gas, needed to set up the account
-      await verifyGas(
-        await executeAndReturnGasCost(factory.connect(mike).buyVaultsBatch(stableCoin, [mike.address], [5], [true])),
-        mike,
-        5,
-      );
-      await verifyGas(
-        await executeAndReturnGasCost(factory.connect(mike).buyVaultsBatch(stableCoin, [mike.address], [5], [true])),
-        mike,
-        5,
-      );
-      await verifyGas(
-        await executeAndReturnGasCost(factory.connect(mike).buyVaultsBatch(stableCoin, [mike.address], [18], [true])),
-        mike,
-        18,
-      );
-    });
-
-    it("should verify gasLimit for batch buy vaults", async function () {
-      const stableCoin = usdc.address;
-      let pricePerVault = await factory.finalPrice(stableCoin);
-      await usdc.connect(mike).approve(factory.address, pricePerVault.mul(100));
-
-      // the first call must add 60000 gas, needed to set up the account
-      await verifyGas(
-        await executeAndReturnGasCost(factory.connect(mike).buyVaultsBatch(stableCoin, [mike.address], [20], [true])),
-        mike,
-        20,
-      );
-      await verifyGas(
-        await executeAndReturnGasCost(factory.connect(mike).buyVaultsBatch(stableCoin, [mike.address], [1], [true])),
-        mike,
-        1,
-      );
-      await verifyGas(
-        await executeAndReturnGasCost(factory.connect(mike).buyVaultsBatch(stableCoin, [mike.address], [1], [true])),
-        mike,
-        1,
-      );
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 2)), mike, 2, true);
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 3)), mike, 3, true);
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 4)), mike, 4, true);
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 5)), mike, 5, true);
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 6)), mike, 6, true);
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 7)), mike, 7, true);
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 8)), mike, 8, true);
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 9)), mike, 9, true);
+      await verifyGas(await executeAndReturnGasCost(factory.connect(mike).buyVaults(stableCoin, 10)), mike, 10, true);
     });
 
     async function expectedUsedGasNoActivation(account, amount) {

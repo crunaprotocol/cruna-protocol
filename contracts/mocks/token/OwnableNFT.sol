@@ -69,5 +69,4 @@ contract OwnableNFT is CrunaProtectedNFTOwnable {
   function activate(uint256 tokenId) public virtual {
     _activate(tokenId);
   }
-
 }

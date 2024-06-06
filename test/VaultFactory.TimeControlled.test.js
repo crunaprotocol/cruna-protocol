@@ -65,7 +65,7 @@ describe("VaultFactory w/ time controlled vault", function () {
     await usdc.approve(factory.address, price);
     const nextTokenId = (await vault.nftConf()).nextTokenId;
     const precalculatedAddress = await vault.managerOf(nextTokenId);
-    await expect(factory.buyVaults(usdc.address,  1, true))
+    await expect(factory.buyVaultsAndActivateThem(usdc.address, 1))
       .to.emit(vault, "Transfer")
       .withArgs(addr0, deployer.address, nextTokenId)
       .to.emit(crunaRegistry, "Created")

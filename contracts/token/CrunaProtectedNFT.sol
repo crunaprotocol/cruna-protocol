@@ -259,7 +259,12 @@ abstract contract CrunaProtectedNFT is
    * True if the tokenId must be deployed via ERC6551Registry,
    * false, it must be deployed via ERC7656Registry
    */
-  function plug(bytes32 key_, uint256 tokenId, bool isERC6551Account, bytes memory data) external payable virtual override onlyTokenOwner(tokenId){
+  function plug(
+    bytes32 key_,
+    uint256 tokenId,
+    bool isERC6551Account,
+    bytes memory data
+  ) external payable virtual override onlyTokenOwner(tokenId) {
     address implementation = _implFromKey(key_);
     ICrunaService service = ICrunaService(implementation);
     if (service.isManaged()) revert ManagedService();
@@ -441,7 +446,8 @@ abstract contract CrunaProtectedNFT is
       (_nftConf.maxTokenId != 0 && tokenId > _nftConf.maxTokenId) ||
       (tokenId < _managerHistory[0].firstTokenId)
     ) revert InvalidTokenId();
-    _deploy(_defaultManagerImplementation(tokenId), 0x00, _SELF, tokenId, false);
+    address manager_ = _deploy(_defaultManagerImplementation(tokenId), 0x00, _SELF, tokenId, false);
+    emit ManagedActivatedFor(tokenId, manager_);
     _safeMint(to, tokenId++);
   }
 
@@ -456,6 +462,8 @@ abstract contract CrunaProtectedNFT is
       (_nftConf.maxTokenId != 0 && tokenId > _nftConf.maxTokenId) ||
       (tokenId < _managerHistory[0].firstTokenId)
     ) revert InvalidTokenId();
-    _deploy(_defaultManagerImplementation(tokenId), 0x00, _SELF, tokenId, false);
+    if (_isDeployed(_defaultManagerImplementation(tokenId), 0x00, _SELF, tokenId, false)) revert AlreadyActivated(tokenId);
+    address manager_ = _deploy(_defaultManagerImplementation(tokenId), 0x00, _SELF, tokenId, false);
+    emit ManagedActivatedFor(tokenId, manager_);
   }
 }

@@ -116,50 +116,18 @@ contract VaultFactory is
     return price - discount;
   }
 
-  function buyVaults(address stableCoin, uint256 amount, bool activate) external virtual override nonReentrant whenNotPaused {
+  function buyVaults(address stableCoin, uint256 amount) external virtual override nonReentrant whenNotPaused {
     uint256 payment = finalPrice(stableCoin) * amount;
     if (payment > ERC20(stableCoin).balanceOf(_msgSender())) revert InsufficientFunds();
-    if (activate) {
-      vault.safeMintAndActivate(_msgSender(), amount);
-    } else {
-      vault.safeMint(_msgSender(), amount);
-    }
+    vault.safeMint(_msgSender(), amount);
     // we manage only trusted stable coins, so no risk of reentrancy
     if (!ERC20(stableCoin).transferFrom(_msgSender(), address(this), payment)) revert TransferFailed();
   }
 
-  function buyVaultsBatch(
-    address stableCoin,
-    address[] memory tos,
-    uint256[] memory amounts,
-    bool[] memory activates
-  ) external virtual override nonReentrant whenNotPaused {
-    if (tos.length != amounts.length) revert InvalidArguments();
-    uint256 amount = 0;
-    for (uint256 i; i < tos.length; ) {
-      unchecked {
-        if (tos[i] == address(0)) {
-          revert ZeroAddress();
-        }
-        amount += amounts[i];
-        ++i;
-      }
-    }
+  function buyVaultsAndActivateThem(address stableCoin, uint256 amount) external virtual override nonReentrant whenNotPaused {
     uint256 payment = finalPrice(stableCoin) * amount;
     if (payment > ERC20(stableCoin).balanceOf(_msgSender())) revert InsufficientFunds();
-    for (uint256 i; i < tos.length; ) {
-      if (amounts[i] != 0) {
-        vault.safeMintAndActivate(tos[i], amounts[i]);
-        if (activates[i]) {
-          vault.safeMintAndActivate(tos[i], amounts[i]);
-        } else {
-          vault.safeMint(tos[i], amounts[i]);
-        }
-      }
-      unchecked {
-        ++i;
-      }
-    }
+    vault.safeMintAndActivate(_msgSender(), amount);
     // we manage only trusted stable coins, so no risk of reentrancy
     if (!ERC20(stableCoin).transferFrom(_msgSender(), address(this), payment)) revert TransferFailed();
   }

@@ -33,9 +33,12 @@ interface IVaultFactory {
   // @param stableCoin the payment token to use for the purchase
   // @param amount number to buy
 
-  function buyVaults(address stableCoin, uint256 amount, bool activate) external;
+  function buyVaults(address stableCoin, uint256 amount) external;
 
-  function buyVaultsBatch(address stableCoin, address[] memory tos, uint256[] memory amounts, bool[] memory activates) external;
+  // @notice Allow people to buy vaults and activate them
+  // @param stableCoin the payment token to use for the purchase
+  // @param amount number to buy
+  function buyVaultsAndActivateThem(address stableCoin, uint256 amount) external;
 
   // @notice Given a payment token, transfers amount or full balance from proceeds to an address
   // @param beneficiary address of the beneficiary

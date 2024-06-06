@@ -74,6 +74,12 @@ allows only the manager of a certain tokenId to call the function.
 | ---- | ---- | ----------- |
 | tokenId | uint256 | The id of the token. |
 
+### onlyTokenOwner
+
+```solidity
+modifier onlyTokenOwner(uint256 tokenId)
+```
+
 ### nftConf
 
 ```solidity
@@ -410,6 +416,23 @@ Function to define a token as transferable or not, according to IERC6454
 | ---- | ---- | ----------- |
 | [0] | bool | true if the token is transferable, false otherwise. |
 
+### _mintByAmount
+
+```solidity
+function _mintByAmount(address to, uint256 amount) internal virtual
+```
+
+Mints tokens by amount.
+
+_It works only if nftConf.progressiveTokenIds is true._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| to | address | The address of the recipient. |
+| amount | uint256 | The amount of tokens to mint. |
+
 ### _mintAndActivateByAmount
 
 ```solidity
@@ -449,5 +472,19 @@ the function will revert and the error may be unfixable._
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | to | address | The address of the recipient. |
+| tokenId | uint256 | The id of the token. |
+
+### _activate
+
+```solidity
+function _activate(uint256 tokenId) internal virtual
+```
+
+This function will activate the manager.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
 | tokenId | uint256 | The id of the token. |
 

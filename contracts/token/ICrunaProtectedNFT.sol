@@ -48,6 +48,8 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
 
   // events
 
+  event ManagedActivatedFor(uint256 tokenId, address manager);
+
   /**
    * @notice Emitted when the default manager is upgraded
    * @param newManagerProxy The address of the new manager proxy
@@ -131,6 +133,11 @@ interface ICrunaProtectedNFT is IManagedNFT, IERC721 {
    * @notice Error returned when the token owner tries to deploy a service that must be managed
    */
   error ManagedService();
+
+  /**
+   * @notice Error returned when the token owner tries to activate and already activated token
+   */
+  error AlreadyActivated(uint256 tokenId);
 
   // views
 

@@ -118,7 +118,7 @@ describe("Testing contract deployments", function () {
     const nextTokenId = (await vault.nftConf()).nextTokenId;
     const managerAddress = await vault.managerOf(nextTokenId);
     expect(await ethers.provider.getCode(managerAddress)).equal("0x");
-    await factory.connect(bob).buyVaults(usdc.address,  1, true);
+    await factory.connect(bob).buyVaultsAndActivateThem(usdc.address, 1);
     expect(await ethers.provider.getCode(managerAddress)).not.equal("0x");
     const manager = await ethers.getContractAt("CrunaManager", managerAddress);
 

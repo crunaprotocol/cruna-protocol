@@ -2,7 +2,7 @@ require("dotenv").config();
 const hre = require("hardhat");
 const ethers = hre.ethers;
 const path = require("path");
-const fs = require('fs-extra');
+const fs = require("fs-extra");
 const EthDeployUtils = require("eth-deploy-utils");
 let deployUtils;
 const { executeProposal, bytes4, keccak256, selectorId } = require("../test/helpers");

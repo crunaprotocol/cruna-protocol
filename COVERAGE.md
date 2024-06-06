@@ -1,56 +1,56 @@
 # Test coverage
 
 ```
-  52 passing
+  9 passing
 
 --------------------------------------|----------|----------|----------|----------
 File                                  |  % Stmts | % Branch |  % Funcs |  % Lines 
 --------------------------------------|----------|----------|----------|----------
- erc/                                 |       90 |       75 |      100 |    90.91 
-  ERC6551AccountProxy.sol             |       90 |       75 |      100 |    90.91 
+ erc/                                 |       60 |     37.5 |      100 |    54.55 
+  ERC6551AccountProxy.sol             |       60 |     37.5 |      100 |    54.55 
   IERC6454.sol                        |      100 |      100 |      100 |      100 
   IERC6982.sol                        |      100 |      100 |      100 |      100 
- guardian/                            |    98.48 |    75.71 |      100 |    98.67 
-  CrunaGuardian.sol                   |    88.89 |       50 |      100 |      100 
+ guardian/                            |        0 |        0 |        0 |        0 
+  CrunaGuardian.sol                   |        0 |        0 |        0 |        0 
   ICrunaGuardian.sol                  |      100 |      100 |      100 |      100 
   ITimeControlledGovernance.sol       |      100 |      100 |      100 |      100 
-  TimeControlledGovernance.sol        |      100 |       80 |      100 |    98.51 
- libs/                                |      100 |        0 |      100 |      100 
+  TimeControlledGovernance.sol        |        0 |        0 |        0 |        0 
+ libs/                                |       50 |        0 |     37.5 |    53.85 
   ExcessivelySafeCall.sol             |      100 |      100 |      100 |      100 
-  GuardianInstance.sol                |      100 |      100 |      100 |      100 
-  ManagerConstants.sol                |      100 |      100 |      100 |      100 
-  TrustedLib.sol                      |      100 |        0 |      100 |      100 
- manager/                             |      100 |    75.26 |      100 |     98.8 
-  Actor.sol                           |      100 |    57.14 |      100 |      100 
-  CrunaManager.sol                    |      100 |    77.44 |      100 |    98.52 
-  CrunaManagerBase.sol                |      100 |    66.67 |      100 |      100 
+  GuardianInstance.sol                |        0 |      100 |        0 |        0 
+  ManagerConstants.sol                |       40 |      100 |       40 |       40 
+  TrustedLib.sol                      |        0 |        0 |        0 |        0 
+ manager/                             |     13.7 |     7.37 |    14.29 |    11.95 
+  Actor.sol                           |    52.38 |    21.43 |       50 |    42.31 
+  CrunaManager.sol                    |    10.11 |     6.71 |        8 |     8.87 
+  CrunaManagerBase.sol                |        5 |        0 |     9.09 |     4.55 
   CrunaManagerProxy.sol               |      100 |      100 |      100 |      100 
   ICrunaManager.sol                   |      100 |      100 |      100 |      100 
- services/                            |      100 |       75 |      100 |      100 
-  CrunaManagedService.sol             |      100 |       80 |      100 |      100 
-  CrunaService.sol                    |      100 |       50 |      100 |      100 
+ services/                            |        0 |        0 |        0 |        0 
+  CrunaManagedService.sol             |        0 |        0 |        0 |        0 
+  CrunaService.sol                    |        0 |        0 |        0 |        0 
   ICrunaManagedService.sol            |      100 |      100 |      100 |      100 
   ICrunaService.sol                   |      100 |      100 |      100 |      100 
- services/inheritance/                |    99.01 |    72.12 |      100 |    96.27 
+ services/inheritance/                |        0 |        0 |        0 |        0 
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
-  InheritanceCrunaPlugin.sol          |    99.01 |    72.12 |      100 |    96.27 
-  InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
- token/                               |    98.67 |    69.44 |      100 |    98.81 
-  CrunaProtectedNFT.sol               |    98.57 |    68.75 |      100 |    98.75 
+  InheritanceCrunaPlugin.sol          |        0 |        0 |        0 |        0 
+  InheritanceCrunaPluginProxy.sol     |      100 |      100 |        0 |      100 
+ token/                               |    51.76 |    31.82 |    51.43 |    53.06 
+  CrunaProtectedNFT.sol               |    53.75 |    33.75 |    53.33 |    54.26 
   CrunaProtectedNFTOwnable.sol        |      100 |       50 |      100 |      100 
-  CrunaProtectedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
+  CrunaProtectedNFTTimeControlled.sol |        0 |        0 |        0 |        0 
   ICrunaProtectedNFT.sol              |      100 |      100 |      100 |      100 
   IManagedNFT.sol                     |      100 |      100 |      100 |      100 
- utils/                               |      100 |    88.46 |      100 |      100 
-  CommonBase.sol                      |      100 |      100 |      100 |      100 
-  Deployer.sol                        |      100 |      100 |      100 |      100 
+ utils/                               |    61.76 |    34.62 |    61.11 |       65 
+  CommonBase.sol                      |       50 |       50 |       50 |       60 
+  Deployer.sol                        |       75 |       50 |       80 |       75 
   ICommonBase.sol                     |      100 |      100 |      100 |      100 
   INamed.sol                          |      100 |      100 |      100 |      100 
   INamedAndVersioned.sol              |      100 |      100 |      100 |      100 
   ISignatureValidator.sol             |      100 |      100 |      100 |      100 
   IVersioned.sol                      |      100 |      100 |      100 |      100 
-  SignatureValidator.sol              |      100 |    86.36 |      100 |      100 
+  SignatureValidator.sol              |    59.09 |    31.82 |    55.56 |    62.96 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    99.27 |    71.23 |      100 |    98.28 
+All files                             |    19.31 |    10.38 |     22.5 |    18.56 
 --------------------------------------|----------|----------|----------|----------
 ```
