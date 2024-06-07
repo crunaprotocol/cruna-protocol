@@ -82,7 +82,7 @@ describe("CrunaManager : Upgrades", function () {
 
     // console.log(keccak256("Created(address,address,bytes32,uint256,address,uint256)"))
 
-    await expect(factory.connect(bob).buyVaults(usdc.address, 1))
+    await expect(factory.connect(bob).buyVaultsAndActivateThem(usdc.address, 1))
       .to.emit(crunaRegistry, "Created")
       .withArgs(
         precalculatedAddress,

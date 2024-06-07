@@ -45,12 +45,7 @@ abstract contract Deployer {
     bool isERC6551Account
   ) internal view virtual returns (bool) {
     address _addr = _addressOf(implementation, salt, tokenAddress, tokenId, isERC6551Account);
-    uint32 size;
-    // solhint-disable-next-line no-inline-assembly
-    assembly {
-      size := extcodesize(_addr)
-    }
-    return (size != 0);
+    return (_addr.code.length != 0);
   }
 
   /**

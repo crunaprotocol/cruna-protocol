@@ -44,6 +44,12 @@ struct ManagerHistory {
 }
 ```
 
+### ManagedActivatedFor
+
+```solidity
+event ManagedActivatedFor(uint256 tokenId, address manager)
+```
+
 ### DefaultManagerUpgrade
 
 ```solidity
@@ -183,6 +189,14 @@ error ManagedService()
 ```
 
 Error returned when the token owner tries to deploy a service that must be managed
+
+### AlreadyActivated
+
+```solidity
+error AlreadyActivated(uint256 tokenId)
+```
+
+Error returned when the token owner tries to activate and already activated token
 
 ### nftConf
 

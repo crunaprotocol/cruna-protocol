@@ -240,10 +240,7 @@ const Helpers = {
     salt, // example >> this.keccak256("Cruna"),
   ) {
     const address = thiz.getAddressViaNickSFactory(deployer, contractName, constructorTypes, constructorArgs, salt);
-
-    // check if the contract has been deployed
-    const code = await ethers.provider.getCode(address);
-    return code !== "0x";
+    return thiz.hasBeenDeployed(address);
   },
 
   async getAddressViaNickSFactory(deployer, contractName, constructorTypes, constructorArgs, salt = thiz.keccak256("Cruna")) {
@@ -515,6 +512,11 @@ const Helpers = {
     const gasUsed = receipt.gasUsed;
     const txDetails = await ethers.provider.getTransaction(receipt.transactionHash);
     return gasUsed.mul(txDetails.gasPrice);
+  },
+
+  async hasBeenDeployed(address) {
+    const code = await ethers.provider.getCode(address);
+    return code !== "0x";
   },
 };
 

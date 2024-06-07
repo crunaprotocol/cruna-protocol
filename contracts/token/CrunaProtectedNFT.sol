@@ -81,6 +81,11 @@ abstract contract CrunaProtectedNFT is
     _;
   }
 
+  modifier onlyTokenOwner(uint256 tokenId) {
+    if (ownerOf(tokenId) != _msgSender()) revert NotTheTokenOwner();
+    _;
+  }
+
   /**
    * @notice Returns the configuration of the NFT
    */
@@ -254,8 +259,12 @@ abstract contract CrunaProtectedNFT is
    * True if the tokenId must be deployed via ERC6551Registry,
    * false, it must be deployed via ERC7656Registry
    */
-  function plug(bytes32 key_, uint256 tokenId, bool isERC6551Account, bytes memory data) external payable virtual override {
-    if (_msgSender() != ownerOf(tokenId)) revert NotTheTokenOwner();
+  function plug(
+    bytes32 key_,
+    uint256 tokenId,
+    bool isERC6551Account,
+    bytes memory data
+  ) external payable virtual override onlyTokenOwner(tokenId) {
     address implementation = _implFromKey(key_);
     ICrunaService service = ICrunaService(implementation);
     if (service.isManaged()) revert ManagedService();
@@ -386,9 +395,27 @@ abstract contract CrunaProtectedNFT is
    * @param to The address of the recipient.
    * @param amount The amount of tokens to mint.
    */
+  function _mintByAmount(address to, uint256 amount) internal virtual {
+    if (_nftConf.managerHistoryLength == 0) revert NftNotInitiated();
+    if (!_nftConf.progressiveTokenIds) revert NotAvailableIfTokenIdsAreNotProgressive();
+    uint256 tokenId = _nftConf.nextTokenId;
+    for (uint256 i; i < amount; ) {
+      unchecked {
+        _safeMint(to, tokenId++);
+        ++i;
+      }
+    }
+    _nftConf.nextTokenId = uint96(tokenId);
+  }
+
+  /**
+   * @notice Mints tokens by amount.
+   * @dev It works only if nftConf.progressiveTokenIds is true.
+   * @param to The address of the recipient.
+   * @param amount The amount of tokens to mint.
+   */
   function _mintAndActivateByAmount(address to, uint256 amount) internal virtual {
     if (!_nftConf.progressiveTokenIds) revert NotAvailableIfTokenIdsAreNotProgressive();
-    if (_nftConf.managerHistoryLength == 0) revert NftNotInitiated();
     uint256 tokenId = _nftConf.nextTokenId;
     for (uint256 i; i < amount; ) {
       unchecked {
@@ -419,7 +446,24 @@ abstract contract CrunaProtectedNFT is
       (_nftConf.maxTokenId != 0 && tokenId > _nftConf.maxTokenId) ||
       (tokenId < _managerHistory[0].firstTokenId)
     ) revert InvalidTokenId();
-    _deploy(_defaultManagerImplementation(tokenId), 0x00, _SELF, tokenId, false);
+    address manager_ = _deploy(_defaultManagerImplementation(tokenId), 0x00, _SELF, tokenId, false);
+    emit ManagedActivatedFor(tokenId, manager_);
     _safeMint(to, tokenId++);
+  }
+
+  /**
+   * @notice This function will activate the manager.
+   * @param tokenId The id of the token.
+   */
+  function _activate(uint256 tokenId) internal virtual onlyTokenOwner(tokenId) {
+    if (_nftConf.managerHistoryLength == 0) revert NftNotInitiated();
+    if (
+      tokenId > type(uint96).max ||
+      (_nftConf.maxTokenId != 0 && tokenId > _nftConf.maxTokenId) ||
+      (tokenId < _managerHistory[0].firstTokenId)
+    ) revert InvalidTokenId();
+    if (_isDeployed(_defaultManagerImplementation(tokenId), 0x00, _SELF, tokenId, false)) revert AlreadyActivated(tokenId);
+    address manager_ = _deploy(_defaultManagerImplementation(tokenId), 0x00, _SELF, tokenId, false);
+    emit ManagedActivatedFor(tokenId, manager_);
   }
 }

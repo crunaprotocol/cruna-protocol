@@ -1,5 +1,8 @@
 # Change log
 
+**0.7.4**
+- Add functions to just mint protected NFTs and deploy the manager later, to make easier for developers to deploy NFT that only expect un-managed services (i.e., they do not need a manager)
+
 **0.7.0**
 - Remove `Canonical` in favor of `GuardianInstance` (for the guardians) and `Deployed` which now hardcodes the addresses of `ERC7656Registry` and `ERC6551Registry` contracts
 - Add a `TimeControlledGovernance` contract to replace OpenZeppelin's `TimelockController` contracts, which is more complete but also larger 

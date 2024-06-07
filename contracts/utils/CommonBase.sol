@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 // Author: Francesco Sullo <francesco@sullo.co>
 
-import {ERC7656Contract} from "erc7656/ERC7656Contract.sol";
+import {ERC7656Linked} from "erc7656/ERC7656Linked.sol";
 import {CrunaProtectedNFT} from "../token/CrunaProtectedNFT.sol";
 import {INamed} from "../utils/INamed.sol";
 
@@ -13,7 +13,7 @@ import {ICommonBase} from "./ICommonBase.sol";
  * @title CommonBase.sol
  * @notice Base contract for managers and services
  */
-abstract contract CommonBase is ICommonBase, INamed, ERC7656Contract {
+abstract contract CommonBase is ICommonBase, INamed, ERC7656Linked {
   /**
    * @notice Error returned when the caller is not the token owner
    */
