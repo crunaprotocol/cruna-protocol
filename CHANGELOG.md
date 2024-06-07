@@ -1,6 +1,6 @@
 # Change log
 
-**0.7.4**
+**0.8.0**
 - Add functions to just mint protected NFTs and deploy the manager later, to make easier for developers to deploy NFT that only expect un-managed services (i.e., they do not need a manager)
 
 **0.7.0**
