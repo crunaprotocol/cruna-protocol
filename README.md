@@ -131,7 +131,7 @@ Cruna Vault is more than just an NFT; it's a comprehensive solution for securing
 Cruna is in beta stage, and to use it you must specify the version you want to install. Install it with, for example
 
 ```sh
-npm install @cruna/protocol
+npm install @cruna/protocol erc7656
 ```
 or similar commands using Yarn or Pnpm, and use in your Solidity smart contracts, for example, as
 

@@ -1,5 +1,8 @@
 # Change log
 
+**0.8.1**
+- Add missed `erc7656` in `contracts/package.json` dependencies
+
 **0.8.0**
 - Add functions to just mint protected NFTs and deploy the manager later, to make easier for developers to deploy NFT that only expect un-managed services (i.e., they do not need a manager)
 
