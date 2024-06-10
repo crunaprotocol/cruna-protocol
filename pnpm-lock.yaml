@@ -12,7 +12,7 @@ dependencies:
     specifier: 0.3.1
     version: 0.3.1
   erc7656:
-    specifier: ^0.1.0
+    specifier: 0.1.0
     version: 0.1.0
 
 devDependencies:
@@ -102,13 +102,13 @@ devDependencies:
     version: 1.0.6
   prettier:
     specifier: ^3.2.5
-    version: 3.2.5
+    version: 3.3.1
   prettier-plugin-solidity:
     specifier: ^1.3.1
-    version: 1.3.1(prettier@3.2.5)
+    version: 1.3.1(prettier@3.3.1)
   pretty-quick:
     specifier: ^4.0.0
-    version: 4.0.0(prettier@3.2.5)
+    version: 4.0.0(prettier@3.3.1)
   require-or-mock:
     specifier: ^0.2.1
     version: 0.2.1
@@ -6566,14 +6566,14 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: true
 
-  /prettier-plugin-solidity@1.3.1(prettier@3.2.5):
+  /prettier-plugin-solidity@1.3.1(prettier@3.3.1):
     resolution: {integrity: sha512-MN4OP5I2gHAzHZG1wcuJl0FsLS3c4Cc5494bbg+6oQWBPuEamjwDvmGfFMZ6NFzsh3Efd9UUxeT7ImgjNH4ozA==}
     engines: {node: '>=16'}
     peerDependencies:
       prettier: '>=2.3.0'
     dependencies:
       '@solidity-parser/parser': 0.17.0
-      prettier: 3.2.5
+      prettier: 3.3.1
       semver: 7.6.2
       solidity-comments-extractor: 0.0.8
     dev: true
@@ -6584,13 +6584,13 @@ packages:
     hasBin: true
     dev: true
 
-  /prettier@3.2.5:
-    resolution: {integrity: sha512-3/GWa9aOC0YeD7LUfvOG2NiDyhOWRvt1k+rcKhOuYnMY24iiCphgneUfJDyFXd6rZCAnuLBv6UeAULtrhT/F4A==}
+  /prettier@3.3.1:
+    resolution: {integrity: sha512-7CAwy5dRsxs8PHXT3twixW9/OEll8MLE0VRPCJyl7CkS6VHGPSlsVaWTiASPTyGyYRyApxlaWTzwUxVNrhcwDg==}
     engines: {node: '>=14'}
     hasBin: true
     dev: true
 
-  /pretty-quick@4.0.0(prettier@3.2.5):
+  /pretty-quick@4.0.0(prettier@3.3.1):
     resolution: {integrity: sha512-M+2MmeufXb/M7Xw3Afh1gxcYpj+sK0AxEfnfF958ktFeAyi5MsKY5brymVURQLgPLV1QaF5P4pb2oFJ54H3yzQ==}
     engines: {node: '>=14'}
     hasBin: true
@@ -6603,7 +6603,7 @@ packages:
       mri: 1.2.0
       picocolors: 1.0.1
       picomatch: 3.0.1
-      prettier: 3.2.5
+      prettier: 3.3.1
       tslib: 2.6.2
     dev: true
 
