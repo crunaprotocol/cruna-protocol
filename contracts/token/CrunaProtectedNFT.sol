@@ -265,17 +265,7 @@ abstract contract CrunaProtectedNFT is
     bool isERC6551Account,
     bytes memory data
   ) external payable virtual override onlyTokenOwner(tokenId) {
-    address implementation = _implFromKey(key_);
-    ICrunaService service = ICrunaService(implementation);
-    if (service.isManaged()) revert ManagedService();
-    address addr = _deploy(implementation, _saltFromKey(key_), _SELF, tokenId, isERC6551Account);
-    service = ICrunaService(addr);
-    /**
-     * @dev it is the service responsibility to assure that `init` can be called only one time
-     * The rationale for call `init` anytime is that an hostile agent can use the registry to deploy
-     * a service that later cannot be initiated if the can be initiated only at the deployment.
-     */
-    service.init(data);
+    _plug(key_, tokenId, isERC6551Account, data);
   }
 
   /**
@@ -370,6 +360,20 @@ abstract contract CrunaProtectedNFT is
       return super._update(to, tokenId, auth);
     }
     revert NotTransferable();
+  }
+
+  function _plug(bytes32 key_, uint256 tokenId, bool isERC6551Account, bytes memory data) internal virtual {
+    address implementation = _implFromKey(key_);
+    ICrunaService service = ICrunaService(implementation);
+    if (service.isManaged()) revert ManagedService();
+    address addr = _deploy(implementation, _saltFromKey(key_), _SELF, tokenId, isERC6551Account);
+    service = ICrunaService(addr);
+    /**
+     * @dev it is the service responsibility to assure that `init` can be called only one time
+     * The rationale for call `init` anytime is that an hostile agent can use the registry to deploy
+     * a service that later cannot be initiated if the can be initiated only at the deployment.
+     */
+    service.init(data);
   }
 
   /**

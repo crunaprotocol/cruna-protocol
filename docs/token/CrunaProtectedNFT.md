@@ -394,6 +394,12 @@ function _update(address to, uint256 tokenId, address auth) internal virtual ret
 
 see {ERC721-_update}.
 
+### _plug
+
+```solidity
+function _plug(bytes32 key_, uint256 tokenId, bool isERC6551Account, bytes data) internal virtual
+```
+
 ### _isTransferable
 
 ```solidity

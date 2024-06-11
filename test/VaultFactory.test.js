@@ -20,7 +20,7 @@ const {
   hasBeenDeployed,
 } = require("./helpers");
 
-describe.only("VaultFactory", function () {
+describe("VaultFactory", function () {
   let crunaRegistry, proxy, guardian, erc6551Registry;
   let vault;
   let factory;
