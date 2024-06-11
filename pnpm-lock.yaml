@@ -12,7 +12,7 @@ dependencies:
     specifier: 0.3.1
     version: 0.3.1
   erc7656:
-    specifier: ^0.1.0
+    specifier: 0.1.0
     version: 0.1.0
 
 devDependencies:

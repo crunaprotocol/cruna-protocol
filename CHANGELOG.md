@@ -1,5 +1,8 @@
 # Change log
 
+**0.8.2**
+- Add internal function `_plug` in `CrunaProtectedNFT`
+
 **0.8.1**
 - Add missed `erc7656` in `contracts/package.json` dependencies
 
