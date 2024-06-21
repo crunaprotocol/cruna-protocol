@@ -643,6 +643,7 @@ contract CrunaManager is GuardianInstance, Actor, CrunaManagerBase, Deployer {
     uint256 requiredVersion = plugin_.requiredManagerVersion();
     if (requiredVersion > _version()) revert PluginRequiresUpdatedManager(requiredVersion);
     if (plugin_.nameId() != nameId_) revert InvalidImplementation(plugin_.nameId(), nameId_);
+    // we do not check the interfaceId because the service is not necessarily extending IERC165
     if (plugin_.isERC6551Account() != isERC6551Account) revert InvalidERC6551Status();
     /**
      * @dev it is the service responsibility to assure that `init` can be called only one time

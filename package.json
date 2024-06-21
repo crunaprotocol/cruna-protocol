@@ -1,6 +1,6 @@
 {
   "name": "@cruna/protocol",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "The Cruna protocol",
   "publishConfig": {
     "access": "public"
@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "clean": "rimraf artifacts cache",
-    "test": "NODE_ENV=test scripts/set-canonical.js && NODE_ENV=test npx hardhat test",
+    "test": "scripts/verify-package-json-in-sync.js && NODE_ENV=test scripts/set-canonical.js && NODE_ENV=test npx hardhat test",
     "test:gas": "NODE_ENV=test scripts/set-canonical.js && NODE_ENV=test GAS_REPORT=yes npx hardhat test",
     "compile": "NODE_ENV=test npx hardhat compile",
     "compile:one": "NODE_ENV=test npx hardhat compile --file contracts/$1.sol",
@@ -41,7 +41,7 @@
   "dependencies": {
     "@openzeppelin/contracts": "5.0.2",
     "erc6551": "0.3.1",
-    "erc7656": "0.1.0"
+    "erc7656": "0.2.0"
   },
   "devDependencies": {
     "@ethersproject/contracts": "^5.7.0",

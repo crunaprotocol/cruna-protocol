@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.20;
 
-import {IERC7656Linked} from "erc7656/IERC7656Linked.sol";
+import {IERC7656Service} from "erc7656/IERC7656Service.sol";
 import {IVersioned} from "../utils/IVersioned.sol";
 
 /**
  * @title ICrunaService.sol
  * @notice Interface for services
  */
-interface ICrunaService is IERC7656Linked, IVersioned {
+interface ICrunaService is IERC7656Service, IVersioned {
   /**
    * @notice Error returned when trying to initialize the service if not authorized
    */
@@ -22,7 +22,9 @@ interface ICrunaService is IERC7656Linked, IVersioned {
   function init(bytes memory data) external;
 
   /**
-   * @notice Called by the manager to know if the plugin is an ERC721 account
+   * @notice Called by the manager to know if the plugin is an ERC6551 account
+   * We do not expect that contract check the interfaceId because the service
+   * is not required to extend IERC165, so that can cause issues.
    */
   function isERC6551Account() external pure returns (bool);
 
