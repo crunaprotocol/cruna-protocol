@@ -28,7 +28,9 @@ upgradeable contracts
 function isERC6551Account() external pure returns (bool)
 ```
 
-Called by the manager to know if the plugin is an ERC721 account
+Called by the manager to know if the plugin is an ERC6551 account
+We do not expect that contract check the interfaceId because the service
+is not required to extend IERC165, so that can cause issues.
 
 ### isManaged
 
