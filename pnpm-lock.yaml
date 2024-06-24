@@ -66,13 +66,13 @@ devDependencies:
     version: 16.4.5
   eth-deploy-utils:
     specifier: ^2.0.0
-    version: 2.0.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(typescript@5.4.5)
+    version: 2.0.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(typescript@5.5.2)
   eth-sig-util:
     specifier: ^3.0.1
     version: 3.0.1
   ethereum-waffle:
     specifier: ^4.0.10
-    version: 4.0.10(@ensdomains/ens@0.4.5)(@ensdomains/resolver@0.2.4)(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typescript@5.4.5)
+    version: 4.0.10(@ensdomains/ens@0.4.5)(@ensdomains/resolver@0.2.4)(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typescript@5.5.2)
   ethereumjs-abi:
     specifier: ^0.6.8
     version: 0.6.8
@@ -87,13 +87,13 @@ devDependencies:
     version: 11.2.0
   hardhat:
     specifier: ^2.22.5
-    version: 2.22.5(typescript@5.4.5)
+    version: 2.22.5(typescript@5.5.2)
   hardhat-contract-sizer:
     specifier: ^2.10.0
     version: 2.10.0(hardhat@2.22.5)
   hardhat-gas-reporter:
     specifier: ^2.2.0
-    version: 2.2.0(hardhat@2.22.5)(typescript@5.4.5)
+    version: 2.2.0(hardhat@2.22.5)(typescript@5.5.2)
   husky:
     specifier: ^9.0.11
     version: 9.0.11
@@ -117,7 +117,7 @@ devDependencies:
     version: 5.0.7
   solhint:
     specifier: ^5.0.1
-    version: 5.0.1(typescript@5.4.5)
+    version: 5.0.1(typescript@5.5.2)
   solidity-coverage:
     specifier: ^0.8.12
     version: 0.8.12(hardhat@2.22.5)
@@ -126,7 +126,7 @@ devDependencies:
     version: 0.6.0-beta.36(hardhat@2.22.5)
   typescript:
     specifier: ^5.4.5
-    version: 5.4.5
+    version: 5.5.2
 
 packages:
 
@@ -261,7 +261,7 @@ packages:
       - supports-color
     dev: true
 
-  /@ethereum-waffle/compiler@4.0.3(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(solc@0.8.15)(typechain@8.3.2)(typescript@5.4.5):
+  /@ethereum-waffle/compiler@4.0.3(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(solc@0.8.15)(typechain@8.3.2)(typescript@5.5.2):
     resolution: {integrity: sha512-5x5U52tSvEVJS6dpCeXXKvRKyf8GICDwiTwUvGD3/WD+DpvgvaoHOL82XqpTSUHgV3bBq6ma5/8gKUJUIAnJCw==}
     engines: {node: '>=10.0'}
     peerDependencies:
@@ -271,14 +271,14 @@ packages:
     dependencies:
       '@resolver-engine/imports': 0.3.3
       '@resolver-engine/imports-fs': 0.3.3
-      '@typechain/ethers-v5': 10.2.1(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.3.2)(typescript@5.4.5)
+      '@typechain/ethers-v5': 10.2.1(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.3.2)(typescript@5.5.2)
       '@types/mkdirp': 0.5.2
       '@types/node-fetch': 2.6.11
       ethers: 5.7.2
       mkdirp: 0.5.6
       node-fetch: 2.7.0
       solc: 0.8.15
-      typechain: 8.3.2(typescript@5.4.5)
+      typechain: 8.3.2(typescript@5.5.2)
     transitivePeerDependencies:
       - '@ethersproject/abi'
       - '@ethersproject/providers'
@@ -1058,7 +1058,7 @@ packages:
       cbor: 8.1.0
       chalk: 2.4.2
       debug: 4.3.5
-      hardhat: 2.22.5(typescript@5.4.5)
+      hardhat: 2.22.5(typescript@5.5.2)
       lodash.clonedeep: 4.5.0
       semver: 6.3.1
       table: 6.8.2
@@ -1136,7 +1136,7 @@ packages:
       hardhat: ^2.0.0
     dependencies:
       ethers: 5.7.2
-      hardhat: 2.22.5(typescript@5.4.5)
+      hardhat: 2.22.5(typescript@5.5.2)
     dev: true
 
   /@nomiclabs/hardhat-etherscan@3.1.8(hardhat@2.22.5):
@@ -1151,7 +1151,7 @@ packages:
       chalk: 2.4.2
       debug: 4.3.5
       fs-extra: 7.0.1
-      hardhat: 2.22.5(typescript@5.4.5)
+      hardhat: 2.22.5(typescript@5.5.2)
       lodash: 4.17.21
       semver: 6.3.1
       table: 6.8.2
@@ -1171,9 +1171,9 @@ packages:
     dependencies:
       '@nomiclabs/hardhat-ethers': 2.2.3(ethers@5.7.2)(hardhat@2.22.5)
       '@types/sinon-chai': 3.2.12
-      ethereum-waffle: 4.0.10(@ensdomains/ens@0.4.5)(@ensdomains/resolver@0.2.4)(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typescript@5.4.5)
+      ethereum-waffle: 4.0.10(@ensdomains/ens@0.4.5)(@ensdomains/resolver@0.2.4)(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typescript@5.5.2)
       ethers: 5.7.2
-      hardhat: 2.22.5(typescript@5.4.5)
+      hardhat: 2.22.5(typescript@5.5.2)
     dev: true
 
   /@openzeppelin/contract-loader@0.6.3:
@@ -1243,7 +1243,7 @@ packages:
       chalk: 4.1.2
       debug: 4.3.5
       ethers: 5.7.2
-      hardhat: 2.22.5(typescript@5.4.5)
+      hardhat: 2.22.5(typescript@5.5.2)
       proper-lockfile: 4.1.2
     transitivePeerDependencies:
       - encoding
@@ -1716,7 +1716,7 @@ packages:
       strip-indent: 2.0.0
     dev: true
 
-  /@typechain/ethers-v5@10.2.1(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.3.2)(typescript@5.4.5):
+  /@typechain/ethers-v5@10.2.1(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.3.2)(typescript@5.5.2):
     resolution: {integrity: sha512-n3tQmCZjRE6IU4h6lqUGiQ1j866n5MTCBJreNEHHVWXa2u9GJTaeYyU1/k+1qLutkyw+sS6VAN+AbeiTqsxd/A==}
     peerDependencies:
       '@ethersproject/abi': ^5.0.0
@@ -1729,9 +1729,9 @@ packages:
       '@ethersproject/providers': 5.7.2
       ethers: 5.7.2
       lodash: 4.17.21
-      ts-essentials: 7.0.3(typescript@5.4.5)
-      typechain: 8.3.2(typescript@5.4.5)
-      typescript: 5.4.5
+      ts-essentials: 7.0.3(typescript@5.5.2)
+      typechain: 8.3.2(typescript@5.5.2)
+      typescript: 5.5.2
     dev: true
 
   /@types/abstract-leveldown@7.2.5:
@@ -1885,14 +1885,14 @@ packages:
     peerDependencies:
       hardhat: ^2.9.0
     dependencies:
-      hardhat: 2.22.5(typescript@5.4.5)
+      hardhat: 2.22.5(typescript@5.5.2)
     dev: true
 
   /abbrev@1.0.9:
     resolution: {integrity: sha512-LEyx4aLEC3x6T0UguF6YILf+ntvmOaWsVfENmIW0E9H09vKlLDGelMjjSm0jkDHALj8A8quZ/HapKNigzwge+Q==}
     dev: true
 
-  /abitype@1.0.0(typescript@5.4.5):
+  /abitype@1.0.0(typescript@5.5.2):
     resolution: {integrity: sha512-NMeMah//6bJ56H5XRj8QCV4AwuW6hB6zqz2LnhhLdcWVQOsXki6/Pn3APeqxCma62nXIcmZWdu1DlHWS74umVQ==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -1903,7 +1903,7 @@ packages:
       zod:
         optional: true
     dependencies:
-      typescript: 5.4.5
+      typescript: 5.5.2
     dev: true
 
   /abortcontroller-polyfill@1.7.5:
@@ -3001,7 +3001,7 @@ packages:
       vary: 1.1.2
     dev: true
 
-  /cosmiconfig@8.3.6(typescript@5.4.5):
+  /cosmiconfig@8.3.6(typescript@5.5.2):
     resolution: {integrity: sha512-kcZ6+W5QzcJ3P1Mt+83OUv/oHFqZHIx8DuxG6eZ5RGMERoLqp4BuGjhHLYGK+Kf5XVkQvqBSmAy/nGWN3qDgEA==}
     engines: {node: '>=14'}
     peerDependencies:
@@ -3014,7 +3014,7 @@ packages:
       js-yaml: 4.1.0
       parse-json: 5.2.0
       path-type: 4.0.0
-      typescript: 5.4.5
+      typescript: 5.5.2
     dev: true
 
   /crc-32@1.2.2:
@@ -3669,14 +3669,14 @@ packages:
     engines: {node: '>= 0.6'}
     dev: true
 
-  /eth-deploy-utils@2.0.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(typescript@5.4.5):
+  /eth-deploy-utils@2.0.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(typescript@5.5.2):
     resolution: {integrity: sha512-OXRCYyvU3YIUOR5JZeWi2F+x//elC0z+I1QjtqPD+wJANH/Upy8Mo7HnB30ey5C8GmyUaSpniG/RSErRTKIPqA==}
     dependencies:
       '@ethersproject/contracts': 5.7.0
       '@openzeppelin/hardhat-upgrades': 1.28.0(@nomiclabs/hardhat-ethers@2.2.3)(@nomiclabs/hardhat-etherscan@3.1.8)(ethers@5.7.2)(hardhat@2.22.5)
       ethereumjs-abi: 0.6.8
       fs-extra: 11.2.0
-      hardhat: 2.22.5(typescript@5.4.5)
+      hardhat: 2.22.5(typescript@5.5.2)
       require-or-mock: 0.2.1
     transitivePeerDependencies:
       - '@nomiclabs/hardhat-ethers'
@@ -3776,7 +3776,7 @@ packages:
       '@scure/bip39': 1.3.0
     dev: true
 
-  /ethereum-waffle@4.0.10(@ensdomains/ens@0.4.5)(@ensdomains/resolver@0.2.4)(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typescript@5.4.5):
+  /ethereum-waffle@4.0.10(@ensdomains/ens@0.4.5)(@ensdomains/resolver@0.2.4)(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typescript@5.5.2):
     resolution: {integrity: sha512-iw9z1otq7qNkGDNcMoeNeLIATF9yKl1M8AIeu42ElfNBplq0e+5PeasQmm8ybY/elkZ1XyRO0JBQxQdVRb8bqQ==}
     engines: {node: '>=10.0'}
     hasBin: true
@@ -3784,12 +3784,12 @@ packages:
       ethers: '*'
     dependencies:
       '@ethereum-waffle/chai': 4.0.10(@ensdomains/ens@0.4.5)(@ensdomains/resolver@0.2.4)(ethers@5.7.2)
-      '@ethereum-waffle/compiler': 4.0.3(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(solc@0.8.15)(typechain@8.3.2)(typescript@5.4.5)
+      '@ethereum-waffle/compiler': 4.0.3(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(solc@0.8.15)(typechain@8.3.2)(typescript@5.5.2)
       '@ethereum-waffle/mock-contract': 4.0.4(ethers@5.7.2)
       '@ethereum-waffle/provider': 4.0.5(@ensdomains/ens@0.4.5)(@ensdomains/resolver@0.2.4)(ethers@5.7.2)
       ethers: 5.7.2
       solc: 0.8.15
-      typechain: 8.3.2(typescript@5.4.5)
+      typechain: 8.3.2(typescript@5.5.2)
     transitivePeerDependencies:
       - '@ensdomains/ens'
       - '@ensdomains/resolver'
@@ -4633,11 +4633,11 @@ packages:
     dependencies:
       chalk: 4.1.2
       cli-table3: 0.6.5
-      hardhat: 2.22.5(typescript@5.4.5)
+      hardhat: 2.22.5(typescript@5.5.2)
       strip-ansi: 6.0.1
     dev: true
 
-  /hardhat-gas-reporter@2.2.0(hardhat@2.22.5)(typescript@5.4.5):
+  /hardhat-gas-reporter@2.2.0(hardhat@2.22.5)(typescript@5.5.2):
     resolution: {integrity: sha512-eAlLWnyDpQ+wJXgSCZsM0yt+rQm3ryJia1I1Hoi94LzlIfuSPcsMQM12VO6UHmAFLvXvoKxXPJ3ZYk0Kz+7CDQ==}
     peerDependencies:
       hardhat: ^2.16.0
@@ -4652,12 +4652,12 @@ packages:
       cli-table3: 0.6.5
       ethereum-cryptography: 2.2.0
       glob: 10.4.1
-      hardhat: 2.22.5(typescript@5.4.5)
+      hardhat: 2.22.5(typescript@5.5.2)
       jsonschema: 1.4.1
       lodash: 4.17.21
       markdown-table: 2.0.0
       sha1: 1.1.1
-      viem: 2.7.14(typescript@5.4.5)
+      viem: 2.7.14(typescript@5.5.2)
     transitivePeerDependencies:
       - bufferutil
       - debug
@@ -4666,7 +4666,7 @@ packages:
       - zod
     dev: true
 
-  /hardhat@2.22.5(typescript@5.4.5):
+  /hardhat@2.22.5(typescript@5.5.2):
     resolution: {integrity: sha512-9Zq+HonbXCSy6/a13GY1cgHglQRfh4qkzmj1tpPlhxJDwNVnhxlReV6K7hCWFKlOrV13EQwsdcD0rjcaQKWRZw==}
     hasBin: true
     peerDependencies:
@@ -4718,7 +4718,7 @@ packages:
       source-map-support: 0.5.21
       stacktrace-parser: 0.1.10
       tsort: 0.0.1
-      typescript: 5.4.5
+      typescript: 5.5.2
       undici: 5.28.4
       uuid: 8.3.2
       ws: 7.5.9
@@ -7314,7 +7314,7 @@ packages:
       - debug
     dev: true
 
-  /solhint@5.0.1(typescript@5.4.5):
+  /solhint@5.0.1(typescript@5.5.2):
     resolution: {integrity: sha512-QeQLS9HGCnIiibt+xiOa/+MuP7BWz9N7C5+Mj9pLHshdkNhuo3AzCpWmjfWVZBUuwIUO3YyCRVIcYLR3YOKGfg==}
     hasBin: true
     dependencies:
@@ -7324,7 +7324,7 @@ packages:
       ast-parents: 0.0.1
       chalk: 4.1.2
       commander: 10.0.1
-      cosmiconfig: 8.3.6(typescript@5.4.5)
+      cosmiconfig: 8.3.6(typescript@5.5.2)
       fast-diff: 1.3.0
       glob: 8.1.0
       ignore: 5.3.1
@@ -7367,7 +7367,7 @@ packages:
       ghost-testrpc: 0.0.2
       global-modules: 2.0.0
       globby: 10.0.2
-      hardhat: 2.22.5(typescript@5.4.5)
+      hardhat: 2.22.5(typescript@5.5.2)
       jsonschema: 1.4.1
       lodash: 4.17.21
       mocha: 10.4.0
@@ -7386,7 +7386,7 @@ packages:
       hardhat: ^2.8.0
     dependencies:
       handlebars: 4.7.8
-      hardhat: 2.22.5(typescript@5.4.5)
+      hardhat: 2.22.5(typescript@5.5.2)
       solidity-ast: 0.4.56
     dev: true
 
@@ -7768,12 +7768,12 @@ packages:
       string-format: 2.0.0
     dev: true
 
-  /ts-essentials@7.0.3(typescript@5.4.5):
+  /ts-essentials@7.0.3(typescript@5.5.2):
     resolution: {integrity: sha512-8+gr5+lqO3G84KdiTSMRLtuyJ+nTBVRKuCrK4lidMPdVeEp0uqC875uE5NMcaA7YYMN7XsNiFQuMvasF8HT/xQ==}
     peerDependencies:
       typescript: '>=3.7.0'
     dependencies:
-      typescript: 5.4.5
+      typescript: 5.5.2
     dev: true
 
   /tslib@1.14.1:
@@ -7845,7 +7845,7 @@ packages:
     resolution: {integrity: sha512-8j+1QmAbPvLZow5Qpi6NCaN8FB60p/6x8/vfNqOk/hC+HuvFZhL4+WfekuhQLiqFZXOgQdrs3B+XxEmCc6b3FQ==}
     dev: true
 
-  /typechain@8.3.2(typescript@5.4.5):
+  /typechain@8.3.2(typescript@5.5.2):
     resolution: {integrity: sha512-x/sQYr5w9K7yv3es7jo4KTX05CLxOf7TRWwoHlrjRh8H82G64g+k7VuWPJlgMo6qrjfCulOdfBjiaDtmhFYD/Q==}
     hasBin: true
     peerDependencies:
@@ -7860,8 +7860,8 @@ packages:
       mkdirp: 1.0.4
       prettier: 2.8.8
       ts-command-line-args: 2.5.1
-      ts-essentials: 7.0.3(typescript@5.4.5)
-      typescript: 5.4.5
+      ts-essentials: 7.0.3(typescript@5.5.2)
+      typescript: 5.5.2
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -7916,8 +7916,8 @@ packages:
       is-typedarray: 1.0.0
     dev: true
 
-  /typescript@5.4.5:
-    resolution: {integrity: sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==}
+  /typescript@5.5.2:
+    resolution: {integrity: sha512-NcRtPEOsPFFWjobJEtfihkLCZCXZt/os3zf8nTxjVH3RvTSxjrCamJpbExGvYOF+tFHc3pA65qpdwPbzjohhew==}
     engines: {node: '>=14.17'}
     hasBin: true
     dev: true
@@ -8096,7 +8096,7 @@ packages:
       extsprintf: 1.3.0
     dev: true
 
-  /viem@2.7.14(typescript@5.4.5):
+  /viem@2.7.14(typescript@5.5.2):
     resolution: {integrity: sha512-5b1KB1gXli02GOQHZIUsRluNUwssl2t4hqdFAzyWPwJ744N83jAOBOjOkrGz7K3qMIv9b0GQt3DoZIErSQTPkQ==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -8109,9 +8109,9 @@ packages:
       '@noble/hashes': 1.3.2
       '@scure/bip32': 1.3.2
       '@scure/bip39': 1.2.1
-      abitype: 1.0.0(typescript@5.4.5)
+      abitype: 1.0.0(typescript@5.5.2)
       isows: 1.0.3(ws@8.13.0)
-      typescript: 5.4.5
+      typescript: 5.5.2
       ws: 8.13.0
     transitivePeerDependencies:
       - bufferutil
