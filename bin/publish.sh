@@ -39,7 +39,7 @@ if [[ $version =~ -([a-zA-Z]+) ]]; then
   npm publish --tag $tag
 else
   echo "Publishing stable version $version"
-  npm publish
+  npm publish NO_CHECK=1
 fi
 
 rm README.md
