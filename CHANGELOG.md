@@ -1,6 +1,6 @@
 # Change log
 
-**0.8.4**
+**0.8.5**
 - Fix bug transferring unmanaged tokens
 
 **0.8.3**

@@ -384,7 +384,8 @@ abstract contract CrunaProtectedNFT is
    * @return true if the token is transferable, false otherwise.
    */
   function _isTransferable(uint256 tokenId, address from, address to) internal view virtual returns (bool) {
-    if (_nftConf.managerHistoryLength == 0) return true;
+    // the token is unmanaged
+    if (!_isDeployed(_defaultManagerImplementation(tokenId), 0x00, _SELF, tokenId, false)) return true;
     ICrunaManager manager = ICrunaManager(_managerOf(tokenId));
     // Burnings and self transfers are not allowed
     if (to == address(0) || from == to) return false;
