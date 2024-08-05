@@ -1,6 +1,9 @@
 # Change log
 
-**0.8.2**
+**0.8.4**
+- Fix bug transferring unmanaged tokens
+
+**0.8.3**
 - Add internal function `_plug` in `CrunaProtectedNFT`
 
 **0.8.2**

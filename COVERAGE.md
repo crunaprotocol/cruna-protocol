@@ -35,8 +35,8 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   IInheritanceCrunaPlugin.sol         |      100 |      100 |      100 |      100 
   InheritanceCrunaPlugin.sol          |    99.01 |    72.12 |      100 |    96.27 
   InheritanceCrunaPluginProxy.sol     |      100 |      100 |      100 |      100 
- token/                               |    98.84 |    67.05 |      100 |    98.99 
-  CrunaProtectedNFT.sol               |    98.77 |    66.25 |      100 |    98.95 
+ token/                               |    97.73 |    66.67 |      100 |       99 
+  CrunaProtectedNFT.sol               |    97.59 |    65.85 |      100 |    98.96 
   CrunaProtectedNFTOwnable.sol        |      100 |       50 |      100 |      100 
   CrunaProtectedNFTTimeControlled.sol |      100 |    83.33 |      100 |      100 
   ICrunaProtectedNFT.sol              |      100 |      100 |      100 |      100 
@@ -51,6 +51,6 @@ File                                  |  % Stmts | % Branch |  % Funcs |  % Line
   IVersioned.sol                      |      100 |      100 |      100 |      100 
   SignatureValidator.sol              |      100 |    86.36 |      100 |      100 
 --------------------------------------|----------|----------|----------|----------
-All files                             |    99.28 |    70.77 |      100 |    98.32 
+All files                             |     99.1 |    70.69 |      100 |    98.32 
 --------------------------------------|----------|----------|----------|----------
 ```
