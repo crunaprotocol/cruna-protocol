@@ -1,5 +1,8 @@
 # Change log
 
+**0.9.0**
+- Use erc7656 v0.3.0
+
 **0.8.5**
 - Fix bug transferring unmanaged tokens
 
