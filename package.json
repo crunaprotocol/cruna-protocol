@@ -76,7 +76,7 @@
     "prettier-plugin-solidity": "^1.4.1",
     "pretty-quick": "^4.0.0",
     "require-or-mock": "^0.2.1",
-    "rimraf": "^5.0.10",
+    "rimraf": "^6.0.1",
     "solhint": "^5.0.3",
     "solidity-coverage": "^0.8.12",
     "solidity-docgen": "0.6.0-beta.36",
